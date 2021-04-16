@@ -2,7 +2,7 @@ import { ListGroup } from 'react-bootstrap'
 import React from 'react'
 
 class Documento extends React.Component {
-    render(){
+    render() {
         return (
             <div>
                 <p>

@@ -12,6 +12,8 @@ import {
   Heading
 
 } from 'grommet';
+import firebase from "firebase/app";
+
 class Estudiante extends React.Component {
   constructor(props) {
     super(props)
@@ -22,52 +24,59 @@ class Estudiante extends React.Component {
     }
   }
 
-  getDocumentos(){
+  getDocumentos() {
     axios.get('http://jsonplaceholder.typicode.com/users').then(res => {
       var data = res.data
-        this.setState({documentos : data})
+      this.setState({ documentos: data })
     })
   }
 
-  getPracticas(){
+  getPracticas() {
     axios.get('http://jsonplaceholder.typicode.com/users').then(res => {
       var data = res.data
-        this.setState({practicas : data})
+      this.setState({ practicas: data })
     })
   }
 
-  getUser(){
+  getUser() {
     axios.get('http://jsonplaceholder.typicode.com/users/1').then(res => {
       var data = res.data
-        this.setState({user : data})
+      this.setState({ user: data })
     })
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getUser()
     this.getDocumentos()
     this.getPracticas()
   }
 
-  render(){
+  render() {
     return (
-        <Accordion>
+      <Accordion>
         <Heading margin="none" >Hola! {this.state.user.name}</Heading>
         <Text>
           Lorem ipsum dolor sit amet consectetur adipiscing elit dui, fringilla facilisis at montes suscipit rhoncus ultrices, cursus augue primis auctor cum tortor litora. Ligula scelerisque orci himenaeos blandit sagittis curabitur quam, mauris primis phasellus natoque dapibus tempus, ac potenti augue egestas torquent laoreet.
         </Text>
-        <br/>
-      <AccordionPanel label="Documentos">
+        <br />
+        <AccordionPanel label="Documentos">
           <Box pad="medium" background="light-2">
 
-          <Documento docs={this.state.documentos}/>
+            <Documento docs={this.state.documentos} />
           </Box>
-      </AccordionPanel>
-      <AccordionPanel label="Prácticas">
+        </AccordionPanel>
+        <AccordionPanel label="Prácticas">
           <Box pad="medium" background="light-2">
-          <Practica practicas={this.state.practicas}/>
+            <Practica practicas={this.state.practicas} />
           </Box>
-      </AccordionPanel>
+        </AccordionPanel>
+        <button onClick={(event) => {
+          firebase.auth().signOut().then(() => {
+            console.log("Sign-out successful.")
+          }).catch((error) => {
+            console.log("An error happened.")
+          });
+        }}>Sign Out</button>
       </Accordion>
     );
   }

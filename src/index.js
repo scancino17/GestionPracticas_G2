@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Landing from './login/Landing';
 import reportWebVitals from './reportWebVitals';
 import firebase from "firebase/app";
 import "firebase/analytics";
+import UserProvider from './providers/UserProvider';
+import App from "./App";
 
 var firebaseConfig = {
   apiKey: "AIzaSyDT3RmRH7Cgp7Y4zCIH0ythSsmR2OJYHNQ",
@@ -22,7 +23,9 @@ firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(
   <React.StrictMode>
-    <Landing />
+    <UserProvider>
+      <App />
+    </UserProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

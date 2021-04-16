@@ -1,24 +1,14 @@
-import logo from './logo.svg';
+import React, { useContext } from "react";
 import './App.css';
+import Landing from './login/Landing';
+import Estudiante from './dashboard-estudiante/Estudiante';
+import "firebase/auth";
+import { UserContext } from "./providers/UserProvider";
 
 function App() {
+  const user = useContext(UserContext);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    user ? <Estudiante /> : <Landing />
   );
 }
 

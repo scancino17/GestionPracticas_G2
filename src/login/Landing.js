@@ -1,6 +1,5 @@
-
-import { Main, Heading, Card, Grid, Box, Form, TextInput, Button, FormField, ResponsiveContext, Grommet } from 'grommet';
 import React, { useState } from "react";
+import { Main, Heading, Card, Grid, Box, Form, TextInput, Button, FormField, ResponsiveContext, Grommet } from 'grommet';
 import { deepMerge } from "grommet/utils";
 import { grommet } from "grommet/themes";
 import firebase from "firebase/app";
@@ -10,17 +9,11 @@ import "firebase/auth";
 const customBreakpoints = deepMerge(grommet, {
   global: {
     breakpoints: {
-      small: {
-        value: 1000
-      },
-      medium: {
-        value: 1000
-      },
-      large: 3000
+      small: { value: 1000 },
+      medium: { value: 1000 },
+      large: { value: 30000 }
     },
-    colors: {
-      focus: '#000000' // added focus color
-    }
+    colors: { focus: '#000000' }
   }
 });
 
@@ -71,7 +64,6 @@ const ResponsiveGrid = ({
 }) => (
   <ResponsiveContext.Consumer>
     {(size) => {
-
       let columnsVal = columns;
       if (columns) {
         if (columns[size]) {
@@ -108,94 +100,46 @@ const ResponsiveGrid = ({
 function Landing() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(false);
 
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
-    try {
-      firebase.auth().signInWithEmailAndPassword(email, password);
-      const token = firebase.auth().currentUser.getIdTokenResult();
-      console.log("Successfully logged user!");
-      console.log(token);
-    }
-    catch(err) {
-      setError("Error signing in with password and email!");
-      console.error("Error signing in with password and email", error);
-      
-    }
+    firebase.auth().signInWithEmailAndPassword(email, password).then((userCredential) => {
+      console.log("Sucessfully logged user!", userCredential.user);
+    }).catch((error) => {
+      console.log(error.message);
+    });
   }
 
   return (
-    <div
-      style={{ height: '100vh' }}
-      path="100%"
-    >
-      
-      <Main
-        align='left'
-        full={true}
-        background="url('Fondo.png')"
-      >
-        <Grommet
-          
-          background='False'
-          theme={customBreakpoints}>
-          <Box>
-     
-            <ResponsiveGrid
-              rows={rows}
-              columns={columns}
-              gap="small"
-              areas={areas}
-              margin="medium"
-            >
-              <Box
-                gridArea="header"
-                justify="center"
-                align="center"
-              >
-                <Heading align='rigth' margin="small" level='1' label='Gestion de Practicas'>Gestión de Prácticas</Heading>
-                <Heading align='rigth' margin="small" level='2' label='Utalca'>Utalca</Heading>
-              </Box>
-              <Box
-                gridArea="test"
-                justify="center"
-                align="center"
-              >
-              </Box>
-              <Box
-                gridArea="test1"
-                justify="center"
-                align="center"
-              >
-                <Card height="250px" width="500px"
-                  background={
-                    { opacity: 'strong', color: 'light-1' }
-                  }
-                >
-                  <Form>
-
-                    <FormField margin="small" name="email" htmlFor="text-input-id" label="Email">
-                      <TextInput id="text-input-email" name="Email" onChange={(event) => { setEmail(event.currentTarget.value) }} />
-                    </FormField>
-                    <FormField margin="small" name="Contraseña" htmlFor="text-input-id" label="Contraseña">
-                      <TextInput id="text-input-password" name="Contraseña" type="password" onChange={(event) => { setPassword(event.currentTarget.value) }} />
-                    </FormField>
-                    <Button style={{ marginLeft: '35%' }} type="Submit" primary label="Ingresar" aling='center' color='#f4971a' onClick={(event) => signInWithEmailAndPasswordHandler(event, email, password)} />
-                  </Form>
-                </Card>
-              </Box>
-            </ResponsiveGrid>
-            <ResponsiveGrid
-              gap="small"
-              margin="medium"
-              columns="medium"
-              rows="xsmall"
-            ></ResponsiveGrid>
-          </Box>
-        </Grommet>
-      </Main>
-    </div>
+    <Main align='left' full={true} background="url('Fondo.png')" style={{ height: '100vh' }} path="100%">
+      <Grommet background='False' theme={customBreakpoints}>
+        <Box>
+          <ResponsiveGrid rows={rows} columns={columns} gap="small" areas={areas} margin="medium">
+            <Box gridArea="header" justify="center" align="center">
+              <Heading margin="small" level='1'>Gestión de Prácticas</Heading>
+              <Heading margin="small" level='2'>Universidad de Talca</Heading>
+            </Box>
+            <Box gridArea="test1" justify="center" align="center">
+              <Card height="250px" width="500px" background={{ opacity: 'strong', color: 'light-1' }}>
+                <Form onSubmit={(event) => signInWithEmailAndPasswordHandler(event, email, password)}>
+                  <FormField margin="small" name="email" htmlFor="text-input-email" label="Email" required="true">
+                    <TextInput id="text-input-email" name="email" type="email" onChange={(event) => { setEmail(event.currentTarget.value) }} />
+                  </FormField>
+                  <FormField margin="small" name="password" htmlFor="text-input-password" label="Contraseña" required="true">
+                    <TextInput id="text-input-password" name="password" type="password" onChange={(event) => { setPassword(event.currentTarget.value) }} />
+                  </FormField>
+                  <Box align="center">
+                    <Button type="submit" primary label="Ingresar" color='#f4971a' />
+                  </Box>
+                </Form>
+              </Card>
+            </Box>
+          </ResponsiveGrid>
+          <ResponsiveGrid gap="small" margin="medium" columns="medium" rows="xsmall" />
+        </Box>
+      </Grommet>
+    </Main>
   );
 }
 

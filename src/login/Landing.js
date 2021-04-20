@@ -6,6 +6,7 @@ import { grommet } from "grommet/themes";
 import firebase from "firebase/app";
 import "firebase/auth";
 
+
 const customBreakpoints = deepMerge(grommet, {
   global: {
     breakpoints: {
@@ -85,7 +86,6 @@ const ResponsiveGrid = ({
         }
       }
 
-
       let areasVal = areas;
       if (areas && !Array.isArray(areas)) areasVal = areas[size];
 
@@ -112,30 +112,36 @@ function Landing() {
 
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(email, password).catch(error => {
-      setError("Error signing in with password and email!");
-      console.error("Error signing in with password and email", error)
-    }).then(() => {
+    try {
+      firebase.auth().signInWithEmailAndPassword(email, password);
       const token = firebase.auth().currentUser.getIdTokenResult();
-      console.log("Successfully logged user!")
+      console.log("Successfully logged user!");
       console.log(token);
-    });
-  };
+    }
+    catch(err) {
+      setError("Error signing in with password and email!");
+      console.error("Error signing in with password and email", error);
+      
+    }
+  }
 
   return (
     <div
       style={{ height: '100vh' }}
       path="100%"
     >
+      
       <Main
         align='left'
         full={true}
         background="url('Fondo.png')"
       >
         <Grommet
+          
           background='False'
           theme={customBreakpoints}>
           <Box>
+     
             <ResponsiveGrid
               rows={rows}
               columns={columns}
@@ -148,7 +154,7 @@ function Landing() {
                 justify="center"
                 align="center"
               >
-                <Heading align='rigth' margin="small" level='1' label='Gestion de Practicas'>Gestion de Practicas</Heading>
+                <Heading align='rigth' margin="small" level='1' label='Gestion de Practicas'>Gestión de Prácticas</Heading>
                 <Heading align='rigth' margin="small" level='2' label='Utalca'>Utalca</Heading>
               </Box>
               <Box
@@ -168,10 +174,11 @@ function Landing() {
                   }
                 >
                   <Form>
+
                     <FormField margin="small" name="email" htmlFor="text-input-id" label="Email">
                       <TextInput id="text-input-email" name="Email" onChange={(event) => { setEmail(event.currentTarget.value) }} />
                     </FormField>
-                    <FormField margin="small" name="password" htmlFor="text-input-id" label="Password">
+                    <FormField margin="small" name="Contraseña" htmlFor="text-input-id" label="Contraseña">
                       <TextInput id="text-input-password" name="Contraseña" type="password" onChange={(event) => { setPassword(event.currentTarget.value) }} />
                     </FormField>
                     <Button style={{ marginLeft: '35%' }} type="Submit" primary label="Ingresar" aling='center' color='#f4971a' onClick={(event) => signInWithEmailAndPasswordHandler(event, email, password)} />

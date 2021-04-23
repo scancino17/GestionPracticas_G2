@@ -1,58 +1,66 @@
-import React from 'react'
-import reactDom from 'react-dom'
-import firebase from 'firebase'
-
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import firebase from 'firebase';
 
 const config = {
- 
-  };
-  // Initialize Firebase
-  firebase.initializeApp(config);
+  apiKey: 'AIzaSyDT3RmRH7Cgp7Y4zCIH0ythSsmR2OJYHNQ',
+  authDomain: 'gestion-practicas.firebaseapp.com',
+  projectId: 'gestion-practicas',
+  storageBucket: 'gestion-practicas.appspot.com',
+  messagingSenderId: '556815124831',
+  appId: '1:556815124831:web:59b82a0edf39c2eb9eceea',
+  measurementId: 'G-SYXNF6CT55'
+};
+// Initialize Firebase
+firebase.initializeApp(config);
 
-
-class SubirArchivo extends React.Component{
-    constructor(){
-        super()
-        this.state ={
-            uploadValue: 0
-        }
-    }
-handleOnChange(event){
-    const file = event.target.files(6)
-    const storageRef = firebase.storage().ref('picture/${file.name}')
-    const task = storageRef.put(file)
-    task.on("state_changet", (snapshot)=>{
-        let percentage = (snapshot.bytesTransferred / snapshot.totalBytes)*100
-        this.setState({
-            uploadValue: percentage
-        })
-    },(error) => {
-        this.setState({
-            message:'Ha ocurrido un error: ${errore.message}'
-
-        },()=>{
-            this.setState({
-                message:'Archivo subido',
-                picture:task.snaoshot.dowloadURL
-            })
-        })
-    })
+class FileUpload extends Component {
+  constructor() {
+    super();
+    this.state = {
+      uploadValue: 0
+    };
   }
 
-    render(){
-        return(
-            <div>
-                <progress value={this.state.uploadValue} max='300'></progress>
-                <br/>
-                <input type="file" onChange={this.handleOnChange.bind(this)}/>
-                <br/>
-                {this.state.message}
-                <br/>
-                <img width='100' src={this.state.picture}/>
-            </div>
-        )
-    }
+  handleOnChange(e) {
+    const file = e.target.files[0];
+    const storageRef = firebase.storage().ref(`images/${file.name}`);
+    const task = storageRef.put(file);
 
-    
+    task.on(
+      'state_changed',
+      (snapshot) => {
+        let percentage =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        this.setState({
+          uploadValue: percentage
+        });
+      },
+      (error) => {
+        console.error(error.message);
+      },
+      () => {
+        // Upload complete
+        this.setState({
+          picture: task.snapshot.downloadURL
+        });
+      }
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        <progress value={this.state.uploadValue} max='100'>
+          {this.state.uploadValue} %
+        </progress>
+        <br />
+        <input type='file' onChange={this.handleOnChange.bind(this)} />
+        <br />
+        <img width='90' src={this.state.picture} />
+      </div>
+    );
+  }
 }
-reactDom.render(<SubirArchivo/>,document.getElementById('root'))
+
+ReactDOM.render(<FileUpload />, document.getElementById('root'));

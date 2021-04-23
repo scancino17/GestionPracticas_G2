@@ -2,6 +2,7 @@
 
 import Documento from './extras/Documento'
 import Practica from './extras/Practica'
+import FileUpload from '../utilidades/FileUpload'
 import React from 'react'
 import axios from 'axios'
 import {

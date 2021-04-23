@@ -1,30 +1,14 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import firebase from 'firebase';
 
-const config = {
-  apiKey: 'AIzaSyDT3RmRH7Cgp7Y4zCIH0ythSsmR2OJYHNQ',
-  authDomain: 'gestion-practicas.firebaseapp.com',
-  projectId: 'gestion-practicas',
-  storageBucket: 'gestion-practicas.appspot.com',
-  messagingSenderId: '556815124831',
-  appId: '1:556815124831:web:59b82a0edf39c2eb9eceea',
-  measurementId: 'G-SYXNF6CT55'
-};
-// Initialize Firebase
-firebase.initializeApp(config);
-
 class FileUpload extends Component {
-  constructor() {
-    super();
-    this.state = {
-      uploadValue: 0
-    };
+  state = {
+    uploadValue: 0
   }
 
   handleOnChange(e) {
     const file = e.target.files[0];
-    const storageRef = firebase.storage().ref(`images/${file.name}`);
+    const storageRef = firebase.storage().ref(`${props.folder}/${file.name}`);
     const task = storageRef.put(file);
 
     task.on(
@@ -47,7 +31,7 @@ class FileUpload extends Component {
       }
     );
   }
-
+  
   render() {
     return (
       <div>
@@ -63,4 +47,4 @@ class FileUpload extends Component {
   }
 }
 
-ReactDOM.render(<FileUpload />, document.getElementById('root'));
+export default FileUpload

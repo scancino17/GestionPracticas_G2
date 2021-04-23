@@ -25,21 +25,21 @@ class Estudiante extends React.Component {
   }
 
   getDocumentos() {
-    axios.get('http://jsonplaceholder.typicode.com/users').then(res => {
+    axios.get('https://rickandmortyapi.com/api/character').then(res => {
       var data = res.data
       this.setState({ documentos: data })
     })
   }
 
   getPracticas() {
-    axios.get('http://jsonplaceholder.typicode.com/users').then(res => {
+    axios.get('https://rickandmortyapi.com/api/character').then(res => {
       var data = res.data
       this.setState({ practicas: data })
     })
   }
 
   getUser() {
-    axios.get('http://jsonplaceholder.typicode.com/users/1').then(res => {
+    axios.get('https://rickandmortyapi.com/api/character/1').then(res => {
       var data = res.data
       this.setState({ user: data })
     })
@@ -62,12 +62,12 @@ class Estudiante extends React.Component {
         <AccordionPanel label="Documentos">
           <Box pad="medium" background="light-2">
 
-            <Documento docs={this.state.documentos} />
+            <Documento docs={this.state.documentos.results} />
           </Box>
         </AccordionPanel>
         <AccordionPanel label="Prácticas">
           <Box pad="medium" background="light-2">
-            <Practica practicas={this.state.practicas} />
+            <Practica practicas={this.state.practicas.results} />
           </Box>
         </AccordionPanel>
         <button onClick={(event) => {

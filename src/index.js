@@ -2,24 +2,22 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import firebase from "firebase/app";
-import "firebase/analytics";
+import firebase from 'firebase/app';
+import 'firebase/analytics';
 import UserProvider from './providers/UserProvider';
-import App from "./App";
+import App from './App';
 
 var firebaseConfig = {
-  apiKey: "AIzaSyDT3RmRH7Cgp7Y4zCIH0ythSsmR2OJYHNQ",
-  authDomain: "gestion-practicas.firebaseapp.com",
-  projectId: "gestion-practicas",
-  storageBucket: "gestion-practicas.appspot.com",
-  messagingSenderId: "556815124831",
-  appId: "1:556815124831:web:59b82a0edf39c2eb9eceea",
-  measurementId: "G-SYXNF6CT55"
+  apiKey: 'AIzaSyDT3RmRH7Cgp7Y4zCIH0ythSsmR2OJYHNQ',
+  authDomain: 'gestion-practicas.firebaseapp.com',
+  projectId: 'gestion-practicas',
+  storageBucket: 'gestion-practicas.appspot.com',
+  messagingSenderId: '556815124831',
+  appId: '1:556815124831:web:59b82a0edf39c2eb9eceea',
+  measurementId: 'G-SYXNF6CT55'
 };
 
 firebase.initializeApp(firebaseConfig);
-
-
 
 ReactDOM.render(
   <React.StrictMode>

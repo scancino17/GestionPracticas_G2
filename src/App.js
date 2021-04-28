@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
 import Estudiante from './dashboard-estudiante/Estudiante';
-import 'firebase/auth';
-import { UserContext } from './providers/UserProvider';
 import { Grommet } from 'grommet';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { useAuth } from './providers/Auth';
 
 const theme = {
   global: {
@@ -21,10 +21,10 @@ const theme = {
 };
 
 function App() {
-  const user = useContext(UserContext);
+  const { currentUser: user } = useAuth();
   return (
     <Grommet theme={theme} full>
-      {user ? <Estudiante /> : <Landing />}
+      <Router>{user ? <Estudiante /> : <Landing />}</Router>
     </Grommet>
   );
 }

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import firebase from 'firebase/app';
 import {
   Box,
   Button,
@@ -15,22 +14,21 @@ import {
   Text,
   TextInput
 } from 'grommet';
+import { useAuth } from '../providers/Auth';
 
 function Landing() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const { login } = useAuth();
 
   function handleOnSubmit(e) {
     e.preventDefault();
     setLoading(true);
     setError(false);
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
+    login(email, password)
       .then((userCredential) => {
-        console.log('Sucessfully logged user!', userCredential.user);
         setLoading(false);
       })
       .catch((error) => {

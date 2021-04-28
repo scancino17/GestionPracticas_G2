@@ -21,7 +21,7 @@ const theme = {
 };
 
 function App() {
-  const { currentUser: user } = useAuth();
+  const { user } = useAuth();
   return (
     <Grommet theme={theme} full>
       <Router>{user ? <Estudiante /> : <Landing />}</Router>

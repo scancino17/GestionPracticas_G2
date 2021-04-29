@@ -30,6 +30,7 @@ function Landing() {
     login(email, password)
       .then((userCredential) => {
         setLoading(false);
+        console.log(userCredential.user.getIdTokenResult());
       })
       .catch((error) => {
         console.log(error.message);

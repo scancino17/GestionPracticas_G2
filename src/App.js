@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import Estudiante from './dashboard-estudiante/Estudiante';
-import "firebase/auth";
-import { UserContext } from "./providers/UserProvider";
 import { Grommet } from 'grommet';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { useAuth } from './providers/Auth';
+import DashboardEstudiante from './dashboard-estudiante/DashboardEstudiante';
 
 const theme = {
   global: {
@@ -15,16 +15,16 @@ const theme = {
     font: {
       family: 'Roboto',
       size: '18px',
-      height: '20px',
+      height: '20px'
     }
   }
 };
 
 function App() {
-  const user = useContext(UserContext);
+  const { user } = useAuth();
   return (
     <Grommet theme={theme} full>
-      {user ? <Estudiante /> : <Landing />}
+      <Router>{user ? <DashboardEstudiante /> : <Landing />}</Router>
     </Grommet>
   );
 }

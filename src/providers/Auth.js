@@ -16,19 +16,7 @@ export function AuthProvider({ children }) {
   const value = { user, userData, role, login, logout };
 
   function login(email, password) {
-    return auth
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        userCredential.user
-          .getIdTokenResult()
-          .then((token) => setRole(token.claims.student));
-        db.collection('users')
-          .doc(userCredential.user.uid)
-          .get()
-          .then((doc) => {
-            setUserData(doc.data());
-          });
-      });
+    return auth.signInWithEmailAndPassword(email, password);
   }
 
   function logout() {
@@ -36,7 +24,16 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => setUser(user));
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      user.getIdTokenResult().then((token) => setRole(token.claims.student));
+      db.collection('users')
+        .doc(user.uid)
+        .get()
+        .then((doc) => {
+          setUserData(doc.data());
+        });
+    });
     setLoaded(true);
     return unsubscribe;
   }, []);

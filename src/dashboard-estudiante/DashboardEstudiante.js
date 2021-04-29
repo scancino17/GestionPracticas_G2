@@ -15,9 +15,9 @@ import { db } from '../firebase';
 
 function DashboardEstudiante() {
   const { user, userData, logout } = useAuth();
+  const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState();
   const [practicas, setPracticas] = useState();
-  const [careerInternshipInfo, setCareerInternshipInfo] = useState();
 
   useEffect(() => {
     axios.get('https://rickandmortyapi.com/api/character').then((res) => {
@@ -27,20 +27,29 @@ function DashboardEstudiante() {
     axios.get('https://rickandmortyapi.com/api/character').then((res) => {
       setPracticas(res.data.results);
     });
-    //db.collection('careerInternshipInfo').where();
-  }, []);
+    if (userData) {
+      db.collection('careerInternshipInfo')
+        .where('careerId', '==', userData.careerId)
+        .get()
+        .then((doc) => {
+          setCareerInternshipInfo(doc.docs[0].data());
+        });
+    }
+  }, [userData]);
 
   return (
     <Main pad='xlarge'>
       <Heading>¡Hola, {userData && userData.name}!</Heading>
       <Text>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        {user.uid}
+        {careerInternshipInfo && careerInternshipInfo.info}
+        {/*Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
         veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
         commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
         velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
         occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+        mollit anim id est laborum.*/}
       </Text>
 
       <Accordion>

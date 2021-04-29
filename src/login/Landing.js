@@ -28,9 +28,8 @@ function Landing() {
     setLoading(true);
     setError(false);
     login(email, password)
-      .then(setLoading(false))
+      .then(() => setLoading(false))
       .catch((error) => {
-        console.log(error.message);
         setError(true);
         setLoading(false);
       });

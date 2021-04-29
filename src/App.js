@@ -21,10 +21,10 @@ const theme = {
 };
 
 function App() {
-  const { role } = useAuth();
+  const { user } = useAuth();
   return (
     <Grommet theme={theme} full>
-      <Router>{role ? <DashboardEstudiante /> : <Landing />}</Router>
+      <Router>{user ? <DashboardEstudiante /> : <Landing />}</Router>
     </Grommet>
   );
 }

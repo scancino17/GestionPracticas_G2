@@ -28,10 +28,7 @@ function Landing() {
     setLoading(true);
     setError(false);
     login(email, password)
-      .then((userCredential) => {
-        setLoading(false);
-        console.log(userCredential.user.getIdTokenResult());
-      })
+      .then(setLoading(false))
       .catch((error) => {
         console.log(error.message);
         setError(true);

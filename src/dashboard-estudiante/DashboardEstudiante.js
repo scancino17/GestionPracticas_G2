@@ -14,10 +14,9 @@ import axios from 'axios';
 import { db } from '../firebase';
 
 function DashboardEstudiante() {
-  const { user, logout } = useAuth();
+  const { user, userData, logout } = useAuth();
   const [docs, setDocs] = useState();
   const [practicas, setPracticas] = useState();
-  const [userData, setUserData] = useState();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
 
   useEffect(() => {
@@ -28,16 +27,7 @@ function DashboardEstudiante() {
     axios.get('https://rickandmortyapi.com/api/character').then((res) => {
       setPracticas(res.data.results);
     });
-
-    db.collection('users')
-      .doc(user.uid)
-      .get()
-      .then((doc) => {
-        setUserData(doc.data());
-      });
-    console.log(userData);
-
-    //db.collection('careerInternshipInfo').where('');
+    //db.collection('careerInternshipInfo').where();
   }, []);
 
   return (

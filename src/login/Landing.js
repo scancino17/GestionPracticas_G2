@@ -43,8 +43,8 @@ function Landing() {
     <Main
       background="url('Fondo.png')"
       direction='row-responsive'
-      pad='medium'
-      justify='evenly'>
+      justify='evenly'
+      pad='medium'>
       <Box justify='center' align='baseline' margin='medium'>
         <Heading margin='small' level='1'>
           Gestión de Prácticas

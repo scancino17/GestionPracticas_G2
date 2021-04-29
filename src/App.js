@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import Estudiante from './dashboard-estudiante/Estudiante';
 import { Grommet } from 'grommet';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useAuth } from './providers/Auth';
+import DashboardEstudiante from './dashboard-estudiante/DashboardEstudiante';
 
 const theme = {
   global: {
@@ -24,7 +24,7 @@ function App() {
   const { user } = useAuth();
   return (
     <Grommet theme={theme} full>
-      <Router>{user ? <Estudiante /> : <Landing />}</Router>
+      <Router>{user ? <DashboardEstudiante /> : <Landing />}</Router>
     </Grommet>
   );
 }

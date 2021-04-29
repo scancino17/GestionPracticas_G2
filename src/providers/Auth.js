@@ -9,9 +9,10 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState();
+  const [userData, setUserData] = useState();
   const [loaded, setLoaded] = useState(false);
 
-  const value = { user, login, logout };
+  const value = { user, userData, login, logout };
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);

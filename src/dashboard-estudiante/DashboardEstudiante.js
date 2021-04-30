@@ -9,7 +9,7 @@ import {
   Text
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../providers/Auth';
+import useAuth from '../providers/Auth';
 import Documentos from './extras/Documentos';
 import Practicas from './extras/Practicas';
 import { db, storage } from '../firebase';

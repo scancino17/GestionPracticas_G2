@@ -11,9 +11,8 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState();
   const [userData, setUserData] = useState();
   const [loaded, setLoaded] = useState(false);
-  const [role, setRole] = useState();
 
-  const value = { user, userData, role, login, logout };
+  const value = { user, userData, login, logout };
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);
@@ -26,13 +25,22 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
-      user.getIdTokenResult().then((token) => setRole(token.claims.student));
-      db.collection('users')
-        .doc(user.uid)
-        .get()
-        .then((doc) => {
-          setUserData(doc.data());
+      if (user) {
+        user.getIdTokenResult().then((token) => {
+          setUser((prevState) => ({
+            ...prevState,
+            student: token.claims.student,
+            admin: token.claims.admin
+          }));
         });
+
+        db.collection('users')
+          .doc(user.uid)
+          .get()
+          .then((doc) => {
+            setUserData(doc.data());
+          });
+      }
     });
     setLoaded(true);
     return unsubscribe;
@@ -44,3 +52,5 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
+export default useAuth;

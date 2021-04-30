@@ -1,4 +1,4 @@
-import { Anchor, Card, CardBody, Text } from 'grommet';
+import { Anchor, Card, CardBody } from 'grommet';
 import { Download } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 

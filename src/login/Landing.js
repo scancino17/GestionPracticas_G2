@@ -14,7 +14,7 @@ import {
   Text,
   TextInput
 } from 'grommet';
-import { useAuth } from '../providers/Auth';
+import useAuth from '../providers/Auth';
 
 function Landing() {
   const [email, setEmail] = useState('');

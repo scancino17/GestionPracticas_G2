@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Grommet } from 'grommet';
+import { Box, Grommet, Spinner } from 'grommet';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { useAuth } from './providers/Auth';
+import useAuth from './providers/Auth';
 import DashboardEstudiante from './dashboard-estudiante/DashboardEstudiante';
+import DashboardAdmin from './dashboad-admin/DashboardAdmin';
 
 const theme = {
   global: {
@@ -22,9 +23,26 @@ const theme = {
 
 function App() {
   const { user } = useAuth();
+  if (user) console.log('student', user.student, 'admin', user.admin);
   return (
     <Grommet theme={theme} full>
-      <Router>{user ? <DashboardEstudiante /> : <Landing />}</Router>
+      <Router>
+        {user ? (
+          user.student || user.admin ? (
+            user.student ? (
+              <DashboardEstudiante />
+            ) : (
+              <DashboardAdmin />
+            )
+          ) : (
+            <Box align='center'>
+              <Spinner margin='medium' size='large' />
+            </Box>
+          )
+        ) : (
+          <Landing />
+        )}
+      </Router>
     </Grommet>
   );
 }

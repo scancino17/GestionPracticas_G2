@@ -6,10 +6,13 @@ function Practicas({ practicas }) {
     <>
       {practicas.map((practica) => {
         return (
-          <Card margin='small' pad='medium'>
-            <CardHeader>{practica.name}</CardHeader>
+          <Card
+            key={`Práctica ${practica.applicationNumber}`}
+            margin='small'
+            pad='medium'>
+            <CardHeader>{`Práctica ${practica.applicationNumber}`}</CardHeader>
             <CardFooter>
-              <Text>{practica.species}</Text>
+              <Text>{practica.status}</Text>
             </CardFooter>
           </Card>
         );

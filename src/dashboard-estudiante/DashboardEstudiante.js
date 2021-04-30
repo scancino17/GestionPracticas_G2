@@ -1,67 +1,75 @@
 import {
   Accordion,
   AccordionPanel,
+  Box,
   Button,
   Heading,
   Main,
+  Spinner,
   Text
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../providers/Auth';
 import Documentos from './extras/Documentos';
 import Practicas from './extras/Practicas';
-import axios from 'axios';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 
 function DashboardEstudiante() {
   const { user, userData, logout } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
-  const [docs, setDocs] = useState();
-  const [practicas, setPracticas] = useState();
+  const [docs, setDocs] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [practicas, setPracticas] = useState([]);
 
   useEffect(() => {
-    axios.get('https://rickandmortyapi.com/api/character').then((res) => {
-      setDocs(res.data.results);
-    });
-
-    axios.get('https://rickandmortyapi.com/api/character').then((res) => {
-      setPracticas(res.data.results);
-    });
     if (userData) {
       db.collection('careerInternshipInfo')
         .where('careerId', '==', userData.careerId)
         .get()
-        .then((doc) => {
-          setCareerInternshipInfo(doc.docs[0].data());
+        .then((querySnapshot) =>
+          setCareerInternshipInfo(querySnapshot.docs[0].data())
+        );
+
+      storage
+        .ref(`careers-docs/${userData.careerId}`)
+        .listAll()
+        .then((res) => setDocs(res.items));
+
+      db.collection('internships')
+        .where('studentId', '==', user.uid)
+        .get()
+        .then((querySnapshot) => {
+          const temp = [];
+          querySnapshot.forEach((doc) => temp.push(doc.data()));
+          setPracticas(temp);
+          setLoaded(true);
         });
     }
   }, [userData]);
 
   return (
     <Main pad='xlarge'>
-      <Heading>¡Hola, {userData && userData.name}!</Heading>
-      <Text>
-        {user.uid}
-        {careerInternshipInfo && careerInternshipInfo.info}
-        {/*Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.*/}
-      </Text>
-
-      <Accordion>
-        <AccordionPanel label='Documentos'>
-          <Documentos docs={docs} />
-        </AccordionPanel>
-        <AccordionPanel label='Prácticas'>
-          <Practicas practicas={practicas} />
-        </AccordionPanel>
-      </Accordion>
-
-      <Button primary label='Sign Out' onClick={logout} />
+      {loaded ? (
+        <>
+          <Heading margin='small'>¡Hola, {userData && userData.name}!</Heading>
+          <Text margin='small'>
+            {careerInternshipInfo && careerInternshipInfo.info}
+          </Text>
+          <Accordion margin='small'>
+            <AccordionPanel label='Documentos'>
+              <Documentos docs={docs} />
+            </AccordionPanel>
+            <AccordionPanel label='Prácticas'>
+              <Practicas practicas={practicas} />
+            </AccordionPanel>
+          </Accordion>
+          <Button primary label='Sign Out' onClick={logout} />
+        </>
+      ) : (
+        <Box align='center'>
+          <Spinner margin='medium' size='large' />
+        </Box>
+      )}
     </Main>
   );
 }

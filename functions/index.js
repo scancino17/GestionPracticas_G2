@@ -12,4 +12,13 @@ exports.processSignUp = functions.auth.user().onCreate((user) => {
         functions.logger.error(error);
       });
   }
+  if (user.email && user.email.endsWith('@utalca.cl')) {
+    const customClaims = { admin: true };
+    return admin
+      .auth()
+      .setCustomUserClaims(user.uid, customClaims)
+      .catch((error) => {
+        functions.logger.error(error);
+      });
+  }
 });

@@ -5,7 +5,7 @@ import Estudiante from './dashboard-estudiante/Estudiante';
 import { Grommet } from 'grommet';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useAuth } from './providers/Auth';
-
+import LayoutEstudiante from './Layout/LayoutEstudiante';
 const theme = {
   global: {
     colors: {
@@ -24,7 +24,7 @@ function App() {
   const { user } = useAuth();
   return (
     <Grommet theme={theme} full>
-      <Router>{user ? <Estudiante /> : <Landing />}</Router>
+      <Router>{user ? <LayoutEstudiante /> : <Landing />}</Router>
     </Grommet>
   );
 }

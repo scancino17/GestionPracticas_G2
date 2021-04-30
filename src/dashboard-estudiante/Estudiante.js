@@ -44,7 +44,7 @@ class Estudiante extends React.Component {
 
   render() {
     return (
-      <Accordion>
+      <Accordion margin='10px'>
         <Heading margin='none'>Hola! {this.state.user.name}</Heading>
         <Text>
           Lorem ipsum dolor sit amet consectetur adipiscing elit dui, fringilla

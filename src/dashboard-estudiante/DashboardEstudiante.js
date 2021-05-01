@@ -2,7 +2,6 @@ import {
   Accordion,
   AccordionPanel,
   Box,
-  Button,
   Heading,
   Main,
   Spinner,
@@ -12,10 +11,12 @@ import React, { useEffect, useState } from 'react';
 import useAuth from '../providers/Auth';
 import Documentos from './extras/Documentos';
 import Practicas from './extras/Practicas';
+import Formulario from '../form/Formulario';
 import { db, storage } from '../firebase';
+import { Route, Switch } from 'react-router-dom';
 
 function DashboardEstudiante() {
-  const { user, userData, logout } = useAuth();
+  const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -48,29 +49,37 @@ function DashboardEstudiante() {
   }, [userData]);
 
   return (
-    <Main pad='xlarge'>
-      {loaded ? (
-        <>
-          <Heading margin='small'>¡Hola, {userData && userData.name}!</Heading>
-          <Text margin='small'>
-            {careerInternshipInfo && careerInternshipInfo.info}
-          </Text>
-          <Accordion margin='small'>
-            <AccordionPanel label='Documentos'>
-              <Documentos docs={docs} />
-            </AccordionPanel>
-            <AccordionPanel label='Prácticas'>
-              <Practicas practicas={practicas} />
-            </AccordionPanel>
-          </Accordion>
-          <Button primary label='Sign Out' onClick={logout} />
-        </>
-      ) : (
-        <Box align='center'>
-          <Spinner margin='medium' size='large' />
-        </Box>
-      )}
-    </Main>
+    <Switch>
+      <Route path='/formulario/:applicationNumber'>
+        <Formulario />
+      </Route>
+      <Route path='/'>
+        <Main pad='xlarge'>
+          {loaded ? (
+            <>
+              <Heading margin='small'>
+                ¡Hola, {userData && userData.name}!
+              </Heading>
+              <Text margin='small'>
+                {careerInternshipInfo && careerInternshipInfo.info}
+              </Text>
+              <Accordion margin='small'>
+                <AccordionPanel label='Documentos'>
+                  <Documentos docs={docs} />
+                </AccordionPanel>
+                <AccordionPanel label='Prácticas'>
+                  <Practicas practicas={practicas} />
+                </AccordionPanel>
+              </Accordion>
+            </>
+          ) : (
+            <Box align='center'>
+              <Spinner margin='medium' size='large' />
+            </Box>
+          )}
+        </Main>
+      </Route>
+    </Switch>
   );
 }
 

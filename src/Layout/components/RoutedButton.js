@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { matchPath, withRouter } from 'react-router';
 import { Button } from 'grommet';
 
-// A simple component that shows the pathname of the current location
 class RoutedButton extends React.Component {
   static propTypes = {
     location: PropTypes.object.isRequired,

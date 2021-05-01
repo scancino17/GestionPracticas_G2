@@ -18,7 +18,7 @@ export class MenuButton extends Component {
           active ||
           (router && !!matchPath(router.route.location.pathname, { path }))
         }
-        hoverIndicator='rgb(40,118,134)'
+        hoverIndicator='rgb(30,86,96)'
         path={path}
         {...rest}>
         <Box

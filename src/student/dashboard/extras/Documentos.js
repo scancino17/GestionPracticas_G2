@@ -17,7 +17,7 @@ function Documento({ doc }) {
 
   useEffect(() => {
     doc.getDownloadURL().then((res) => setUrl(res));
-  }, []);
+  });
 
   return (
     <Card key={doc.name} margin='small' pad='medium'>

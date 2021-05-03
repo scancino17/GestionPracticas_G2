@@ -4,8 +4,8 @@ import Landing from './login/Landing';
 import { Box, Button, Grommet, Header, Image, Menu, Spinner } from 'grommet';
 import { BrowserRouter as Router } from 'react-router-dom';
 import useAuth from './providers/Auth';
-import DashboardEstudiante from './dashboard-estudiante/DashboardEstudiante';
-import DashboardAdmin from './dashboad-admin/DashboardAdmin';
+import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
+import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 
 const theme = {
   global: {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardBody, CardHeader, CardFooter, Button, Text } from 'grommet';
-import { LinkNext, Favorite } from 'grommet-icons';
+import { Card, CardBody, CardHeader, CardFooter, Button } from 'grommet';
+import { LinkNext } from 'grommet-icons';
 
 function QuickAccess({ title, body }) {
   return (

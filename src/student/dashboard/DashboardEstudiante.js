@@ -8,11 +8,11 @@ import {
   Text
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
-import useAuth from '../providers/Auth';
+import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
 import Practicas from './extras/Practicas';
-import Formulario from '../form/Formulario';
-import { db, storage } from '../firebase';
+import Formulario from '../../form/Formulario';
+import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 
 function DashboardEstudiante() {
@@ -46,7 +46,7 @@ function DashboardEstudiante() {
           setLoaded(true);
         });
     }
-  }, [userData]);
+  }, [user, userData]);
 
   return (
     <Switch>

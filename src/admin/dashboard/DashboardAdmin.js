@@ -1,6 +1,6 @@
 import { Heading, Text, Main, Box } from 'grommet';
 import React from 'react';
-import QuickAccess from '../dashboad-admin/QuickAccess';
+import QuickAccess from './QuickAccess';
 import { List, Group, Task, Upload, DocumentText } from 'grommet-icons';
 
 function DashboardAdmin() {

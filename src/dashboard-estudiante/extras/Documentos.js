@@ -20,7 +20,7 @@ function Documento({ doc }) {
   }, []);
 
   return (
-    <Card margin='small' pad='medium'>
+    <Card key={doc.name} margin='small' pad='medium'>
       <CardBody justify='between' direction='row'>
         <Anchor
           href={url}

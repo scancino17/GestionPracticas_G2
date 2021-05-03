@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Grommet, Spinner } from 'grommet';
+import { Box, Button, Grommet, Header, Image, Menu, Spinner } from 'grommet';
 import { BrowserRouter as Router } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './dashboard-estudiante/DashboardEstudiante';
@@ -22,23 +22,37 @@ const theme = {
 };
 
 function App() {
-  const { user } = useAuth();
-  if (user) console.log('student', user.student, 'admin', user.admin);
+  const { user, logout } = useAuth();
   return (
     <Grommet theme={theme} full>
       <Router>
         {user ? (
-          user.student || user.admin ? (
-            user.student ? (
-              <DashboardEstudiante />
+          <>
+            <Header background='brand' elevation='medium'>
+              <Button
+                icon={
+                  <Box height='xxsmall'>
+                    <Image fill='vertical' src='logo.png' />
+                  </Box>
+                }
+              />
+              <Menu
+                label='Cuenta'
+                items={[{ label: 'Cerrar sesión', onClick: logout }]}
+              />
+            </Header>
+            {user.student || user.admin ? (
+              user.student ? (
+                <DashboardEstudiante />
+              ) : (
+                <DashboardAdmin />
+              )
             ) : (
-              <DashboardAdmin />
-            )
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
-          )
+              <Box align='center'>
+                <Spinner margin='medium' size='large' />
+              </Box>
+            )}
+          </>
         ) : (
           <Landing />
         )}

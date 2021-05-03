@@ -1,12 +1,9 @@
-import { Heading, Text, Main, Button, Box } from 'grommet';
+import { Heading, Text, Main, Box } from 'grommet';
 import React from 'react';
 import QuickAccess from '../dashboad-admin/QuickAccess';
 import { List, Group, Task, Upload, DocumentText } from 'grommet-icons';
-import useAuth from '../providers/Auth';
 
 function DashboardAdmin() {
-  const { logout } = useAuth();
-
   return (
     <Main pad='xlarge'>
       <Heading>¡Hola, Usuario Admin!</Heading>
@@ -50,7 +47,6 @@ function DashboardAdmin() {
           />
         </Box>
       </Box>
-      <Button primary label='Sign Out' onClick={logout} />
     </Main>
   );
 }

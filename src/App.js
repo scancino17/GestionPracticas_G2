@@ -6,6 +6,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
+import ApplicationsList from './admin/applications/ApplicationsList';
 
 const theme = {
   global: {
@@ -26,7 +27,7 @@ function App() {
   return (
     <Grommet theme={theme} full>
       <Router>
-        {user ? (
+        {/*user ? (
           <>
             <Header background='brand' elevation='medium'>
               <Button
@@ -55,7 +56,8 @@ function App() {
           </>
         ) : (
           <Landing />
-        )}
+        )*/}
+        <ApplicationsList />
       </Router>
     </Grommet>
   );

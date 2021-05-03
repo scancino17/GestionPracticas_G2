@@ -2,6 +2,7 @@ import { Heading, Text, Main, Box } from 'grommet';
 import React from 'react';
 import QuickAccess from './QuickAccess';
 import { List, Group, Task, Upload, DocumentText } from 'grommet-icons';
+import ApplicationsList from '../applications/ApplicationsList';
 
 function DashboardAdmin() {
   return (

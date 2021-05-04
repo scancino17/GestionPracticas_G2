@@ -27,7 +27,7 @@ function App() {
   return (
     <Grommet theme={theme} full>
       <Router>
-        {/*user ? (
+        {user ? (
           <>
             <Header background='brand' elevation='medium'>
               <Button
@@ -56,8 +56,8 @@ function App() {
           </>
         ) : (
           <Landing />
-        )*/}
-        <ApplicationsList />
+        )}
+        {/*<ApplicationsList />*/}
       </Router>
     </Grommet>
   );

@@ -1,34 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Card, CardFooter, CardHeader, Text } from 'grommet';
+import { Box, Button, Card, CardBody, List, Text } from 'grommet';
 import { FormNext } from 'grommet-icons';
 
 function Practicas({ practicas }) {
   return (
-    <>
-      {practicas.map((practica) => {
-        return (
-          <Practica
-            applicationNumber={practica.applicationNumber}
-            status={practica.status}
-          />
-        );
-      })}
-    </>
+    <List border={false} data={practicas}>
+      {(practica) => <Practica practica={practica} />}
+    </List>
   );
 }
 
-function Practica({ applicationNumber, status }) {
+function Practica({ practica }) {
   return (
-    <Card key={`Práctica ${applicationNumber}`} margin='small' pad='medium'>
-      <CardHeader>{`Práctica ${applicationNumber}`}</CardHeader>
-      <CardFooter>
-        <Text>{status}</Text>
-        <Link to={`/formulario/${applicationNumber}`}>
+    <Link to={`/formulario/${practica.applicationNumber}`}>
+      <Card pad='medium'>
+        <CardBody direction='row' justify='between'>
+          <Box>
+            <Text>{`Práctica ${practica.applicationNumber}`}</Text>
+            <Text>{practica.status}</Text>
+          </Box>
           <Button icon={<FormNext />} />
-        </Link>
-      </CardFooter>
-    </Card>
+        </CardBody>
+      </Card>
+    </Link>
   );
 }
 

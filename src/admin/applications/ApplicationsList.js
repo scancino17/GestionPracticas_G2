@@ -1,14 +1,16 @@
 import {
   Box,
+  Button,
   Card,
   CardBody,
-  CardHeader,
   Heading,
   List,
   Main,
   Text
 } from 'grommet';
+import { FormNext } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { db } from '../../firebase';
 
 function ApplicationsList() {
@@ -27,22 +29,29 @@ function ApplicationsList() {
   }, []);
 
   return (
-    <Main>
-      <Heading>Postulaciones realizadas</Heading>
-      <Box>
-        <List data={applications}>
-          {(item) => (
-            <Card>
-              <CardHeader>{item.name}</CardHeader>
-              <CardBody>
-                <Text>{`Práctica ${item.applicationNumber}`}</Text>
-                <Text>{item.companyName}</Text>
-              </CardBody>
-            </Card>
-          )}
-        </List>
-      </Box>
+    <Main pad='xlarge'>
+      <Heading>Postulaciones de práctica pendientes</Heading>
+      <List border={false} data={applications}>
+        {(application) => <ApplicationItem application={application} />}
+      </List>
     </Main>
+  );
+}
+
+function ApplicationItem({ application }) {
+  return (
+    <Card pad='medium'>
+      <CardBody align='center' direction='row' justify='between'>
+        <Box>
+          <Text>{application.name}</Text>
+          <Text>{`Práctica ${application.applicationNumber}`}</Text>
+          <Text>{application.companyName}</Text>
+        </Box>
+        <Link to={`/applications/${application.id}`}>
+          <Button icon={<FormNext />} />
+        </Link>
+      </CardBody>
+    </Card>
   );
 }
 

@@ -1,7 +1,6 @@
 import { Anchor, Card, CardBody, List, Text } from 'grommet';
 import { Download } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 function Documentos({ docs }) {
   return (

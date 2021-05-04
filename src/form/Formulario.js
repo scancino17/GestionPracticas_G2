@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stepper } from 'react-form-stepper';
 import {
   Button,
@@ -10,17 +10,18 @@ import {
   DateInput,
   FileInput
 } from 'grommet';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { db, storage } from '../firebase';
 import useAuth from '../providers/Auth';
 
 function Formulario() {
-  // Application number para poder usarlo
-  let { applicationNumber } = useParams();
+  const { internshipId } = useParams();
   const { user, userData } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
+  const [applicationNumber, setApplicationNumber] = useState();
   const [form, setForm] = useState({
     studentId: user.uid,
+    internshipId: internshipId,
     applicationNumber: applicationNumber,
     name: userData.name,
     rut: userData.rut,
@@ -42,6 +43,19 @@ function Formulario() {
   });
   const [formFile, setFormFile] = useState();
   const [consentFile, setConsentFile] = useState();
+
+  useEffect(() => {
+    db.collection('internships')
+      .doc(internshipId)
+      .get()
+      .then((doc) => {
+        setApplicationNumber(doc.data().applicationNumber);
+        setForm((prevForm) => ({
+          ...prevForm,
+          applicationNumber: doc.data().applicationNumber
+        }));
+      });
+  }, [internshipId]);
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
@@ -71,6 +85,9 @@ function Formulario() {
         `students-docs/${user.uid}/${applicationNumber}/${consentFile.name}`
       )
       .put(consentFile);
+    db.collection('internships')
+      .doc(internshipId)
+      .update({ status: 'En revisión' });
   };
 
   return (
@@ -405,7 +422,9 @@ function Formulario() {
           )}
           {activeStep === 2 && (
             <Box width='15%'>
-              <Button label='Enviar' color='#f4971a' onClick={handleEnviar} />
+              <Link to='/'>
+                <Button label='Enviar' onClick={handleEnviar} primary />
+              </Link>
             </Box>
           )}
         </Box>

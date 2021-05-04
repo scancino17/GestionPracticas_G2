@@ -13,7 +13,7 @@ function Practicas({ practicas }) {
 
 function Practica({ practica }) {
   return (
-    <Link to={`/formulario/${practica.applicationNumber}`}>
+    <Link to={`/form/${practica.studentId}/${practica.id}`}>
       <Card pad='medium'>
         <CardBody direction='row' justify='between'>
           <Box>

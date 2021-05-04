@@ -23,7 +23,7 @@ function Application() {
   useEffect(() => {
     if (data)
       storage
-        .ref(`students-docs/${data.studentId}/${data.applicationNumber}`)
+        .ref(`students-docs/${data.studentId}/${data.internshipId}`)
         .listAll()
         .then((res) => setDocs(res.items));
   }, [data]);

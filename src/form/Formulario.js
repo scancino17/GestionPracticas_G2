@@ -81,9 +81,7 @@ function Formulario() {
       .put(formFile);
     storage
       .ref()
-      .child(
-        `students-docs/${user.uid}/${applicationNumber}/${consentFile.name}`
-      )
+      .child(`students-docs/${user.uid}/${internshipId}/${consentFile.name}`)
       .put(consentFile);
     db.collection('internships')
       .doc(internshipId)

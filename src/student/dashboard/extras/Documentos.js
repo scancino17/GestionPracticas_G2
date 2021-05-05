@@ -1,14 +1,12 @@
-import { Anchor, Card, CardBody } from 'grommet';
+import { Anchor, Card, CardBody, List, Text } from 'grommet';
 import { Download } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 
 function Documentos({ docs }) {
   return (
-    <>
-      {docs.map((doc) => {
-        return <Documento doc={doc} />;
-      })}
-    </>
+    <List border={false} data={docs}>
+      {(doc) => <Documento doc={doc} />}
+    </List>
   );
 }
 
@@ -20,17 +18,14 @@ function Documento({ doc }) {
   });
 
   return (
-    <Card key={doc.name} margin='small' pad='medium'>
-      <CardBody justify='between' direction='row'>
-        <Anchor
-          href={url}
-          target='_blank'
-          icon={<Download />}
-          label={doc.name}
-          reverse='true'
-        />
-      </CardBody>
-    </Card>
+    <Anchor href={url} target='_blank'>
+      <Card pad='medium'>
+        <CardBody direction='row' justify='between'>
+          <Text>{doc.name}</Text>
+          <Download />
+        </CardBody>
+      </Card>
+    </Anchor>
   );
 }
 

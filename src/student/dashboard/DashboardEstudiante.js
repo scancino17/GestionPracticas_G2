@@ -41,7 +41,9 @@ function DashboardEstudiante() {
         .get()
         .then((querySnapshot) => {
           const temp = [];
-          querySnapshot.forEach((doc) => temp.push(doc.data()));
+          querySnapshot.forEach((doc) =>
+            temp.push({ id: doc.id, ...doc.data() })
+          );
           setPracticas(temp);
           setLoaded(true);
         });
@@ -50,10 +52,7 @@ function DashboardEstudiante() {
 
   return (
     <Switch>
-      <Route path='/formulario/:applicationNumber'>
-        <Formulario />
-      </Route>
-      <Route path='/'>
+      <Route exact path='/'>
         <Main pad='xlarge'>
           {loaded ? (
             <>
@@ -78,6 +77,9 @@ function DashboardEstudiante() {
             </Box>
           )}
         </Main>
+      </Route>
+      <Route path='/form/:userId/:internshipId'>
+        <Formulario />
       </Route>
     </Switch>
   );

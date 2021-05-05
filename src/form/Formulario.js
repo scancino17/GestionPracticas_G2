@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stepper } from 'react-form-stepper';
 import {
   Button,
@@ -10,35 +10,52 @@ import {
   DateInput,
   FileInput
 } from 'grommet';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { db, storage } from '../firebase';
 import useAuth from '../providers/Auth';
 
 function Formulario() {
-  // Application number para poder usarlo
-  let { applicationNumber } = useParams();
-  const { user } = useAuth();
+  const { internshipId } = useParams();
+  const { user, userData } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
+  const [applicationNumber, setApplicationNumber] = useState();
   const [form, setForm] = useState({
-    nameStudent: '',
-    emailStudent: '',
-    matricula: '',
-    phoneStudent: '',
-    emergencyPhoneStudent: '',
-    rutStudent: '',
-    modality: '',
-    healtCare: '',
-    nameCompany: '',
+    studentId: user.uid,
+    internshipId: internshipId,
+    applicationNumber: applicationNumber,
+    name: userData.name,
+    rut: userData.rut,
+    enrollmentNumber: userData.enrollmentNumber,
+    phone: '',
+    email: userData.email,
+    emergencyContact: '',
+    emergencyPhone: '',
+    companyName: '',
     city: '',
+    supervisorName: '',
+    supervisorPosition: '',
+    supervisorPhone: '',
+    supervisorEmail: '',
+    modality: '',
+    healthCare: '',
     startDate: '',
-    endDate: '',
-    nameSupervisor: '',
-    emailSupervisor: '',
-    positionSupervisor: '',
-    phoneSupervisor: '',
-    rutSupervisor: ''
+    endDate: ''
   });
-  const [file, setFile] = useState();
+  const [formFile, setFormFile] = useState();
+  const [consentFile, setConsentFile] = useState();
+
+  useEffect(() => {
+    db.collection('internships')
+      .doc(internshipId)
+      .get()
+      .then((doc) => {
+        setApplicationNumber(doc.data().applicationNumber);
+        setForm((prevForm) => ({
+          ...prevForm,
+          applicationNumber: doc.data().applicationNumber
+        }));
+      });
+  }, [internshipId]);
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
@@ -48,13 +65,27 @@ function Formulario() {
     setActiveStep(activeStep + 1);
   };
 
-  function handleFileInput(e) {
-    setFile(e.target.files[0]);
+  function handleFormFileInput(e) {
+    setFormFile(e.target.files[0]);
+  }
+
+  function handleConsentFileInput(e) {
+    setConsentFile(e.target.files[0]);
   }
 
   const handleEnviar = () => {
     db.collection('applications').add(form);
-    storage.ref().child(`students-docs/${user.uid}/${file.name}`).put(file);
+    storage
+      .ref()
+      .child(`students-docs/${user.uid}/${applicationNumber}/${formFile.name}`)
+      .put(formFile);
+    storage
+      .ref()
+      .child(`students-docs/${user.uid}/${internshipId}/${consentFile.name}`)
+      .put(consentFile);
+    db.collection('internships')
+      .doc(internshipId)
+      .update({ status: 'En revisión' });
   };
 
   return (
@@ -73,120 +104,89 @@ function Formulario() {
           <Box pad='large' width='75%' justify='center'>
             <h1>Información personal</h1>
             <Form>
-              <FormField
-                name='name'
-                htmlFor='text-input-id'
-                label='Nombre completo'>
-                <TextInput
-                  id='text-input-id'
-                  name='name'
-                  value={form.nameStudent}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      nameStudent: e.target.value
-                    }))
-                  }
-                />
+              <FormField name='name' htmlFor='name' label='Nombre completo'>
+                <TextInput id='name' name='name' value={form.name} disabled />
               </FormField>
-              <FormField name='email' htmlFor='text-input-id' label='Correo'>
-                <TextInput
-                  id='text-input-email'
-                  name='email'
-                  type='email'
-                  value={form.emailStudent}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emailStudent: e.target.value
-                    }))
-                  }
-                />
+              <FormField name='rut' htmlFor='rut' label='RUT'>
+                <TextInput id='rut' name='rut' value={form.rut} disabled />
               </FormField>
               <FormField
                 name='enrollment'
-                htmlFor='text-input-id'
-                label='Numero de matricula'>
+                htmlFor='enrollment'
+                label='Numero de matrícula'>
                 <TextInput
-                  id='text-input-id'
+                  id='enrollment'
                   name='enrollment'
-                  value={form.matricula}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      matricula: e.target.value
-                    }))
-                  }
+                  value={form.enrollmentNumber}
+                  disabled
                 />
               </FormField>
-              <FormField name='phone' htmlFor='text-input-id' label='Telefono'>
+              <FormField name='phone' htmlFor='phone' label='Teléfono'>
                 <TextInput
-                  id='text-input-id'
+                  id='phone'
                   name='phone'
-                  value={form.phoneStudent}
+                  value={form.phone}
                   onChange={(e) =>
                     setForm((prevState) => ({
                       ...prevState,
-                      phoneStudent: e.target.value
+                      phone: e.target.value
                     }))
                   }
                 />
               </FormField>
-              <FormField
-                name='emergencyPhone'
-                htmlFor='text-input-id'
-                label='Telefono de emergencia'>
+              <FormField name='email' htmlFor='email' label='Correo'>
                 <TextInput
-                  id='text-input-id'
-                  name='emergencyPhone'
-                  value={form.emergencyPhoneStudent}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emergencyPhoneStudent: e.target.value
-                    }))
-                  }
+                  id='email'
+                  name='email'
+                  type='email'
+                  value={form.email}
+                  disabled
                 />
               </FormField>
-              <FormField name='rut' htmlFor='text-input-id' label='RUT'>
+              <FormField
+                name='emergency-contact'
+                htmlFor='emergency-contact'
+                label='Nombre Contacto de Emergencia'>
                 <TextInput
-                  id='text-input-id'
-                  name='rut'
-                  value={form.rutStudent}
+                  id='emergency-contact'
+                  name='emergency-contact'
+                  value={form.emergencyContact}
                   onChange={(e) =>
                     setForm((prevState) => ({
                       ...prevState,
-                      rutStudent: e.target.value
+                      emergencyContact: e.target.value
                     }))
                   }
                 />
               </FormField>
               <FormField
-                name='modality'
-                htmlFor='text-input-id'
-                label='Modalidad'>
-                <Select
-                  options={['Online', 'Presencial', 'Mixta']}
-                  value={form.modality}
-                  onChange={({ option }) =>
+                name='emergency-phone'
+                htmlFor='emergency-phone'
+                label='Teléfono de emergencia'>
+                <TextInput
+                  id='emergency-phone'
+                  name='emergency-phone'
+                  value={form.emergencyPhone}
+                  onChange={(e) =>
                     setForm((prevState) => ({
                       ...prevState,
-                      modality: option
+                      emergencyPhone: e.target.value
                     }))
                   }
                 />
               </FormField>
               <FormField
-                name='healthCare'
-                htmlFor='text-input-id'
+                name='healthcare'
+                htmlFor='healthcare'
                 label='Seguro de salud'>
                 <Select
-                  options={['Fonasa', 'Isapre', 'No se sabe']}
-                  value={form.healtCare}
+                  id='healthcare'
+                  options={['Fonasa', 'Isapre', 'No sabe']}
+                  value={form.healthCare}
                   onChange={({ option }) =>
                     setForm((prevState) => ({
                       ...prevState,
-                      healtCare: option
+                      healthCare: option
                     }))
                   }
                 />
@@ -202,25 +202,28 @@ function Formulario() {
             <Box pad='large' width='75%' justify='center'>
               <h1>Informacion de la empresa</h1>
               <Form>
-                <FormField name='name' htmlFor='text-input-id' label='Nombre'>
+                <FormField
+                  name='company-name'
+                  htmlFor='company-name'
+                  label='Nombre de la empresa'>
                   <TextInput
-                    id='text-input-id'
-                    name='name'
-                    value={form.nameCompany}
+                    id='company-name'
+                    name='company-name'
+                    value={form.companyName}
                     onChange={(e) =>
                       setForm((prevState) => ({
                         ...prevState,
-                        nameCompany: e.target.value
+                        companyName: e.target.value
                       }))
                     }
                   />
                 </FormField>
                 <FormField
                   name='city'
-                  htmlFor='text-input-id'
-                  label='Ciudad donde se realizara la practica'>
+                  htmlFor='city'
+                  label='Ciudad donde se realizará la práctica'>
                   <TextInput
-                    id='text-input-id'
+                    id='city'
                     name='city'
                     value={form.city}
                     onChange={(e) =>
@@ -231,14 +234,109 @@ function Formulario() {
                     }
                   />
                 </FormField>
+              </Form>
+              <h1>Informacion del supervisor</h1>
+              <Form>
                 <FormField
-                  name='startDate'
-                  htmlFor='date-input-id'
-                  label='Inicio de practica'>
+                  name='supervisor-name'
+                  htmlFor='supervisor-name'
+                  label='Nombre completo del supervisor'>
+                  <TextInput
+                    id='supervisor-name'
+                    name='supervisorname'
+                    value={form.supervisorName}
+                    onChange={(e) =>
+                      setForm((prevState) => ({
+                        ...prevState,
+                        supervisorName: e.target.value
+                      }))
+                    }
+                  />
+                </FormField>
+                <FormField
+                  name='supervisor-position'
+                  htmlFor='supervisor-position'
+                  label='Cargo del supervisor'>
+                  <TextInput
+                    id='supervisor-position'
+                    name='supervisor-position'
+                    value={form.supervisorPosition}
+                    onChange={(e) =>
+                      setForm((prevState) => ({
+                        ...prevState,
+                        supervisorPosition: e.target.value
+                      }))
+                    }
+                  />
+                </FormField>
+                <FormField
+                  name='supervisor-phone'
+                  htmlFor='supervisor-phone'
+                  label='Teléfono del supervisor'>
+                  <TextInput
+                    id='supervisor-phone'
+                    name='supervisor-phone'
+                    value={form.supervisorPhone}
+                    onChange={(e) =>
+                      setForm((prevState) => ({
+                        ...prevState,
+                        supervisorPhone: e.target.value
+                      }))
+                    }
+                  />
+                </FormField>
+                <FormField
+                  name='supervisor-email'
+                  htmlFor='supervisor-email'
+                  label='Correo del supervisor'>
+                  <TextInput
+                    id='supervisor-email'
+                    name='supervisor-email'
+                    type='email'
+                    value={form.supervisorEmail}
+                    onChange={(e) =>
+                      setForm((prevState) => ({
+                        ...prevState,
+                        supervisorEmail: e.target.value
+                      }))
+                    }
+                  />
+                </FormField>
+              </Form>
+              <h1>Acerca de la práctica</h1>
+              <Form>
+                <FormField
+                  name='application-number'
+                  htmlFor='application-number'
+                  label='Número de práctica'>
+                  <TextInput
+                    id='application-number'
+                    name='application-number'
+                    value={`Práctica ${form.applicationNumber}`}
+                    disabled
+                  />
+                </FormField>
+                <FormField name='modality' htmlFor='modality' label='Modalidad'>
+                  <Select
+                    id='modality'
+                    options={['Online', 'Presencial', 'Mixta']}
+                    value={form.modality}
+                    onChange={({ option }) =>
+                      setForm((prevState) => ({
+                        ...prevState,
+                        modality: option
+                      }))
+                    }
+                  />
+                </FormField>
+                <FormField
+                  name='start-date'
+                  htmlFor='start-date'
+                  label='Fecha de inicio de práctica'>
                   <DateInput
-                    id='date-input-id'
-                    name='startDate'
-                    format='mm/dd/yyyy'
+                    id='start-date'
+                    name='start-date'
+                    format='dd/mm/yyyy'
                     value={form.startDate}
                     onChange={({ value }) => {
                       setForm((prevState) => ({
@@ -249,13 +347,13 @@ function Formulario() {
                   />
                 </FormField>
                 <FormField
-                  name='endDate'
-                  htmlFor='date-input-id'
-                  label='Fin de practica'>
+                  name='end-date'
+                  htmlFor='end-date'
+                  label='Fecha de término de práctica'>
                   <DateInput
-                    id='date-input-id'
-                    name='endDate'
-                    format='mm/dd/yyyy'
+                    id='end-date'
+                    name='end-date'
+                    format='dd/mm/yyyy'
                     value={form.endDate}
                     onChange={({ value }) => {
                       setForm((prevState) => ({
@@ -263,84 +361,6 @@ function Formulario() {
                         endDate: value
                       }));
                     }}
-                  />
-                </FormField>
-              </Form>
-              <h1>Informacion del supervisor</h1>
-              <Form>
-                <FormField
-                  name='name'
-                  htmlFor='text-input-id'
-                  label='Nombre completo'>
-                  <TextInput
-                    id='text-input-id'
-                    name='name'
-                    value={form.nameSupervisor}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        nameSupervisor: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField name='email' htmlFor='text-input-id' label='Correo'>
-                  <TextInput
-                    id='text-input-email'
-                    name='email'
-                    type='email'
-                    value={form.emailSupervisor}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        emailSupervisor: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
-                  name='position'
-                  htmlFor='text-input-id'
-                  label='Cargo'>
-                  <TextInput
-                    id='text-input-id'
-                    name='position'
-                    value={form.positionSupervisor}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        positionSupervisor: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
-                  name='phone'
-                  htmlFor='text-input-id'
-                  label='Telefono'>
-                  <TextInput
-                    id='text-input-id'
-                    name='phone'
-                    value={form.phoneSupervisor}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        phoneSupervisor: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField name='rut' htmlFor='text-input-id' label='RUT'>
-                  <TextInput
-                    id='text-input-id'
-                    name='rut'
-                    value={form.rutSupervisor}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        rutSupervisor: e.target.value
-                      }))
-                    }
                   />
                 </FormField>
               </Form>
@@ -352,7 +372,10 @@ function Formulario() {
       {activeStep === 2 && (
         <>
           <h1>Archivos</h1>
-          <FileInput onChange={handleFileInput} />
+          <h2>Formulario de inscipción de práctica</h2>
+          <FileInput onChange={handleFormFileInput} />
+          <h2>Consentimiento informado</h2>
+          <FileInput onChange={handleConsentFileInput} />
         </>
       )}
 
@@ -370,32 +393,36 @@ function Formulario() {
           )}
           {((activeStep === 0 &&
             !(
-              form.nameStudent === '' ||
-              form.emailStudent === '' ||
-              form.matricula === '' ||
-              form.phoneStudent === '' ||
-              form.emergencyPhoneStudent === '' ||
-              form.rutStudent === '' ||
-              form.modality === '' ||
-              form.healtCare === ''
+              form.name === '' ||
+              form.rut === '' ||
+              form.enrollmentNumber === '' ||
+              form.phone === '' ||
+              form.email === '' ||
+              form.emergencyContact === '' ||
+              form.emergencyPhone === '' ||
+              form.healthCare === ''
             )) ||
             (activeStep === 1 &&
-              !(form.nameCompany === '',
-              form.city === '' ||
+              !(
+                form.companyName === '' ||
+                form.city === '' ||
+                form.supervisorName === '' ||
+                form.supervisorPosition === '' ||
+                form.supervisorPhone === '' ||
+                form.supervisorEmail === '' ||
+                form.modality === '' ||
                 form.startDate === '' ||
-                form.endDate === '' ||
-                form.nameSupervisor === '' ||
-                form.emailSupervisor === '' ||
-                form.positionSupervisor === '' ||
-                form.phoneSupervisor === '' ||
-                form.rutSupervisor === ''))) && (
+                form.endDate === ''
+              ))) && (
             <Box width='15%'>
               <Button label='siguiente' color='#f4971a' onClick={handleNext} />
             </Box>
           )}
           {activeStep === 2 && (
             <Box width='15%'>
-              <Button label='Enviar' color='#f4971a' onClick={handleEnviar} />
+              <Link to='/'>
+                <Button label='Enviar' onClick={handleEnviar} primary />
+              </Link>
             </Box>
           )}
         </Box>

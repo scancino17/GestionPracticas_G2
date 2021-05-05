@@ -5,10 +5,7 @@ import { LinkNext } from 'grommet-icons';
 function QuickAccess({ title, body }) {
   return (
     <Card height='small' width='small' background='light-1'>
-      <CardHeader pad='medium'>
-        {/*Render Title*/}
-        {title}
-      </CardHeader>
+      <CardHeader pad='medium'>{title}</CardHeader>
       <CardBody align='center' pad='medium'>
         {body}
       </CardBody>

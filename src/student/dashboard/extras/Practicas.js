@@ -13,7 +13,9 @@ function Practicas({ practicas }) {
 
 function Practica({ practica }) {
   return (
-    <Link to={`/form/${practica.studentId}/${practica.id}`}>
+    <Link
+      style={{ color: 'inherit', textDecoration: 'inherit' }}
+      to={`/form/${practica.studentId}/${practica.id}`}>
       <Card pad='medium'>
         <CardBody direction='row' justify='between'>
           <Box>

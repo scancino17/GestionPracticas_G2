@@ -3,7 +3,6 @@ import {
   AccordionPanel,
   Box,
   Heading,
-  Main,
   Spinner,
   Text
 } from 'grommet';
@@ -53,7 +52,7 @@ function DashboardEstudiante() {
   return (
     <Switch>
       <Route exact path='/'>
-        <Main pad='xlarge'>
+        <Box pad='xlarge'>
           {loaded ? (
             <>
               <Heading margin='small'>
@@ -76,7 +75,7 @@ function DashboardEstudiante() {
               <Spinner margin='medium' size='large' />
             </Box>
           )}
-        </Main>
+        </Box>
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />

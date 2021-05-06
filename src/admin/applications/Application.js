@@ -143,7 +143,7 @@ function Application() {
           </Box>
           {rejected && (
             <Box>
-              <Heading level='4' weight='bold'>
+              <Heading level='3' weight='bold'>
                 Razón de Rechazo
               </Heading>
               <TextArea

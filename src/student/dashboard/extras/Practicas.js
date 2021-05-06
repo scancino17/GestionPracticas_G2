@@ -11,21 +11,33 @@ function Practicas({ practicas }) {
   );
 }
 
-function Practica({ practica }) {
+function PracticaCard({ practica }) {
   return (
+    <Card pad='medium'>
+      <CardBody direction='row' justify='between'>
+        <Box>
+          <Text>{`Práctica ${practica.applicationNumber}`}</Text>
+          <Text>{practica.status}</Text>
+        </Box>
+        <Button icon={<FormNext />} />
+      </CardBody>
+    </Card>
+  );
+}
+
+function Practica({ practica }) {
+  let practicaDisponible = (practica) => {
+    return practica.status === 'Disponible' || practica.status === 'Rechazado';
+  };
+
+  return practicaDisponible(practica) ? (
     <Link
       style={{ color: 'inherit', textDecoration: 'inherit' }}
       to={`/form/${practica.studentId}/${practica.id}`}>
-      <Card pad='medium'>
-        <CardBody direction='row' justify='between'>
-          <Box>
-            <Text>{`Práctica ${practica.applicationNumber}`}</Text>
-            <Text>{practica.status}</Text>
-          </Box>
-          <Button icon={<FormNext />} />
-        </CardBody>
-      </Card>
+      <PracticaCard practica={practica} />
     </Link>
+  ) : (
+    <PracticaCard practica={practica} />
   );
 }
 

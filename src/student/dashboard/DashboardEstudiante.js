@@ -3,8 +3,8 @@ import {
   AccordionPanel,
   Box,
   Heading,
-  Spinner,
-  Text
+  Markdown,
+  Spinner
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
@@ -58,9 +58,10 @@ function DashboardEstudiante() {
               <Heading margin='small'>
                 ¡Hola, {userData && userData.name}!
               </Heading>
-              <Text margin='small'>
-                {careerInternshipInfo && careerInternshipInfo.info}
-              </Text>
+              <Markdown margin='small'>
+                {careerInternshipInfo &&
+                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
+              </Markdown>
               <Accordion margin='small'>
                 <AccordionPanel label='Documentos'>
                   <Documentos docs={docs} />

@@ -1,3 +1,4 @@
+import { getDefaultNormalizer } from '@testing-library/dom';
 import { Box, Button, Heading, Main, Spinner, Text, TextArea } from 'grommet';
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -33,15 +34,16 @@ function Application() {
       .doc(data.internshipId)
       .update({ status: 'Aprobado' });
 
-    db.collection('mail').add({
-    to: data.email,
-    template: {
-              name: 'Approved',
-              data: {
-                from_name: data.name
-              }
-            }
-    });
+    db.collection('mails')
+      .add({
+        to: data.email,
+        template: {
+          name: "Approved",
+          data: {
+            from_name: data.name 
+          },
+        },
+      });
   }
 
   function handleReject() {
@@ -49,16 +51,17 @@ function Application() {
       .doc(data.internshipId)
       .update({ status: 'Rechazado', reason: rejectReason });
 
-    db.collection('mail').add({
-    to: data.email,
-    template: {
-              name: 'Failed',
-              data: {
-                from_name: data.name,
-                result: '\n ola' 
-              }
-            }
-    });
+    db.collection('mails')
+    .add({
+      to: data.email,
+      template: {
+        name: 'Failed',
+        data: {
+          from_name: data.name,
+          result: rejectReason 
+        }
+      }
+    });
   }
 
   return (

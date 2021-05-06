@@ -35,6 +35,18 @@ function Application() {
     db.collection('internships')
       .doc(data.internshipId)
       .update({ status: 'En curso' });
+
+    db.collection('mails')
+      .add({
+        to: data.email,
+        template: {
+          name: "Approved",
+          data: {
+            from_name: data.name 
+          },
+        },
+      });
+
     history.push(applicationsPath);
   }
 
@@ -42,9 +54,19 @@ function Application() {
     db.collection('applications')
       .doc(id)
       .update({ status: 'Rechazado', reason: rejectReason });
-    db.collection('internships')
-      .doc(data.internshipId)
-      .update({ status: 'En curso' });
+
+    db.collection('mails')
+    .add({
+      to: data.email,
+      template: {
+        name: 'Failed',
+        data: {
+          from_name: data.name,
+          result: rejectReason 
+        }
+      }
+    });
+
     history.push(applicationsPath);
   }
 

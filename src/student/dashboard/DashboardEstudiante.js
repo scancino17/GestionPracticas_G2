@@ -3,9 +3,8 @@ import {
   AccordionPanel,
   Box,
   Heading,
-  Main,
-  Spinner,
-  Text
+  Markdown,
+  Spinner
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
@@ -53,15 +52,16 @@ function DashboardEstudiante() {
   return (
     <Switch>
       <Route exact path='/'>
-        <Main pad='xlarge'>
+        <Box pad='xlarge'>
           {loaded ? (
             <>
               <Heading margin='small'>
                 ¡Hola, {userData && userData.name}!
               </Heading>
-              <Text margin='small'>
-                {careerInternshipInfo && careerInternshipInfo.info}
-              </Text>
+              <Markdown margin='small'>
+                {careerInternshipInfo &&
+                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
+              </Markdown>
               <Accordion margin='small'>
                 <AccordionPanel label='Documentos'>
                   <Documentos docs={docs} />
@@ -76,7 +76,7 @@ function DashboardEstudiante() {
               <Spinner margin='medium' size='large' />
             </Box>
           )}
-        </Main>
+        </Box>
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />

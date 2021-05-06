@@ -32,12 +32,33 @@ function Application() {
     db.collection('internships')
       .doc(data.internshipId)
       .update({ status: 'Aprobado' });
+
+    db.collection('mail').add({
+    to: data.email,
+    template: {
+              name: 'Approved',
+              data: {
+                from_name: data.name
+              }
+            }
+    });
   }
 
   function handleReject() {
     db.collection('internships')
       .doc(data.internshipId)
       .update({ status: 'Rechazado', reason: rejectReason });
+
+    db.collection('mail').add({
+    to: data.email,
+    template: {
+              name: 'Failed',
+              data: {
+                from_name: data.name,
+                result: '\n ola' 
+              }
+            }
+    });
   }
 
   return (

@@ -9,25 +9,10 @@ import {
   Text
 } from 'grommet';
 import { FormNext } from 'grommet-icons';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { db } from '../../firebase';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
 
-function ApplicationsList() {
-  const [applications, setApplications] = useState([]);
-
-  useEffect(() => {
-    db.collection('applications')
-      .get()
-      .then((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) =>
-          list.push({ id: doc.id, ...doc.data() })
-        );
-        setApplications(list);
-      });
-  }, []);
-
+function ApplicationsList({ applications }) {
   return (
     <Main pad='xlarge'>
       <Heading>Postulaciones de práctica pendientes</Heading>
@@ -39,19 +24,27 @@ function ApplicationsList() {
 }
 
 function ApplicationItem({ application }) {
+  let history = useHistory();
   return (
-    <Card pad='medium'>
-      <CardBody align='center' direction='row' justify='between'>
-        <Box>
-          <Text>{application.name}</Text>
-          <Text>{`Práctica ${application.applicationNumber}`}</Text>
-          <Text>{application.companyName}</Text>
-        </Box>
-        <Link to={`/applications/${application.id}`}>
-          <Button icon={<FormNext />} />
-        </Link>
-      </CardBody>
-    </Card>
+    <Box
+      round='small'
+      hoverIndicator={{ elevation: 'medium' }}
+      onClick={() => {
+        history.push(`/applications/${application.id}`);
+      }}>
+      <Card pad='medium'>
+        <CardBody align='center' direction='row' justify='between'>
+          <Box>
+            <Text>{application.name}</Text>
+            <Text>{`Práctica ${application.applicationNumber}`}</Text>
+            <Text>{application.companyName}</Text>
+          </Box>
+          <Box pad='small'>
+            <Button icon={<FormNext />} />
+          </Box>
+        </CardBody>
+      </Card>
+    </Box>
   );
 }
 

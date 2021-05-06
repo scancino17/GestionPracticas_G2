@@ -31,16 +31,20 @@ function Application() {
   }, [data]);
 
   function handleApprove() {
+    db.collection('applications').doc(id).update({ status: 'Aprobado' });
     db.collection('internships')
       .doc(data.internshipId)
-      .update({ status: 'Aprobado' });
+      .update({ status: 'En curso' });
     history.push(applicationsPath);
   }
 
   function handleReject() {
+    db.collection('applications')
+      .doc(id)
+      .update({ status: 'Rechazado', reason: rejectReason });
     db.collection('internships')
       .doc(data.internshipId)
-      .update({ status: 'Rechazado', reason: rejectReason });
+      .update({ status: 'En curso' });
     history.push(applicationsPath);
   }
 

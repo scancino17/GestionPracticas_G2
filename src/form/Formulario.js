@@ -23,6 +23,7 @@ function Formulario() {
     studentId: user.uid,
     internshipId: internshipId,
     applicationNumber: applicationNumber,
+    status: 'En revisión',
     name: userData.name,
     rut: userData.rut,
     enrollmentNumber: userData.enrollmentNumber,

@@ -9,7 +9,7 @@ import {
   CardFooter,
   Button
 } from 'grommet';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import QuickAccess from './QuickAccess';
 import {
   List,
@@ -23,7 +23,26 @@ import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import Application from '../applications/Application';
 
+import { db } from '../../firebase';
+
 function DashboardAdmin() {
+  const [applications, setApplications] = useState();
+  const [pendingApplications, setPendingApplications] = useState();
+
+  let updateApplications = () => {
+    db.collection('applications').onSnapshot((querySnapshot) => {
+      var list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      setApplications(list);
+      const pending = list.filter((item) => item.status === 'En revisión');
+      setPendingApplications(pending);
+    });
+  };
+
+  useEffect(() => {
+    updateApplications();
+  }, []);
+
   return (
     <Switch>
       <Route exact path='/'>
@@ -34,7 +53,9 @@ function DashboardAdmin() {
               <Card height='small' width='small' background='light-1'>
                 <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
                 <CardBody align='center' pad='medium'>
-                  <Text weight='bold'>10</Text>
+                  {pendingApplications && (
+                    <Text weight='bold'>{pendingApplications.length}</Text>
+                  )}
                 </CardBody>
                 <CardFooter pad={{ horizontal: 'small' }} background='light-2'>
                   <Link to='/applications'>
@@ -83,7 +104,7 @@ function DashboardAdmin() {
         </Main>
       </Route>
       <Route exact path='/applications'>
-        <ApplicationsList />
+        <ApplicationsList applications={pendingApplications} />
       </Route>
       <Route path='/applications/:id'>
         <Application />

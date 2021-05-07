@@ -14,7 +14,7 @@ function Practicas({ practicas }) {
 function PracticaCard({ practica }) {
   let practicaColorStatus = (status) => {
     switch (status) {
-      case 'Aprobado':
+      case 'En curso':
         return 'status-ok';
       case 'Rechazado':
         return 'status-error';
@@ -46,7 +46,7 @@ function PracticaCard({ practica }) {
 
 function Practica({ practica }) {
   let practicaDisponible = (practica) => {
-    return practica.status === 'Disponible' || practica.status === 'Rechazado';
+    return practica.status !== 'No disponible';
   };
 
   let history = useHistory();
@@ -58,7 +58,7 @@ function Practica({ practica }) {
         elevation: 'medium'
       }}
       onClick={() =>
-        history.push(`/form/${practica.studentId}/${practica.id}`)
+        history.push(`/internship/${practica.studentId}/${practica.id}`)
       }>
       <PracticaCard practica={practica} />
     </Box>

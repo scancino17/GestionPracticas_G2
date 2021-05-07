@@ -84,9 +84,9 @@ function Formulario() {
       .ref()
       .child(`students-docs/${user.uid}/${internshipId}/${consentFile.name}`)
       .put(consentFile);
-    db.collection('internships')
+    /*db.collection('internships')
       .doc(internshipId)
-      .update({ status: 'En revisión' });
+      .update({ status: 'En revisión' });*/
   };
 
   return (

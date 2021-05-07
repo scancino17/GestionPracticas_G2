@@ -13,6 +13,8 @@ import Practicas from './extras/Practicas';
 import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
+import StudentApplications from './applications/StudentApplications';
+import ApplicationDetails from './applications/ApplicationDetails';
 
 function DashboardEstudiante() {
   const { user, userData } = useAuth();
@@ -80,6 +82,12 @@ function DashboardEstudiante() {
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />
+      </Route>
+      <Route path='/internship/:studentId/:internshipId'>
+        <StudentApplications />
+      </Route>
+      <Route path='/applications/:applicationId'>
+        <ApplicationDetails />
       </Route>
     </Switch>
   );

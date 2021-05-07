@@ -76,13 +76,13 @@ function DashboardEstudiante(props) {
             <Box align='center'>
               <Spinner margin='medium' size='large' />
             </Box>
-          </Route>
-          <Route path='/form/:userId/:internshipId'>
-            <Formulario />
-          </Route>
-        </Switch>
-      </Box>
-    </Box>
+          )}
+        </Box>
+      </Route>
+      <Route path='/form/:userId/:internshipId'>
+        <Formulario />
+      </Route>
+    </Switch>
   );
 }
 

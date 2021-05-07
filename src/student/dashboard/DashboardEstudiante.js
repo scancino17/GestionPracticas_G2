@@ -6,6 +6,7 @@ import {
   Spinner,
   Text
 } from 'grommet';
+import { Halt } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
@@ -13,7 +14,6 @@ import Practicas from './extras/Practicas';
 import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
-import BarraLateral from '../../sideBar/BarraLateral';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -21,12 +21,6 @@ function DashboardEstudiante(props) {
   const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
-  const items = [
-    {
-      label: 'Intership',
-      path: '/form/:userId/:internshipId'
-    }
-  ];
 
   useEffect(() => {
     if (userData) {
@@ -58,7 +52,6 @@ function DashboardEstudiante(props) {
 
   return (
     <Box direction='row' fill responsive>
-      <BarraLateral items={items} setIsSmall={props.setIsSmall} />
       <Box flex>
         <Switch>
           <Route exact path='/'>

@@ -10,8 +10,8 @@ import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 const theme = {
   global: {
     colors: {
-      brand: '#f4971a',
-      focus: '#000000'
+      brand: 'status-warning',
+      focus: 'neutral-3'
     },
     font: {
       family: 'Roboto',

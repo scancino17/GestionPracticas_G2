@@ -3,8 +3,8 @@ import {
   AccordionPanel,
   Box,
   Heading,
-  Spinner,
-  Text
+  Markdown,
+  Spinner
 } from 'grommet';
 import { Halt } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
@@ -51,33 +51,30 @@ function DashboardEstudiante(props) {
   }, [user, userData]);
 
   return (
-    <Box direction='row' fill responsive>
-      <Box flex>
-        <Switch>
-          <Route exact path='/'>
-            <Box overflow='scroll'>
-              {loaded ? (
-                <>
-                  <Heading margin='small'>
-                    ¡Hola, {userData && userData.name}!
-                  </Heading>
-                  <Text margin='small'>
-                    {careerInternshipInfo && careerInternshipInfo.info}
-                  </Text>
-                  <Accordion margin='small'>
-                    <AccordionPanel label='Documentos'>
-                      <Documentos docs={docs} />
-                    </AccordionPanel>
-                    <AccordionPanel label='Prácticas'>
-                      <Practicas practicas={practicas} />
-                    </AccordionPanel>
-                  </Accordion>
-                </>
-              ) : (
-                <Box align='center'>
-                  <Spinner margin='medium' size='large' />
-                </Box>
-              )}
+    <Switch>
+      <Route exact path='/'>
+        <Box pad='xlarge'>
+          {loaded ? (
+            <>
+              <Heading margin='small'>
+                ¡Hola, {userData && userData.name}!
+              </Heading>
+              <Markdown margin='small'>
+                {careerInternshipInfo &&
+                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
+              </Markdown>
+              <Accordion margin='small'>
+                <AccordionPanel label='Documentos'>
+                  <Documentos docs={docs} />
+                </AccordionPanel>
+                <AccordionPanel label='Prácticas'>
+                  <Practicas practicas={practicas} />
+                </AccordionPanel>
+              </Accordion>
+            </>
+          ) : (
+            <Box align='center'>
+              <Spinner margin='medium' size='large' />
             </Box>
           </Route>
           <Route path='/form/:userId/:internshipId'>

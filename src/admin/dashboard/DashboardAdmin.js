@@ -27,8 +27,27 @@ import {
   Halt
 } from 'grommet-icons';
 
+import { db } from '../../firebase';
+
 function DashboardAdmin() {
   const { user, userData } = useAuth();
+  const [applications, setApplications] = useState();
+  const [pendingApplications, setPendingApplications] = useState();
+
+  let updateApplications = () => {
+    db.collection('applications').onSnapshot((querySnapshot) => {
+      var list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      setApplications(list);
+      const pending = list.filter((item) => item.status === 'En revisión');
+      setPendingApplications(pending);
+    });
+  };
+
+  useEffect(() => {
+    updateApplications();
+  }, []);
+
   return (
     <Box direction='row' fill responsive>
       <BarraLateral />
@@ -42,11 +61,11 @@ function DashboardAdmin() {
                   <Card height='small' width='small' background='light-1'>
                     <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
                     <CardBody align='center' pad='medium'>
-                      <Text weight='bold'>10</Text>
+                      {pendingApplications && (
+                        <Text weight='bold'>{pendingApplications.length}</Text>
+                      )}
                     </CardBody>
-                    <CardFooter
-                      pad={{ horizontal: 'small' }}
-                      background='light-2'>
+                    <CardFooter pad={{ horizontal: 'small' }} background='light-2'>
                       <Link to='/applications'>
                         <Button
                           fill='horizontal'
@@ -93,7 +112,7 @@ function DashboardAdmin() {
             </Main>
           </Route>
           <Route exact path='/applications'>
-            <ApplicationsList />
+            <ApplicationsList applications={pendingApplications} />
           </Route>
           <Route path='/applications/:id'>
             <Application />

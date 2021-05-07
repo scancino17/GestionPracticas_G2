@@ -1,4 +1,4 @@
-import { Anchor, Card, CardBody, List, Text } from 'grommet';
+import { Anchor, Card, CardBody, List, Text, Box } from 'grommet';
 import { Download } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 
@@ -18,14 +18,19 @@ function Documento({ doc }) {
   });
 
   return (
-    <Anchor href={url} target='_blank'>
-      <Card pad='medium'>
-        <CardBody direction='row' justify='between'>
-          <Text>{doc.name}</Text>
-          <Download />
-        </CardBody>
-      </Card>
-    </Anchor>
+    <Box
+      round='small'
+      hoverIndicator={{ elevation: 'medium' }}
+      onClick={() => {}}>
+      <Anchor href={url} target='_blank'>
+        <Card pad='medium'>
+          <CardBody direction='row' justify='between'>
+            <Text>{doc.name}</Text>
+            <Download />
+          </CardBody>
+        </Card>
+      </Anchor>
+    </Box>
   );
 }
 

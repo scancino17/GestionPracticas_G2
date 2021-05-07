@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Box, Button, Card, CardBody, List, Text } from 'grommet';
+import { useHistory } from 'react-router-dom';
+import { Box, Card, CardBody, CardHeader, List } from 'grommet';
 import { FormNext } from 'grommet-icons';
 
 function Practicas({ practicas }) {
@@ -12,14 +12,33 @@ function Practicas({ practicas }) {
 }
 
 function PracticaCard({ practica }) {
+  let practicaColorStatus = (status) => {
+    switch (status) {
+      case 'Aprobado':
+        return 'status-ok';
+      case 'Rechazado':
+        return 'status-error';
+      case 'Pendiente':
+        return 'status-warning';
+      case 'No disponible':
+        return 'status-disabled';
+      default:
+        return 'status-unknown';
+    }
+  };
+
   return (
     <Card pad='medium'>
+      <CardHeader pad='xsmall'>{`Práctica ${practica.applicationNumber}`}</CardHeader>
       <CardBody direction='row' justify='between'>
         <Box>
-          <Text>{`Práctica ${practica.applicationNumber}`}</Text>
-          <Text>{practica.status}</Text>
+          <Card pad='small' background={practicaColorStatus(practica.status)}>
+            <CardBody>{practica.status}</CardBody>
+          </Card>
         </Box>
-        <Button icon={<FormNext />} />
+        <Box pad='small'>
+          <FormNext />
+        </Box>
       </CardBody>
     </Card>
   );
@@ -30,12 +49,19 @@ function Practica({ practica }) {
     return practica.status === 'Disponible' || practica.status === 'Rechazado';
   };
 
+  let history = useHistory();
+
   return practicaDisponible(practica) ? (
-    <Link
-      style={{ color: 'inherit', textDecoration: 'inherit' }}
-      to={`/form/${practica.studentId}/${practica.id}`}>
+    <Box
+      round='small'
+      hoverIndicator={{
+        elevation: 'medium'
+      }}
+      onClick={() =>
+        history.push(`/form/${practica.studentId}/${practica.id}`)
+      }>
       <PracticaCard practica={practica} />
-    </Link>
+    </Box>
   ) : (
     <PracticaCard practica={practica} />
   );

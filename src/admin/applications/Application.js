@@ -12,7 +12,6 @@ function Application() {
   const [rejectReason, setRejectReason] = useState('');
   var history = useHistory();
   var applicationsPath = '/applications';
-
   useEffect(() => {
     db.collection('applications')
       .doc(id)

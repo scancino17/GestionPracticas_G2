@@ -13,13 +13,20 @@ import Practicas from './extras/Practicas';
 import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
+import BarraLateral from '../../sideBar/BarraLateral';
 
-function DashboardEstudiante() {
+function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
+  const items = [
+    {
+      label: 'Intership',
+      path: '/form/:userId/:internshipId'
+    }
+  ];
 
   useEffect(() => {
     if (userData) {
@@ -50,37 +57,42 @@ function DashboardEstudiante() {
   }, [user, userData]);
 
   return (
-    <Switch>
-      <Route exact path='/'>
-        <Box pad='xlarge'>
-          {loaded ? (
-            <>
-              <Heading margin='small'>
-                ¡Hola, {userData && userData.name}!
-              </Heading>
-              <Text margin='small'>
-                {careerInternshipInfo && careerInternshipInfo.info}
-              </Text>
-              <Accordion margin='small'>
-                <AccordionPanel label='Documentos'>
-                  <Documentos docs={docs} />
-                </AccordionPanel>
-                <AccordionPanel label='Prácticas'>
-                  <Practicas practicas={practicas} />
-                </AccordionPanel>
-              </Accordion>
-            </>
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
+    <Box direction='row' fill responsive>
+      <BarraLateral items={items} setIsSmall={props.setIsSmall} />
+      <Box flex>
+        <Switch>
+          <Route exact path='/'>
+            <Box overflow='scroll'>
+              {loaded ? (
+                <>
+                  <Heading margin='small'>
+                    ¡Hola, {userData && userData.name}!
+                  </Heading>
+                  <Text margin='small'>
+                    {careerInternshipInfo && careerInternshipInfo.info}
+                  </Text>
+                  <Accordion margin='small'>
+                    <AccordionPanel label='Documentos'>
+                      <Documentos docs={docs} />
+                    </AccordionPanel>
+                    <AccordionPanel label='Prácticas'>
+                      <Practicas practicas={practicas} />
+                    </AccordionPanel>
+                  </Accordion>
+                </>
+              ) : (
+                <Box align='center'>
+                  <Spinner margin='medium' size='large' />
+                </Box>
+              )}
             </Box>
-          )}
-        </Box>
-      </Route>
-      <Route path='/form/:userId/:internshipId'>
-        <Formulario />
-      </Route>
-    </Switch>
+          </Route>
+          <Route path='/form/:userId/:internshipId'>
+            <Formulario />
+          </Route>
+        </Switch>
+      </Box>
+    </Box>
   );
 }
 

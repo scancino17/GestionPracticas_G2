@@ -6,6 +6,7 @@ import {
   Markdown,
   Spinner
 } from 'grommet';
+import { Halt } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
@@ -14,7 +15,7 @@ import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 
-function DashboardEstudiante() {
+function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);
@@ -75,13 +76,13 @@ function DashboardEstudiante() {
             <Box align='center'>
               <Spinner margin='medium' size='large' />
             </Box>
-          )}
-        </Box>
-      </Route>
-      <Route path='/form/:userId/:internshipId'>
-        <Formulario />
-      </Route>
-    </Switch>
+          </Route>
+          <Route path='/form/:userId/:internshipId'>
+            <Formulario />
+          </Route>
+        </Switch>
+      </Box>
+    </Box>
   );
 }
 

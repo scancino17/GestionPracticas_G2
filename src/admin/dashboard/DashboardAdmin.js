@@ -8,7 +8,8 @@ import {
   CardBody,
   CardFooter,
   Button,
-  Paragraph
+  Paragraph,
+  Chart
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
 import QuickAccess from './QuickAccess';
@@ -56,16 +57,16 @@ function DashboardAdmin() {
           <Route exact path='/'>
             <Main pad='xlarge'>
               <Heading> ¡Hola, {userData && userData.name}!</Heading>
-              <Box alignSelf='center' direction='row-responsive'>
-                <Box pad='small'>
-                  <Card height='small' width='small' background='light-1'>
+              <Box alignSelf='center'>
+                <Box margin='medium' pad='small'>
+                  <Card background='light-1'>
                     <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
                     <CardBody align='center' pad='medium'>
                       {pendingApplications && (
                         <Text weight='bold'>{pendingApplications.length}</Text>
                       )}
                     </CardBody>
-                    <CardFooter pad={{ horizontal: 'small' }} background='light-2'>
+                    <CardFooter justify='end' background='light-2'>
                       <Link to='/applications'>
                         <Button
                           fill='horizontal'
@@ -76,37 +77,52 @@ function DashboardAdmin() {
                     </CardFooter>
                   </Card>
                 </Box>
-                <Box pad='small'>
-                  <QuickAccess
-                    title='Inscripciones Aprobadas'
-                    body={<List color='plain' />}
-                  />
-                </Box>
-                <Box pad='small'>
-                  <QuickAccess
-                    title='Administrar Encargados'
-                    body={<Group color='plain' />}
-                  />
-                </Box>
-              </Box>
-              <Box alignSelf='center' direction='row-responsive'>
-                <Box pad='small'>
-                  <QuickAccess
-                    title='Evaluar Prácticas'
-                    body={<Task color='plain' />}
-                  />
-                </Box>
-                <Box pad='small'>
-                  <QuickAccess
-                    title='Importar Alumnos'
-                    body={<Upload color='plain' />}
-                  />
-                </Box>
-                <Box pad='small'>
-                  <QuickAccess
-                    title='Editar Formulario'
-                    body={<DocumentText color='plain' />}
-                  />
+                <Box direction='row-responsive'>
+                  <Card background='light-1' margin='medium' pad='medium'>
+                    <CardHeader>
+                      Gráfico: Por qué Paw Patrol es mejor que el resto
+                    </CardHeader>
+                    <CardBody>
+                      <Chart
+                        animate
+                        bounds={[
+                          [0, 7],
+                          [0, 100]
+                        ]}
+                        values={[
+                          { value: [0, 100], label: 'zero' },
+                          { value: [1, 10], label: 'thirty' },
+                          { value: [2, 15], label: 'forty' },
+                          { value: [3, 12], label: 'sixty' },
+                          { value: [4, 8], label: 'seventy' },
+                          { value: [5, 4], label: 'sixty' }
+                        ]}
+                        aria-label='chart'
+                      />
+                    </CardBody>
+                  </Card>
+                  <Card background='light-1' margin='medium' pad='medium'>
+                    <CardHeader>Gráfico: Revenue OnlyFans del poio</CardHeader>
+                    <CardBody>
+                      <Chart
+                        bounds={[
+                          [0, 7],
+                          [0, 100]
+                        ]}
+                        values={[
+                          { value: [0, 0], label: 'zero' },
+                          { value: [1, 30], label: 'thirty' },
+                          { value: [2, 40], label: 'forty' },
+                          { value: [3, 60], label: 'sixty' },
+                          { value: [4, 70], label: 'seventy' },
+                          { value: [5, 60], label: 'sixty' },
+                          { value: [6, 80], label: 'eighty' },
+                          { value: [7, 100], label: 'one hundred' }
+                        ]}
+                        aria-label='chart'
+                      />
+                    </CardBody>
+                  </Card>
                 </Box>
               </Box>
             </Main>

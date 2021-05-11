@@ -35,16 +35,15 @@ function Application() {
       .doc(data.internshipId)
       .update({ status: 'En curso' });
 
-    db.collection('mails')
-      .add({
-        to: data.email,
-        template: {
-          name: "Approved",
-          data: {
-            from_name: data.name 
-          },
-        },
-      });
+    db.collection('mails').add({
+      to: data.email,
+      template: {
+        name: 'Approved',
+        data: {
+          from_name: data.name
+        }
+      }
+    });
 
     history.push(applicationsPath);
   }
@@ -54,14 +53,13 @@ function Application() {
       .doc(id)
       .update({ status: 'Rechazado', reason: rejectReason });
 
-    db.collection('mails')
-    .add({
-      to: data.email,
-      template: {
-        name: 'Failed',
-        data: {
+    db.collection('mails').add({
+      to: data.email,
+      template: {
+        name: 'Failed',
+        data: {
           from_name: data.name,
-          result: rejectReason 
+          result: rejectReason
         }
       }
     });
@@ -70,7 +68,7 @@ function Application() {
   }
 
   return (
-    <Box pad='xlarge'>
+    <Box pad='xlarge' overflow='scroll'>
       {data && docs ? (
         <>
           <Heading>Formulario de inscripción de práctica</Heading>

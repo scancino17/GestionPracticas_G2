@@ -1,5 +1,5 @@
-import { Sidebar, Nav, Button, ResponsiveContext, Text } from 'grommet';
-import React, { Component } from 'react';
+import React from 'react';
+import { Button, Nav, Sidebar } from 'grommet';
 import {
   List,
   Group,
@@ -8,7 +8,8 @@ import {
   DocumentText,
   Archive
 } from 'grommet-icons';
-import { Route, Switch, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
 const items = [
   {
     label: 'Inscripción Pendiente',
@@ -33,7 +34,7 @@ const items = [
   {
     label: 'Importar Alumnos',
     icon: <Upload style={{ color: 'inherit' }} />,
-    path: '/wip'
+    path: '/import'
   },
   {
     label: 'Editar Formulario',
@@ -48,7 +49,6 @@ function BarraLateral() {
         elevation='large'
         background='#02475e'
         round='none'
-        align='15px'
         justify='start'
         width='12rem'>
         {items.map((item) => (
@@ -73,4 +73,5 @@ function BarraLateral() {
     </>
   );
 }
+
 export default BarraLateral;

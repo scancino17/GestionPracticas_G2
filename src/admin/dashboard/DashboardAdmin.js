@@ -12,30 +12,22 @@ import {
   Chart
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
-import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
 import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../sideBar/BarraLateral';
 import Application from '../applications/Application';
-import {
-  List,
-  Group,
-  Task,
-  Upload,
-  DocumentText,
-  LinkNext,
-  Halt
-} from 'grommet-icons';
+import { LinkNext, Halt } from 'grommet-icons';
 
 import { db } from '../../firebase';
+import ImportStudents from '../import/ImportStudents';
 
 function DashboardAdmin() {
   const { user, userData } = useAuth();
   const [applications, setApplications] = useState();
   const [pendingApplications, setPendingApplications] = useState();
 
-  let updateApplications = () => {
+  useEffect(() => {
     db.collection('applications').onSnapshot((querySnapshot) => {
       var list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
@@ -43,10 +35,6 @@ function DashboardAdmin() {
       const pending = list.filter((item) => item.status === 'En revisión');
       setPendingApplications(pending);
     });
-  };
-
-  useEffect(() => {
-    updateApplications();
   }, []);
 
   return (
@@ -146,6 +134,9 @@ function DashboardAdmin() {
                 Esta pagina no existe
               </Paragraph>
             </Box>
+          </Route>
+          <Route path='/import'>
+            <ImportStudents />
           </Route>
         </Switch>
       </Box>

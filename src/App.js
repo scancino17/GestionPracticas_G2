@@ -22,7 +22,7 @@ const theme = {
 };
 
 function App() {
-  const { user, logout } = useAuth();
+  const { user, userData, logout } = useAuth();
   let history = useHistory();
   return (
     <Grommet theme={theme} full>
@@ -46,7 +46,7 @@ function App() {
               }}
             />
           </Header>
-          {user.student || user.admin ? (
+          {(user.student || user.admin) && userData ? (
             user.student ? (
               <DashboardEstudiante />
             ) : (

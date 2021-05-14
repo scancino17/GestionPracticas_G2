@@ -105,12 +105,13 @@ function DashboardAdmin() {
                     <CardHeader>Gráfico: Revenue OnlyFans del poio</CardHeader>
                     <CardBody>
                       <Chart
+                        animate
                         bounds={[
                           [0, 7],
                           [0, 100]
                         ]}
                         values={[
-                          { value: [0, 0], label: 'zero' },
+                          { value: [0, 5], label: 'zero' },
                           { value: [1, 30], label: 'thirty' },
                           { value: [2, 40], label: 'forty' },
                           { value: [3, 60], label: 'sixty' },

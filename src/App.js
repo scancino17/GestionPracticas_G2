@@ -1,11 +1,8 @@
-import React from 'react';
+import { Button } from 'grommet';
+import React, { useState } from 'react';
 import './App.css';
-import Landing from './login/Landing';
-import { Box, Button, Grommet, Header, Image, Spinner } from 'grommet';
-import { useHistory } from 'react-router-dom';
-import useAuth from './providers/Auth';
-import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
-import DashboardAdmin from './admin/dashboard/DashboardAdmin';
+import FormBuilder from './dynamicForm/FormBuilder';
+import FormView from './dynamicForm/FormView';
 
 const theme = {
   global: {
@@ -22,46 +19,29 @@ const theme = {
 };
 
 function App() {
-  const { user, logout } = useAuth();
-  let history = useHistory();
+  const [form, setForm] = useState([
+    {
+      name: 'inout test',
+      type: 'input',
+      value: ''
+    },
+    {
+      name: 'selection test',
+      type: 'Select',
+      options: ['opcion1', 'opcion2', 'opcion3'],
+      value: ''
+    },
+    {
+      name: 'nombre',
+      type: 'file',
+      value: ''
+    }
+  ]);
   return (
-    <Grommet theme={theme} full>
-      {user ? (
-        <>
-          <Header background='brand' elevation='medium'>
-            <Button
-              onClick={() => history.push('/')}
-              icon={
-                <Box height='xxsmall'>
-                  <Image fill='vertical' src='logo.png' />
-                </Box>
-              }
-            />
-            <Button
-              label='Cerrar sesión'
-              onClick={(e) => {
-                e.preventDefault();
-                logout();
-                history.replace('/');
-              }}
-            />
-          </Header>
-          {user.student || user.admin ? (
-            user.student ? (
-              <DashboardEstudiante />
-            ) : (
-              <DashboardAdmin />
-            )
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
-          )}
-        </>
-      ) : (
-        <Landing />
-      )}
-    </Grommet>
+    <>
+      <FormBuilder formInner={form} setFormInner={setForm} />
+      <Button onClick={console.log('form')} />
+    </>
   );
 }
 

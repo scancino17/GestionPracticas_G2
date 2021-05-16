@@ -6,7 +6,8 @@ import {
   Task,
   Upload,
   DocumentText,
-  Archive
+  Archive,
+  UserAdd
 } from 'grommet-icons';
 import { Route, Switch, Link } from 'react-router-dom';
 const items = [
@@ -39,6 +40,11 @@ const items = [
     label: 'Editar Formulario',
     icon: <DocumentText style={{ color: 'inherit' }} />,
     path: '/wip'
+  },
+  {
+    label: 'Intenciones de práctica',
+    icon: <UserAdd style={{ color: 'inherit' }} />,
+    path: '/internship-intention'
   }
 ];
 function BarraLateral() {

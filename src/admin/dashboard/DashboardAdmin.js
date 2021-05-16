@@ -29,6 +29,7 @@ import {
 } from 'grommet-icons';
 
 import { db } from '../../firebase';
+import InternshipIntention from '../internship/InternshipIntention';
 
 function DashboardAdmin() {
   const { user, userData } = useAuth();
@@ -132,6 +133,9 @@ function DashboardAdmin() {
           </Route>
           <Route path='/applications/:id'>
             <Application />
+          </Route>
+          <Route path='/internship-intention'>
+            <InternshipIntention />
           </Route>
           <Route exact path='/wip'>
             <Box

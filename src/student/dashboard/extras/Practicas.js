@@ -1,17 +1,28 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Box, Card, CardBody, CardHeader, List } from 'grommet';
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  List
+} from 'grommet';
 import { FormNext } from 'grommet-icons';
+import StudentIntention from './StudentIntention';
 
 function Practicas({ practicas }) {
   return (
     <List border={false} data={practicas}>
-      {(practica) => <Practica practica={practica} />}
+      {(practica) => <PracticaCard practica={practica} />}
     </List>
   );
 }
 
 function PracticaCard({ practica }) {
+  let history = useHistory();
+
   let practicaColorStatus = (status) => {
     switch (status) {
       case 'En curso':
@@ -28,42 +39,35 @@ function PracticaCard({ practica }) {
   };
 
   return (
-    <Card pad='medium'>
-      <CardHeader pad='xsmall'>{`Práctica ${practica.applicationNumber}`}</CardHeader>
-      <CardBody direction='row' justify='between'>
-        <Box>
-          <Card pad='small' background={practicaColorStatus(practica.status)}>
-            <CardBody>{practica.status}</CardBody>
-          </Card>
-        </Box>
-        <Box pad='small'>
-          <FormNext />
-        </Box>
-      </CardBody>
-    </Card>
-  );
-}
-
-function Practica({ practica }) {
-  let practicaDisponible = (practica) => {
-    return practica.status !== 'No disponible';
-  };
-
-  let history = useHistory();
-
-  return practicaDisponible(practica) ? (
     <Box
       round='small'
       hoverIndicator={{
         elevation: 'medium'
       }}
-      onClick={() =>
-        history.push(`/internship/${practica.studentId}/${practica.id}`)
-      }>
-      <PracticaCard practica={practica} />
+      onClick={() => {}}>
+      <Card pad='medium'>
+        <CardHeader pad='xsmall'>{`Práctica ${practica.applicationNumber}`}</CardHeader>
+        <CardBody direction='row' justify='between'>
+          <Box>
+            <Card pad='small' background={practicaColorStatus(practica.status)}>
+              <CardBody>{practica.status}</CardBody>
+            </Card>
+          </Box>
+          <Box pad='small'>
+            <FormNext />
+          </Box>
+        </CardBody>
+        <CardFooter>
+          <Button
+            label='Lista  de prácticas'
+            onClick={() =>
+              history.push(`/internship/${practica.studentId}/${practica.id}`)
+            }
+          />
+          <StudentIntention practica={practica} />
+        </CardFooter>
+      </Card>
     </Box>
-  ) : (
-    <PracticaCard practica={practica} />
   );
 }
 

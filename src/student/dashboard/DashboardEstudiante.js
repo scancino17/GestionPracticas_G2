@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
 import Practicas from './extras/Practicas';
-import Formulario from '../../form/Formulario';
+import Formulario from '../../form/Formulario1';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import StudentApplications from './applications/StudentApplications';

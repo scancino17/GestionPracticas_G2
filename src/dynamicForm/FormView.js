@@ -12,15 +12,15 @@ import {
 import { useEffect, useState } from 'react';
 
 function FormView(props) {
-  const [flag, setFalg] = useState(false);
+  const [flag, setFlag] = useState(false);
   useEffect(() => {
-    setFalg(false);
-  }, [props.formInner, flag]);
+    setFlag(false);
+  }, [props.form, flag]);
   return (
     <>
       <Form>
         <Card gap='medium' pad='medium'>
-          {props.formInner.map((element) =>
+          {props.form.map((element) =>
             element.type === 'Select' ? (
               <FormField label={element.name}>
                 <Select

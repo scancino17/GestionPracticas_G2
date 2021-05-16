@@ -38,7 +38,7 @@ const items = [
   {
     label: 'Editar Formulario',
     icon: <DocumentText style={{ color: 'inherit' }} />,
-    path: '/wip'
+    path: '/editForm'
   }
 ];
 function BarraLateral() {

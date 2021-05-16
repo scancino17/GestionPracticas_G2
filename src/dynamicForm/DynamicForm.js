@@ -3,8 +3,7 @@ import { useState } from 'react';
 import FormBuilder from './FormBuilder';
 import FormView from './FormView';
 
-function DynamicForm() {
-  const [form, setForm] = useState([]);
+function DynamicForm(props) {
   const [flag, setFlag] = useState(false);
   return (
     <Box direction='row' pad='large'>
@@ -12,16 +11,16 @@ function DynamicForm() {
         <FormBuilder
           setFlag={setFlag}
           flag={flag}
-          handlerSetFormInner={setForm}
-          formInner={form}
+          handlerSetFormInner={props.setForm}
+          formInner={props.form}
         />
       </Box>
       <Box flex>
         <FormView
           setFlag={setFlag}
           flag={flag}
-          handlerSetFormInner={setForm}
-          formInner={form}
+          handlerSetFormInner={props.setForm}
+          form={props.form}
         />
       </Box>
     </Box>

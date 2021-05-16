@@ -18,6 +18,7 @@ import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../sideBar/BarraLateral';
 import Application from '../applications/Application';
+import EditForm from '../editForm/EditForm';
 import {
   List,
   Group,
@@ -132,6 +133,9 @@ function DashboardAdmin() {
           </Route>
           <Route path='/applications/:id'>
             <Application />
+          </Route>
+          <Route path='/editForm/:careerId'>
+            <EditForm />
           </Route>
           <Route exact path='/wip'>
             <Box

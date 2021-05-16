@@ -13,123 +13,49 @@ import {
   Text,
   TextInput
 } from 'grommet';
-import { Car } from 'grommet-icons';
-import react from 'react';
-import React, { createElement, useState } from 'react';
+import { Add, Down, Trash, Up } from 'grommet-icons';
+
+import React, { createElement, useState, useEffect } from 'react';
+import ConstructorCamp from './ConstructorCamp';
 
 function FormBuilder(props) {
   const [show, setShow] = useState(false);
-  const [type, setType] = useState('');
-  const [form, setForm] = useState();
 
-  function ConstructorForm(props) {
-    const [value, setValue] = useState('');
-    const [name, setName] = useState('');
-    const [options, setOpctions] = useState([]);
-    const [newOption, setNewOption] = useState('');
+  useEffect(() => {
+    props.setFlag(false);
+  }, [props.formInner, props.flag]);
 
-    return (
-      <Layer
-        modal={true}
-        onEsc={() => setShow(false)}
-        onClickOutside={() => setShow(false)}>
-        <Card pad='large'>
-          <Select
-            options={['Input', 'Select', 'File', 'Header']}
-            value={value}
-            onChange={({ option }) => setValue(option)}
-          />
-          {value === 'Input' ? (
-            <>
-              <h1>Input</h1>
-              <FormField label={'Nombre'} color='red'>
-                <TextInput />
-              </FormField>
-            </>
-          ) : value === 'Select' ? (
-            <>
-              <h1>Select</h1>
-              <FormField label={'Nombre'} color='red'>
-                <TextInput />
-              </FormField>
-              <Box direction='row' justify='center' align='center'>
-                <Box
-                  width='auto'
-                  flex
-                  border={{ color: 'brand', size: 'small' }}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableCell scope='col' border='bottom'>
-                          opcion
-                        </TableCell>
-                        <TableCell scope='col' border='bottom'></TableCell>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {options.map((option) => (
-                        <TableRow key={option.i}>
-                          <TableCell scope='col'>
-                            <Text>{option}</Text>
-                          </TableCell>
-                          <TableCell scope='col'>
-                            <Button
-                              label='-'
-                              onClick={() =>
-                                setOpctions((prev) =>
-                                  prev.filter((element) => element !== option)
-                                )
-                              }
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      <TableRow>
-                        <TableCell scope='col'>
-                          <TextInput
-                            value={newOption}
-                            onChange={(e) => setNewOption(e.target.value)}
-                          />
-                        </TableCell>
-                        <TableCell scope='col'>
-                          <Button
-                            label='+'
-                            onClick={() => {
-                              setOpctions((prev) => prev.concat(newOption));
-                              setNewOption('');
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </Box>
-              </Box>
-            </>
-          ) : value === 'File' ? (
-            <>
-              <h1>File</h1>
-              <FormField label={'Nombre'} color='red'>
-                <TextInput />
-              </FormField>
-            </>
-          ) : value === 'Header' ? (
-            <>
-              <h1>Header</h1>
-              <FormField label={'Titulo'} color='red'>
-                <TextInput />
-              </FormField>
-            </>
-          ) : null}
-          <Button label='guardar' />
-        </Card>
-      </Layer>
-    );
+  function hadlerDelete(element) {
+    props.handlerSetFormInner((prev) => prev.filter((el) => el !== element));
+  }
+  function handlerUp(index) {
+    props.handlerSetFormInner((prev) => array_move(prev, index, index - 1));
+    props.setFlag(true);
   }
 
+  function handlerDown(index) {
+    props.handlerSetFormInner((prev) => array_move(prev, index, index + 1));
+    props.setFlag(true);
+  }
+  function array_move(arr, old_index, new_index) {
+    while (old_index < 0) {
+      old_index += arr.length;
+    }
+    while (new_index < 0) {
+      new_index += arr.length;
+    }
+    if (new_index >= arr.length) {
+      var k = new_index - arr.length + 1;
+      while (k--) {
+        arr.push(undefined);
+      }
+    }
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    return arr; // for testing purposes
+  }
   return (
     <>
-      <Box direction='row' justify='center' align='center'>
+      <Box direction='row'>
         <Box width='auto' flex border={{ color: 'brand', size: 'small' }}>
           <Table>
             <TableHeader>
@@ -145,7 +71,7 @@ function FormBuilder(props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {props.formInner.map((rec) => (
+              {props.formInner.map((rec, i) => (
                 <TableRow key={rec.i}>
                   <TableCell scope='col'>
                     <Text>{rec.name}</Text>
@@ -157,17 +83,15 @@ function FormBuilder(props) {
                   </TableCell>
                   <TableCell>
                     <Button
-                      label='eliminar'
-                      onClick={() => console.log('eliminar')}
+                      icon={<Trash />}
+                      onClick={() => hadlerDelete(rec)}
                     />
-                    <Button
-                      label='arriba'
-                      onClick={() => console.log('arriba')}
-                    />
-                    <Button
-                      label='abajo'
-                      onClick={() => console.log('eliminar')}
-                    />
+                    {i !== 0 && (
+                      <Button icon={<Up />} onClick={() => handlerUp(i)} />
+                    )}
+                    {i !== props.formInner.length - 1 && (
+                      <Button icon={<Down />} onClick={() => handlerDown(i)} />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -176,8 +100,17 @@ function FormBuilder(props) {
         </Box>
 
         <Box>
-          <Button label='show' onClick={() => setShow(true)} />
-          {show && <ConstructorForm />}
+          <Button
+            alignSelf='start'
+            icon={<Add />}
+            onClick={() => setShow(true)}
+          />
+          {show && (
+            <ConstructorCamp
+              handlerSetFormInnerInner={props.handlerSetFormInner}
+              setShow={setShow}
+            />
+          )}
         </Box>
       </Box>
     </>

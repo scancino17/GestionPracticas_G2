@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
 import {
@@ -8,13 +8,16 @@ import {
   Grommet,
   Header,
   Image,
-  Spinner
+  Spinner,
+  Text,
+  Layer,
+  Menu
 } from 'grommet';
 import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
-import { Actions } from 'grommet-icons';
+import { Actions, User } from 'grommet-icons';
 import { auth } from './firebase';
 
 const theme = {
@@ -33,6 +36,7 @@ const theme = {
 
 function App() {
   const { user, userData, logout } = useAuth();
+  const [show, setShow] = useState();
   let history = useHistory();
   return (
     <Grommet theme={theme} full>
@@ -47,49 +51,53 @@ function App() {
                 </Box>
               }
             />
-
-            <DropButton
-              label={<Actions />}
-              dropAlign={{ top: 'bottom', right: 'right' }}
-              dropContent={
-                <Box background='light-2' margin='4px'>
-                  {userData ? (
-                    <Button
-                      margin='3px'
-                      padding='3px 15px'
-                      label='Cambiar contraseña'
-                      onClick={(e) => {
-                        e.preventDefault();
-                        auth
-                          .sendPasswordResetEmail(userData.email)
-                          .then(function () {
-                            // Email sent.
-                          })
-                          .catch(function (error) {
-                            // An error happened.
-                          });
-                        alert(
-                          'Se ha enviado un correo electronico con instrucciones para cambio de contraseña'
-                        );
-                      }}
-                    />
-                  ) : (
-                    <Button></Button>
-                  )}
-
-                  <Button
-                    margin='3px'
-                    padding='3px 15px'
-                    label='Cerrar sesión'
-                    onClick={(e) => {
-                      e.preventDefault();
-                      logout();
-                      history.replace('/');
-                    }}
-                  />
-                </Box>
-              }
+            <Menu
+              dropProps={{ align: { top: 'top', right: 'right' } }}
+              margin='small'
+              icon={<User />}
+              items={[
+                {
+                  label: 'Cambiar contraseña',
+                  onClick: (e) => {
+                    e.preventDefault();
+                    auth
+                      .sendPasswordResetEmail(userData.email)
+                      .then(function () {
+                        // Email sent.
+                      })
+                      .catch(function (error) {
+                        // An error happened.
+                      });
+                    setShow(true);
+                  }
+                },
+                {
+                  label: 'Cerrar sesión',
+                  onClick: (e) => {
+                    e.preventDefault();
+                    logout();
+                    history.replace('/');
+                  }
+                }
+              ]}
             />
+
+            {show && (
+              <Layer
+                onEsc={() => setShow(false)}
+                onClickOutside={() => setShow(false)}>
+                <Text justify='Center' margin='medium'>
+                  Se ha enviado un correo con las instrucciones para
+                  restablecimiento de contraseña
+                </Text>
+                <Button
+                  margin='medium'
+                  primary
+                  label='Cerrar'
+                  onClick={() => setShow(false)}
+                />
+              </Layer>
+            )}
           </Header>
           {(user.student || user.admin) && userData ? (
             user.student ? (

@@ -9,9 +9,11 @@ import {
   CardFooter,
   Button,
   Paragraph,
+  Grid,
   Chart
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
+import QuickAccessGr from './QuickAccessGr';
 import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
 import { Link, Route, Switch } from 'react-router-dom';
@@ -55,78 +57,28 @@ function DashboardAdmin() {
       <Box flex>
         <Switch>
           <Route exact path='/'>
-            <Main pad='xlarge'>
-              <Heading> ¡Hola, {userData && userData.name}!</Heading>
-              <Box alignSelf='center'>
-                <Box margin='medium' pad='small'>
-                  <Card background='light-1'>
-                    <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
-                    <CardBody align='center' pad='medium'>
-                      {pendingApplications && (
-                        <Text weight='bold'>{pendingApplications.length}</Text>
-                      )}
-                    </CardBody>
-                    <CardFooter justify='end' background='light-2'>
-                      <Link to='/applications'>
-                        <Button
-                          fill='horizontal'
-                          icon={<LinkNext color='plain' />}
-                          hoverIndicator
-                        />
-                      </Link>
-                    </CardFooter>
-                  </Card>
-                </Box>
-                <Box direction='row-responsive'>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>
-                      Gráfico: Por qué Paw Patrol es mejor que el resto
-                    </CardHeader>
-                    <CardBody>
-                      <Chart
-                        animate
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 100], label: 'zero' },
-                          { value: [1, 10], label: 'thirty' },
-                          { value: [2, 15], label: 'forty' },
-                          { value: [3, 12], label: 'sixty' },
-                          { value: [4, 8], label: 'seventy' },
-                          { value: [5, 4], label: 'sixty' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>Gráfico: Revenue OnlyFans del poio</CardHeader>
-                    <CardBody>
-                      <Chart
-                        animate
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 5], label: 'zero' },
-                          { value: [1, 30], label: 'thirty' },
-                          { value: [2, 40], label: 'forty' },
-                          { value: [3, 60], label: 'sixty' },
-                          { value: [4, 70], label: 'seventy' },
-                          { value: [5, 60], label: 'sixty' },
-                          { value: [6, 80], label: 'eighty' },
-                          { value: [7, 100], label: 'one hundred' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                </Box>
+              <Box alignSelf='center'  direction='row-responsive' >
+                  {pendingApplications &&(
+                  <QuickAccessGr title='Solicitudes Pendientes' number={pendingApplications.length}/>
+                  )}
+            
+                  <QuickAccessGr title='Nuevos Formularios' number={0}/>
+             
+                  <QuickAccessGr title='Formularios Corregidos' number={0}/>
+            
+                  <QuickAccessGr title='Nuevos Informes' number={10}/>
               </Box>
-            </Main>
+              <Box alignSelf='center'  direction='row-responsive'>
+                  {pendingApplications &&(
+                  <QuickAccess title='Solicitudes Pendientes' number={pendingApplications.length}/>
+                  )}
+          
+                  <QuickAccess title='Nuevos Formularios' number={0}/>
+            
+                  <QuickAccess title='Formularios Corregidos' number={0}/>
+             
+                  <QuickAccess title='Nuevos Informes' number={10}/>
+              </Box>   
           </Route>
           <Route exact path='/applications'>
             <ApplicationsList applications={pendingApplications} />

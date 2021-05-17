@@ -10,25 +10,27 @@ import {
   Main,
   Text
 } from 'grommet';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { db, storage } from '../../firebase';
 
 const approvalState = 'Pendiente Aprobación';
 const confirmIntentionState = 'Pendiente';
 const deniendState = 'Rechazado';
 
-const IntentionList = ({ applications }) => {
+const IntentionList = ({ applications, update }) => {
   return (
     <Main>
       <Heading>Estudiantes con intención de práctica</Heading>
       <List border={false} data={applications}>
-        {(application) => <IntentionItem application={application} />}
+        {(application) => (
+          <IntentionItem application={application} update={update} />
+        )}
       </List>
     </Main>
   );
 };
 
-const IntentionItem = ({ application }) => {
+const IntentionItem = ({ application, update }) => {
   console.log(application);
   const [showApprovalModal, setShowApprovalModal] = useState();
   const [showRejectModal, setShowRejectModal] = useState();
@@ -78,23 +80,32 @@ const IntentionItem = ({ application }) => {
           />
         </Box>
         {showApprovalModal && (
-          <ApprovalModal application={application} closeModal={closeModal} />
+          <ApprovalModal
+            application={application}
+            closeModal={closeModal}
+            update={update}
+          />
         )}
         {showRejectModal && (
-          <RejectModal application={application} closeModal={closeModal} />
+          <RejectModal
+            application={application}
+            closeModal={closeModal}
+            update={update}
+          />
         )}
       </AccordionPanel>
     </Accordion>
   );
 };
 
-const RejectModal = ({ application, closeModal }) => {
+const RejectModal = ({ application, closeModal, update }) => {
   const handleRejecton = () => {
     db.collection('internships')
       .doc(application.internshipId)
       .update({ status: deniendState });
 
     closeModal();
+    update();
   };
 
   return (
@@ -124,7 +135,7 @@ const RejectModal = ({ application, closeModal }) => {
   );
 };
 
-const ApprovalModal = ({ application, closeModal }) => {
+const ApprovalModal = ({ application, closeModal, update }) => {
   const [letterFile, setLetterFile] = useState();
   const [isConfirmDisabled, setConfirmDisabled] = useState();
 
@@ -148,13 +159,15 @@ const ApprovalModal = ({ application, closeModal }) => {
       .doc(internshipId)
       .set({ status: confirmIntentionState }, { merge: true });
 
-    storage.ref
+    storage
+      .ref()
       .child(
         `students-docs/${studentId}/${internshipId}/letter/${letterFile.name}`
       )
       .put(letterFile);
 
     closeModal();
+    update();
   };
 
   return (
@@ -191,34 +204,50 @@ const ApprovalModal = ({ application, closeModal }) => {
 function InternshipIntention() {
   const [applications, setApplications] = useState([]);
 
-  useEffect(() => {
-    const unsub = db
-      .collection('internships')
+  const addApplication = useCallback(
+    (newItem) => {
+      setApplications((prevState) => {
+        let newState = [];
+        prevState.forEach((item) => newState.push(item));
+        newState.push(newItem);
+        return newState;
+      });
+    },
+    [setApplications]
+  );
+
+  const updateApplications = useCallback(() => {
+    setApplications([]);
+
+    db.collection('internships')
       .where('status', '==', approvalState)
-      .onSnapshot((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
+      .get()
+      .then((snapshot) => {
+        snapshot.forEach((doc) => {
           const internship = doc.data();
+          const internshipId = doc.id;
+
           db.collection('users')
             .doc(internship.studentId)
             .get()
             .then((student) => {
-              // console.log(doc.id, internship, student.data());
-              setApplications((prevList) => {
-                prevList.push({
-                  internshipId: doc.id,
-                  ...internship,
-                  ...student.data()
-                });
-                console.log(prevList);
-                return prevList;
+              addApplication({
+                internshipId: internshipId,
+                ...internship,
+                ...student.data()
               });
             });
         });
       });
-    return unsub;
-  }, []);
+  }, [setApplications, addApplication]);
 
-  return <IntentionList applications={applications} />;
+  useEffect(() => {
+    updateApplications();
+  }, [updateApplications]);
+
+  return (
+    <IntentionList applications={applications} update={updateApplications} />
+  );
 }
 
 export default InternshipIntention;

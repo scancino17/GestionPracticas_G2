@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
+import { CssBaseline } from '@material-ui/core';
 
 const theme = {
   global: {
@@ -25,7 +26,8 @@ function App() {
   const { user, userData, logout } = useAuth();
   let history = useHistory();
   return (
-    <Grommet theme={theme} full>
+    <>
+      <CssBaseline />
       {user ? (
         <>
           <Header background='brand' elevation='medium'>
@@ -61,7 +63,7 @@ function App() {
       ) : (
         <Landing />
       )}
-    </Grommet>
+    </>
   );
 }
 

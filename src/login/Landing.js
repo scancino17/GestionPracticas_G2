@@ -1,21 +1,16 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
+import useAuth from '../providers/Auth';
 import {
-  Box,
   Button,
   Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Form,
-  FormField,
-  Heading,
-  Main,
-  Spinner,
-  Text,
-  TextInput,
-  Image
-} from 'grommet';
-import useAuth from '../providers/Auth';
+  CircularProgress,
+  Container,
+  Divider,
+  Grid,
+  Paper,
+  TextField,
+  Typography
+} from '@material-ui/core';
 
 function Landing() {
   const [email, setEmail] = useState('');
@@ -30,98 +25,107 @@ function Landing() {
     setError(false);
     login(email, password)
       .then(() => setLoading(false))
-      .catch((error) => {
+      .catch(() => {
         setError(true);
         setLoading(false);
       });
   }
 
   return (
-    <Main background="url('Fondo.png')" direction='row' justify='evenly'>
-      <Box direction='row' align='center'>
-        <Box align='center'>
-          <Card
-            background={{ opacity: 'strong', color: 'light-1' }}
-            height='auto'
-            pad='medium'
-            width='auto'>
-            <Box direction='row-responsive'>
-              <Box margin='auto' width='auto' justify='left' pad='medium'>
-                <Image fit='cover' src='logo.png' pad='medium' />
-                <Box pad='medium'>
-                  <Heading margin='none' level='2'>
-                    Gestión de Prácticas
-                  </Heading>
-                  <Heading margin='none' level='3'>
-                    Universidad de Talca
-                  </Heading>
-                </Box>
-              </Box>
+    <div style={{ backgroundImage: 'url(Fondo.png)' }}>
+      <Container>
+        <Grid
+          container
+          direction='column'
+          justify='center'
+          style={{ height: '100vh' }}>
+          <Grid
+            item
+            container
+            justify='center'
+            alignItems='center'
+            style={{
+              backgroundColor: '#F2F2F2D0',
+              borderRadius: '1rem',
+              padding: '3rem'
+            }}>
+            <Grid
+              item
+              container
+              direction='column'
+              justify='center'
+              spacing={1}
+              xs={12}
+              sm={6}>
+              <Grid item>
+                <img src='logo.png' alt='Logo' />
+              </Grid>
+              <Grid item>
+                <Typography variant='h3'>Gestión de Prácticas</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant='h4' gutterBottom>
+                  Universidad de Talca
+                </Typography>
+              </Grid>
+            </Grid>
 
-              <Box justify='right'>
-                <Card
-                  width='auto'
-                  background={{ opacity: 'strong', color: 'light-1' }}>
-                  {loading ? (
-                    <Box align='center'>
-                      <Spinner margin='medium' size='large' />
-                    </Box>
-                  ) : (
-                    <>
-                      <CardHeader justify='center'>
-                        <Heading level='3'>Iniciar sesión</Heading>
-                      </CardHeader>
-                      <Form onSubmit={handleOnSubmit}>
-                        <CardBody pad='medium'>
-                          {error && (
-                            <Text margin='small' color='status-critical'>
-                              Error iniciando sesión. Por favor revise sus
-                              credenciales.
-                            </Text>
-                          )}
-                          <FormField
-                            name='email'
-                            htmlFor='text-input-email'
-                            label='Email'
-                            required>
-                            <TextInput
-                              id='text-input-email'
-                              name='email'
-                              type='email'
-                              onChange={(e) => setEmail(e.target.value)}
-                            />
-                          </FormField>
-                          <FormField
-                            name='password'
-                            htmlFor='text-input-password'
-                            label='Contraseña'
-                            required>
-                            <TextInput
-                              id='text-input-password'
-                              name='password'
-                              type='password'
-                              onChange={(e) => setPassword(e.target.value)}
-                            />
-                          </FormField>
-                        </CardBody>
-                        <CardFooter pad='small' justify='center'>
-                          <Button
-                            type='submit'
-                            primary
-                            label='Ingresar'
-                            color='brand'
-                          />
-                        </CardFooter>
-                      </Form>
-                    </>
-                  )}
-                </Card>
-              </Box>
-            </Box>
-          </Card>
-        </Box>
-      </Box>
-    </Main>
+            <Divider orientation='vertical' flexItem />
+
+            <Grid item container xs={12} sm={6} justify='center'>
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <form onSubmit={handleOnSubmit}>
+                  <Grid
+                    container
+                    direction='column'
+                    spacing={2}
+                    alignItems='center'>
+                    <Grid item>
+                      <Typography variant='h5'>Iniciar sesión</Typography>
+                    </Grid>
+                    {error && (
+                      <Grid item>
+                        <Typography color='error'>
+                          Error iniciando sesión. Por favor revise sus
+                          credenciales.
+                        </Typography>
+                      </Grid>
+                    )}
+                    <Grid item>
+                      <TextField
+                        id='text-input-email'
+                        label='Email'
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        type='email'
+                        variant='outlined'
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        id='text-input-password'
+                        label='Contraseña'
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        type='password'
+                        variant='outlined'
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Button color='primary' type='submit' variant='contained'>
+                        Ingresar
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
+      </Container>
+    </div>
   );
 }
 

@@ -8,6 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import MenuIcon from '@material-ui/icons/Menu';
 
+import { makeStyles } from '@material-ui/core/styles';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -15,15 +16,28 @@ import PublishIcon from '@material-ui/icons/Publish';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
 
-const styles = {
-  button: {
-    width: 64, height: 64,
-    padding: 0,
+const useStyles = makeStyles((theme) => ({
+  deleteIcon1: {
+    '& svg': {
+      fontSize: 25
+    }
   },
-  icon: {
-    width: 64, height: 64,
+  deleteIcon2: {
+    '& svg': {
+      fontSize: 50
+    }
   },
-};
+  deleteIcon3: {
+    '& svg': {
+      fontSize: 75
+    }
+  },
+  deleteIcon4: {
+    '& svg': {
+      fontSize: 100
+    }
+  }
+}));
 
 const items = [
   {
@@ -58,18 +72,20 @@ const items = [
   }
 ];
 
+
+
 function BarraLateralM(){
+  const classes = useStyles();
   const [open,setOpen] = useState(false);
   return(
     <div>
       <IconButton
-        edge='false'
         color='inherit'
         aria-label='open drawer'
         onClick={()=> setOpen(true)}
-        style={styles.button} iconStyle={styles.icon}
+        className={classes.deleteIcon2}
       >
-        <MenuIcon/>
+        <MenuIcon />
       </IconButton>
       <SwipeableDrawer
         

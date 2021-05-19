@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
-import { CssBaseline } from '@material-ui/core';
+import { AppBar, CssBaseline } from '@material-ui/core';
 
 const theme = {
   global: {
@@ -30,24 +30,24 @@ function App() {
       <CssBaseline />
       {user ? (
         <>
-          <Header background='brand' elevation='medium'>
-            <Button
-              onClick={() => history.push('/')}
-              icon={
-                <Box height='xxsmall'>
-                  <Image fill='vertical' src='logo.png' />
-                </Box>
-              }
-            />
-            <Button
-              label='Cerrar sesión'
-              onClick={(e) => {
-                e.preventDefault();
-                logout();
-                history.replace('/');
-              }}
-            />
-          </Header>
+            <Header background='brand' elevation='medium'>
+              <Button
+                onClick={() => history.push('/')}
+                icon={
+                  <Box height='xxsmall'>
+                    <Image fill='vertical' src='logo.png' />
+                  </Box>
+                }
+              />
+              <Button
+                label='Cerrar sesión'
+                onClick={(e) => {
+                  e.preventDefault();
+                  logout();
+                  history.replace('/');
+                }}
+              />
+            </Header>
           {(user.student || user.admin) && userData ? (
             user.student ? (
               <DashboardEstudiante />

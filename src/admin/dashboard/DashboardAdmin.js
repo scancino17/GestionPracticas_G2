@@ -1,10 +1,9 @@
-import GridItem from "./extras/Grid/GridItem.js";
-import GridContainer from "./extras/Grid/GridContainer.js";
 import Card from "./extras/Card/Card";
 import CardHeader from "./extras/Card/CardHeader.js";
 import CardIcon from "./extras/Card/CardIcon.js";
 import CardFooter from "./extras/Card/CardFooter.js";
 import { makeStyles } from "@material-ui/core/styles";
+import Grid  from "@material-ui/core/Grid";
 
 import { 
   MdAccessibility,
@@ -60,8 +59,8 @@ function DashboardAdmin() {
       <Box flex>
         <Switch>
           <Route exact path='/'>
-          <GridContainer>
-            <GridItem xs={12} sm={6} md={3}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Card>
                 <CardHeader color="warning" stats icon>
                   <CardIcon color="warning">
@@ -79,8 +78,8 @@ function DashboardAdmin() {
                   </div>
                 </CardFooter>
               </Card>
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
               <Card>
                 <CardHeader color="success" stats icon>
                   <CardIcon color="success">
@@ -98,8 +97,8 @@ function DashboardAdmin() {
                   </div>
                 </CardFooter>
               </Card>
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
               <Card>
                 <CardHeader color="danger" stats icon>
                   <CardIcon color="danger">
@@ -117,8 +116,8 @@ function DashboardAdmin() {
                   </div>
                 </CardFooter>
               </Card>
-            </GridItem>
-            <GridItem xs={12} sm={6} md={3}>
+            </Grid>
+            <Grid item xs={12} sm={6} md={3}>
               <Card>
                 <CardHeader color="info" stats icon>
                   <CardIcon color="info">
@@ -136,8 +135,8 @@ function DashboardAdmin() {
                   </div>
                 </CardFooter>
               </Card>
-            </GridItem>
-          </GridContainer>
+            </Grid>
+          </Grid>
           </Route>
           <Route exact path='/applications'>
             <ApplicationsList applications={pendingApplications} />

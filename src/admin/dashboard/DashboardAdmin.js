@@ -12,25 +12,16 @@ import {
   Chart
 } from 'grommet';
 import React, { useEffect, useState } from 'react';
-import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
 import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
-import BarraLateral from '../../sideBar/BarraLateral';
+import BarraLateral from '../../layout/BarraLateral';
 import Application from '../applications/Application';
-import {
-  List,
-  Group,
-  Task,
-  Upload,
-  DocumentText,
-  LinkNext,
-  Halt
-} from 'grommet-icons';
+import { LinkNext, Halt } from 'grommet-icons';
 
 import { db } from '../../firebase';
 
-function DashboardAdmin() {
+function DashboardAdmin({ sidebarProps }) {
   const { user, userData } = useAuth();
   const [applications, setApplications] = useState();
   const [pendingApplications, setPendingApplications] = useState();
@@ -51,7 +42,7 @@ function DashboardAdmin() {
 
   return (
     <Box direction='row' fill responsive>
-      <BarraLateral />
+      <BarraLateral {...sidebarProps} />
       <Box flex>
         <Switch>
           <Route exact path='/'>

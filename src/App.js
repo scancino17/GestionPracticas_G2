@@ -1,53 +1,38 @@
 import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Button, Grommet, Header, Image, Spinner } from 'grommet';
-import { useHistory } from 'react-router-dom';
+import { Box, Spinner } from 'grommet';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
-import { AppBar, CssBaseline } from '@material-ui/core';
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
+import TopBar from './layout/TopBar';
 
-const theme = {
-  global: {
-    colors: {
-      brand: 'status-warning',
-      focus: 'neutral-3'
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#6782bc',
+      main: '#36568c',
+      dark: '#002e5e',
+      contrastText: '#ffffff'
     },
-    font: {
-      family: 'Roboto',
-      size: '18px',
-      height: '20px'
+    secondary: {
+      light: '#ffc057',
+      main: '#f28f25',
+      dark: '#ba6100',
+      contrastText: '#000000'
     }
   }
-};
+});
 
 function App() {
-  const { user, userData, logout } = useAuth();
-  let history = useHistory();
+  const { user, userData } = useAuth();
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       {user ? (
         <>
-            <Header background='brand' elevation='medium'>
-              <Button
-                onClick={() => history.push('/')}
-                icon={
-                  <Box height='xxsmall'>
-                    <Image fill='vertical' src='logo.png' />
-                  </Box>
-                }
-              />
-              <Button
-                label='Cerrar sesión'
-                onClick={(e) => {
-                  e.preventDefault();
-                  logout();
-                  history.replace('/');
-                }}
-              />
-            </Header>
+          <TopBar />
           {(user.student || user.admin) && userData ? (
             user.student ? (
               <DashboardEstudiante />
@@ -63,7 +48,7 @@ function App() {
       ) : (
         <Landing />
       )}
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { Box } from 'grommet';
+import { Grid } from '@material-ui/core';
 import { useState } from 'react';
 import FormBuilder from './FormBuilder';
 import FormView from './FormView';
@@ -6,24 +6,28 @@ import FormView from './FormView';
 function DynamicForm(props) {
   const [flag, setFlag] = useState(false);
   return (
-    <Box direction='row' pad='large'>
-      <Box width='35%' height='large'>
+    <Grid container>
+      <Grid item xs={12} md={4}>
         <FormBuilder
           setFlag={setFlag}
           flag={flag}
+          indexInner={props.index}
           handlerSetFormInner={props.setForm}
           formInner={props.form}
+          formFullInner={props.formFull}
         />
-      </Box>
-      <Box flex>
+      </Grid>
+      <Grid item xs={12} md={8}>
         <FormView
           setFlag={setFlag}
           flag={flag}
+          indexInner={props.index}
           handlerSetFormInner={props.setForm}
+          formFullInner={props.formFull}
           form={props.form}
         />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   );
 }
 export default DynamicForm;

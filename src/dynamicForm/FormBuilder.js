@@ -1,21 +1,18 @@
 import {
   Box,
-  Button,
-  Card,
-  FormField,
-  Layer,
-  Select,
+  Grid,
+  Typography,
   Table,
-  TableBody,
+  TableHead,
   TableCell,
-  TableHeader,
   TableRow,
-  Text,
-  TextInput
-} from 'grommet';
-import { Add, Down, Trash, Up } from 'grommet-icons';
+  TableBody,
+  Button,
+  IconButton
+} from '@material-ui/core';
+import { Delete, ArrowUpward, ArrowDownward, Add } from '@material-ui/icons';
 
-import React, { createElement, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ConstructorCamp from './ConstructorCamp';
 
 function FormBuilder(props) {
@@ -25,17 +22,39 @@ function FormBuilder(props) {
     props.setFlag(false);
   }, [props.formInner, props.flag]);
 
-  function hadlerDelete(element) {
-    props.handlerSetFormInner((prev) => prev.filter((el) => el !== element));
+  function hadlerDelete(element, i) {
+    const aux = props.formFullInner();
+    aux[props.indexInner].form.splice(i, 1);
+    props.handlerSetFormInner(aux);
+    props.setFlag(true);
   }
   function handlerUp(index) {
-    props.handlerSetFormInner((prev) => array_move(prev, index, index - 1));
+    const aux = props.formFullInner();
+    aux[props.indexInner].form = array_move(
+      aux[props.indexInner].form,
+      index,
+      index - 1
+    );
+    props.handlerSetFormInner(aux);
+    console.log(aux);
+
+    //props.handlerSetFormInner((prev) => array_move(prev, index, index - 1));
     props.setFlag(true);
   }
 
   function handlerDown(index) {
-    props.handlerSetFormInner((prev) => array_move(prev, index, index + 1));
+    const aux = props.formFullInner();
+    aux[props.indexInner].form = array_move(
+      aux[props.indexInner].form,
+      index,
+      index + 1
+    );
+    props.handlerSetFormInner(aux);
+    console.log(aux);
+
+    //props.handlerSetFormInner((prev) => array_move(prev, index, index + 1));
     props.setFlag(true);
+    console.log(props.formInner);
   }
   function array_move(arr, old_index, new_index) {
     while (old_index < 0) {
@@ -54,66 +73,92 @@ function FormBuilder(props) {
     return arr; // for testing purposes
   }
   return (
-    <>
-      <Box direction='row'>
-        <Box width='auto' flex border={{ color: 'brand', size: 'small' }}>
+    <Grid direction='row-respno' border={1}>
+      <Grid>
+        <Box border={1}>
           <Table>
-            <TableHeader>
+            <TableHead>
               <TableRow>
                 <TableCell scope='col' border='bottom'>
-                  Nombre
+                  <Typography>Nombre</Typography>
                 </TableCell>
                 <TableCell scope='col' border='bottom'>
-                  Tipo
+                  <Typography>Tipo</Typography>
                 </TableCell>
 
-                <TableCell scope='col' border='bottom'></TableCell>
+                <TableCell scope='col' border='bottom'>
+                  <Typography>Acciones</Typography>
+                </TableCell>
               </TableRow>
-            </TableHeader>
+            </TableHead>
             <TableBody>
               {props.formInner.map((rec, i) => (
                 <TableRow key={rec.i}>
                   <TableCell scope='col'>
-                    <Text>{rec.name}</Text>
+                    <Grid>
+                      <Typography>{rec.name}</Typography>
+                    </Grid>
                   </TableCell>
                   <TableCell scope='col'>
-                    <Text>
-                      <Text>{rec.type}</Text>
-                    </Text>
+                    <Typography>{rec.type}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Button
-                      icon={<Trash />}
-                      onClick={() => hadlerDelete(rec)}
-                    />
-                    {i !== 0 && (
-                      <Button icon={<Up />} onClick={() => handlerUp(i)} />
-                    )}
-                    {i !== props.formInner.length - 1 && (
-                      <Button icon={<Down />} onClick={() => handlerDown(i)} />
-                    )}
+                    <Grid container direction='colum' spacing={4}>
+                      <Grid xs={3}>
+                        <IconButton onClick={() => hadlerDelete(rec, i)}>
+                          <Delete />
+                        </IconButton>
+                      </Grid>
+                      <Grid xs={3}>
+                        {i !== 0 && (
+                          <IconButton onClick={() => handlerUp(i)}>
+                            <ArrowUpward />
+                          </IconButton>
+                        )}
+                        {i === 0 && (
+                          <IconButton disabled onClick={() => handlerUp(i)}>
+                            <ArrowUpward />
+                          </IconButton>
+                        )}
+                      </Grid>
+                      <Grid xs={3}>
+                        {i < props.formInner.length - 1 && (
+                          <IconButton onClick={() => handlerDown(i)}>
+                            <ArrowDownward />
+                          </IconButton>
+                        )}
+                        {i === props.formInner.length - 1 && (
+                          <IconButton disabled onClick={() => handlerDown(i)}>
+                            <ArrowDownward />
+                          </IconButton>
+                        )}
+                      </Grid>
+                    </Grid>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Box>
+      </Grid>
 
-        <Box>
-          <Button
-            alignSelf='start'
-            icon={<Add />}
-            onClick={() => setShow(true)}
+      <Grid>
+        <Button fullWidth startIcon={<Add />} onClick={() => setShow(true)}>
+          <Typography>Agregar Campo</Typography>
+        </Button>
+        {
+          <ConstructorCamp
+            handlerSetFormInnerInner={props.handlerSetFormInner}
+            formInnerInner={props.formInner}
+            indexInnerInner={props.indexInner}
+            setShow={setShow}
+            formFullInnerInner={props.formFullInner}
+            setFlagInner={props.setFlag}
+            show={show}
           />
-          {show && (
-            <ConstructorCamp
-              handlerSetFormInnerInner={props.handlerSetFormInner}
-              setShow={setShow}
-            />
-          )}
-        </Box>
-      </Box>
-    </>
+        }
+      </Grid>
+    </Grid>
   );
 }
 export default FormBuilder;

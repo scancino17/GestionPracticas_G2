@@ -1,23 +1,38 @@
 import {
-  Box,
-  Button,
-  Card,
-  FormField,
-  Layer,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
   Select,
   Table,
   TableBody,
   TableCell,
-  TableHeader,
+  TableHead,
   TableRow,
-  TextInput,
-  Text
-} from 'grommet';
+  TextField,
+  Button,
+  IconButton,
+  Box,
+  Dialog,
+  DialogContent,
+  Modal
+} from '@material-ui/core';
+import { Add, Delete, Save } from '@material-ui/icons';
+import { FormField, TextInput, Text } from 'grommet';
 import { useState } from 'react';
 
 function ConstructorCamp(props) {
   const [type, setType] = useState('');
+  const [types, setTypes] = useState([
+    'Input',
+    'Select',
+    'File',
+    'Header',
+    'Space'
+  ]);
   const [name, setName] = useState('');
+  const [openSelect, setopenSelect] = useState('');
   const [options, setOpctions] = useState([]);
   const [newOption, setNewOption] = useState('');
   function handlerAddCamp() {
@@ -33,7 +48,8 @@ function ConstructorCamp(props) {
         type: type,
         name: name,
         options: options,
-        value: ''
+        value: '',
+        open: false
       };
     } else if (type === 'File') {
       temp = {
@@ -52,110 +68,178 @@ function ConstructorCamp(props) {
         type: type
       };
     }
-    console.log(temp);
-    props.handlerSetFormInnerInner((prev) => prev.concat(temp));
+    //console.log(props.formInnerInner);
+    const aux = props.formFullInnerInner();
+    console.log(aux);
+    aux[props.indexInnerInner].form.push(temp);
+    console.log(aux);
+    props.handlerSetFormInnerInner(aux);
+    props.setFlagInner(true);
   }
   return (
-    <Layer
-      modal={true}
-      onEsc={() => props.setShow(false)}
-      onClickOutside={() => props.setShow(false)}>
-      <Card pad='large'>
-        <Select
-          options={['Input', 'Select', 'File', 'Header', 'Space']}
-          value={type}
-          onChange={({ option }) => setType(option)}
-        />
-        {type === 'Input' ? (
-          <>
-            <h1>Input</h1>
-            <FormField label={'Nombre'} color='red'>
-              <TextInput onChange={(e) => setName(e.target.value)} />
-            </FormField>
-          </>
-        ) : type === 'Select' ? (
-          <>
-            <h1>Select</h1>
-            <FormField label={'Nombre'} color='red'>
-              <TextInput onChange={(e) => setName(e.target.value)} />
-            </FormField>
-            <Box direction='row' justify='center' align='center'>
-              <Box width='auto' flex border={{ color: 'brand', size: 'small' }}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableCell scope='col' border='bottom'>
-                        opción
-                      </TableCell>
-                      <TableCell scope='col' border='bottom'></TableCell>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {options.map((option) => (
-                      <TableRow key={option.i}>
-                        <TableCell scope='col'>
-                          <Text>{option}</Text>
-                        </TableCell>
-                        <TableCell scope='col'>
-                          <Button
-                            label='-'
-                            onClick={() =>
-                              setOpctions((prev) =>
-                                prev.filter((element) => element !== option)
-                              )
-                            }
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                    <TableRow>
-                      <TableCell scope='col'>
-                        <TextInput
-                          value={newOption}
-                          onChange={(e) => setNewOption(e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell scope='col'>
-                        <Button
-                          label='+'
-                          onClick={() => {
-                            setOpctions((prev) => prev.concat(newOption));
-                            setNewOption('');
-                          }}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Box>
-            </Box>
-          </>
-        ) : type === 'File' ? (
-          <>
-            <h1>File</h1>
-            <FormField label={'Nombre'} color='red'>
-              <TextInput onChange={(e) => setName(e.target.value)} />
-            </FormField>
-          </>
-        ) : type === 'Header' ? (
-          <>
-            <h1>Header</h1>
-            <FormField label={'Titulo'} color='red'>
-              <TextInput onChange={(e) => setName(e.target.value)} />
-            </FormField>
-          </>
-        ) : type === 'Space' ? (
-          <></>
-        ) : null}
-        <Button
-          label='guardar'
-          onClick={() => {
-            handlerAddCamp();
-            props.setShow(false);
-          }}
-        />
-      </Card>
-    </Layer>
+    <Modal
+      open={props.show}
+      onClose={() => props.setShow(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+      <Box justifyContent='center' width={1 / 2}>
+        <Box bgcolor='white' padding={8}>
+          <Grid container direction='column' spacing={5}>
+            <Grid item xs>
+              <FormControl fullWidth>
+                <InputLabel>Tipo de Campo</InputLabel>
+                <Select
+                  fullWidth
+                  value={type}
+                  open={openSelect}
+                  onClose={() => setopenSelect(false)}
+                  onOpen={() => setopenSelect(true)}
+                  onChange={(e) => setType(e.target.value)}>
+                  <MenuItem value={''}>None</MenuItem>
+                  {types.map((option) => (
+                    <MenuItem value={option}>{option}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {type === 'Input' ? (
+              <>
+                <Grid item xs>
+                  <TextField
+                    fullWidth
+                    variant='outlined'
+                    xs={12}
+                    required
+                    id='standard-required'
+                    label={'Nombre'}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Grid>
+              </>
+            ) : type === 'Select' ? (
+              <>
+                <Grid item xs>
+                  <h1>Select</h1>
+                  <Grid item xs>
+                    <TextField
+                      fullWidth
+                      variant='outlined'
+                      xs={12}
+                      required
+                      id='standard-required'
+                      label={'Nombre'}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </Grid>
+
+                  <Grid item xs>
+                    <Grid item width='auto' flex>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell scope='col' border='bottom'>
+                              opción
+                            </TableCell>
+                            <TableCell scope='col' border='bottom'></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {options.map((option) => (
+                            <TableRow key={option.i}>
+                              <TableCell scope='col'>
+                                <Text>{option}</Text>
+                              </TableCell>
+                              <TableCell scope='col'>
+                                <IconButton
+                                  onClick={() =>
+                                    setOpctions((prev) =>
+                                      prev.filter(
+                                        (element) => element !== option
+                                      )
+                                    )
+                                  }>
+                                  <Delete />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                          <TableRow>
+                            <TableCell scope='col'>
+                              <TextInput
+                                value={newOption}
+                                onChange={(e) => setNewOption(e.target.value)}
+                              />
+                            </TableCell>
+                            <TableCell scope='col'>
+                              <IconButton
+                                onClick={() => {
+                                  setOpctions((prev) => prev.concat(newOption));
+                                  setNewOption('');
+                                }}>
+                                <Add />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </>
+            ) : type === 'File' ? (
+              <>
+                <Grid item xs>
+                  <h1>File</h1>
+                  <TextField
+                    fullWidth
+                    variant='outlined'
+                    xs={12}
+                    required
+                    id='standard-required'
+                    label={'Nombre'}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Grid>
+              </>
+            ) : type === 'Header' ? (
+              <>
+                <Grid item xs>
+                  <h1>Header</h1>
+                  <TextField
+                    fullWidth
+                    variant='outlined'
+                    xs={12}
+                    required
+                    id='standard-required'
+                    label={'Titulo'}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Grid>
+              </>
+            ) : type === 'Space' ? (
+              <></>
+            ) : null}
+            {type !== '' ? (
+              <Button
+                startIcon={<Save />}
+                onClick={() => {
+                  handlerAddCamp();
+                  props.setShow(false);
+                }}
+              />
+            ) : null}
+          </Grid>
+        </Box>
+      </Box>
+    </Modal>
   );
 }
 export default ConstructorCamp;
+{
+  /**
+   */
+}

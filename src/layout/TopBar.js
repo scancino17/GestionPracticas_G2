@@ -11,12 +11,16 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import useAuth from '../providers/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
-import { User } from 'grommet-icons';
 
 const useStyles = makeStyles({
   logo: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
     maxHeight: '4rem'
+  },
+  icon: {
+    '& svg': {
+      fontSize: 40
+    }
   }
 });
 
@@ -61,7 +65,7 @@ function TopBar({ setSidebarOpen }) {
               color='inherit'
               aria-label='open drawer'
               onClick={() => setSidebarOpen((prevState) => !prevState)}
-              className={classes.deleteIcon2}>
+              className={classes.icon}>
               <MenuIcon />
             </IconButton>
           )}
@@ -72,7 +76,10 @@ function TopBar({ setSidebarOpen }) {
             <img className={classes.logo} src='logo5b.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
-          <IconButton onClick={handleProfileMenuOpen} color='inherit'>
+          <IconButton
+            onClick={handleProfileMenuOpen}
+            color='inherit'
+            className={classes.icon}>
             <AccountCircle />
           </IconButton>
         </Toolbar>

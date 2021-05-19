@@ -4,6 +4,7 @@ import {
   makeStyles,
   Menu,
   MenuItem,
+  Snackbar,
   Toolbar
 } from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
@@ -11,6 +12,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import useAuth from '../providers/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles({
   logo: {
@@ -26,10 +28,11 @@ const useStyles = makeStyles({
 
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { user, logout } = useAuth();
+  const { user, logout, resetPassword } = useAuth();
   const [anchorEl, setAnchorEl] = useState();
   const history = useHistory();
   const isMenuOpen = Boolean(anchorEl);
+  const [resetPasswordSnack, setResetPasswordSnack] = useState();
 
   function handleProfileMenuOpen(e) {
     setAnchorEl(e.currentTarget);
@@ -45,15 +48,40 @@ function TopBar({ setSidebarOpen }) {
     handleMenuClose();
   }
 
+  function handleResetPassword() {
+    resetPassword(user.email);
+    setResetPasswordSnack(true);
+    handleMenuClose();
+  }
+
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
       keepMounted
       open={isMenuOpen}
       onClose={handleMenuClose}>
-      <MenuItem onClick={handleMenuClose}>Cambiar contraseña</MenuItem>
+      <MenuItem onClick={handleResetPassword}>Cambiar contraseña</MenuItem>
       <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
     </Menu>
+  );
+
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant='filled' {...props} />;
+  }
+
+  const renderResetPasswordSnackbar = (
+    <Snackbar
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      open={resetPasswordSnack}
+      autoHideDuration={7000}
+      onClose={() => setResetPasswordSnack(false)}
+      message='Se ha enviado un correo con las instrucciones para
+      restablecimiento de contraseña'>
+      <Alert severity='success'>
+        Se ha enviado un correo con las instrucciones para reestablecer su
+        contraseña.
+      </Alert>
+    </Snackbar>
   );
 
   return (
@@ -85,6 +113,7 @@ function TopBar({ setSidebarOpen }) {
         </Toolbar>
       </AppBar>
       {renderMenu}
+      {renderResetPasswordSnackbar}
     </>
   );
 }

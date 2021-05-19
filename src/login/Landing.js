@@ -7,6 +7,7 @@ import {
   Container,
   Divider,
   Grid,
+  Link,
   makeStyles,
   Paper,
   TextField,
@@ -35,7 +36,9 @@ function Landing() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const { login } = useAuth();
+  const [showRecoverPassword, setShowRecoverPassword] = useState(false);
+  const [showEmailSent, setShowEmailSent] = useState(false);
+  const { login, resetPassword } = useAuth();
 
   function handleOnSubmit(e) {
     e.preventDefault();
@@ -92,49 +95,115 @@ function Landing() {
           {loading ? (
             <CircularProgress />
           ) : (
-            <form onSubmit={handleOnSubmit}>
-              <Grid
-                container
-                direction='column'
-                spacing={2}
-                alignItems='center'>
-                <Grid item>
-                  <Typography variant='h5'>Iniciar sesión</Typography>
-                </Grid>
-                {error && (
+            <>
+              {showRecoverPassword ? (
+                <Grid
+                  container
+                  direction='column'
+                  spacing='2'
+                  alignItems='center'>
                   <Grid item>
-                    <Typography color='error'>
-                      Error iniciando sesión. Por favor revise sus credenciales.
+                    <Typography variant='h5'>Restablecer contraseña</Typography>
+                  </Grid>
+                  {showEmailSent && (
+                    <Grid item>
+                      <Typography color='error'>
+                        Se ha enviado un correo para restablecer su contraseña
+                      </Typography>
+                    </Grid>
+                  )}
+                  <Grid item>
+                    <TextField
+                      id='text-input-email'
+                      label='Email'
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      type='email'
+                      variant='outlined'
+                    />
+                  </Grid>
+                  <Grid item>
+                    <Button
+                      color='primary'
+                      variant='contained'
+                      onClick={() => {
+                        resetPassword(email);
+                        setShowEmailSent(true);
+                      }}>
+                      Confirmar
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Typography>
+                      <Link
+                        href='#'
+                        onClick={() => {
+                          setShowRecoverPassword(false);
+                          setShowEmailSent(false);
+                        }}>
+                        Recordé mi contraseña
+                      </Link>
                     </Typography>
                   </Grid>
-                )}
-                <Grid item>
-                  <TextField
-                    id='text-input-email'
-                    label='Email'
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    type='email'
-                    variant='outlined'
-                  />
                 </Grid>
-                <Grid item>
-                  <TextField
-                    id='text-input-password'
-                    label='Contraseña'
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    type='password'
-                    variant='outlined'
-                  />
-                </Grid>
-                <Grid item>
-                  <Button color='primary' type='submit' variant='contained'>
-                    Ingresar
-                  </Button>
-                </Grid>
-              </Grid>
-            </form>
+              ) : (
+                <form onSubmit={handleOnSubmit}>
+                  <Grid
+                    container
+                    direction='column'
+                    spacing={2}
+                    alignItems='center'>
+                    <Grid item>
+                      <Typography variant='h5'>Iniciar sesión</Typography>
+                    </Grid>
+                    {error && (
+                      <Grid item>
+                        <Typography color='error'>
+                          Error iniciando sesión. Por favor revise sus
+                          credenciales.
+                        </Typography>
+                      </Grid>
+                    )}
+                    <Grid item>
+                      <TextField
+                        id='text-input-email'
+                        label='Email'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        type='email'
+                        variant='outlined'
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        id='text-input-password'
+                        label='Contraseña'
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        type='password'
+                        variant='outlined'
+                      />
+                    </Grid>
+                    <Grid item>
+                      <Button color='primary' type='submit' variant='contained'>
+                        Ingresar
+                      </Button>
+                    </Grid>
+                    <Grid item>
+                      <Typography>
+                        <Link
+                          href='#'
+                          onClick={() => setShowRecoverPassword(true)}>
+                          Olvidé mi contraseña
+                        </Link>
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </form>
+              )}
+            </>
           )}
         </Grid>
       </Grid>

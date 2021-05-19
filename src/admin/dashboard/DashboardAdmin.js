@@ -16,7 +16,7 @@ import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
 import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
-import BarraLateral from '../../sideBar/BarraLateral';
+import BarraLateral from '../../layout/BarraLateral';
 import Application from '../applications/Application';
 import {
   List,

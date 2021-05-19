@@ -1,35 +1,47 @@
 import React from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Button, Grommet, Header, Image, Spinner } from 'grommet';
+import { Box, Button, Header, Image, Spinner } from 'grommet';
 import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
-import { CssBaseline } from '@material-ui/core';
+import {
+  AppBar,
+  createMuiTheme,
+  CssBaseline,
+  IconButton,
+  ThemeProvider,
+  Toolbar
+} from '@material-ui/core';
+import TopBar from './layout/TopBar';
 
-const theme = {
-  global: {
-    colors: {
-      brand: 'status-warning',
-      focus: 'neutral-3'
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#6782bc',
+      main: '#36568c',
+      dark: '#002e5e',
+      contrastText: '#ffffff'
     },
-    font: {
-      family: 'Roboto',
-      size: '18px',
-      height: '20px'
+    secondary: {
+      light: '#ffc057',
+      main: '#f28f25',
+      dark: '#ba6100',
+      contrastText: '#000000'
     }
   }
-};
+});
 
 function App() {
   const { user, userData, logout } = useAuth();
   let history = useHistory();
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       {user ? (
         <>
+          <TopBar />
           <Header background='brand' elevation='medium'>
             <Button
               onClick={() => history.push('/')}
@@ -63,7 +75,7 @@ function App() {
       ) : (
         <Landing />
       )}
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -20,6 +20,7 @@ function TopBar() {
 
   function handleLogout() {
     logout();
+    history.push('/');
     handleMenuClose();
   }
 

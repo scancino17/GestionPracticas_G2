@@ -1,10 +1,25 @@
-import { AppBar, IconButton, Menu, MenuItem, Toolbar } from '@material-ui/core';
+import {
+  AppBar,
+  IconButton,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Toolbar
+} from '@material-ui/core';
 import { AccountCircle } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import useAuth from '../providers/Auth';
 
+const useStyles = makeStyles({
+  logo: {
+    // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
+    maxHeight: '4rem'
+  }
+});
+
 function TopBar() {
+  const classes = useStyles();
   const { logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState();
   const history = useHistory();
@@ -43,7 +58,7 @@ function TopBar() {
             edge='start'
             disableRipple
             onClick={() => history.push('/')}>
-            <img src='logo.png' alt='logo' />
+            <img className={classes.logo} src='logo5b.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
           <IconButton onClick={handleProfileMenuOpen} color='inherit'>

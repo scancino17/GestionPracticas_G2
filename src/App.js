@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
 import { Box, Spinner } from 'grommet';
@@ -27,17 +27,19 @@ const theme = createMuiTheme({
 
 function App() {
   const { user, userData } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       {user ? (
         <>
-          <TopBar />
+          <TopBar setSidebarOpen={setSidebarOpen} />
           {(user.student || user.admin) && userData ? (
             user.student ? (
               <DashboardEstudiante />
             ) : (
-              <DashboardAdmin />
+              <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )
           ) : (
             <Box align='center'>

@@ -10,6 +10,8 @@ import { AccountCircle } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import useAuth from '../providers/Auth';
+import MenuIcon from '@material-ui/icons/Menu';
+import { User } from 'grommet-icons';
 
 const useStyles = makeStyles({
   logo: {
@@ -18,9 +20,9 @@ const useStyles = makeStyles({
   }
 });
 
-function TopBar() {
+function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState();
   const history = useHistory();
   const isMenuOpen = Boolean(anchorEl);
@@ -54,10 +56,19 @@ function TopBar() {
     <>
       <AppBar position='static'>
         <Toolbar>
+          {!user.student && (
+            <IconButton
+              color='inherit'
+              aria-label='open drawer'
+              onClick={() => setSidebarOpen((prevState) => !prevState)}
+              className={classes.deleteIcon2}>
+              <MenuIcon />
+            </IconButton>
+          )}
           <IconButton
-            edge='start'
             disableRipple
-            onClick={() => history.push('/')}>
+            onClick={() => history.push('/')}
+            style={{ backgroundColor: 'transparent' }}>
             <img className={classes.logo} src='logo5b.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />

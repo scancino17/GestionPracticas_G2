@@ -1,36 +1,37 @@
-import {
-  Heading,
-  Text,
-  Main,
-  Box,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-  Paragraph,
-  Grid,
-  Chart
-} from 'grommet';
+import GridItem from "./extras/Grid/GridItem.js";
+import GridContainer from "./extras/Grid/GridContainer.js";
+import Card from "./extras/Card/Card";
+import CardHeader from "./extras/Card/CardHeader.js";
+import CardIcon from "./extras/Card/CardIcon.js";
+import CardFooter from "./extras/Card/CardFooter.js";
+import { makeStyles } from "@material-ui/core/styles";
+
+import { 
+  MdAccessibility,
+  MdStore,
+  MdUpdate,
+  MdInfoOutline,
+  MdContentCopy
+} from "react-icons/md";
+
 import React, { useEffect, useState } from 'react';
-import QuickAccessGr from './QuickAccessGr';
-import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
 import { Link, Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../sideBar/BarraLateral';
 import Application from '../applications/Application';
 import {
-  List,
-  Group,
-  Task,
-  Upload,
-  DocumentText,
-  LinkNext,
   Halt
 } from 'grommet-icons';
+import { Box, Heading, Paragraph } from 'grommet';
+
+import CountUp from 'react-countup';
 
 import { db } from '../../firebase';
+
+import styles from "./extras/assets/jss/material-dashboard-react/views/dashboardStyle";
+
+const useStyles = makeStyles(styles);
 
 function DashboardAdmin() {
   const { user, userData } = useAuth();
@@ -51,34 +52,92 @@ function DashboardAdmin() {
     updateApplications();
   }, []);
 
+  const classes = useStyles();
+
   return (
     <Box direction='row' fill responsive>
       <BarraLateral />
       <Box flex>
         <Switch>
           <Route exact path='/'>
-              <Box alignSelf='center'  direction='row-responsive' >
-                  {pendingApplications &&(
-                  <QuickAccessGr title='Solicitudes Pendientes' number={pendingApplications.length}/>
-                  )}
-            
-                  <QuickAccessGr title='Nuevos Formularios' number={0}/>
-             
-                  <QuickAccessGr title='Formularios Corregidos' number={0}/>
-            
-                  <QuickAccessGr title='Nuevos Informes' number={10}/>
-              </Box>
-              <Box alignSelf='center'  direction='row-responsive'>
-                  {pendingApplications &&(
-                  <QuickAccess title='Solicitudes Pendientes' number={pendingApplications.length}/>
-                  )}
-          
-                  <QuickAccess title='Nuevos Formularios' number={0}/>
-            
-                  <QuickAccess title='Formularios Corregidos' number={0}/>
-             
-                  <QuickAccess title='Nuevos Informes' number={10}/>
-              </Box>   
+          <GridContainer>
+            <GridItem xs={12} sm={6} md={3}>
+              <Card>
+                <CardHeader color="warning" stats icon>
+                  <CardIcon color="warning">
+                    <MdContentCopy/>
+                  </CardIcon>
+                  <p className={classes.cardCategory}>Nuevas Declaraciones</p>
+                  <h3 className={classes.cardTitle}>
+                    <CountUp end={100} duration={3}/>
+                  </h3>
+                </CardHeader>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <Card>
+                <CardHeader color="success" stats icon>
+                  <CardIcon color="success">
+                    <MdStore />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>Nuevos Formularios</p>
+                  <h3 className={classes.cardTitle}>
+                    <CountUp end={50} duration={3}/>
+                  </h3>
+                </CardHeader>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <Card>
+                <CardHeader color="danger" stats icon>
+                  <CardIcon color="danger">
+                    <MdInfoOutline/>
+                  </CardIcon>
+                  <p className={classes.cardCategory}>Formularios Corregidos</p>
+                  <h3 className={classes.cardTitle}>
+                    <CountUp end={10} duration={3}/>
+                  </h3>
+                </CardHeader>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </GridItem>
+            <GridItem xs={12} sm={6} md={3}>
+              <Card>
+                <CardHeader color="info" stats icon>
+                  <CardIcon color="info">
+                    <MdAccessibility />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>Prácticas en Marcha</p>
+                  <h3 className={classes.cardTitle}>
+                    <CountUp end={1000} duration={3}/>
+                  </h3>
+                </CardHeader>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </GridItem>
+          </GridContainer>
           </Route>
           <Route exact path='/applications'>
             <ApplicationsList applications={pendingApplications} />

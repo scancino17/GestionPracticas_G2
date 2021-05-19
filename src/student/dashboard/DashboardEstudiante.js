@@ -1,12 +1,4 @@
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Heading,
-  Markdown,
-  Spinner
-} from 'grommet';
-import { Halt } from 'grommet-icons';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
@@ -16,6 +8,9 @@ import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
+import EmptyHome from './EmptyHome';
+import DetailedHome from './DetailedHome';
+import Hidden from '@material-ui/core/Hidden';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -55,7 +50,7 @@ function DashboardEstudiante(props) {
   return (
     <Switch>
       <Route exact path='/'>
-        <Box pad='xlarge'>
+        {/*<Box pad='xlarge'>
           {loaded ? (
             <>
               <Heading margin='small'>
@@ -79,7 +74,19 @@ function DashboardEstudiante(props) {
               <Spinner margin='medium' size='large' />
             </Box>
           )}
-        </Box>
+        </Box>*/}
+        <Hidden smDown>
+          <div className='p-5 text-center bg-image banner' style={{ backgroundImage: "url('HomeBanner-2x.png')"}}>
+              <div className='mask'>
+                  <div className='d-flex align-items-center h-100'>
+                      <div className='text-black'>
+                          <Typography variant='h4' style={{marginLeft: '2rem'}}>¡Bienvenido, {userData && userData.name}!</Typography>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </Hidden>
+        {props.onGoingIntern  ? <DetailedHome done={false}/> : <EmptyHome practicas={practicas}/> }
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />

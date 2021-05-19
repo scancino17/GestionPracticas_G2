@@ -48,7 +48,7 @@ function App() {
           </Header>
           {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante />
+              <DashboardEstudiante onGoingIntern={false}/>
             ) : (
               <DashboardAdmin />
             )

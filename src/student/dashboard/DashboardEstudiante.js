@@ -6,7 +6,6 @@ import {
   Markdown,
   Spinner
 } from 'grommet';
-import { Halt } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
@@ -17,7 +16,7 @@ import { Route, Switch } from 'react-router-dom';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 
-function DashboardEstudiante(props) {
+function DashboardEstudiante() {
   const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);

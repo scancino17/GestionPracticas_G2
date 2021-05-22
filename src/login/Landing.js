@@ -1,15 +1,12 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import useAuth from '../providers/Auth';
 import {
   Button,
-  Card,
   CircularProgress,
-  Container,
   Divider,
   Grid,
   Link,
   makeStyles,
-  Paper,
   TextField,
   Typography
 } from '@material-ui/core';
@@ -23,10 +20,13 @@ const useStyles = makeStyles({
   loginBackground: {
     backgroundColor: '#F2F2F2D0',
     borderRadius: '1rem',
-    padding: '3rem'
+    paddingTop: '3rem',
+    paddingBottom: '3rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem'
   },
   logo: {
-    maxWidth: '260px'
+    maxWidth: '22.5rem'
   }
 });
 
@@ -62,7 +62,7 @@ function Landing() {
       <Grid
         item
         container
-        justify='center'
+        justify='space-evenly'
         alignItems='center'
         xs={10}
         md={8}
@@ -73,18 +73,16 @@ function Landing() {
           container
           direction='column'
           justify='center'
+          alignItems='center'
           spacing={1}
           xs={12}
           sm={6}>
-          <Grid item>
-            <img className={classes.logo} src='logo2.png' alt='Logo' />
+          <Grid item container justify='center'>
+            <img className={classes.logo} src='logo1.png' alt='Logo' />
           </Grid>
           <Grid item>
-            <Typography variant='h3'>Gestión de Prácticas</Typography>
-          </Grid>
-          <Grid item>
-            <Typography variant='h4' gutterBottom>
-              Universidad de Talca
+            <Typography variant='h4' color='primary'>
+              Gestión de Prácticas
             </Typography>
           </Grid>
         </Grid>
@@ -155,7 +153,9 @@ function Landing() {
                     spacing={2}
                     alignItems='center'>
                     <Grid item>
-                      <Typography variant='h5'>Iniciar sesión</Typography>
+                      <Typography variant='h5' style={{ color: '#002e5e' }}>
+                        Iniciar sesión
+                      </Typography>
                     </Grid>
                     {error && (
                       <Grid item>

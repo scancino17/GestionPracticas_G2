@@ -1,11 +1,3 @@
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Heading,
-  Markdown,
-  Spinner
-} from 'grommet';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import Documentos from './extras/Documentos';
@@ -15,6 +7,7 @@ import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
+import { CircularProgress, Grid } from '@material-ui/core';
 
 function DashboardEstudiante() {
   const { user, userData } = useAuth();
@@ -54,10 +47,10 @@ function DashboardEstudiante() {
   return (
     <Switch>
       <Route exact path='/'>
-        <Box pad='xlarge'>
+        <Grid item container>
           {loaded ? (
             <>
-              <Heading margin='small'>
+              {/*<Heading margin='small'>
                 ¡Hola, {userData && userData.name}!
               </Heading>
               <Markdown margin='small'>
@@ -71,14 +64,20 @@ function DashboardEstudiante() {
                 <AccordionPanel label='Prácticas'>
                   <Practicas practicas={practicas} />
                 </AccordionPanel>
-              </Accordion>
+              </Accordion>*/}
             </>
           ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
+            <Grid
+              item
+              container
+              justify='center'
+              alignItems='center'
+              direction='row'
+              xs={12}>
+              <CircularProgress color='secondary' />
+            </Grid>
           )}
-        </Box>
+        </Grid>
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />

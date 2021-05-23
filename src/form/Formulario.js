@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Stepper } from 'react-form-stepper';
-import {
-  Button,
-  Form,
-  FormField,
-  TextInput,
-  Box,
-  Select,
-  DateInput,
-  FileInput
-} from 'grommet';
 import { Link, useParams } from 'react-router-dom';
 import { db, storage } from '../firebase';
 import useAuth from '../providers/Auth';
+import {
+  Button,
+  Grid,
+  StepLabel,
+  Stepper,
+  Step,
+  Typography,
+  TextField,
+  MenuItem
+} from '@material-ui/core';
+import { DropzoneArea } from 'material-ui-dropzone';
 
 function Formulario() {
   const { internshipId } = useParams();
@@ -44,6 +44,13 @@ function Formulario() {
   });
   const [formFile, setFormFile] = useState();
   const [consentFile, setConsentFile] = useState();
+  const steps = [
+    { label: 'Información personal' },
+    { label: 'Información de la empresa' },
+    { label: 'Archivos' }
+  ];
+  const healthCareOptions = ['Isapre', 'Fonana', 'No sabe'];
+  const modalityOptions = ['Presencial, Mixta, Online'];
 
   useEffect(() => {
     db.collection('internships')
@@ -66,12 +73,12 @@ function Formulario() {
     setActiveStep(activeStep + 1);
   };
 
-  function handleFormFileInput(e) {
-    setFormFile(e.target.files[0]);
+  function handleFormFileInput(files) {
+    setFormFile(files[0]);
   }
 
-  function handleConsentFileInput(e) {
-    setConsentFile(e.target.files[0]);
+  function handleConsentFileInput(files) {
+    setConsentFile(files[0]);
   }
 
   const handleEnviar = () => {
@@ -91,306 +98,305 @@ function Formulario() {
 
   return (
     <>
-      <Stepper
-        steps={[
-          { label: 'Información personal' },
-          { label: 'Información de la empresa' },
-          { label: 'Archivos' }
-        ]}
-        activeStep={activeStep}
-      />
+      <Stepper activeStep={activeStep}>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
 
       {activeStep === 0 && (
-        <Box justify='center' direction='row-responsive' width='100%'>
-          <Box pad='large' width='75%' justify='center'>
-            <h1>Información personal</h1>
-            <Form>
-              <FormField name='name' htmlFor='name' label='Nombre completo'>
-                <TextInput id='name' name='name' value={form.name} disabled />
-              </FormField>
-              <FormField name='rut' htmlFor='rut' label='RUT'>
-                <TextInput id='rut' name='rut' value={form.rut} disabled />
-              </FormField>
-              <FormField
+        <Grid
+          item
+          container
+          justify='center'
+          direction='row'
+          alignItems='center'
+          xs={12}>
+          <Grid item container xs={9} justify='center'>
+            <Typography variant='h1'>Información personal</Typography>
+            <form>
+              <TextField
+                id='name'
+                name='name'
+                label='Nombre completo'
+                value={form.name}
+                disabled
+                InputLabelProps={{ htmlFor: 'name' }}
+              />
+              <TextField
+                id='rut'
+                name='rut'
+                label='RUT'
+                value={form.rut}
+                disabled
+                InputLabelProps={{ htmlFor: 'rut' }}
+              />
+              <TextField
+                id='enrollment'
                 name='enrollment'
-                htmlFor='enrollment'
-                label='Numero de matrícula'>
-                <TextInput
-                  id='enrollment'
-                  name='enrollment'
-                  value={form.enrollmentNumber}
-                  disabled
-                />
-              </FormField>
-              <FormField name='phone' htmlFor='phone' label='Teléfono'>
-                <TextInput
-                  id='phone'
-                  name='phone'
-                  value={form.phone}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      phone: e.target.value
-                    }))
-                  }
-                />
-              </FormField>
-              <FormField name='email' htmlFor='email' label='Correo'>
-                <TextInput
-                  id='email'
-                  name='email'
-                  type='email'
-                  value={form.email}
-                  disabled
-                />
-              </FormField>
-              <FormField
+                label='Número de matrícula'
+                value={form.enrollmentNumber}
+                disabled
+                InputLabelProps={{ htmlFor: 'enrollment' }}
+              />
+              <TextField
+                id='phone'
+                name='phone'
+                label='Teléfono'
+                value={form.phone}
+                InputLabelProps={{ htmlFor: 'phone' }}
+                onChange={(e) =>
+                  setForm((prevState) => ({
+                    ...prevState,
+                    phone: e.target.value
+                  }))
+                }
+              />
+              <TextField
+                id='email'
+                name='email'
+                label='Correo'
+                value={form.email}
+                disabled
+                InputLabelProps={{ htmlFor: 'email' }}
+              />
+              <TextField
+                id='emergency-contact'
                 name='emergency-contact'
-                htmlFor='emergency-contact'
-                label='Nombre Contacto de Emergencia'>
-                <TextInput
-                  id='emergency-contact'
-                  name='emergency-contact'
-                  value={form.emergencyContact}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emergencyContact: e.target.value
-                    }))
-                  }
-                />
-              </FormField>
-              <FormField
+                label='Nombre contacto de emergencia'
+                value={form.emergencyContact}
+                InputLabelProps={{ htmlFor: 'emergency-contact' }}
+                onChange={(e) =>
+                  setForm((prevState) => ({
+                    ...prevState,
+                    emergencyContact: e.target.value
+                  }))
+                }
+              />
+              <TextField
+                id='emergency-phone'
                 name='emergency-phone'
-                htmlFor='emergency-phone'
-                label='Teléfono de emergencia'>
-                <TextInput
-                  id='emergency-phone'
-                  name='emergency-phone'
-                  value={form.emergencyPhone}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emergencyPhone: e.target.value
-                    }))
-                  }
-                />
-              </FormField>
-              <FormField
+                label='Teléfono de emergencia'
+                value={form.emergencyPhone}
+                InputLabelProps={{ htmlFor: 'emergency-phone' }}
+                onChange={(e) =>
+                  setForm((prevState) => ({
+                    ...prevState,
+                    emergencyPhone: e.target.value
+                  }))
+                }
+              />
+              <TextField
+                id='healthcare'
                 name='healthcare'
-                htmlFor='healthcare'
-                label='Seguro de salud'>
-                <Select
-                  id='healthcare'
-                  options={['Fonasa', 'Isapre', 'No sabe']}
-                  value={form.healthCare}
-                  onChange={({ option }) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      healthCare: option
-                    }))
-                  }
-                />
-              </FormField>
-            </Form>
-          </Box>
-        </Box>
+                label='Seguro de salud'
+                value={form.healthCare}
+                select
+                InputLabelProps={{ htmlFor: 'healthcare' }}>
+                onChange=
+                {(event) =>
+                  setForm((prevState) => ({
+                    ...prevState,
+                    helthCare: event.target.value
+                  }))
+                }
+                {healthCareOptions.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </form>
+          </Grid>
+        </Grid>
       )}
 
       {activeStep === 1 && (
         <>
-          <Box justify='center' direction='row-responsive' width='100%'>
-            <Box pad='large' width='75%' justify='center'>
-              <h1>Informacion de la empresa</h1>
-              <Form>
-                <FormField
+          <Grid item container justify='center' direction='row' xs={12}>
+            <Grid item container xs={9} justify='center'>
+              <Typography variant='h1'>Información de la empresa</Typography>
+              <form>
+                <TextField
+                  id='company-name'
                   name='company-name'
-                  htmlFor='company-name'
-                  label='Nombre de la empresa'>
-                  <TextInput
-                    id='company-name'
-                    name='company-name'
-                    value={form.companyName}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        companyName: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
+                  label='Nombre de la empresa'
+                  value={form.companyName}
+                  InputLabelProps={{ htmlFor: 'company-name' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      companyName: e.target.value
+                    }))
+                  }
+                />
+                <TextField
+                  id='city'
                   name='city'
-                  htmlFor='city'
-                  label='Ciudad donde se realizará la práctica'>
-                  <TextInput
-                    id='city'
-                    name='city'
-                    value={form.city}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        city: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-              </Form>
-              <h1>Informacion del supervisor</h1>
-              <Form>
-                <FormField
+                  label='Ciudad donde se realizará la práctica'
+                  value={form.city}
+                  InputLabelProps={{ htmlFor: 'city' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      city: e.target.value
+                    }))
+                  }
+                />
+              </form>
+              <Typography variant='h1'>Información del supervisor</Typography>
+              <form>
+                <TextField
+                  id='supervisor-name'
                   name='supervisor-name'
-                  htmlFor='supervisor-name'
-                  label='Nombre completo del supervisor'>
-                  <TextInput
-                    id='supervisor-name'
-                    name='supervisorname'
-                    value={form.supervisorName}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        supervisorName: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
+                  label='Nombre completo del supervisor'
+                  value={form.supervisorName}
+                  InputLabelProps={{ htmlFor: 'supervisor-name' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      supervisorName: e.target.value
+                    }))
+                  }
+                />
+                <TextField
+                  id='supervisor-position'
                   name='supervisor-position'
-                  htmlFor='supervisor-position'
-                  label='Cargo del supervisor'>
-                  <TextInput
-                    id='supervisor-position'
-                    name='supervisor-position'
-                    value={form.supervisorPosition}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        supervisorPosition: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
+                  label='Cargo del supervisor'
+                  value={form.supervisorPosition}
+                  InputLabelProps={{ htmlFor: 'supervisor-position' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      supervisorPosition: e.target.value
+                    }))
+                  }
+                />
+                <TextField
+                  id='supervisor-phone'
                   name='supervisor-phone'
-                  htmlFor='supervisor-phone'
-                  label='Teléfono del supervisor'>
-                  <TextInput
-                    id='supervisor-phone'
-                    name='supervisor-phone'
-                    value={form.supervisorPhone}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        supervisorPhone: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
+                  label='Cargo del supervisor'
+                  value={form.supervisorPhone}
+                  InputLabelProps={{ htmlFor: 'supervisor-phone' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      supervisorPhone: e.target.value
+                    }))
+                  }
+                />
+                <TextField
+                  id='supervisor-email'
                   name='supervisor-email'
-                  htmlFor='supervisor-email'
-                  label='Correo del supervisor'>
-                  <TextInput
-                    id='supervisor-email'
-                    name='supervisor-email'
-                    type='email'
-                    value={form.supervisorEmail}
-                    onChange={(e) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        supervisorEmail: e.target.value
-                      }))
-                    }
-                  />
-                </FormField>
-              </Form>
-              <h1>Acerca de la práctica</h1>
-              <Form>
-                <FormField
+                  label='Correo del supervisor'
+                  value={form.supervisorEmail}
+                  InputLabelProps={{ htmlFor: 'supervisor-email' }}
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      supervisorEmail: e.target.value
+                    }))
+                  }
+                />
+              </form>
+              <Typography variant='h1'>Acerca de la práctica</Typography>
+              <form>
+                <TextField
+                  id='application-number'
                   name='application-number'
-                  htmlFor='application-number'
-                  label='Número de práctica'>
-                  <TextInput
-                    id='application-number'
-                    name='application-number'
-                    value={`Práctica ${form.applicationNumber}`}
-                    disabled
-                  />
-                </FormField>
-                <FormField name='modality' htmlFor='modality' label='Modalidad'>
-                  <Select
-                    id='modality'
-                    options={['Online', 'Presencial', 'Mixta']}
-                    value={form.modality}
-                    onChange={({ option }) =>
-                      setForm((prevState) => ({
-                        ...prevState,
-                        modality: option
-                      }))
-                    }
-                  />
-                </FormField>
-                <FormField
+                  label='Número de práctica'
+                  value={`Práctica ${form.applicationNumber}`}
+                  disabled
+                  InputLabelProps={{ htmlFor: 'application-number' }}
+                />
+                <TextField
+                  id='modality'
+                  name='modality'
+                  label='Modalidad'
+                  value={form.modality}
+                  select
+                  InputLabelProps={{ htmlFor: 'modality' }}>
+                  onChange=
+                  {(event) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      modality: event.target.value
+                    }))
+                  }
+                  {modalityOptions.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  id='start-date'
                   name='start-date'
-                  htmlFor='start-date'
-                  label='Fecha de inicio de práctica'>
-                  <DateInput
-                    id='start-date'
-                    name='start-date'
-                    format='dd/mm/yyyy'
-                    value={form.startDate}
-                    onChange={({ value }) => {
-                      setForm((prevState) => ({
-                        ...prevState,
-                        startDate: value
-                      }));
-                    }}
-                  />
-                </FormField>
-                <FormField
+                  label='Fecha de inicio de práctica'
+                  value={form.startDate}
+                  InputLabelProps={{ htmlFor: 'start-date' }}
+                  type='date'
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      startDate: e.target.value
+                    }))
+                  }
+                />
+                <TextField
+                  id='end-date'
                   name='end-date'
-                  htmlFor='end-date'
-                  label='Fecha de término de práctica'>
-                  <DateInput
-                    id='end-date'
-                    name='end-date'
-                    format='dd/mm/yyyy'
-                    value={form.endDate}
-                    onChange={({ value }) => {
-                      setForm((prevState) => ({
-                        ...prevState,
-                        endDate: value
-                      }));
-                    }}
-                  />
-                </FormField>
-              </Form>
-            </Box>
-          </Box>
+                  label='Fecha de término de práctica'
+                  value={form.startDate}
+                  InputLabelProps={{ htmlFor: 'end-date' }}
+                  type='date'
+                  onChange={(e) =>
+                    setForm((prevState) => ({
+                      ...prevState,
+                      endDate: e.target.value
+                    }))
+                  }
+                />
+              </form>
+            </Grid>
+          </Grid>
         </>
       )}
 
       {activeStep === 2 && (
         <>
-          <h1>Archivos</h1>
-          <h2>Formulario de inscipción de práctica</h2>
-          <FileInput onChange={handleFormFileInput} />
-          <h2>Consentimiento informado</h2>
-          <FileInput onChange={handleConsentFileInput} />
+          <Typography variant='h1'>Archivos</Typography>
+          <Typography variant='h2'>
+            Formulario de inscripción de práctica
+          </Typography>
+          <DropzoneArea filesLimit={1} onChange={handleFormFileInput} />
+          <Typography variant='h2'>Consentimiento informado</Typography>
+          <DropzoneArea filesLimit={1} onChange={handleConsentFileInput} />
         </>
       )}
 
-      <Box align='center' alignContent='center' justify='center' width='100%'>
-        <Box
+      <Grid
+        item
+        container
+        align='center'
+        alignItems='center'
+        justify='center'
+        xs={12}>
+        <Grid
+          item
+          container
           direction='row'
-          pad='large'
-          alignContent='center'
-          width='100%'
+          alignItems='center'
+          xs={12}
           justify='center'>
           {activeStep > 0 && (
-            <Box width='15%'>
-              <Button label='volver' color='#f4971a' onClick={handleBack} />
-            </Box>
+            <Grid item xs={2}>
+              <Button color='primary' onClick={handleBack}>
+                Volver
+              </Button>
+            </Grid>
           )}
           {((activeStep === 0 &&
             !(
@@ -415,19 +421,26 @@ function Formulario() {
                 form.startDate === '' ||
                 form.endDate === ''
               ))) && (
-            <Box width='15%'>
-              <Button label='siguiente' color='#f4971a' onClick={handleNext} />
-            </Box>
+            <Grid item xs={2}>
+              <Button color='primary' onClick={handleNext}>
+                Siguiente
+              </Button>
+            </Grid>
           )}
           {activeStep === 2 && (
-            <Box width='15%'>
+            <Grid item xs={2}>
               <Link to='/'>
-                <Button label='Enviar' onClick={handleEnviar} primary />
+                <Button
+                  onClick={handleEnviar}
+                  variant='contained'
+                  color='primary'>
+                  Enviar
+                </Button>
               </Link>
-            </Box>
+            </Grid>
           )}
-        </Box>
-      </Box>
+        </Grid>
+      </Grid>
     </>
   );
 }

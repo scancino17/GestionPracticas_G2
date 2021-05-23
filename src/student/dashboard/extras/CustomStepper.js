@@ -9,37 +9,47 @@ import Hidden from '@material-ui/core/Hidden';
 import Tooltip from '@material-ui/core/Tooltip';
 
 function CustomStepper() {
-    const [activeStep, setActiveStep] = React.useState(0);
-    const steps = getSteps();
+  const [activeStep, setActiveStep] = React.useState(0);
+  const steps = getSteps();
 
-    function getSteps() {
-        return [
-            'Práctica Declarada',
-            'Completando Formularios',
-            'Práctica en Curso',
-            'Práctica Terminada'
-        ];
-    }
+  function getSteps() {
+    return [
+      'Práctica Declarada',
+      'Completando Formularios',
+      'Práctica en Curso',
+      'Práctica Terminada'
+    ];
+  }
 
-    return (
-        <Container maxWidth='lg'>
-            <Grid className='border rounded' style={{ marginTop: '3rem'}}>
-                <Typography variant='h4' style={{ marginTop: '1rem', marginLeft: '1rem'}} >Práctica X: Google</Typography>
-                <Hidden smDown>
-                    <Typography className='text-muted small' variant='p' style={{ marginTop: '1rem', marginLeft: '1rem'}}>Supervisor: Sundar Pichai · Dirección: Palo Alto, CA · Modalidad: Remoto</Typography>
-                </Hidden>
-                <hr/>
-                <Stepper activeStep={activeStep} alternativeLabel>
-                    {steps.map((label) => (
-                        <Step key={label}>
-                            <Tooltip title={label} aria-label={label}>
-                                <StepLabel></StepLabel>
-                            </Tooltip>
-                        </Step>
-                    ))}
-                </Stepper>
-            </Grid>
-        </Container>
-    );
+  return (
+    <Container maxWidth='lg'>
+      <Grid className='border rounded' style={{ marginTop: '3rem' }}>
+        <Typography
+          variant='h4'
+          style={{ marginTop: '1rem', marginLeft: '1rem' }}>
+          Práctica X: Google
+        </Typography>
+        <Hidden smDown>
+          <Typography
+            className='text-muted small'
+            variant='p'
+            style={{ marginTop: '1rem', marginLeft: '1rem' }}>
+            Supervisor: Sundar Pichai · Dirección: Palo Alto, CA · Modalidad:
+            Remoto
+          </Typography>
+        </Hidden>
+        <hr />
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((label) => (
+            <Step key={label}>
+              <Tooltip title={label} aria-label={label}>
+                <StepLabel></StepLabel>
+              </Tooltip>
+            </Step>
+          ))}
+        </Stepper>
+      </Grid>
+    </Container>
+  );
 }
 export default CustomStepper;

@@ -5,15 +5,15 @@ import ToDoList from './extras/ToDoList';
 import './extras/Student.css';
 import Stories from './extras/Stories';
 
-function DetailedHome(props){
-    return (
-        <>
-        <Container style={{paddingBottom:'5rem'}}>
-            <CustomStepper/>
-            <ToDoList done={props.done}/>
-            <Stories/>
-        </Container>
-        </>
-    );
+function DetailedHome(props) {
+  return (
+    <>
+      <Container style={{ paddingBottom: '5rem' }}>
+        <CustomStepper />
+        <ToDoList done={props.done} />
+        <Stories />
+      </Container>
+    </>
+  );
 }
 export default DetailedHome;

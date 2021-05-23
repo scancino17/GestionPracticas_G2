@@ -1,16 +1,10 @@
-import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
-import Documentos from './extras/Documentos';
-import Practicas from './extras/Practicas';
-import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
-import StudentApplications from './applications/StudentApplications';
-import ApplicationDetails from './applications/ApplicationDetails';
 import EmptyHome from './EmptyHome';
 import DetailedHome from './DetailedHome';
-import Hidden from '@material-ui/core/Hidden';
+import { Grid, Hidden, Typography } from '@material-ui/core';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -41,6 +35,7 @@ function DashboardEstudiante(props) {
           querySnapshot.forEach((doc) =>
             temp.push({ id: doc.id, ...doc.data() })
           );
+          console.log(temp);
           setPracticas(temp);
           setLoaded(true);
         });
@@ -50,45 +45,26 @@ function DashboardEstudiante(props) {
   return (
     <Switch>
       <Route exact path='/'>
-        {/*<Box pad='xlarge'>
-          {loaded ? (
-            <>
-              <Heading margin='small'>
-                ¡Hola, {userData && userData.name}!
-              </Heading>
-              <Markdown margin='small'>
-                {careerInternshipInfo &&
-                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
-              </Markdown>
-              <Accordion margin='small'>
-                <AccordionPanel label='Documentos'>
-                  <Documentos docs={docs} />
-                </AccordionPanel>
-                <AccordionPanel label='Prácticas'>
-                  <Practicas practicas={practicas} />
-                </AccordionPanel>
-              </Accordion>
-            </>
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
-          )}
-        </Box>*/}
         <Hidden smDown>
-          <div className='p-5 text-center bg-image banner' style={{ backgroundImage: "url('HomeBanner-2x.png')"}}>
-              <div className='mask'>
-                  <div className='d-flex align-items-center h-100'>
-                      <div className='text-black'>
-                          <Typography variant='h4' style={{marginLeft: '2rem'}}>¡Bienvenido, {userData && userData.name}!</Typography>
-                      </div>
-                  </div>
-              </div>
-          </div>
+          <Grid
+            container
+            alignContent='center'
+            style={{
+              height: '150px',
+              backgroundImage: "url('HomeBanner-2x.png')"
+            }}>
+            <Typography variant='h4' style={{ marginLeft: '2rem' }}>
+              ¡Bienvenido, {userData && userData.name}!{' '}
+            </Typography>
+          </Grid>
         </Hidden>
-        {props.onGoingIntern  ? <DetailedHome done={false}/> : <EmptyHome practicas={practicas}/> }
+        {props.onGoingIntern ? (
+          <DetailedHome done={false} />
+        ) : (
+          <EmptyHome practicas={practicas} />
+        )}
       </Route>
-      <Route path='/form/:userId/:internshipId'>
+      {/*<Route path='/form/:userId/:internshipId'>
         <Formulario />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>
@@ -96,7 +72,7 @@ function DashboardEstudiante(props) {
       </Route>
       <Route path='/applications/:applicationId'>
         <ApplicationDetails />
-      </Route>
+        </Route>*/}
     </Switch>
   );
 }

@@ -10,16 +10,19 @@ function EmptyHome({ practicas }) {
 
   return (
     <>
-      <Grid container direction='column' spacing={1} alignItems='center'>
+      <Grid
+        container
+        direction='column'
+        spacing={2}
+        justify='center'
+        alignItems='center'
+        style={{ padding: '2rem' }}>
         <Grid item>
           <Hidden xsDown>
-            <img
-              width='300'
-              height='220'
-              src='EmptyState-2x.png'
-              alt='No internships'
-            />
+            <img width='300' src='EmptyState-2x.png' alt='No internships' />
           </Hidden>
+        </Grid>
+        <Grid item container direction='column' alignItems='center'>
           <Typography variant='h6'>
             No tienes prácticas programadas de momento.
           </Typography>

@@ -35,7 +35,6 @@ function DashboardEstudiante(props) {
           querySnapshot.forEach((doc) =>
             temp.push({ id: doc.id, ...doc.data() })
           );
-          console.log(temp);
           setPracticas(temp);
           setLoaded(true);
         });
@@ -47,14 +46,12 @@ function DashboardEstudiante(props) {
       <Route exact path='/'>
         <Hidden smDown>
           <Grid
-            container
-            alignContent='center'
             style={{
-              height: '150px',
-              backgroundImage: "url('HomeBanner-2x.png')"
+              backgroundImage: "url('HomeBanner-2x.png')",
+              backgroundSize: 'cover'
             }}>
-            <Typography variant='h4' style={{ marginLeft: '2rem' }}>
-              ¡Bienvenido, {userData && userData.name}!{' '}
+            <Typography variant='h4' style={{ padding: '2rem' }}>
+              ¡Bienvenido, {userData && userData.name}!
             </Typography>
           </Grid>
         </Hidden>

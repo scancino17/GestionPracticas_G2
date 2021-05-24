@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import EmptyHomeModal from './extras/EmptyHomeModal';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
-import './extras/Student.css';
-import { Button, Grid, Hidden, Typography } from '@material-ui/core';
+import { Button, Container, Grid, Hidden, Typography } from '@material-ui/core';
 
 function EmptyHome({ practicas }) {
   const [basicModal, setBasicModal] = useState(false);
   const toggleShow = () => setBasicModal(!basicModal);
 
   return (
-    <>
+    <Container style={{ padding: '6rem' }}>
       <Grid
         container
         direction='column'
         spacing={2}
         justify='center'
-        alignItems='center'
-        style={{ padding: '2rem' }}>
+        alignItems='center'>
         <Grid item>
           <Hidden xsDown>
             <img width='300' src='EmptyState-2x.png' alt='No internships' />
@@ -26,7 +24,7 @@ function EmptyHome({ practicas }) {
           <Typography variant='h6'>
             No tienes prácticas programadas de momento.
           </Typography>
-          <Typography variant='p' color='textSecondary'>
+          <Typography variant='body2' color='textSecondary'>
             Declara tu práctica y cosas mágicas pasarán ;)
           </Typography>
         </Grid>
@@ -42,7 +40,7 @@ function EmptyHome({ practicas }) {
         setModal={setBasicModal}
         practicas={practicas}
       />
-    </>
+    </Container>
   );
 }
 

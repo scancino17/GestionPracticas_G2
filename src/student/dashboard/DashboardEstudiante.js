@@ -4,7 +4,7 @@ import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import EmptyHome from './EmptyHome';
 import DetailedHome from './DetailedHome';
-import { Grid, Hidden, Typography } from '@material-ui/core';
+import { Container, Grid, Hidden, Typography } from '@material-ui/core';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -56,7 +56,7 @@ function DashboardEstudiante(props) {
           </Grid>
         </Hidden>
         {props.onGoingIntern ? (
-          <DetailedHome done={false} />
+          <DetailedHome done={true} />
         ) : (
           <EmptyHome practicas={practicas} />
         )}
@@ -65,11 +65,11 @@ function DashboardEstudiante(props) {
         <Formulario />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>
-        <StudentApplications />
+      <StudentApplications />
       </Route>
       <Route path='/applications/:applicationId'>
-        <ApplicationDetails />
-        </Route>*/}
+      <ApplicationDetails />
+    </Route>*/}
     </Switch>
   );
 }

@@ -20,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
     // Este flex: auto está aqui para que los form abajo puedan ocupar todo el tamaño del grid que los contiene
     // El '& .MuiTextField-root' tiene básicamente la misma funcionalidad.
     flex: 'auto',
+    paddingTop: '1rem',
+    paddingBottom: '1rem',
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
       width: '100%'
@@ -132,112 +134,112 @@ function Formulario() {
       {activeStep === 0 && (
         <Grid
           item
-          container
           xs={9}
+          container
           justify='center'
           direction='row'
           alignItems='center'>
-          <Typography variant='h2'>Información personal</Typography>
-          <Grid item container xs={12} justify='center' alignItems='center'>
-            <form className={classes.root}>
-              <Grid
-                container
-                justify='center'
-                direction='row'
-                alignItems='center'>
-                <TextField
-                  id='name'
-                  name='name'
-                  label='Nombre completo'
-                  value={form.name}
-                  disabled
-                  InputLabelProps={{ htmlFor: 'name' }}
-                />
-                <TextField
-                  id='rut'
-                  name='rut'
-                  label='RUT'
-                  value={form.rut}
-                  disabled
-                  InputLabelProps={{ htmlFor: 'rut' }}
-                />
-                <TextField
-                  id='enrollment'
-                  name='enrollment'
-                  label='Número de matrícula'
-                  value={form.enrollmentNumber}
-                  disabled
-                  InputLabelProps={{ htmlFor: 'enrollment' }}
-                />
-                <TextField
-                  id='phone'
-                  name='phone'
-                  label='Teléfono'
-                  value={form.phone}
-                  InputLabelProps={{ htmlFor: 'phone' }}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      phone: e.target.value
-                    }))
-                  }
-                />
-                <TextField
-                  id='email'
-                  name='email'
-                  label='Correo'
-                  value={form.email}
-                  disabled
-                  InputLabelProps={{ htmlFor: 'email' }}
-                />
-                <TextField
-                  id='emergency-contact'
-                  name='emergency-contact'
-                  label='Nombre contacto de emergencia'
-                  value={form.emergencyContact}
-                  InputLabelProps={{ htmlFor: 'emergency-contact' }}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emergencyContact: e.target.value
-                    }))
-                  }
-                />
-                <TextField
-                  id='emergency-phone'
-                  name='emergency-phone'
-                  label='Teléfono de emergencia'
-                  value={form.emergencyPhone}
-                  InputLabelProps={{ htmlFor: 'emergency-phone' }}
-                  onChange={(e) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      emergencyPhone: e.target.value
-                    }))
-                  }
-                />
-                <TextField
-                  id='healthcare'
-                  name='healthcare'
-                  label='Seguro de salud'
-                  value={form.healthCare}
-                  select
-                  InputLabelProps={{ htmlFor: 'healthcare' }}
-                  onChange={(event) =>
-                    setForm((prevState) => ({
-                      ...prevState,
-                      healthCare: event.target.value
-                    }))
-                  }>
-                  {healthCareOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-            </form>
+          <Grid
+            item
+            xs={12}
+            container
+            justify='center'
+            direction='row'
+            alignItems='center'>
+            <Typography variant='h2'>Información personal</Typography>
           </Grid>
+          <form className={classes.root}>
+            <TextField
+              id='name'
+              name='name'
+              label='Nombre completo'
+              value={form.name}
+              disabled
+              InputLabelProps={{ htmlFor: 'name' }}
+            />
+            <TextField
+              id='rut'
+              name='rut'
+              label='RUT'
+              value={form.rut}
+              disabled
+              InputLabelProps={{ htmlFor: 'rut' }}
+            />
+            <TextField
+              id='enrollment'
+              name='enrollment'
+              label='Número de matrícula'
+              value={form.enrollmentNumber}
+              disabled
+              InputLabelProps={{ htmlFor: 'enrollment' }}
+            />
+            <TextField
+              id='phone'
+              name='phone'
+              label='Teléfono'
+              value={form.phone}
+              InputLabelProps={{ htmlFor: 'phone' }}
+              onChange={(e) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  phone: e.target.value
+                }))
+              }
+            />
+            <TextField
+              id='email'
+              name='email'
+              label='Correo'
+              value={form.email}
+              disabled
+              InputLabelProps={{ htmlFor: 'email' }}
+            />
+            <TextField
+              id='emergency-contact'
+              name='emergency-contact'
+              label='Nombre contacto de emergencia'
+              value={form.emergencyContact}
+              InputLabelProps={{ htmlFor: 'emergency-contact' }}
+              onChange={(e) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  emergencyContact: e.target.value
+                }))
+              }
+            />
+            <TextField
+              id='emergency-phone'
+              name='emergency-phone'
+              label='Teléfono de emergencia'
+              value={form.emergencyPhone}
+              InputLabelProps={{ htmlFor: 'emergency-phone' }}
+              onChange={(e) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  emergencyPhone: e.target.value
+                }))
+              }
+            />
+            <TextField
+              id='healthcare'
+              name='healthcare'
+              label='Seguro de salud'
+              value={form.healthCare}
+              select
+              InputLabelProps={{ htmlFor: 'healthcare' }}
+              onChange={(event) =>
+                setForm((prevState) => ({
+                  ...prevState,
+                  healthCare: event.target.value
+                }))
+              }>
+              {healthCareOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </form>
         </Grid>
       )}
 
@@ -249,7 +251,15 @@ function Formulario() {
           justify='center'
           direction='row'
           alignItems='center'>
-          <Typography variant='h2'>Información de la empresa</Typography>
+          <Grid
+            item
+            xs={12}
+            container
+            justify='center'
+            direction='row'
+            alignItems='center'>
+            <Typography variant='h2'>Información de la empresa</Typography>
+          </Grid>
           <form className={classes.root}>
             <TextField
               id='company-name'
@@ -278,7 +288,15 @@ function Formulario() {
               }
             />
           </form>
-          <Typography variant='h2'>Información del supervisor</Typography>
+          <Grid
+            item
+            xs={12}
+            container
+            justify='center'
+            direction='row'
+            alignItems='center'>
+            <Typography variant='h2'>Información del supervisor</Typography>
+          </Grid>
           <form className={classes.root}>
             <TextField
               id='supervisor-name'
@@ -333,7 +351,15 @@ function Formulario() {
               }
             />
           </form>
-          <Typography variant='h2'>Acerca de la práctica</Typography>
+          <Grid
+            item
+            xs={12}
+            container
+            justify='center'
+            direction='row'
+            alignItems='center'>
+            <Typography variant='h2'>Acerca de la práctica</Typography>
+          </Grid>
           <form className={classes.root}>
             <TextField
               id='application-number'

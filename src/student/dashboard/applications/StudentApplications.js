@@ -1,18 +1,27 @@
-import { Box, Button, Card, CardBody, Heading, List, Text } from 'grommet';
-import { FormNext } from 'grommet-icons';
+import {
+  Card,
+  CardContent,
+  Chip,
+  Grid,
+  List,
+  ListItem,
+  Typography
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { db } from '../../../firebase';
 
 function ApplicationsList({ applications }) {
   return (
-    <Box pad='xlarge'>
-      <Heading>Solicitudes a practica</Heading>
-      <AddApplication />
-      <List border={false} data={applications}>
-        {(application) => <ApplicationItem application={application} />}
+    <Grid container justify='center' alignItems='center' direction='column'>
+      <Typography variant='h3'>Solicitudes de práctica</Typography>
+      <List>
+        <AddApplication />
+        {applications.map((application) => (
+          <ApplicationItem application={application} />
+        ))}
       </List>
-    </Box>
+    </Grid>
   );
 }
 
@@ -22,40 +31,28 @@ function ApplicationItem({ application }) {
   let practicaColorStatus = (status) => {
     switch (status) {
       case 'Aprobada':
-        return 'status-ok';
+        return 'success';
       case 'Rechazado':
-        return 'status-error';
+        return 'error';
       case 'En revisión':
-        return 'status-warning';
+        return 'warning';
       default:
-        return 'status-unknown';
+        return 'info';
     }
   };
 
   return (
-    <Box
-      round='small'
-      hoverIndicator={{ elevation: 'medium' }}
-      onClick={() => {
-        history.push(`/applications/${application.id}`);
-      }}>
-      <Card pad='medium'>
-        <CardBody align='center' direction='row' justify='between'>
-          <Box>
-            <Text>{`Solicitud de Práctica ${application.applicationNumber}`}</Text>
-            <Text>{application.companyName}</Text>
-            <Card
-              pad='small'
-              background={practicaColorStatus(application.status)}>
-              <CardBody>{application.status}</CardBody>
-            </Card>
-          </Box>
-          <Box pad='small'>
-            <Button icon={<FormNext />} />
-          </Box>
-        </CardBody>
-      </Card>
-    </Box>
+    <ListItem>
+      <Grid item xs={12}>
+        <Card onClick={() => history.push(`/applications/${application.id}`)}>
+          <CardContent>
+            <Typography variant='h4'>{`Solicitud de práctica ${application.applicationNumber}`}</Typography>
+            <Typography variant='h5'>{application.companyName}</Typography>
+            <Chip primary label={application.status} />
+          </CardContent>
+        </Card>
+      </Grid>
+    </ListItem>
   );
 }
 
@@ -63,28 +60,24 @@ function AddApplication() {
   let history = useHistory();
   const { studentId, internshipId } = useParams();
   return (
-    <Box
-      round='small'
-      margin='medium'
-      hoverIndicator={{ elevation: 'medium' }}
-      onClick={() => history.push(`/form/${studentId}/${internshipId}`)}>
-      <Card pad='medium'>
-        <CardBody direction='row' justify='between'>
-          <Text margin='small' weight='bold' color='brand'>
-            Agregar nueva solicitud de practica
-          </Text>
-          <Box pad='small'>
-            <FormNext />
-          </Box>
-        </CardBody>
-      </Card>
-    </Box>
+    <ListItem>
+      <Grid item xs={12}>
+        <Card
+          onClick={() => history.push(`/form/${studentId}/${internshipId}`)}>
+          <CardContent>
+            <Typography variant='h4' color='primary'>
+              Agregar nueva solicitud de práctica
+            </Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    </ListItem>
   );
 }
 
 function StudentApplications() {
   const { internshipId } = useParams();
-  const [applications, setApplications] = useState();
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     db.collection('applications')

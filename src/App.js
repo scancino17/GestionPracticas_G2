@@ -26,6 +26,15 @@ const theme = createMuiTheme({
       main: '#f28f25',
       dark: '#ba6100',
       contrastText: '#000000'
+    },
+    error: {
+      main: '#f44336'
+    },
+    warning: {
+      main: '#ff9800'
+    },
+    success: {
+      main: '#4caf50'
     }
   }
 });
@@ -50,9 +59,8 @@ function App() {
             <Grid
               container
               justify='center'
-              alignIyems='center'
-              direction='row'
-              xs={12}>
+              alignItems='center'
+              direction='row'>
               <CircularProgress color='secondary' />
             </Grid>
           )}

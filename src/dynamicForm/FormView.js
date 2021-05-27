@@ -15,6 +15,7 @@ import {
   Container
 } from '@material-ui/core';
 import { useEffect, useState } from 'react';
+import Selector from './Selector';
 
 function FormView(props) {
   const theme = useTheme();
@@ -25,13 +26,9 @@ function FormView(props) {
   }, [props.form, props.flag]);
 
   const updateItem = (index, whichvalue, newvalue) => {
-    let g = props.form[index];
-    g[whichvalue] = newvalue;
-    props.handlerSetFormInner((prev) => [
-      ...prev.slice(0, index),
-      g,
-      ...prev.slice(index + 1)
-    ]);
+    props.form[index][whichvalue] = newvalue;
+    console.log(props.form);
+    props.setFlag(true);
   };
 
   return (
@@ -110,6 +107,30 @@ function FormView(props) {
                       {' '}
                     </Typography>
                   </Grid>
+                ) : element.type === 'predefinido' ? (
+                  element.type2 === 'Ciudad' ? (
+                    <Grid item xs>
+                      <h1>predef</h1>
+                      <Selector
+                        valueinner={element.value}
+                        camp={element.type2}
+                        onParentChange={(newValue) => {
+                          updateItem(index, 'value', newValue.label);
+                        }}
+                      />
+                    </Grid>
+                  ) : element.type2 === 'Compania' ? (
+                    <Grid item xs>
+                      <h1>Compañia</h1>
+                      <Selector
+                        valueinner={element.value}
+                        camp={element.type2}
+                        onParentChange={(newValue) => {
+                          updateItem(index, 'value', newValue.label);
+                        }}
+                      />
+                    </Grid>
+                  ) : null
                 ) : null
               )
             : null}

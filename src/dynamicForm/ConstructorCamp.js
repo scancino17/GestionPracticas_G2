@@ -24,15 +24,20 @@ import { useState } from 'react';
 
 function ConstructorCamp(props) {
   const [type, setType] = useState('');
+  const [type2, setType2] = useState('');
   const [types, setTypes] = useState([
     'Input',
     'Select',
     'File',
     'Header',
-    'Space'
+    'Space',
+    'predefinido'
   ]);
+  const [predefined, setPredefined] = useState(['Ciudad', 'Compania']);
+
   const [name, setName] = useState('');
   const [openSelect, setopenSelect] = useState('');
+  const [openSelect2, setopenSelect2] = useState('');
   const [options, setOpctions] = useState([]);
   const [newOption, setNewOption] = useState('');
   function handlerAddCamp() {
@@ -66,6 +71,13 @@ function ConstructorCamp(props) {
     } else if (type === 'Space') {
       temp = {
         type: type
+      };
+    } else if (type === 'predefinido') {
+      temp = {
+        type: type,
+        type2: type2,
+        value: '',
+        name: type2
       };
     }
     //console.log(props.formInnerInner);
@@ -222,6 +234,25 @@ function ConstructorCamp(props) {
               </>
             ) : type === 'Space' ? (
               <></>
+            ) : type === 'predefinido' ? (
+              <>
+                {/* select predefinido*/}
+                <FormControl fullWidth>
+                  <InputLabel>Tipo de Campo</InputLabel>
+                  <Select
+                    fullWidth
+                    value={type2}
+                    open={openSelect2}
+                    onClose={() => setopenSelect2(false)}
+                    onOpen={() => setopenSelect2(true)}
+                    onChange={(e) => setType2(e.target.value)}>
+                    <MenuItem value={''}>None</MenuItem>
+                    {predefined.map((option) => (
+                      <MenuItem value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </>
             ) : null}
             {type !== '' ? (
               <Button

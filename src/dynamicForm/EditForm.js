@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import DynamicForm from '../../dynamicForm/DynamicForm';
-import { db } from '../../firebase';
-import useAuth from '../../providers/Auth';
+import DynamicForm from './DynamicForm';
+import { db } from '../firebase';
+import useAuth from '../providers/Auth';
 import {
   Grid,
   Modal,
@@ -34,15 +34,16 @@ function EditForm() {
   const { userData } = useAuth();
   function getStepContent(stepIndex) {}
   useEffect(() => {
-    /*db.collection('form')
+    db.collection('form')
       .doc(careerId)
       .get()
       .then((doc) => {
         const data = doc.data();
-        setForm1(data.form1);
-        setForm2(data.form2);
-        setForm3(data.form3);
-      }).then(setFormFull,);*/
+        console.log(data);
+        if (data) {
+          setFormFull(data.form);
+        }
+      });
   }, []);
   useEffect(() => {
     console.log(formFull);
@@ -65,9 +66,8 @@ function EditForm() {
     return formFull;
   }
   async function handleSave() {
-    const formRef = db.collection('form').doc('3407');
-
-    const res = await formRef.set(formFull);
+    console.log(formFull);
+    db.collection('form').doc(careerId).set({ form: formFull });
   }
   function hadlerDelete(element) {
     setFormFull((prev) => prev.filter((el) => el !== element));
@@ -127,6 +127,7 @@ function EditForm() {
                     form={form.form}
                     formFull={getFormFull}
                     index={i}
+                    admin
                   />
                 )
             )}

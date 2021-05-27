@@ -26,6 +26,10 @@ const useStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: '100%'
     }
+  },
+  topBottomPadding: {
+    paddingTop: '1rem',
+    paddingBottom: '1rem'
   }
 }));
 
@@ -121,7 +125,7 @@ function Formulario() {
       direction='row'
       alignItems='center'
       xs={12}>
-      <Grid item xs={9} justify='center'>
+      <Grid item xs={9}>
         <Stepper activeStep={activeStep}>
           {steps.map((label) => (
             <Step key={label.label}>
@@ -428,7 +432,15 @@ function Formulario() {
           justify='center'
           direction='row'
           alignItems='center'>
-          <Typography variant='h2'>Archivos</Typography>
+          <Grid
+            item
+            xs={12}
+            container
+            justify='center'
+            direction='row'
+            alignItems='center'>
+            <Typography variant='h2'>Archivos</Typography>
+          </Grid>
           <Typography variant='h3'>
             Formulario de inscripción de práctica
           </Typography>
@@ -444,7 +456,8 @@ function Formulario() {
         direction='row'
         alignItems='center'
         xs={12}
-        justify='center'>
+        justify='center'
+        className={classes.topBottomPadding}>
         {activeStep > 0 && (
           <Grid item xs={2} container justify='center' alignItems='center'>
             <Button color='primary' onClick={handleBack}>

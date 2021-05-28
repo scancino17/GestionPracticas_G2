@@ -2,7 +2,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
   Divider,
   Grid,
@@ -57,7 +56,7 @@ function ToDoList({ done }) {
       <AccordionDetails>
         {done ? (
           <Grid container direction='column' alignItems='center'>
-            <img src='AllDone.png' />
+            <img src='AllDone.png' alt='Vacio' />
             <Typography variant='h6'>
               No tienes tareas pendientes de momento.
             </Typography>

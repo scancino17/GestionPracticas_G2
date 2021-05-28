@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import EmptyHomeModal from './extras/EmptyHomeModal';
-import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 import { Button, Container, Grid, Hidden, Typography } from '@material-ui/core';
 
 function EmptyHome({ practicas }) {

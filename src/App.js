@@ -8,6 +8,7 @@ import {
   CircularProgress,
   createMuiTheme,
   CssBaseline,
+  Grid,
   ThemeProvider
 } from '@material-ui/core';
 import TopBar from './layout/TopBar';
@@ -25,6 +26,15 @@ const theme = createMuiTheme({
       main: '#f28f25',
       dark: '#ba6100',
       contrastText: '#000000'
+    },
+    error: {
+      main: '#f44336'
+    },
+    warning: {
+      main: '#ff9800'
+    },
+    success: {
+      main: '#4caf50'
     }
   }
 });
@@ -46,7 +56,13 @@ function App() {
               <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )
           ) : (
-            <CircularProgress />
+            <Grid
+              container
+              justify='center'
+              alignItems='center'
+              direction='row'>
+              <CircularProgress color='secondary' />
+            </Grid>
           )}
         </>
       ) : (

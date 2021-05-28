@@ -13,6 +13,7 @@ import {
 } from '@material-ui/core';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
+import Formulario from './../../form/Formulario';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -77,15 +78,15 @@ function DashboardEstudiante(props) {
           </Grid>
         )}
       </Route>
-      {/*<Route path='/form/:userId/:internshipId'>
+      <Route path='/form/:userId/:internshipId'>
         <Formulario />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>
-      <StudentApplications />
+        <StudentApplications />
       </Route>
       <Route path='/applications/:applicationId'>
-      <ApplicationDetails />
-    </Route>*/}
+        <ApplicationDetails />
+      </Route>
     </Switch>
   );
 }

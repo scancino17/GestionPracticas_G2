@@ -18,11 +18,13 @@ function EmptyHomeModal(props) {
       TransitionComponent={Transition}
       keepMounted
       onClose={props.close}
+      maxWidth='sm'
+      fullWidth
       aria-labelledby='dialog-slide-title'
       aria-describedby='dialog-slide-description'>
       <DialogTitle>Declarar Práctica</DialogTitle>
       <DialogContent>
-        {/*<Practicas practicas={props.practicas} />*/}
+        <Practicas practicas={props.practicas} />
       </DialogContent>
       <DialogActions>
         <Button onClick={props.close} color='primary'>

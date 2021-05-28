@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Spinner } from 'grommet';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
-import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
+import {
+  CircularProgress,
+  createMuiTheme,
+  CssBaseline,
+  ThemeProvider
+} from '@material-ui/core';
 import TopBar from './layout/TopBar';
 
 const theme = createMuiTheme({
@@ -37,14 +41,12 @@ function App() {
           <TopBar setSidebarOpen={setSidebarOpen} />
           {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante />
+              <DashboardEstudiante onGoingIntern={false} />
             ) : (
               <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )
           ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
+            <CircularProgress />
           )}
         </>
       ) : (

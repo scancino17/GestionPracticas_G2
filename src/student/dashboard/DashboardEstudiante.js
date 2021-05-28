@@ -1,22 +1,12 @@
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Heading,
-  Markdown,
-  Spinner
-} from 'grommet';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
-import Documentos from './extras/Documentos';
-import Practicas from './extras/Practicas';
-import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
-import StudentApplications from './applications/StudentApplications';
-import ApplicationDetails from './applications/ApplicationDetails';
+import EmptyHome from './EmptyHome';
+import DetailedHome from './DetailedHome';
+import { Container, Grid, Hidden, Typography } from '@material-ui/core';
 
-function DashboardEstudiante() {
+function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);
@@ -54,41 +44,32 @@ function DashboardEstudiante() {
   return (
     <Switch>
       <Route exact path='/'>
-        <Box pad='xlarge'>
-          {loaded ? (
-            <>
-              <Heading margin='small'>
-                ¡Hola, {userData && userData.name}!
-              </Heading>
-              <Markdown margin='small'>
-                {careerInternshipInfo &&
-                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
-              </Markdown>
-              <Accordion margin='small'>
-                <AccordionPanel label='Documentos'>
-                  <Documentos docs={docs} />
-                </AccordionPanel>
-                <AccordionPanel label='Prácticas'>
-                  <Practicas practicas={practicas} />
-                </AccordionPanel>
-              </Accordion>
-            </>
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
-          )}
-        </Box>
+        <Hidden smDown>
+          <Grid
+            style={{
+              backgroundImage: "url('HomeBanner-2x.png')",
+              backgroundSize: 'cover'
+            }}>
+            <Typography variant='h4' style={{ padding: '2rem' }}>
+              ¡Bienvenido, {userData && userData.name}!
+            </Typography>
+          </Grid>
+        </Hidden>
+        {props.onGoingIntern ? (
+          <DetailedHome done={true} />
+        ) : (
+          <EmptyHome practicas={practicas} />
+        )}
       </Route>
-      <Route path='/form/:userId/:internshipId'>
+      {/*<Route path='/form/:userId/:internshipId'>
         <Formulario />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>
-        <StudentApplications />
+      <StudentApplications />
       </Route>
       <Route path='/applications/:applicationId'>
-        <ApplicationDetails />
-      </Route>
+      <ApplicationDetails />
+    </Route>*/}
     </Switch>
   );
 }

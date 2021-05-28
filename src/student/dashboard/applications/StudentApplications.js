@@ -5,11 +5,27 @@ import {
   Grid,
   List,
   ListItem,
+  makeStyles,
   Typography
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { db } from '../../../firebase';
+
+const useStyles = makeStyles((theme) => ({
+  chipSuccess: {
+    colorPrimary: theme.palette.success.main
+  },
+  chipError: {
+    colorPrimary: theme.palette.error.main
+  },
+  chipWarning: {
+    colorPrimary: theme.palette.warning.main
+  },
+  chipInfo: {
+    colorPrimary: theme.palette.primary.light
+  }
+}));
 
 function ApplicationsList({ applications }) {
   return (
@@ -27,17 +43,18 @@ function ApplicationsList({ applications }) {
 
 function ApplicationItem({ application }) {
   let history = useHistory();
+  const classes = useStyles();
 
   let practicaColorStatus = (status) => {
     switch (status) {
       case 'Aprobada':
-        return 'success';
+        return classes.chipSuccess;
       case 'Rechazado':
-        return 'error';
+        return classes.chipError;
       case 'En revisión':
-        return 'warning';
+        return classes.chipWarning;
       default:
-        return 'info';
+        return classes.chipInfo;
     }
   };
 
@@ -48,7 +65,11 @@ function ApplicationItem({ application }) {
           <CardContent>
             <Typography variant='h4'>{`Solicitud de práctica ${application.applicationNumber}`}</Typography>
             <Typography variant='h5'>{application.companyName}</Typography>
-            <Chip primary label={application.status} />
+            <Chip
+              className={practicaColorStatus(application.status)}
+              color='primary'
+              label={application.status}
+            />
           </CardContent>
         </Card>
       </Grid>

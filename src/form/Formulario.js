@@ -331,7 +331,7 @@ function Formulario() {
             <TextField
               id='supervisor-phone'
               name='supervisor-phone'
-              label='Cargo del supervisor'
+              label='Teléfono del supervisor'
               value={form.supervisorPhone}
               InputLabelProps={{ htmlFor: 'supervisor-phone' }}
               onChange={(e) =>

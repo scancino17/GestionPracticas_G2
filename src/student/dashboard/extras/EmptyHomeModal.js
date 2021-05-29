@@ -7,27 +7,20 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
-function EmptyHomeModal(props) {
-  const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction='up' ref={ref} {...props} />;
-  });
-
+function EmptyHomeModal({ open, onClose, practicas }) {
   return (
     <Dialog
-      open={props.show}
-      TransitionComponent={Transition}
-      keepMounted
-      onClose={props.close}
-      maxWidth='sm'
+      open={open}
+      onClose={onClose}
       fullWidth
-      aria-labelledby='dialog-slide-title'
-      aria-describedby='dialog-slide-description'>
-      <DialogTitle>Declarar Práctica</DialogTitle>
+      aria-labelledby='Intenciones de práctica'
+      aria-describedby='Declarar intención de práctica'>
+      <DialogTitle>Declarar intención de práctica</DialogTitle>
       <DialogContent>
-        <Practicas practicas={props.practicas} />
+        <Practicas practicas={practicas} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.close} color='primary'>
+        <Button onClick={onClose} color='primary'>
           Cerrar
         </Button>
       </DialogActions>

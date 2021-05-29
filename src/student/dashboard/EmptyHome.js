@@ -4,7 +4,7 @@ import { Button, Container, Grid, Hidden, Typography } from '@material-ui/core';
 
 function EmptyHome({ practicas }) {
   const [basicModal, setBasicModal] = useState(false);
-  const toggleShow = () => setBasicModal(!basicModal);
+  const toggleShow = () => setBasicModal((prev) => !prev);
 
   return (
     <Container style={{ padding: '6rem' }}>
@@ -34,9 +34,8 @@ function EmptyHome({ practicas }) {
         </Grid>
       </Grid>
       <EmptyHomeModal
-        show={basicModal}
-        close={toggleShow}
-        setModal={setBasicModal}
+        open={basicModal}
+        onClose={toggleShow}
         practicas={practicas}
       />
     </Container>

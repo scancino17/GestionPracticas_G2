@@ -4,13 +4,7 @@ import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import EmptyHome from './EmptyHome';
 import DetailedHome from './DetailedHome';
-import {
-  CircularProgress,
-  Container,
-  Grid,
-  Hidden,
-  Typography
-} from '@material-ui/core';
+import { CircularProgress, Grid, Hidden, Typography } from '@material-ui/core';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';

@@ -1,37 +1,41 @@
+import Card from './extras/Card/Card';
+import CardHeader from './extras/Card/CardHeader.js';
+import CardIcon from './extras/Card/CardIcon.js';
+import CardFooter from './extras/Card/CardFooter.js';
 import {
-  Heading,
-  Text,
-  Main,
-  Box,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-  Paragraph,
-  Chart
-} from 'grommet';
+  MdAccessibility,
+  MdStore,
+  MdUpdate,
+  MdInfoOutline,
+  MdContentCopy
+} from 'react-icons/md';
 import React, { useEffect, useState } from 'react';
-import QuickAccess from './QuickAccess';
 import useAuth from '../../providers/Auth';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
-import BarraLateral from '../../sideBar/BarraLateral';
+import BarraLateral from '../../layout/BarraLateral';
 import Application from '../applications/Application';
-import {
-  List,
-  Group,
-  Task,
-  Upload,
-  DocumentText,
-  LinkNext,
-  Halt
-} from 'grommet-icons';
+
+import CountUp from 'react-countup';
 
 import { db } from '../../firebase';
 import InternshipIntention from '../internship/InternshipIntention';
 
-function DashboardAdmin() {
+import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
+import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
+import WarningIcon from '@material-ui/icons/Warning';
+
+const useStyles = makeStyles((theme) => ({
+  ...styles,
+  root: {
+    display: 'flex'
+  },
+  content: {
+    flexGrow: 1,
+    paddingTop: theme.spacing(14)
+  }
+}));
+function DashboardAdmin({ sidebarProps }) {
   const { user, userData } = useAuth();
   const [applications, setApplications] = useState();
   const [pendingApplications, setPendingApplications] = useState();
@@ -50,110 +54,111 @@ function DashboardAdmin() {
     updateApplications();
   }, []);
 
+  const classes = useStyles();
+
   return (
-    <Box direction='row' fill responsive>
-      <BarraLateral />
-      <Box flex>
-        <Switch>
-          <Route exact path='/'>
-            <Main pad='xlarge'>
-              <Heading> ¡Hola, {userData && userData.name}!</Heading>
-              <Box alignSelf='center'>
-                <Box margin='medium' pad='small'>
-                  <Card background='light-1'>
-                    <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
-                    <CardBody align='center' pad='medium'>
-                      {pendingApplications && (
-                        <Text weight='bold'>{pendingApplications.length}</Text>
-                      )}
-                    </CardBody>
-                    <CardFooter justify='end' background='light-2'>
-                      <Link to='/applications'>
-                        <Button
-                          fill='horizontal'
-                          icon={<LinkNext color='plain' />}
-                          hoverIndicator
-                        />
-                      </Link>
-                    </CardFooter>
-                  </Card>
-                </Box>
-                <Box direction='row-responsive'>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>
-                      Gráfico: Por qué Paw Patrol es mejor que el resto
-                    </CardHeader>
-                    <CardBody>
-                      <Chart
-                        animate
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 100], label: 'zero' },
-                          { value: [1, 10], label: 'thirty' },
-                          { value: [2, 15], label: 'forty' },
-                          { value: [3, 12], label: 'sixty' },
-                          { value: [4, 8], label: 'seventy' },
-                          { value: [5, 4], label: 'sixty' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>Gráfico: Revenue OnlyFans del poio</CardHeader>
-                    <CardBody>
-                      <Chart
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 0], label: 'zero' },
-                          { value: [1, 30], label: 'thirty' },
-                          { value: [2, 40], label: 'forty' },
-                          { value: [3, 60], label: 'sixty' },
-                          { value: [4, 70], label: 'seventy' },
-                          { value: [5, 60], label: 'sixty' },
-                          { value: [6, 80], label: 'eighty' },
-                          { value: [7, 100], label: 'one hundred' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                </Box>
-              </Box>
-            </Main>
-          </Route>
-          <Route exact path='/applications'>
-            <ApplicationsList applications={pendingApplications} />
-          </Route>
-          <Route path='/applications/:id'>
-            <Application />
-          </Route>
-          <Route path='/internship-intention'>
-            <InternshipIntention />
-          </Route>
-          <Route exact path='/wip'>
-            <Box
-              fill
-              align='center'
-              pad={{ top: 'large', horizontal: 'small' }}>
-              <Halt size='xlarge' />
-              <Heading textAlign='center' level='2'>
-                Pagina no encontrada!
-              </Heading>
-              <Paragraph textAlign='center' color='dark-4'>
-                Esta pagina no existe
-              </Paragraph>
-            </Box>
-          </Route>
-        </Switch>
-      </Box>
-    </Box>
+    <div className={classes.root}>
+      <BarraLateral {...sidebarProps} />
+      <Switch>
+        <Route exact path='/'>
+          <Container className={classes.content}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='warning' stats icon>
+                    <CardIcon color='warning'>
+                      <MdContentCopy />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Nuevas Declaraciones</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={100} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='success' stats icon>
+                    <CardIcon color='success'>
+                      <MdStore />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Nuevos Formularios</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={50} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='danger' stats icon>
+                    <CardIcon color='danger'>
+                      <MdInfoOutline />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>
+                      Formularios Corregidos
+                    </p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={10} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='info' stats icon>
+                    <CardIcon color='info'>
+                      <MdAccessibility />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Prácticas en Marcha</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={1000} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+          </Container>
+        </Route>
+        <Route exact path='/applications'>
+          <ApplicationsList applications={pendingApplications} />
+        </Route>
+        <Route path='/applications/:id'>
+          <Application />
+        </Route>
+        <Route exact path='/wip'>
+          <Grid container direction='column' alignItems='center' mar>
+            <WarningIcon fontSize='large' />
+            <Typography variant='h3'>Página no encontrada!</Typography>
+            <Typography color='textSecondary'>Esta página no existe</Typography>
+          </Grid>
+        </Route>
+      </Switch>
+    </div>
   );
 }
 

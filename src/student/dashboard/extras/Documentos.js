@@ -1,12 +1,23 @@
-import { Anchor, Card, CardBody, List, Text, Box } from 'grommet';
-import { Download } from 'grommet-icons';
+import {
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from '@material-ui/core';
+import { GetApp } from '@material-ui/icons';
+
 import React, { useEffect, useState } from 'react';
 
 function Documentos({ docs }) {
   return (
-    <List border={false} data={docs}>
-      {(doc) => <Documento doc={doc} />}
-    </List>
+    <Grid item xs={12}>
+      <List>
+        {docs.map((doc) => (
+          <Documento doc={doc} />
+        ))}
+      </List>
+    </Grid>
   );
 }
 
@@ -18,19 +29,12 @@ function Documento({ doc }) {
   });
 
   return (
-    <Box
-      round='small'
-      hoverIndicator={{ elevation: 'medium' }}
-      onClick={() => {}}>
-      <Anchor href={url} target='_blank'>
-        <Card pad='medium'>
-          <CardBody direction='row' justify='between'>
-            <Text>{doc.name}</Text>
-            <Download />
-          </CardBody>
-        </Card>
-      </Anchor>
-    </Box>
+    <ListItem button component='a' href={url} target='_blank' rel='noopener'>
+      <ListItemIcon>
+        <GetApp />
+      </ListItemIcon>
+      <ListItemText primary={doc.name} />
+    </ListItem>
   );
 }
 

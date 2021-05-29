@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Hidden,
   IconButton,
   makeStyles,
   Menu,
@@ -14,7 +15,7 @@ import useAuth from '../providers/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   logo: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
     maxHeight: '4rem'
@@ -23,8 +24,11 @@ const useStyles = makeStyles({
     '& svg': {
       fontSize: 40
     }
+  },
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1
   }
-});
+}));
 
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
@@ -86,17 +90,19 @@ function TopBar({ setSidebarOpen }) {
 
   return (
     <>
-      <AppBar position='static'>
+      <AppBar position='fixed' className={classes.appBar}>
         <Toolbar>
-          {!user.student && (
-            <IconButton
-              color='inherit'
-              aria-label='open drawer'
-              onClick={() => setSidebarOpen((prevState) => !prevState)}
-              className={classes.icon}>
-              <MenuIcon />
-            </IconButton>
-          )}
+          <Hidden mdUp>
+            {!user.student && (
+              <IconButton
+                color='inherit'
+                aria-label='open drawer'
+                onClick={() => setSidebarOpen((prevState) => !prevState)}
+                className={classes.icon}>
+                <MenuIcon />
+              </IconButton>
+            )}
+          </Hidden>
           <IconButton
             disableRipple
             onClick={() => history.push('/')}

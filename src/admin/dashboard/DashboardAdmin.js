@@ -24,8 +24,16 @@ import styles from './extras/assets/jss/material-dashboard-react/views/dashboard
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 
-const useStyles = makeStyles(styles);
-
+const useStyles = makeStyles((theme) => ({
+  ...styles,
+  root: {
+    display: 'flex'
+  },
+  content: {
+    flexGrow: 1,
+    paddingTop: theme.spacing(14)
+  }
+}));
 function DashboardAdmin({ sidebarProps }) {
   const { user, userData } = useAuth();
   const [applications, setApplications] = useState();
@@ -48,11 +56,11 @@ function DashboardAdmin({ sidebarProps }) {
   const classes = useStyles();
 
   return (
-    <>
+    <div className={classes.root}>
       <BarraLateral {...sidebarProps} />
       <Switch>
         <Route exact path='/'>
-          <Container>
+          <Container className={classes.content}>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
@@ -149,7 +157,7 @@ function DashboardAdmin({ sidebarProps }) {
           </Grid>
         </Route>
       </Switch>
-    </>
+    </div>
   );
 }
 

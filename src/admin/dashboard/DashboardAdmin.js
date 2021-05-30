@@ -24,6 +24,7 @@ import styles from './extras/assets/jss/material-dashboard-react/views/dashboard
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import EditForm from '../../dynamicForm/EditForm';
+import FormCheck from '../../dynamicForm/FormCheck';
 
 const useStyles = makeStyles((theme) => ({
   ...styles,
@@ -152,6 +153,9 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/edit-form/:careerId'>
           <EditForm />
+        </Route>
+        <Route path='/check-form/:careerId'>
+          <FormCheck />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

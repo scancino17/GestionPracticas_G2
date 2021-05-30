@@ -1,6 +1,6 @@
 import { Button } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
-import { db } from './../../../firebase';
+import { db } from '../../../firebase';
 
 const approvalState = 'Pendiente Aprobación';
 

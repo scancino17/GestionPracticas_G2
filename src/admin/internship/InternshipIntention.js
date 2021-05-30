@@ -19,6 +19,7 @@ import { ExpandMore } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useCallback, useEffect, useState } from 'react';
 import { db, storage } from '../../firebase';
+import { useAuth } from '../../providers/Auth';
 
 const approvalState = 'Pendiente Aprobación';
 const confirmIntentionState = 'Pendiente';
@@ -157,11 +158,16 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
 
 const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
   const [reason, setReason] = useState('');
+  const { userData } = useAuth();
 
   const handleRejecton = () => {
     db.collection('internships')
       .doc(application.internshipId)
-      .update({ status: deniendState, reason: reason });
+      .update({
+        status: deniendState,
+        reason: reason,
+        evaluatingSupervisor: { name: userData.name, email: userData.email }
+      });
 
     closeModal();
     update();
@@ -199,6 +205,7 @@ const ApprovalModal = ({
   update,
   showApprovalModal
 }) => {
+  const { userData } = useAuth();
   const [letterFile, setLetterFile] = useState();
   const [isConfirmDisabled, setConfirmDisabled] = useState();
 
@@ -220,7 +227,10 @@ const ApprovalModal = ({
 
     db.collection('internships')
       .doc(internshipId)
-      .set({ status: confirmIntentionState }, { merge: true });
+      .update({
+        status: confirmIntentionState,
+        evaluatingSupervisor: { name: userData.name, email: userData.email }
+      });
 
     storage
       .ref()

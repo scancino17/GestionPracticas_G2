@@ -8,6 +8,7 @@ import { CircularProgress, Grid, Hidden, Typography } from '@material-ui/core';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';
+import InternshipIntention from './InternshipIntention';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -63,7 +64,8 @@ function DashboardEstudiante(props) {
             {props.onGoingIntern ? (
               <DetailedHome done={true} />
             ) : (
-              <EmptyHome practicas={practicas} />
+              <InternshipIntention internships={practicas} />
+              /*<EmptyHome practicas={practicas} />*/
             )}
           </>
         ) : (

@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Grid, Hidden, Typography } from '@material-ui/core';
 import { FaSuitcase } from 'react-icons/fa';
-import StudentIntention from './StudentIntention';
+import StudentIntention from './StudentIntentionButton';
 
 function Practicas({ practicas }) {
   return (

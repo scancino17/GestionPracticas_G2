@@ -51,7 +51,11 @@ function App() {
           <TopBar setSidebarOpen={setSidebarOpen} />
           {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante onGoingIntern={false} />
+              <DashboardEstudiante
+                onGoingIntern={
+                  'onGoingIntern' in userData ? userData.onGoingIntern : false
+                }
+              />
             ) : (
               <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )

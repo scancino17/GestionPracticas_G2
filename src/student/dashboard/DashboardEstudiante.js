@@ -56,7 +56,7 @@ function DashboardEstudiante(props) {
                   backgroundSize: 'cover'
                 }}>
                 <Typography variant='h4' style={{ padding: '2rem' }}>
-                  ¡Bienvenido, {userData && userData.name}!
+                  ¡Bienvenido/a, {userData && userData.name}!
                 </Typography>
               </Grid>
             </Hidden>

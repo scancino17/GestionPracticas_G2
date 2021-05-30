@@ -53,7 +53,7 @@ const items = [
   {
     label: 'Editar Formulario',
     icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/edit-form'
   }
 ];
 

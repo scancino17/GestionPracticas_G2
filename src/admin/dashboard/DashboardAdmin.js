@@ -23,20 +23,17 @@ import { db } from '../../firebase';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
+import EditForm from '../../dynamicForm/EditForm';
+import FormCheck from '../../dynamicForm/FormCheck';
 
-const useStyles = makeStyles((theme) => ({
-  ...styles,
-  content: {
-    flexGrow: 1,
-    paddingTop: theme.spacing(14)
-  }
-}));
+const useStyles = makeStyles(styles);
+
 function DashboardAdmin({ sidebarProps }) {
   const { user, userData } = useAuth();
   const [applications, setApplications] = useState();
   const [pendingApplications, setPendingApplications] = useState();
 
-  let updateApplications = () => {
+  const updateApplications = () => {
     db.collection('applications').onSnapshot((querySnapshot) => {
       var list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
@@ -57,7 +54,7 @@ function DashboardAdmin({ sidebarProps }) {
       <BarraLateral {...sidebarProps} />
       <Switch>
         <Route exact path='/'>
-          <Container className={classes.content}>
+          <Container>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
@@ -145,6 +142,12 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/applications/:id'>
           <Application />
+        </Route>
+        <Route path='/edit-form'>
+          <EditForm />
+        </Route>
+        <Route path='/check-form/:careerId'>
+          <FormCheck />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

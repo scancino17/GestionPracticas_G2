@@ -1,5 +1,6 @@
 import Card from './extras/Card/Card';
 import CardHeader from './extras/Card/CardHeader.js';
+import CardBody from './extras/Card/CardBody.js';
 import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
 import {
@@ -7,7 +8,13 @@ import {
   MdStore,
   MdUpdate,
   MdInfoOutline,
-  MdContentCopy
+  MdContentCopy,
+  MdTimeline,
+  MdMultilineChart,
+  MdEqualizer,
+  MdPieChart,
+  MdTrackChanges,
+  MdDonutLarge
 } from 'react-icons/md';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
@@ -25,6 +32,14 @@ import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import EditForm from '../../dynamicForm/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
+import VerticalBar from './extras/charts/VerticalBar';
+import PieChart from './extras/charts/PieChart';
+import RadarChart from './extras/charts/RadarChart';
+import PolarChart from './extras/charts/PolarChart';
+import DoughnutChart from './extras/charts/DoughnutChart';
+import GroupedBarChart from './extras/charts/GroupedBarChart';
+import LineChart from './extras/charts/LineChart';
+import MultiTypeChart from './extras/charts/MultiTypeChart';
 
 const useStyles = makeStyles(styles);
 
@@ -126,6 +141,169 @@ function DashboardAdmin({ sidebarProps }) {
                       <CountUp end={1000} duration={3} />
                     </h3>
                   </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            {/*Charts*/}
+            <Grid>
+              <Card>
+                <CardHeader color='rose' icon>
+                  <CardIcon color='rose'>
+                    <MdMultilineChart />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>MultiType Chart</p>
+                </CardHeader>
+                <CardBody>
+                  <MultiTypeChart />
+                </CardBody>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={8} md={8}>
+                <Card>
+                  <CardHeader color='warning' icon>
+                    <CardIcon color='warning'>
+                      <MdEqualizer />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Single Bars Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <VerticalBar />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4} md={4}>
+                <Card>
+                  <CardHeader color='info' icon>
+                    <CardIcon color='info'>
+                      <MdPieChart />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Pie Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <PieChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='danger' icon>
+                    <CardIcon color='danger'>
+                      <MdTrackChanges />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Radar Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <RadarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='success' icon>
+                    <CardIcon color='success'>
+                      <MdDonutLarge />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Doughnut Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <DoughnutChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='warning' icon>
+                    <CardIcon color='warning'>
+                      <MdTrackChanges />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Polar Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <PolarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={6}>
+                <Card>
+                  <CardHeader color='info' icon>
+                    <CardIcon color='info'>
+                      <MdEqualizer />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Grouped Bars Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <GroupedBarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6}>
+                <Card>
+                  <CardHeader color='danger' icon>
+                    <CardIcon color='danger'>
+                      <MdTimeline />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Line Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <LineChart />
+                  </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>
                       <MdUpdate />

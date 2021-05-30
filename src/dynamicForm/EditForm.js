@@ -1,38 +1,33 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DynamicForm from './DynamicForm';
 import { db } from '../firebase';
-import useAuth from '../providers/Auth';
+import { Add, ArrowDownward, ArrowUpward, Delete } from '@material-ui/icons';
 import {
+  Box,
+  Button,
+  Container,
   Grid,
+  IconButton,
   Modal,
   Step,
   StepLabel,
   Stepper,
-  Typography,
-  Button,
-  Box,
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
-  IconButton,
   TextField,
-  makeStyles
+  Typography
 } from '@material-ui/core';
-import { Add, ArrowDownward, ArrowUpward, Delete } from '@material-ui/icons';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([]);
-  const [form1, setForm1] = useState([]);
-  const [form2, setForm2] = useState([]);
-  const [form3, setForm3] = useState([]);
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const { careerId } = useParams();
-  const { userData } = useAuth();
 
   useEffect(() => {
     db.collection('form')
@@ -40,39 +35,34 @@ function EditForm() {
       .get()
       .then((doc) => {
         const data = doc.data();
-        console.log(data);
         if (data) {
           setFormFull(data.form);
         }
       });
   }, []);
+
   useEffect(() => {
-    console.log(formFull);
     setFlag(false);
   }, [flag]);
 
   const [activeStep, setActiveStep] = useState(0);
 
-  const handleNext = () => {
+  function handleNext() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-  function getFormFull() {
-    return formFull;
   }
-  async function handleSave() {
-    console.log(formFull);
+
+  function handleBack() {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  }
+
+  function handleSave() {
     db.collection('form').doc(careerId).set({ form: formFull });
   }
+
   function hadlerDelete(element) {
     setFormFull((prev) => prev.filter((el) => el !== element));
   }
+
   function handlerUp(index) {
     setFormFull((prev) => array_move(prev, index, index - 1));
     setFlag(true);
@@ -82,6 +72,7 @@ function EditForm() {
     setFormFull((prev) => array_move(prev, index, index + 1));
     setFlag(true);
   }
+
   function array_move(arr, old_index, new_index) {
     while (old_index < 0) {
       old_index += arr.length;
@@ -98,18 +89,9 @@ function EditForm() {
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing purposes
   }
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      display: 'flex'
-    },
-    content: {
-      flexGrow: 1,
-      paddingTop: theme.spacing(14)
-    }
-  }));
-  const classes = useStyles();
+
   return (
-    <div className={classes.content}>
+    <Container>
       <Grid container direction='column'>
         <Grid item>
           <Button
@@ -128,23 +110,23 @@ function EditForm() {
             ))}
           </Stepper>
         </Grid>
-        <div>
+        <>
           {activeStep === formFull.length ? (
-            <div>
+            <>
               <Typography>Guardar</Typography>
               <Button variant='contained' color='primary' onClick={handleSave}>
                 Guardar
               </Button>
-            </div>
+            </>
           ) : (
             <Grid item>
               {formFull.map(
                 (form, i) =>
                   i === activeStep && (
                     <DynamicForm
-                      setForm={setFormFull}
                       form={form.form}
-                      formFull={getFormFull}
+                      setForm={setFormFull}
+                      formFull={formFull}
                       index={i}
                       admin
                     />
@@ -248,9 +230,7 @@ function EditForm() {
                           <IconButton
                             onClick={() => {
                               formFull.push({ step: newOption, form: [] });
-                              console.log(formFull);
                               setFlag(true);
-
                               setNewOption('');
                             }}>
                             <Add />
@@ -263,9 +243,9 @@ function EditForm() {
               </Grid>
             </Box>
           </Modal>
-        </div>
+        </>
       </Grid>
-    </div>
+    </Container>
   );
 }
 

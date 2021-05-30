@@ -1,40 +1,30 @@
+import React, { useEffect } from 'react';
 import {
-  Input,
-  Select,
-  MenuItem,
-  useTheme,
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  Box,
-  FormControl,
-  InputLabel,
   Button,
+  FormControl,
   Grid,
-  Container
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography
 } from '@material-ui/core';
-import { useEffect, useState } from 'react';
 import Selector from './Selector';
 
-function FormView(props) {
-  const theme = useTheme();
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
+function FormView({ flag, setFlag, form }) {
   useEffect(() => {
-    props.setFlag(false);
-  }, [props.form, props.flag]);
+    setFlag(false);
+  }, [form, flag]);
 
   const updateItem = (index, whichvalue, newvalue) => {
-    props.form[index][whichvalue] = newvalue;
-    console.log(props.form);
-    props.setFlag(true);
+    form[index][whichvalue] = newvalue;
+    setFlag(true);
   };
 
   return (
     <Grid container direction='column' spacing={5}>
-      {props.form
-        ? props.form.map((element, index) =>
+      {form
+        ? form.map((element, index) =>
             element.type === 'Select' ? (
               <Grid item>
                 <FormControl fullWidth>
@@ -133,4 +123,5 @@ function FormView(props) {
     </Grid>
   );
 }
+
 export default FormView;

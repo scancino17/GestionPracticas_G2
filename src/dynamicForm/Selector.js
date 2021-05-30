@@ -7,43 +7,36 @@ const createOption = (label) => ({
   value: label.toLowerCase().replaceAll(/\W/g, '')
 });
 
-function Selector(props) {
+function Selector({ valueinner, camp, onParentChange }) {
   const [isLoading, setLoading] = useState(true);
   const [options, setOptions] = useState();
-  const [value, setValue] = useState(props.valueinner);
+  const [value, setValue] = useState(valueinner);
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection(props.camp)
-      .onSnapshot((querySnapshot) => {
-        let options = [];
-        querySnapshot.forEach((doc) => options.push(doc.data()));
-        setOptions(options);
-      });
-
+    const unsubscribe = db.collection(camp).onSnapshot((querySnapshot) => {
+      let options = [];
+      querySnapshot.forEach((doc) => options.push(doc.data()));
+      setOptions(options);
+    });
     setLoading(false);
-
     return unsubscribe;
   }, []);
 
-  const handleCreate = async (inputValue) => {
+  function handleCreate(inputValue) {
     setLoading(true);
     const newOption = createOption(inputValue);
-
-    await db
-      .collection(props.camp)
+    db.collection(camp)
       .add(createOption(inputValue))
-      .then(setLoading(false));
+      .then(() => {
+        setLoading(false);
+        setValue(newOption);
+      });
+  }
 
-    setValue(newOption);
-  };
-
-  const handleOnChange = (newValue) => {
-    if (newValue) {
-      props.onParentChange(newValue);
-    }
+  function handleOnChange(newValue) {
+    if (newValue) onParentChange(newValue);
     setValue(newValue);
-  };
+  }
 
   return (
     <CreatableSelect

@@ -16,10 +16,10 @@ import {
   Box,
   Dialog,
   DialogContent,
-  Modal
+  Modal,
+  Typography
 } from '@material-ui/core';
 import { Add, Delete, Save } from '@material-ui/icons';
-import { FormField, TextInput, Text } from 'grommet';
 import { useState } from 'react';
 
 function ConstructorCamp(props) {
@@ -163,7 +163,7 @@ function ConstructorCamp(props) {
                           {options.map((option) => (
                             <TableRow key={option.i}>
                               <TableCell scope='col'>
-                                <Text>{option}</Text>
+                                <Typography>{option}</Typography>
                               </TableCell>
                               <TableCell scope='col'>
                                 <IconButton
@@ -181,8 +181,14 @@ function ConstructorCamp(props) {
                           ))}
                           <TableRow>
                             <TableCell scope='col'>
-                              <TextInput
+                              <TextField
+                                fullWidth
+                                variant='outlined'
+                                xs={12}
+                                required
                                 value={newOption}
+                                id='standard-required'
+                                label={'Nuevo opción'}
                                 onChange={(e) => setNewOption(e.target.value)}
                               />
                             </TableCell>

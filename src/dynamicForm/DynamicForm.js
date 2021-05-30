@@ -6,10 +6,10 @@ import FormView from './FormView';
 function DynamicForm(props) {
   const [flag, setFlag] = useState(false);
   return (
-    <Grid container>
+    <Grid container justify='center' spacing={8}>
       {props.admin && (
         <>
-          <Grid item xs={12} md={4}>
+          <Grid item xs={12} md={6}>
             <FormBuilder
               setFlag={setFlag}
               flag={flag}
@@ -20,7 +20,7 @@ function DynamicForm(props) {
             />
           </Grid>
 
-          <Grid item xs={12} md={8}>
+          <Grid item xs={12} md={6}>
             <FormView
               setFlag={setFlag}
               flag={flag}
@@ -33,7 +33,7 @@ function DynamicForm(props) {
         </>
       )}
       {props.student && (
-        <Grid item xs={12} md={10} justify='center'>
+        <Grid item xs={12} md={12} justify='center'>
           <FormView
             setFlag={setFlag}
             flag={flag}

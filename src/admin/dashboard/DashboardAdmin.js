@@ -143,7 +143,7 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/applications/:id'>
           <Application />
         </Route>
-        <Route path='/edit-form/:careerId'>
+        <Route path='/edit-form'>
           <EditForm />
         </Route>
         <Route path='/check-form/:careerId'>

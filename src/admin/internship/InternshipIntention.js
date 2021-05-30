@@ -1,15 +1,22 @@
 import {
   Accordion,
-  AccordionPanel,
+  AccordionActions,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
-  FileInput,
-  Heading,
-  Layer,
-  List,
-  Main,
-  Text
-} from 'grommet';
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Grid,
+  makeStyles,
+  TextField,
+  Typography
+} from '@material-ui/core';
+import { ExpandMore } from '@material-ui/icons';
+import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useCallback, useEffect, useState } from 'react';
 import { db, storage } from '../../firebase';
 
@@ -17,21 +24,53 @@ const approvalState = 'Pendiente Aprobación';
 const confirmIntentionState = 'Pendiente';
 const deniendState = 'Rechazado';
 
+const useStyles = makeStyles((theme) => ({
+  list: {
+    padding: '1rem'
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary
+  }
+}));
+
 const IntentionList = ({ applications, update }) => {
+  const classes = useStyles();
+  const [expanded, setExpanded] = useState();
+
+  const changeExpanded = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
+
   return (
-    <Main>
-      <Heading>Estudiantes con intención de práctica</Heading>
-      <List border={false} data={applications}>
-        {(application) => (
-          <IntentionItem application={application} update={update} />
-        )}
-      </List>
-    </Main>
+    <Grid>
+      <Typography variant='h3' style={{ paddingLeft: '1rem' }}>
+        Estudiantes con intención de práctica
+      </Typography>
+      <Grid>
+        <Grid className={classes.list}>
+          {applications.map((application) => (
+            <IntentionItem
+              application={application}
+              update={update}
+              expanded={expanded}
+              changeExpanded={changeExpanded}
+            />
+          ))}
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 
-const IntentionItem = ({ application, update }) => {
+const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
   console.log(application);
+  const classes = useStyles();
   const [showApprovalModal, setShowApprovalModal] = useState();
   const [showRejectModal, setShowRejectModal] = useState();
 
@@ -40,107 +79,131 @@ const IntentionItem = ({ application, update }) => {
     setShowRejectModal(false);
   };
 
+  let { internshipId, name, applicationNumber } = application;
   return (
-    <Accordion margin='small'>
-      <AccordionPanel label={application.name}>
-        <Box direction='row-responsive' margin='small'>
-          <Text weight='bold'>Nombre: </Text>
-          <Text margin={{ left: 'xsmall' }}>{application.name}</Text>
-        </Box>
-        <Box direction='row-responsive' margin='small'>
-          <Text weight='bold'>Rut: </Text>
-          <Text margin={{ left: 'xsmall' }}>{application.rut}</Text>
-        </Box>
-        <Box direction='row-responsive' margin='small'>
-          <Text weight='bold'>Matrícula: </Text>
-          <Text margin={{ left: 'xsmall' }}>
-            {application.enrollmentNumber}
-          </Text>
-        </Box>
-        <Box direction='row-responsive' margin='small'>
-          <Text weight='bold'>Práctica: </Text>
-          <Text margin={{ left: 'xsmall' }}>
-            {application.applicationNumber}
-          </Text>
-        </Box>
-        <Box direction='row-responsive' margin='small' justify='end'>
-          <Button
-            label='Rechazar'
-            color='status-error'
-            primary
-            margin='small'
-            onClick={() => setShowRejectModal(true)}
-          />
-          <Button
-            label='Aprobar'
-            color='status-ok'
-            primary
-            margin='small'
-            onClick={() => setShowApprovalModal(true)}
-          />
-        </Box>
-        {showApprovalModal && (
-          <ApprovalModal
-            application={application}
-            closeModal={closeModal}
-            update={update}
-          />
-        )}
-        {showRejectModal && (
-          <RejectModal
-            application={application}
-            closeModal={closeModal}
-            update={update}
-          />
-        )}
-      </AccordionPanel>
-    </Accordion>
+    <>
+      <Accordion
+        expanded={expanded === internshipId}
+        onChange={changeExpanded(internshipId)}>
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          <Typography className={classes.heading}>{name}</Typography>
+          <Typography
+            className={
+              classes.secondaryHeading
+            }>{`Intención de práctica ${applicationNumber}`}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Grid container>
+            <Grid item xs={12} style={{ paddingBottom: '.5rem' }}>
+              <Typography variant='h6'>Detalles de postulante</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Nombre:</Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{application.name}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Rut:</Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{application.rut}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Matrícula:</Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{application.enrollmentNumber}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Correo:</Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{application.email}</Typography>
+            </Grid>
+            <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
+              <Typography>Práctica {application.applicationNumber}</Typography>
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+        <AccordionActions>
+          <Button onClick={() => setShowRejectModal(true)}>Rechazar</Button>
+          <Button onClick={() => setShowApprovalModal(true)}>Aprobar</Button>
+        </AccordionActions>
+      </Accordion>
+      <ApprovalModal
+        application={application}
+        closeModal={closeModal}
+        update={update}
+        showApprovalModal={showApprovalModal}
+      />
+      <RejectModal
+        application={application}
+        closeModal={closeModal}
+        update={update}
+        showRejectModal={showRejectModal}
+      />
+    </>
   );
 };
 
-const RejectModal = ({ application, closeModal, update }) => {
+const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
+  const [reason, setReason] = useState('');
+
   const handleRejecton = () => {
     db.collection('internships')
       .doc(application.internshipId)
-      .update({ status: deniendState });
+      .update({ status: deniendState, reason: reason });
 
     closeModal();
     update();
   };
 
+  const handleReasonChange = (e) => {
+    setReason(e.target.value);
+  };
+
   return (
-    <Layer onEsc={closeModal} onClickOutside={closeModal}>
-      <Box margin='medium'>
-        <Box margin='xsmall'>
-          <Text>{`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}</Text>
-          <Text>Esta operación no se podrá revertir.</Text>
-        </Box>
-        <Box margin='xsmall' direction='row-responsive' justify='end'>
-          <Button
-            label='Cancelar'
-            onClick={closeModal}
-            color='status-disabled'
-            margin='xsmall'
-          />
-          <Button
-            label='Confirmar rechazo'
-            color='status-error'
-            margin='xsmall'
-            primary
-            onClick={handleRejecton}
-          />
-        </Box>
-      </Box>
-    </Layer>
+    <Dialog open={showRejectModal} onClose={closeModal}>
+      <DialogTitle>Rechazar intención de práctica</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}</DialogContentText>
+        <DialogContentText>
+          Esta operación no se podrá revertir.
+        </DialogContentText>
+        <TextField
+          label='Razón de Rechazo'
+          onChange={handleReasonChange}
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeModal}>Cancelar</Button>
+        <Button onClick={handleRejecton}>Confirmar rechazo</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
-const ApprovalModal = ({ application, closeModal, update }) => {
+const ApprovalModal = ({
+  application,
+  closeModal,
+  update,
+  showApprovalModal
+}) => {
   const [letterFile, setLetterFile] = useState();
   const [isConfirmDisabled, setConfirmDisabled] = useState();
 
-  const handleLetterFile = (e) => {
-    setLetterFile(e.target.files[0]);
+  const handleLetterFile = (files) => {
+    setLetterFile(files[0]);
   };
 
   useEffect(() => {
@@ -171,33 +234,22 @@ const ApprovalModal = ({ application, closeModal, update }) => {
   };
 
   return (
-    <Layer onEsc={closeModal} onClickOutside={closeModal}>
-      <Box margin='medium'>
-        <Box margin='xsmall'>
-          <Text>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</Text>
-          <Text>Adjunte la carta de recomendación correspondiente.</Text>
-        </Box>
-        <Box margin='xsmall'>
-          <FileInput onChange={handleLetterFile} />
-        </Box>
-        <Box margin='xsmall' direction='row-responsive' justify='end'>
-          <Button
-            label='Cancelar'
-            onClick={closeModal}
-            color='status-disabled'
-            margin='xsmall'
-          />
-          <Button
-            label='Confirmar aprobación'
-            color='status-ok'
-            margin='xsmall'
-            disabled={isConfirmDisabled}
-            primary
-            onClick={handleApproval}
-          />
-        </Box>
-      </Box>
-    </Layer>
+    <Dialog open={showApprovalModal} onClose={closeModal}>
+      <DialogTitle>Aprobar intención de práctica</DialogTitle>
+      <DialogContent>
+        <Typography>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</Typography>
+        <Typography>
+          Adjunte la carta de recomendación correspondiente.
+        </Typography>
+        <DropzoneArea onChange={handleLetterFile} />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={closeModal}>Cancelar</Button>
+        <Button disabled={isConfirmDisabled} onClick={handleApproval}>
+          Confirmar Aprobación
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

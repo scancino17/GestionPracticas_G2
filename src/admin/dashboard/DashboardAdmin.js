@@ -150,6 +150,11 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/applications/:id'>
           <Application />
         </Route>
+        <Route path='/internship-intention'>
+          <Container className={classes.content}>
+            <InternshipIntention />
+          </Container>
+        </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>
             <WarningIcon fontSize='large' />

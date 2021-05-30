@@ -1,4 +1,4 @@
-import { Button } from 'grommet';
+import { Button } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { db } from './../../../firebase';
 
@@ -33,7 +33,7 @@ function StudentIntention({ practica }) {
       primary
       onClick={handleOnClick}
       disabled={isPendingApproval()}
-      color={isPendingApproval() ? 'status-warning' : 'status-ok'}
+      color='default'
     />
   );
 }

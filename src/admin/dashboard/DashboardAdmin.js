@@ -26,9 +26,6 @@ import WarningIcon from '@material-ui/icons/Warning';
 
 const useStyles = makeStyles((theme) => ({
   ...styles,
-  root: {
-    display: 'flex'
-  },
   content: {
     flexGrow: 1,
     paddingTop: theme.spacing(14)
@@ -56,7 +53,7 @@ function DashboardAdmin({ sidebarProps }) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div style={{ display: 'flex' }}>
       <BarraLateral {...sidebarProps} />
       <Switch>
         <Route exact path='/'>

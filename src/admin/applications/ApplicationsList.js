@@ -1,50 +1,47 @@
 import {
-  Box,
   Button,
-  Card,
-  CardBody,
-  Heading,
+  Container,
+  Grid,
   List,
-  Main,
-  Text
-} from 'grommet';
+  ListItem,
+  Typography
+} from '@material-ui/core';
 import { FormNext } from 'grommet-icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 function ApplicationsList({ applications }) {
   return (
-    <Main pad='xlarge'>
-      <Heading>Postulaciones de práctica pendientes</Heading>
-      <List border={false} data={applications}>
-        {(application) => <ApplicationItem application={application} />}
+    <Container>
+      <Typography variant='h4'>Postulaciones de práctica pendientes</Typography>
+      <List>
+        {applications.map((application) => (
+          <ListItem>
+            <ApplicationItem application={application} />
+          </ListItem>
+        ))}
       </List>
-    </Main>
+    </Container>
   );
 }
 
 function ApplicationItem({ application }) {
   let history = useHistory();
   return (
-    <Box
-      round='small'
-      hoverIndicator={{ elevation: 'medium' }}
+    <Grid
+      container
       onClick={() => {
         history.push(`/applications/${application.id}`);
       }}>
-      <Card pad='medium'>
-        <CardBody align='center' direction='row' justify='between'>
-          <Box>
-            <Text>{application.name}</Text>
-            <Text>{`Práctica ${application.applicationNumber}`}</Text>
-            <Text>{application.companyName}</Text>
-          </Box>
-          <Box pad='small'>
-            <Button icon={<FormNext />} />
-          </Box>
-        </CardBody>
-      </Card>
-    </Box>
+      <Grid item container direction='column'>
+        <Typography>{application.name}</Typography>
+        <Typography>{`Práctica ${application.applicationNumber}`}</Typography>
+        <Typography>{application.companyName}</Typography>
+      </Grid>
+      <Grid item>
+        <Button icon={<FormNext />} />
+      </Grid>
+    </Grid>
   );
 }
 

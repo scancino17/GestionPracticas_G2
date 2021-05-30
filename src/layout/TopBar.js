@@ -90,7 +90,9 @@ function TopBar({ setSidebarOpen }) {
 
   return (
     <>
-      <AppBar position='fixed' className={classes.appBar}>
+      <AppBar
+        position={user.student ? 'static' : 'fixed'}
+        className={classes.appBar}>
         <Toolbar>
           <Hidden mdUp>
             {!user.student && (

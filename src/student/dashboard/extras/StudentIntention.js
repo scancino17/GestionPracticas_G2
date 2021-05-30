@@ -24,17 +24,11 @@ function StudentIntention({ practica }) {
   useEffect(() => {});
 
   return (
-    <Button
-      label={
-        internshipState !== approvalState
-          ? 'Informar intención de práctica'
-          : 'Intención enviada'
-      }
-      primary
-      onClick={handleOnClick}
-      disabled={isPendingApproval()}
-      color='default'
-    />
+    <Button onClick={handleOnClick} disabled={isPendingApproval()}>
+      {internshipState !== approvalState
+        ? 'Informar intención de práctica'
+        : 'Intención enviada'}
+    </Button>
   );
 }
 

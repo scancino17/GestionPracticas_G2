@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  FileInput,
-  Heading,
-  List,
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow
-} from 'grommet';
 import XLSX from 'xlsx';
 import { auth, db } from '../../firebase';
 import axios from 'axios';
+import {
+  Button,
+  Container,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from '@material-ui/core';
+import { DropzoneArea } from 'material-ui-dropzone';
 
 function ImportStudents() {
   const [list, setList] = useState([]);
@@ -46,8 +47,8 @@ function ImportStudents() {
     setList(temp);
   };
 
-  function handleFileUpload(e) {
-    if (e.target.files[0]) reader.readAsBinaryString(e.target.files[0]);
+  function handleFileUpload(files) {
+    if (files[0]) reader.readAsBinaryString(files[0]);
   }
 
   function handleSubmit() {
@@ -95,36 +96,37 @@ function ImportStudents() {
   }
 
   return (
-    <Box pad='medium'>
-      <Heading level='1'>Importar estudiantes</Heading>
-      <FileInput
+    <Container>
+      <Typography variant='h4' style={{ marginTop: '3rem' }}>
+        Importar estudiantes
+      </Typography>
+      <DropzoneArea
+        filesLimit={1}
         accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         onChange={handleFileUpload}
       />
-      <Table margin='large'>
-        <TableHeader>
-          <TableRow>
-            <TableCell scope='col' border='bottom'>
-              Nombre alumno
-            </TableCell>
-            <TableCell scope='col' border='bottom'>
-              Carrera
-            </TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {list.map((row) => {
-            return (
-              <TableRow>
-                <TableCell scope='row'>{row[4]}</TableCell>
-                <TableCell scope='row'>{row[0]}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Nombre alumno</TableCell>
+              <TableCell>Carrera</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map((row) => {
+              return (
+                <TableRow>
+                  <TableCell scope='row'>{row[4]}</TableCell>
+                  <TableCell scope='row'>{row[0]}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <Button label='Confirmar' onClick={handleSubmit} />
-    </Box>
+    </Container>
   );
 }
 

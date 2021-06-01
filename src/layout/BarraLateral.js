@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 
 import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
 
+import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -25,6 +26,11 @@ const useStyles = makeStyles({
 });
 
 const items = [
+  {
+    label: 'Dashboard',
+    icon: <PollIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/'
+  },
   {
     label: 'Intenciones de práctica',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
@@ -48,7 +54,7 @@ const items = [
   {
     label: 'Importar Alumnos',
     icon: <PublishIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/import'
   },
   {
     label: 'Administrar Encargados',

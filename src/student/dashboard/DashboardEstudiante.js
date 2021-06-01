@@ -1,21 +1,13 @@
-import {
-  Accordion,
-  AccordionPanel,
-  Box,
-  Heading,
-  Markdown,
-  Spinner
-} from 'grommet';
-import { Halt } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
-import Documentos from './extras/Documentos';
-import Practicas from './extras/Practicas';
-import Formulario from '../../form/Formulario';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
+import EmptyHome from './EmptyHome';
+import DetailedHome from './DetailedHome';
+import { CircularProgress, Grid, Hidden, Typography } from '@material-ui/core';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
+import Formulario from './../../form/Formulario';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -55,31 +47,30 @@ function DashboardEstudiante(props) {
   return (
     <Switch>
       <Route exact path='/'>
-        <Box pad='xlarge'>
-          {loaded ? (
-            <>
-              <Heading margin='small'>
-                ¡Hola, {userData && userData.name}!
-              </Heading>
-              <Markdown margin='small'>
-                {careerInternshipInfo &&
-                  careerInternshipInfo.info.replaceAll('\\n', '\n')}
-              </Markdown>
-              <Accordion margin='small'>
-                <AccordionPanel label='Documentos'>
-                  <Documentos docs={docs} />
-                </AccordionPanel>
-                <AccordionPanel label='Prácticas'>
-                  <Practicas practicas={practicas} />
-                </AccordionPanel>
-              </Accordion>
-            </>
-          ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
-          )}
-        </Box>
+        {loaded ? (
+          <>
+            <Hidden smDown>
+              <Grid
+                style={{
+                  backgroundImage: "url('HomeBanner-2x.png')",
+                  backgroundSize: 'cover'
+                }}>
+                <Typography variant='h4' style={{ padding: '2rem' }}>
+                  ¡Bienvenido/a, {userData && userData.name}!
+                </Typography>
+              </Grid>
+            </Hidden>
+            {props.onGoingIntern ? (
+              <DetailedHome done={true} />
+            ) : (
+              <EmptyHome practicas={practicas} />
+            )}
+          </>
+        ) : (
+          <Grid item container justify='center' alignItems='center' xs={12}>
+            <CircularProgress color='secondary' />
+          </Grid>
+        )}
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />

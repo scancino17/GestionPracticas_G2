@@ -1,67 +1,74 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Button, Grommet, Header, Image, Spinner } from 'grommet';
-import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
+import {
+  CircularProgress,
+  createMuiTheme,
+  CssBaseline,
+  Grid,
+  ThemeProvider
+} from '@material-ui/core';
+import TopBar from './layout/TopBar';
 
-const theme = {
-  global: {
-    colors: {
-      brand: 'status-warning',
-      focus: 'neutral-3'
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#6782bc',
+      main: '#36568c',
+      dark: '#002e5e',
+      contrastText: '#ffffff'
     },
-    font: {
-      family: 'Roboto',
-      size: '18px',
-      height: '20px'
+    secondary: {
+      light: '#ffc057',
+      main: '#f28f25',
+      dark: '#ba6100',
+      contrastText: '#000000'
+    },
+    error: {
+      main: '#f44336'
+    },
+    warning: {
+      main: '#ff9800'
+    },
+    success: {
+      main: '#4caf50'
     }
   }
-};
+});
 
 function App() {
-  const { user, logout } = useAuth();
-  let history = useHistory();
+  const { user, userData } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <Grommet theme={theme} full>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       {user ? (
         <>
-          <Header background='brand' elevation='medium'>
-            <Button
-              onClick={() => history.push('/')}
-              icon={
-                <Box height='xxsmall'>
-                  <Image fill='vertical' src='logo.png' />
-                </Box>
-              }
-            />
-            <Button
-              label='Cerrar sesión'
-              onClick={(e) => {
-                e.preventDefault();
-                logout();
-                history.replace('/');
-              }}
-            />
-          </Header>
-          {user.student || user.admin ? (
+          <TopBar setSidebarOpen={setSidebarOpen} />
+          {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante />
+              <DashboardEstudiante onGoingIntern={false} />
             ) : (
-              <DashboardAdmin />
+              <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )
           ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
+            <Grid
+              container
+              justify='center'
+              alignItems='center'
+              direction='row'>
+              <CircularProgress color='secondary' />
+            </Grid>
           )}
         </>
       ) : (
         <Landing />
       )}
-    </Grommet>
+    </ThemeProvider>
   );
 }
 

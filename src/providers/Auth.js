@@ -12,14 +12,18 @@ export function AuthProvider({ children }) {
   const [userData, setUserData] = useState();
   const [loaded, setLoaded] = useState(false);
 
-  const value = { user, userData, login, logout };
+  const value = { user, userData, login, logout, resetPassword };
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);
   }
 
   function logout() {
-    return auth.signOut();
+    return auth.signOut().then(() => setUserData(null));
+  }
+
+  function resetPassword(email) {
+    return auth.sendPasswordResetEmail(email);
   }
 
   useEffect(() => {

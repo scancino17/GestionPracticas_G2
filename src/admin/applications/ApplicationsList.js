@@ -42,7 +42,8 @@ function ApplicationItem({ application }) {
         secondary={`Práctica ${application.applicationNumber} - ${application.companyName}`}
       />
       <ListItemSecondaryAction>
-        <IconButton disableRipple>
+        <IconButton
+          onClick={() => history.push(`/applications/${application.id}`)}>
           <NavigateNext />
         </IconButton>
       </ListItemSecondaryAction>

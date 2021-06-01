@@ -123,7 +123,7 @@ function EditForm() {
               labelId='select-career'
               value={careerId}
               onChange={(e) => setCareerId(e.target.value)}
-              style={{ minWidth: '10rem' }}>
+              style={{ minWidth: '12rem' }}>
               {careers.map((career) => {
                 return (
                   <MenuItem key={career.id} value={career.id}>

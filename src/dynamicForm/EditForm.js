@@ -6,8 +6,10 @@ import {
   Box,
   Button,
   Container,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
   MenuItem,
   Modal,
   Select,
@@ -29,16 +31,16 @@ function EditForm() {
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [careers, setCareers] = useState([]);
-  const [careerId, setCareerId] = useState('');
+  const [careerId, setCareerId] = useState();
 
   useEffect(() => {
     db.collection('careers')
       .get()
       .then((querySnapshot) => {
         const temp = [];
-        querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
-        );
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== 'general') temp.push({ id: doc.id, ...doc.data() });
+        });
         setCareers(temp);
       });
   });
@@ -107,17 +109,31 @@ function EditForm() {
 
   return (
     <Container>
-      <Grid>
-        <Typography variant='h4'>Carrera:</Typography>
-        <Select value={careerId} onChange={(e) => setCareerId(e.target.value)}>
-          {careers.map((career) => {
-            return (
-              <MenuItem key={career.id} value={career.id}>
-                {career.name}
-              </MenuItem>
-            );
-          })}
-        </Select>
+      <Grid
+        container
+        justify='space-between'
+        style={{ margin: '3rem 0 2rem 0' }}>
+        <Grid item>
+          <Typography variant='h4'>Carrera:</Typography>
+        </Grid>
+        <Grid item>
+          <FormControl>
+            <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
+            <Select
+              labelId='select-career'
+              value={careerId}
+              onChange={(e) => setCareerId(e.target.value)}
+              style={{ minWidth: '10rem' }}>
+              {careers.map((career) => {
+                return (
+                  <MenuItem key={career.id} value={career.id}>
+                    {career.name}
+                  </MenuItem>
+                );
+              })}
+            </Select>
+          </FormControl>
+        </Grid>
       </Grid>
       {careerId && (
         <Grid container direction='column'>

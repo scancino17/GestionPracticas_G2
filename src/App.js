@@ -40,7 +40,7 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const { user, userData, logout } = useAuth();
+  const { user, userData } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

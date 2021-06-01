@@ -1,24 +1,29 @@
 import {
-  Button,
   Container,
-  Grid,
+  Divider,
+  IconButton,
   List,
   ListItem,
+  ListItemSecondaryAction,
+  ListItemText,
   Typography
 } from '@material-ui/core';
-import { FormNext } from 'grommet-icons';
+import { NavigateNext } from '@material-ui/icons';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
 function ApplicationsList({ applications }) {
   return (
     <Container>
-      <Typography variant='h4'>Postulaciones de práctica pendientes</Typography>
+      <Typography variant='h4' style={{ marginTop: '4rem' }}>
+        Postulaciones de práctica pendientes
+      </Typography>
       <List>
         {applications.map((application) => (
-          <ListItem>
+          <>
             <ApplicationItem application={application} />
-          </ListItem>
+            <Divider />
+          </>
         ))}
       </List>
     </Container>
@@ -26,22 +31,22 @@ function ApplicationsList({ applications }) {
 }
 
 function ApplicationItem({ application }) {
-  let history = useHistory();
+  const history = useHistory();
+
   return (
-    <Grid
-      container
-      onClick={() => {
-        history.push(`/applications/${application.id}`);
-      }}>
-      <Grid item container direction='column'>
-        <Typography>{application.name}</Typography>
-        <Typography>{`Práctica ${application.applicationNumber}`}</Typography>
-        <Typography>{application.companyName}</Typography>
-      </Grid>
-      <Grid item>
-        <Button icon={<FormNext />} />
-      </Grid>
-    </Grid>
+    <ListItem
+      button
+      onClick={() => history.push(`/applications/${application.id}`)}>
+      <ListItemText
+        primary={application.name}
+        secondary={`Práctica ${application.applicationNumber} - ${application.companyName}`}
+      />
+      <ListItemSecondaryAction>
+        <IconButton disableRipple>
+          <NavigateNext />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
   );
 }
 

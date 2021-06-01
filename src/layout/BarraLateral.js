@@ -26,18 +26,13 @@ const useStyles = makeStyles({
 
 const items = [
   {
-    label: 'Inscripción Pendiente',
+    label: 'Postulaciones Pendientes',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/applications'
   },
   {
-    label: 'Inscripciones Aprobadas',
+    label: 'Postulaciones Aprobadas',
     icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
-  },
-  {
-    label: 'Administrar Encargados',
-    icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/wip'
   },
   {
@@ -46,14 +41,19 @@ const items = [
     path: '/wip'
   },
   {
+    label: 'Editar Formulario',
+    icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/edit-form'
+  },
+  {
     label: 'Importar Alumnos',
     icon: <PublishIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/wip'
   },
   {
-    label: 'Editar Formulario',
-    icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/edit-form'
+    label: 'Administrar Encargados',
+    icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/wip'
   }
 ];
 
@@ -75,8 +75,7 @@ const drawer = (
               fontSize: 12,
               color: '#ffffff'
             }}
-            startIcon={item.icon}
-            size='large'>
+            startIcon={item.icon}>
             {item.label}
           </Button>
         </ListItem>

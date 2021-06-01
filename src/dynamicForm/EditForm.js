@@ -109,12 +109,12 @@ function EditForm() {
 
   return (
     <Container>
-      <Grid
-        container
-        justify='space-between'
-        style={{ margin: '3rem 0 2rem 0' }}>
+      <Typography variant='h4' style={{ marginTop: '3rem' }}>
+        Formularios de inscripción de práctica
+      </Typography>
+      <Grid container justify='flex-end' alignItems='center' spacing={4}>
         <Grid item>
-          <Typography variant='h4'>Carrera:</Typography>
+          <Typography variant='h5'>Carrera:</Typography>
         </Grid>
         <Grid item>
           <FormControl>

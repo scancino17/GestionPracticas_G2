@@ -26,14 +26,14 @@ const useStyles = makeStyles({
 
 const items = [
   {
-    label: 'Postulaciones Pendientes',
+    label: 'Intenciones de práctica',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/applications'
+    path: '/wip'
   },
   {
-    label: 'Postulaciones Aprobadas',
+    label: 'Postulaciones de práctica',
     icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/applications'
   },
   {
     label: 'Evaluar Prácticas',

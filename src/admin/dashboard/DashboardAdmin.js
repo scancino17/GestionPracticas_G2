@@ -40,6 +40,7 @@ import DoughnutChart from './extras/charts/DoughnutChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import LineChart from './extras/charts/LineChart';
 import MultiTypeChart from './extras/charts/MultiTypeChart';
+import ImportStudents from '../import/ImportStudents';
 
 const useStyles = makeStyles(styles);
 
@@ -326,6 +327,9 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/check-form/:careerId'>
           <FormCheck />
+        </Route>
+        <Route path='/import'>
+          <ImportStudents />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

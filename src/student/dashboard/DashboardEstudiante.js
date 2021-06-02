@@ -17,23 +17,7 @@ import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles({
-  banner: {
-    backgroundColor: 'rgb(224, 244, 247)',
-    height: '200px',
-    '@media (max-width: 480px)': {
-      height: '78px !important'
-    },
-    '@media (max-width: 1024px)': {
-      height: '100px !important'
-    },
-    '@media (max-width: 1600px)': {
-      height: '120px !important'
-    }
-  }
-});
+import InternshipIntention from './InternshipIntention';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -41,7 +25,6 @@ function DashboardEstudiante(props) {
   const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
-  const classes = useStyles();
 
   useEffect(() => {
     if (userData) {
@@ -78,7 +61,6 @@ function DashboardEstudiante(props) {
           <>
             <Hidden smDown>
               <Grid
-                className={classes.banner}
                 style={{
                   backgroundImage: "url('HomeBanner-2x.png')",
                   backgroundSize: 'cover'
@@ -110,6 +92,7 @@ function DashboardEstudiante(props) {
             {props.onGoingIntern ? (
               <DetailedHome done={false} />
             ) : (
+              /*<InternshipIntention internships={practicas} />*/
               <EmptyHome practicas={practicas} />
             )}
           </>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Grid, Hidden, Typography } from '@material-ui/core';
 import { FaSuitcase } from 'react-icons/fa';
+import StudentIntention from './StudentIntentionButton';
 
 function Practicas({ practicas }) {
   return (
@@ -25,10 +26,29 @@ function Practica({ practica }) {
       hoverIndicator={{
         elevation: 'medium'
       }}
-      onClick={() =>
-        history.push(`/internship/${practica.studentId}/${practica.id}`)
-      }>
-      <PracticaCard practica={practica} />
+      onClick={() => {}}>
+      <Card pad='medium'>
+        <CardHeader pad='xsmall'>{`Práctica ${practica.applicationNumber}`}</CardHeader>
+        <CardBody direction='row' justify='between'>
+          <Box>
+            <Card pad='small' background={practicaColorStatus(practica.status)}>
+              <CardBody>{practica.status}</CardBody>
+            </Card>
+          </Box>
+          <Box pad='small'>
+            <FormNext />
+          </Box>
+        </CardBody>
+        <CardFooter>
+          <Button
+            label='Lista  de prácticas'
+            onClick={() =>
+              history.push(`/internship/${practica.studentId}/${practica.id}`)
+            }
+          />
+          <StudentIntention practica={practica} />
+        </CardFooter>
+      </Card>
     </Box>
   ) : (
     <PracticaCard practica={practica} />
@@ -54,14 +74,31 @@ function Practica({ practica }) {
       style={{ padding: '1rem' }}
       justify='space-between'
       wrap='nowrap'>
-      <Grid container>
-        <Hidden smDown>
+      <Grid
+        container
+        alignItems='center'
+        direction='row'
+        justify='space-between'
+        wrap='nowrap'>
+        <Grid item container>
           <Grid item>
-            <FaSuitcase className='item-responsive' />
+            <Hidden smDown>
+              <FaSuitcase
+                className='item-responsive'
+                style={{
+                  color: 'inherit',
+                  fontSize: '1rem',
+                  marginRight: '1rem'
+                }}
+              />
+            </Hidden>
           </Grid>
-        </Hidden>
+          <Grid item>
+            <Typography variant='h6'>{`Práctica ${practica.applicationNumber}`}</Typography>
+          </Grid>
+        </Grid>
         <Grid item>
-          <Typography variant='h6'>{`Práctica ${practica.applicationNumber}`}</Typography>
+          <StudentIntention practica={practica} />
         </Grid>
       </Grid>
     </Grid>

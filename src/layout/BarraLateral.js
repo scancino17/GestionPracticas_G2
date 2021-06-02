@@ -14,6 +14,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import PublishIcon from '@material-ui/icons/Publish';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 const useStyles = makeStyles({
   paper: {
@@ -60,6 +61,11 @@ const items = [
     label: 'Administrar Encargados',
     icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/wip'
+  },
+  {
+    label: 'Intenciones de práctica',
+    icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/internship-intention'
   }
 ];
 

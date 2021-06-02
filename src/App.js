@@ -8,6 +8,7 @@ import {
   CircularProgress,
   createMuiTheme,
   CssBaseline,
+  darken,
   Grid,
   ThemeProvider
 } from '@material-ui/core';
@@ -28,13 +29,15 @@ const theme = createMuiTheme({
       contrastText: '#000000'
     },
     error: {
-      main: '#f44336'
+      main: '#f44336',
+      dark: darken('#f44336', 0.15)
     },
     warning: {
       main: '#ff9800'
     },
     success: {
-      main: '#4caf50'
+      main: '#4caf50',
+      dark: darken('#4caf50', 0.15)
     }
   }
 });
@@ -51,7 +54,7 @@ function App() {
           <TopBar setSidebarOpen={setSidebarOpen} />
           {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante onGoingIntern={false} />
+              <DashboardEstudiante onGoingIntern={true} />
             ) : (
               <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )

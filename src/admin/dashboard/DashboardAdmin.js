@@ -26,6 +26,7 @@ import Application from '../applications/Application';
 import CountUp from 'react-countup';
 
 import { db } from '../../firebase';
+import InternshipIntention from '../internship/InternshipIntention';
 
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
@@ -330,6 +331,11 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/import'>
           <ImportStudents />
+        </Route>
+        <Route path='/internship-intention'>
+          <Container className={classes.content}>
+            <InternshipIntention />
+          </Container>
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

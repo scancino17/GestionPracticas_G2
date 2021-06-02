@@ -11,6 +11,9 @@ import {
   Container
 } from '@material-ui/core';
 import useAuth from '../providers/Auth';
+import Swal from 'sweetalert2';
+import { useHistory } from 'react-router-dom';
+import { sentApplication } from '../InternshipStates';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -18,6 +21,7 @@ function SendForm({ edit }) {
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useAuth();
   const { internshipId } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
     if (!edit) {
@@ -37,6 +41,10 @@ function SendForm({ edit }) {
           if (data) setFormFull(data.form);
         });
     }
+
+    db.collection('internships')
+      .doc(userData.currentInternship.id)
+      .update({ status: sentApplication });
   }, []);
 
   useEffect(() => {
@@ -55,14 +63,14 @@ function SendForm({ edit }) {
     if (!edit) {
       db.collection('applications').add({
         form: formFull,
-        student: user.uid
+        student: user.uid,
+        email: userData.email,
+        careerId: userData.careerId
       });
     } else {
       db.collection('applications').doc(internshipId).set({
         form: formFull,
-        student: user.uid,
-        name: user.name,
-        email: user.email
+        student: user.uid
       });
     }
   }
@@ -108,9 +116,41 @@ function SendForm({ edit }) {
             onClick={handleBack}>
             Anterior
           </Button>
-          <Button variant='contained' color='primary' onClick={handleNext}>
-            {activeStep === formFull.length - 1 ? 'Finalizar' : 'Siguiente'}
-          </Button>
+          {activeStep !== formFull.length - 1 && (
+            <Button variant='contained' color='primary' onClick={handleNext}>
+              Siguiente
+            </Button>
+          )}
+          {activeStep === formFull.length - 1 && (
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={() => {
+                Swal.fire({
+                  title: '¿Desea enviar su solicitud?',
+                  showDenyButton: true,
+                  confirmButtonText: `Enviar`,
+                  denyButtonText: `Salir`
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    handleSave();
+                    Swal.fire('¡Formulario enviado!', '', 'success').then(
+                      (result) => {
+                        if (result.isConfirmed) history.push('/');
+                      }
+                    );
+                  } else if (result.isDenied) {
+                    Swal.fire(
+                      'Revisa bien tu formulario antes de enviarlo',
+                      '',
+                      'info'
+                    );
+                  }
+                });
+              }}>
+              Enviar
+            </Button>
+          )}
         </>
       )}
     </Container>

@@ -21,8 +21,6 @@ import SendForm from './../../dynamicForm/SendForm';
 
 function DashboardEstudiante() {
   const { user, userData } = useAuth();
-  const [careerInternshipInfo, setCareerInternshipInfo] = useState();
-  const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
   const [step, setStep] = useState(0);
@@ -31,19 +29,6 @@ function DashboardEstudiante() {
     let unsubscribe;
     if (userData) {
       if (userData.step) setStep(userData.step);
-
-      db.collection('careerInternshipInfo')
-        .where('careerId', '==', userData.careerId)
-        .get()
-        .then((querySnapshot) =>
-          setCareerInternshipInfo(querySnapshot.docs[0].data())
-        );
-
-      storage
-        .ref(`careers-docs/${userData.careerId}`)
-        .listAll()
-        .then((res) => setDocs(res.items));
-
       unsubscribe = db
         .collection('internships')
         .where('studentId', '==', user.uid)
@@ -56,7 +41,6 @@ function DashboardEstudiante() {
           setLoaded(true);
         });
     }
-
     return unsubscribe;
   }, [user, userData]);
 

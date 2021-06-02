@@ -4,7 +4,16 @@ import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import EmptyHome from './EmptyHome';
 import DetailedHome from './DetailedHome';
-import { CircularProgress, Grid, Hidden, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  Grid,
+  Hidden,
+  Typography,
+  Divider,
+  Card,
+  Container
+} from '@material-ui/core';
+import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';
@@ -79,6 +88,25 @@ function DashboardEstudiante(props) {
                 </Typography>
               </Grid>
             </Hidden>
+            <Container style={{ padding: '2rem' }}>
+              <Card>
+                <Grid item>
+                  <Grid item>
+                    <CustomStepper />
+                  </Grid>
+                  <Divider />
+                  <Grid item style={{ margin: '2rem 0rem 1rem 2rem' }}>
+                    <Typography variant='h5'>Práctica X: Google</Typography>
+                    <Hidden smDown>
+                      <Typography color='textSecondary' variant='body2'>
+                        Supervisor: Sundar Pichai · Dirección: Palo Alto, CA ·
+                        Modalidad: Remoto
+                      </Typography>
+                    </Hidden>
+                  </Grid>
+                </Grid>
+              </Card>
+            </Container>
             {props.onGoingIntern ? (
               <DetailedHome done={false} />
             ) : (

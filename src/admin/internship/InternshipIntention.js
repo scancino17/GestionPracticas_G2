@@ -5,6 +5,7 @@ import {
   AccordionSummary,
   Box,
   Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -31,9 +32,6 @@ const approvedIntentionState = approvedIntention;
 const deniedIntentionState = deniedIntention;
 
 const useStyles = makeStyles((theme) => ({
-  list: {
-    padding: '1rem'
-  },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     flexBasis: '33.33%',
@@ -46,7 +44,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IntentionList = ({ applications, update }) => {
-  const classes = useStyles();
   const [expanded, setExpanded] = useState();
 
   const changeExpanded = (panel) => (event, isExpanded) => {
@@ -54,28 +51,25 @@ const IntentionList = ({ applications, update }) => {
   };
 
   return (
-    <Grid>
-      <Typography variant='h3' style={{ paddingLeft: '1rem' }}>
+    <Container>
+      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
         Estudiantes con intención de práctica
       </Typography>
       <Grid>
-        <Grid className={classes.list}>
-          {applications.map((application) => (
-            <IntentionItem
-              application={application}
-              update={update}
-              expanded={expanded}
-              changeExpanded={changeExpanded}
-            />
-          ))}
-        </Grid>
+        {applications.map((application) => (
+          <IntentionItem
+            application={application}
+            update={update}
+            expanded={expanded}
+            changeExpanded={changeExpanded}
+          />
+        ))}
       </Grid>
-    </Grid>
+    </Container>
   );
 };
 
 const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
-  console.log(application);
   const classes = useStyles();
   const [showApprovalModal, setShowApprovalModal] = useState();
   const [showRejectModal, setShowRejectModal] = useState();
@@ -141,8 +135,12 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
           </Grid>
         </AccordionDetails>
         <AccordionActions>
-          <Button onClick={() => setShowRejectModal(true)}>Rechazar</Button>
-          <Button onClick={() => setShowApprovalModal(true)}>Aprobar</Button>
+          <Button color='primary' onClick={() => setShowRejectModal(true)}>
+            Rechazar
+          </Button>
+          <Button color='primary' onClick={() => setShowApprovalModal(true)}>
+            Aprobar
+          </Button>
         </AccordionActions>
       </Accordion>
       <ApprovalModal
@@ -197,8 +195,12 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeModal}>Cancelar</Button>
-        <Button onClick={handleRejecton}>Confirmar rechazo</Button>
+        <Button color='primary' onClick={closeModal}>
+          Cancelar
+        </Button>
+        <Button color='primary' onClick={handleRejecton}>
+          Confirmar rechazo
+        </Button>
       </DialogActions>
     </Dialog>
   );
@@ -245,6 +247,15 @@ const ApprovalModal = ({
         )
         .put(file);
     });
+
+    db.collection('users')
+      .doc(studentId)
+      .update({
+        currentInternship: {
+          id: internshipId,
+          number: application.applicationNumber
+        }
+      });
 
     closeModal();
     update();

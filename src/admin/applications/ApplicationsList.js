@@ -89,8 +89,8 @@ function ApplicationsList() {
       </Grid>
 
       <List>
-        {filteredApplications &&
-          filteredApplications.map((application) => (
+        {applications &&
+          applications.map((application) => (
             <>
               <ApplicationItem application={application} />
               <Divider />

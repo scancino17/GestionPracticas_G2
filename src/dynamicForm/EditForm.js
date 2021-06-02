@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import DynamicForm from './DynamicForm';
 import { db } from '../firebase';
-import { Add, ArrowDownward, ArrowUpward, Delete, Build, ArrowBack, ArrowForward, CheckCircleOutline } from '@material-ui/icons';
+import {
+  Add,
+  ArrowDownward,
+  ArrowUpward,
+  Delete,
+  Build,
+  ArrowBack,
+  ArrowForward,
+  CheckCircleOutline
+} from '@material-ui/icons';
 import {
   Box,
   Button,
@@ -109,7 +118,7 @@ function EditForm() {
 
   return (
     <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
+      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
         Formularios de inscripción de práctica
       </Typography>
       <Grid container justify='flex-end' alignItems='center' spacing={4}>
@@ -136,15 +145,14 @@ function EditForm() {
         </Grid>
       </Grid>
       {careerId && (
-        <Grid container direction='column' >
+        <Grid container direction='column'>
           <Grid item>
             <Button
               variant='contained'
               color='primary'
-              startIcon={<Build />} 
+              startIcon={<Build />}
               onClick={() => setShow(true)}>
-              
-               Administrar Pasos
+              Administrar Pasos
             </Button>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -181,26 +189,32 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid item >
+                <Grid item>
                   <Box pt={3}>
-                    
-                      <Button
-                        variant='contained'
-                        color='primary'
-                        disabled={activeStep === 0}
-                        startIcon={<ArrowBack />}
-                        onClick={handleBack}>
-                        Anterior
-                      </Button>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      startIcon={<ArrowBack />}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
 
-                      <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={handleNext}
-                        endIcon={activeStep === formFull.length - 1 ? <CheckCircleOutline/> : <ArrowForward/>}>
-                        {activeStep === formFull.length - 1 ? 'Terminar' : 'Siguiente'}
-                      </Button>
-                    
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleNext}
+                      endIcon={
+                        activeStep === formFull.length - 1 ? (
+                          <CheckCircleOutline />
+                        ) : (
+                          <ArrowForward />
+                        )
+                      }>
+                      {activeStep === formFull.length - 1
+                        ? 'Terminar'
+                        : 'Siguiente'}
+                    </Button>
                   </Box>
                 </Grid>
               </Grid>

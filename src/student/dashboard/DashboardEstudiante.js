@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
 import { db, storage } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
-import EmptyHome from './EmptyHome';
 import DetailedHome from './DetailedHome';
 import {
   CircularProgress,
@@ -21,16 +20,19 @@ import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../../InternshipStates';
 import SendForm from './../../dynamicForm/SendForm';
 
-function DashboardEstudiante(props) {
+function DashboardEstudiante() {
   const { user, userData } = useAuth();
   const [careerInternshipInfo, setCareerInternshipInfo] = useState();
   const [docs, setDocs] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
+  const [step, setStep] = useState(0);
 
   useEffect(() => {
-    let desubscribe = () => {};
+    let unsubscribe;
     if (userData) {
+      if (userData.step) setStep(userData.step);
+
       db.collection('careerInternshipInfo')
         .where('careerId', '==', userData.careerId)
         .get()
@@ -43,7 +45,7 @@ function DashboardEstudiante(props) {
         .listAll()
         .then((res) => setDocs(res.items));
 
-      desubscribe = db
+      unsubscribe = db
         .collection('internships')
         .where('studentId', '==', user.uid)
         .onSnapshot((querySnapshot) => {
@@ -56,7 +58,7 @@ function DashboardEstudiante(props) {
         });
     }
 
-    return desubscribe;
+    return unsubscribe;
   }, [user, userData]);
 
   return (
@@ -68,30 +70,30 @@ function DashboardEstudiante(props) {
               <Grid
                 style={{
                   backgroundImage: "url('HomeBanner-2x.png')",
-                  backgroundSize: 'cover'
+                  backgroundSize: 'cover',
+                  padding: '2rem'
                 }}>
-                <Typography variant='h4' style={{ padding: '2rem' }}>
+                <Typography variant='h4'>
                   ¡Bienvenido/a, {userData && userData.name}!
                 </Typography>
+                {userData.step > 0 && (
+                  <Typography variant='h5'>
+                    Práctica {userData.currentInternship.number}
+                  </Typography>
+                )}
+                {userData.step > 1 && (
+                  <Hidden smDown>
+                    <Typography color='textSecondary' variant='body2'>
+                      Supervisor: Sundar Pichai · Dirección: Palo Alto, CA ·
+                      Modalidad: Remoto
+                    </Typography>
+                  </Hidden>
+                )}
               </Grid>
             </Hidden>
             <Container style={{ padding: '2rem' }}>
               <Card>
-                <Grid item>
-                  <Grid item>
-                    <CustomStepper />
-                  </Grid>
-                  <Divider />
-                  <Grid item style={{ margin: '2rem 0rem 1rem 2rem' }}>
-                    <Typography variant='h5'>Práctica X: Google</Typography>
-                    <Hidden smDown>
-                      <Typography color='textSecondary' variant='body2'>
-                        Supervisor: Sundar Pichai · Dirección: Palo Alto, CA ·
-                        Modalidad: Remoto
-                      </Typography>
-                    </Hidden>
-                  </Grid>
-                </Grid>
+                <CustomStepper step={step} />
               </Card>
             </Container>
             {practicas.filter((item) => !finishedIntentionProcess(item.status))
@@ -115,7 +117,7 @@ function DashboardEstudiante(props) {
         <SendForm />
       </Route>
       {/**este es el que va al formulario dinamico para edicion */}
-      <Route path='/editInternship/:internshipId'>
+      <Route path='/edit-form/:internshipId'>
         <SendForm edit />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>

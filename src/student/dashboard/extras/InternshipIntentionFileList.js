@@ -1,10 +1,4 @@
-import {
-  Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText
-} from '@material-ui/core';
+import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { GetApp } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
 import { storage } from '../../../firebase';
@@ -38,13 +32,11 @@ function InternshipIntentionFileList({ studentId, internshipId }) {
   }, [internshipId, studentId]);
 
   return (
-    <Grid>
-      <List>
-        {files.map((file) => (
-          <UrlLink file={file} />
-        ))}
-      </List>
-    </Grid>
+    <List>
+      {files.map((file) => (
+        <UrlLink file={file} />
+      ))}
+    </List>
   );
 }
 

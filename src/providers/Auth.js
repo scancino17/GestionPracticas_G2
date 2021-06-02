@@ -40,10 +40,7 @@ export function AuthProvider({ children }) {
 
         db.collection('users')
           .doc(user.uid)
-          .get()
-          .then((doc) => {
-            setUserData(doc.data());
-          });
+          .onSnapshot((doc) => setUserData(doc.data()));
       }
     });
     setLoaded(true);

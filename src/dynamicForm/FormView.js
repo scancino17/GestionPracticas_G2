@@ -10,6 +10,7 @@ import {
   Typography
 } from '@material-ui/core';
 import Selector from './Selector';
+import { DropzoneArea } from 'material-ui-dropzone';
 
 function FormView({ flag, setFlag, form, readOnly }) {
   useEffect(() => {
@@ -22,21 +23,19 @@ function FormView({ flag, setFlag, form, readOnly }) {
   };
 
   return (
-    <Grid container 
-      direction='column' 
-      spacing={5} >
+    <Grid container direction='column' spacing={5}>
       {form
         ? form.map((element, index) =>
             element.type === 'Select' ? (
-              <Grid item >
+              <Grid item>
                 <FormControl fullWidth>
                   <InputLabel>{element.name}</InputLabel>
                   <Select
                     fullWidth
                     value={element.value}
                     open={element.open}
-                    onClose={() => !readOnly && (index, 'open', false)}
-                    onOpen={() => !readOnly && updateItem(index, 'open', true)}
+                    onClose={() => updateItem(index, 'open', false)}
+                    onOpen={() => updateItem(index, 'open', true)}
                     onChange={(e) =>
                       !readOnly && updateItem(index, 'value', e.target.value)
                     }>
@@ -68,21 +67,10 @@ function FormView({ flag, setFlag, form, readOnly }) {
                   <Typography variant='h6' gutterBottom>
                     {element.name}
                   </Typography>
-                  <input
-                    style={{ display: 'none' }}
-                    accept='image/*'
-                    id='contained-button-file'
-                    multiple
-                    type='file'
+                  <DropzoneArea
+                    filesLimit={1}
+                    accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                   />
-                  <label htmlFor='contained-button-file'>
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      component='span'>
-                      Upload
-                    </Button>
-                  </label>
                 </div>
               </Grid>
             ) : element.type === 'Header' ? (

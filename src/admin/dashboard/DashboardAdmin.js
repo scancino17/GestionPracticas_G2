@@ -309,9 +309,7 @@ function DashboardAdmin({ sidebarProps }) {
           <ImportStudents />
         </Route>
         <Route path='/internship-intention'>
-          <Container className={classes.content}>
-            <InternshipIntention />
-          </Container>
+          <InternshipIntention />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

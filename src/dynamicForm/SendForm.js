@@ -8,7 +8,8 @@ import {
   Stepper,
   Typography,
   Button,
-  Grid
+  Grid,
+  Container
 } from '@material-ui/core';
 import FormView from './FormView';
 import useAuth from '../providers/Auth';
@@ -62,14 +63,14 @@ function SendForm({ edit }) {
 
   function handleSave() {
     if (!edit) {
-      db.collection('formApplication').add({
+      db.collection('applications').add({
         form: formFull,
-        studen: user.uid
+        student: user.uid
       });
     } else {
-      db.collection('formApplication').doc(internshipId).set({
+      db.collection('applications').doc(internshipId).set({
         form: formFull,
-        studen: user.uid,
+        student: user.uid,
         name: user.name,
         email: user.email
       });
@@ -77,8 +78,11 @@ function SendForm({ edit }) {
   }
 
   return (
-    <>
-      <Stepper activeStep={activeStep} alternativeLabel>
+    <Container>
+      <Stepper
+        activeStep={activeStep}
+        alternativeLabel
+        style={{ margin: '2rem' }}>
         {formFull.map((step) => (
           <Step key={step.step}>
             <StepLabel>{step.step}</StepLabel>
@@ -124,7 +128,7 @@ function SendForm({ edit }) {
           </Button>
         </>
       )}
-    </>
+    </Container>
   );
 }
 

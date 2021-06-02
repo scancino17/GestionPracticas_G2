@@ -6,11 +6,19 @@ import FormView from './FormView';
 function DynamicForm({ admin, student, index, form, setForm, formFull }) {
   const [flag, setFlag] = useState(false);
   return (
-    
     <Grid container justify='center' spacing={8}>
       {admin && (
         <>
-          
+          <Grid item xs={12} md={6} style={{ background: '#ffffff' }}>
+            <FormBuilder
+              flag={flag}
+              setFlag={setFlag}
+              indexInner={index}
+              handlerSetFormInner={setForm}
+              formInner={form}
+              formFullInner={formFull}
+            />
+          </Grid>
           <Grid item xs={12} md={6}>
             <FormView
               setFlag={setFlag}
@@ -19,16 +27,6 @@ function DynamicForm({ admin, student, index, form, setForm, formFull }) {
               handlerSetFormInner={setForm}
               formFullInner={formFull}
               form={form}
-            />
-          </Grid>
-          <Grid item xs={12} md={6} style={{background:'#ffffff'}}>
-            <FormBuilder
-              flag={flag}
-              setFlag={setFlag}
-              indexInner={index}
-              handlerSetFormInner={setForm}
-              formInner={form}
-              formFullInner={formFull}
             />
           </Grid>
         </>

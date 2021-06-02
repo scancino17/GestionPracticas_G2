@@ -1,5 +1,5 @@
 import { Button } from '@material-ui/core';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { db } from '../../../firebase';
 import { pendingIntention } from '../../../InternshipStates';
 
@@ -15,17 +15,18 @@ function StudentIntention({ practica, altText }) {
 
     db.collection('internships')
       .doc(practica.id)
-      .set({ status: approvalState }, { merge: true });
+      .update({ status: approvalState });
   };
 
   const isPendingApproval = () => {
     return internshipState === approvalState;
   };
 
-  useEffect(() => {});
-
   return (
-    <Button onClick={handleOnClick} disabled={isPendingApproval()}>
+    <Button
+      onClick={handleOnClick}
+      disabled={isPendingApproval()}
+      color='primary'>
       {internshipState !== approvalState
         ? altText
           ? altText

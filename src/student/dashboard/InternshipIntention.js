@@ -239,10 +239,11 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
       db.collection('internships')
         .doc(internship.id)
         .update({ status: pendingApplication });
+      db.collection('users').doc(internship.studentId).update({ step: 1 });
     };
 
     return (
-      <Button onClick={handleStartInternship}>
+      <Button color='primary' onClick={handleStartInternship}>
         Comenzar proceso de práctica
       </Button>
     );

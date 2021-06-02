@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 
 import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
 
+import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -27,19 +28,19 @@ const useStyles = makeStyles({
 
 const items = [
   {
-    label: 'Inscripción Pendiente',
+    label: 'Dashboard',
+    icon: <PollIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/'
+  },
+  {
+    label: 'Intenciones de práctica',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/applications'
+    path: '/internship-intention'
   },
   {
-    label: 'Inscripciones Aprobadas',
+    label: 'Postulaciones de práctica',
     icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
-  },
-  {
-    label: 'Administrar Encargados',
-    icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/applications'
   },
   {
     label: 'Evaluar Prácticas',
@@ -47,19 +48,19 @@ const items = [
     path: '/wip'
   },
   {
-    label: 'Importar Alumnos',
-    icon: <PublishIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
-  },
-  {
     label: 'Editar Formulario',
     icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/edit-form'
   },
   {
-    label: 'Intenciones de práctica',
+    label: 'Importar Alumnos',
     icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/internship-intention'
+    path: '/import'
+  },
+  {
+    label: 'Administrar Encargados',
+    icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/wip'
   }
 ];
 
@@ -81,8 +82,7 @@ const drawer = (
               fontSize: 12,
               color: '#ffffff'
             }}
-            startIcon={item.icon}
-            size='large'>
+            startIcon={item.icon}>
             {item.label}
           </Button>
         </ListItem>

@@ -120,6 +120,16 @@ function TopBar({ setSidebarOpen }) {
           </IconButton>
         </Toolbar>
       </AppBar>
+      {!user.student && (
+        <Toolbar>
+          <IconButton
+            disableRipple
+            onClick={() => history.push('/')}
+            style={{ backgroundColor: 'transparent' }}>
+            <img className={classes.logo} src='logo5b.png' alt='logo' />
+          </IconButton>
+        </Toolbar>
+      )}
       {renderMenu}
       {renderResetPasswordSnackbar}
     </>

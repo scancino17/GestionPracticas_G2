@@ -22,3 +22,7 @@ exports.processSignUp = functions.auth.user().onCreate((user) => {
       });
   }
 });
+
+exports.importUsers = functions.https.onRequest((request, response) => {
+  functions.logger.info(request);
+});

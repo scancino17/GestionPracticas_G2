@@ -16,18 +16,13 @@ import {
   MdTrackChanges,
   MdDonutLarge
 } from 'react-icons/md';
-import React, { useEffect, useState } from 'react';
-import useAuth from '../../providers/Auth';
+import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import Application from '../applications/Application';
-
 import CountUp from 'react-countup';
-
-import { db } from '../../firebase';
 import InternshipIntention from '../internship/InternshipIntention';
-
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -43,27 +38,8 @@ import LineChart from './extras/charts/LineChart';
 import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 
-const useStyles = makeStyles(styles);
-
 function DashboardAdmin({ sidebarProps }) {
-  const { user, userData } = useAuth();
-  const [applications, setApplications] = useState();
-  const [pendingApplications, setPendingApplications] = useState();
-
-  const updateApplications = () => {
-    db.collection('applications').onSnapshot((querySnapshot) => {
-      var list = [];
-      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      setApplications(list);
-      const pending = list.filter((item) => item.status === 'En revisión');
-      setPendingApplications(pending);
-    });
-  };
-
-  useEffect(() => {
-    updateApplications();
-  }, []);
-
+  const useStyles = makeStyles(styles);
   const classes = useStyles();
 
   return (
@@ -318,7 +294,7 @@ function DashboardAdmin({ sidebarProps }) {
           </Container>
         </Route>
         <Route exact path='/applications'>
-          <ApplicationsList applications={pendingApplications} />
+          <ApplicationsList />
         </Route>
         <Route path='/applications/:id'>
           <Application />

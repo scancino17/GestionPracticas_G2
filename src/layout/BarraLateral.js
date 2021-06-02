@@ -54,18 +54,13 @@ const items = [
   },
   {
     label: 'Importar Alumnos',
-    icon: <PublishIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/import'
   },
   {
     label: 'Administrar Encargados',
     icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/wip'
-  },
-  {
-    label: 'Intenciones de práctica',
-    icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/internship-intention'
   }
 ];
 

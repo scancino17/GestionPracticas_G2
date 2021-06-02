@@ -18,9 +18,11 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 
-function ApplicationsList({ applications }) {
+function ApplicationsList() {
   const [careers, setCareers] = useState([]);
   const [careerId, setCareerId] = useState();
+  const [applications, setApplications] = useState();
+  const [filteredApplications, setFilteredApplications] = useState();
 
   useEffect(() => {
     db.collection('careers')
@@ -41,6 +43,21 @@ function ApplicationsList({ applications }) {
         .get()
         .then((doc) => {});
   }, [careerId]);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('applications')
+      .onSnapshot((querySnapshot) => {
+        const list = [];
+        querySnapshot.forEach((doc) =>
+          list.push({ id: doc.id, ...doc.data() })
+        );
+        setApplications(list);
+        const pending = list.filter((item) => item.status === 'En revisión');
+        setFilteredApplications(pending);
+      });
+    return unsubscribe;
+  }, []);
 
   return (
     <Container>
@@ -72,12 +89,13 @@ function ApplicationsList({ applications }) {
       </Grid>
 
       <List>
-        {applications.map((application) => (
-          <>
-            <ApplicationItem application={application} />
-            <Divider />
-          </>
-        ))}
+        {filteredApplications &&
+          filteredApplications.map((application) => (
+            <>
+              <ApplicationItem application={application} />
+              <Divider />
+            </>
+          ))}
       </List>
     </Container>
   );

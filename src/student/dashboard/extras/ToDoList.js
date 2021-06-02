@@ -14,8 +14,25 @@ import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { RiSurveyLine } from 'react-icons/ri';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  icon: {
+    fontSize: '2rem',
+    marginRight: '1rem',
+    '@media (max-width: 480px)': {
+      fontSize: '1rem'
+    }
+  },
+  button: {
+    maxWidth: '100px',
+    minWidth: '100px'
+  }
+});
 
 function ToDoItem({ icon, title, body, buttonText }) {
+  const classes = useStyles();
+
   return (
     <Grid
       container
@@ -36,7 +53,7 @@ function ToDoItem({ icon, title, body, buttonText }) {
         </Grid>
       </Grid>
       <Grid item>
-        <Button variant='outlined' color='primary'>
+        <Button className={classes.button} variant='outlined' color='primary'>
           {buttonText}
         </Button>
       </Grid>
@@ -45,6 +62,8 @@ function ToDoItem({ icon, title, body, buttonText }) {
 }
 
 function ToDoList({ done }) {
+  const classes = useStyles();
+
   return (
     <Accordion>
       <AccordionSummary
@@ -67,42 +86,42 @@ function ToDoList({ done }) {
         ) : (
           <Grid direction='column' style={{ width: '100%' }}>
             <ToDoItem
-              icon={<FiDownload className='item-responsive' />}
+              icon={<FiDownload className={classes.icon} />}
               title='Descargar Documentos'
               body='Descarga los documentos que tu carrera solicita adjuntar.'
               buttonText='Descargar'
             />
             <Divider />
             <ToDoItem
-              icon={<FaWpforms className='item-responsive' />}
+              icon={<FaWpforms className={classes.icon} />}
               title='Completar Formulario'
               body='Completa el formulario de inscripción de práctica.'
               buttonText='Completar'
             />
             <Divider />
             <ToDoItem
-              icon={<FaWpforms className='item-responsive' />}
+              icon={<FaWpforms className={classes.icon} />}
               title='Corregir Formulario'
               body='El formulario que enviaste requiere correcciones.'
               buttonText='Corregir'
             />
             <Divider />
             <ToDoItem
-              icon={<IoDocumentAttachOutline className='item-responsive' />}
+              icon={<IoDocumentAttachOutline className={classes.icon} />}
               title='Enviar Informe'
               body='Cuéntanos lo que has aprendido durante la práctica.'
               buttonText='Enviar'
             />
             <Divider />
             <ToDoItem
-              icon={<IoDocumentAttachOutline className='item-responsive' />}
+              icon={<IoDocumentAttachOutline className={classes.icon} />}
               title='Corregir Informe'
               body='El informe que has enviado requiere correcciones.'
               buttonText='Corregir'
             />
             <Divider />
             <ToDoItem
-              icon={<RiSurveyLine className='item-responsive' />}
+              icon={<RiSurveyLine className={classes.icon} />}
               title='Responder Encuesta'
               body='Cuéntanos tu experiencia durante las semanas práctica.'
               buttonText='Responder'

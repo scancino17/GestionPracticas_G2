@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import Selector from './Selector';
 
-function FormView({ flag, setFlag, form }) {
+function FormView({ flag, setFlag, form, readOnly }) {
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
@@ -33,10 +33,10 @@ function FormView({ flag, setFlag, form }) {
                     fullWidth
                     value={element.value}
                     open={element.open}
-                    onClose={() => updateItem(index, 'open', false)}
-                    onOpen={() => updateItem(index, 'open', true)}
+                    onClose={() => !readOnly && (index, 'open', false)}
+                    onOpen={() => !readOnly && updateItem(index, 'open', true)}
                     onChange={(e) =>
-                      updateItem(index, 'value', e.target.value)
+                      !readOnly && updateItem(index, 'value', e.target.value)
                     }>
                     <MenuItem value={''}>None</MenuItem>
                     {element.options.map((option) => (
@@ -55,7 +55,9 @@ function FormView({ flag, setFlag, form }) {
                   id='standard-required'
                   label={element.name}
                   value={element.value}
-                  onChange={(e) => updateItem(index, 'value', e.target.value)}
+                  onChange={(e) =>
+                    !readOnly && updateItem(index, 'value', e.target.value)
+                  }
                 />
               </Grid>
             ) : element.type === 'File' ? (

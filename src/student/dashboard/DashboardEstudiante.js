@@ -19,6 +19,7 @@ import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../../InternshipStates';
+import SendForm from './../../dynamicForm/SendForm';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -108,6 +109,14 @@ function DashboardEstudiante(props) {
       </Route>
       <Route path='/form/:userId/:internshipId'>
         <Formulario />
+      </Route>
+      {/**este es el que va al formulario dinamico */}
+      <Route path='/send-form'>
+        <SendForm />
+      </Route>
+      {/**este es el que va al formulario dinamico para edicion */}
+      <Route path='/editInternship/:internshipId'>
+        <SendForm edit />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>
         <StudentApplications />

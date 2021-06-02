@@ -302,7 +302,7 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/edit-form'>
           <EditForm />
         </Route>
-        <Route path='/check-form/:careerId'>
+        <Route path='/check-form/:ApplicationId'>
           <FormCheck />
         </Route>
         <Route path='/import'>

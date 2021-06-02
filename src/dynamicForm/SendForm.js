@@ -7,23 +7,45 @@ import {
   StepLabel,
   Stepper,
   Typography,
-  Button
+  Button,
+  Grid
 } from '@material-ui/core';
+import FormView from './FormView';
+import useAuth from '../providers/Auth';
 
-function SendForm() {
+function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
-  const { careerId } = useParams();
   const [activeStep, setActiveStep] = useState(0);
+  const { user, userData } = useAuth();
+  const { internshipId } = useParams();
 
   useEffect(() => {
-    db.collection('form')
-      .doc(careerId)
-      .get()
-      .then((doc) => {
-        const data = doc.data();
-        if (data) setFormFull(data.form);
-      });
+    if (!edit) {
+      db.collection('form')
+        .doc('3407')
+        .get()
+        .then((doc) => {
+          const data = doc.data();
+          console.log(data);
+          if (data) {
+            setFormFull(data.form);
+            console.log(data);
+          }
+        });
+    } else {
+      db.collection('formApplication')
+        .doc(internshipId)
+        .get()
+        .then((doc) => {
+          const data = doc.data();
+          console.log(data);
+          if (data) {
+            setFormFull(data.form);
+            console.log(data);
+          }
+        });
+    }
   }, []);
 
   useEffect(() => {
@@ -39,7 +61,19 @@ function SendForm() {
   }
 
   function handleSave() {
-    db.collection('form').doc(careerId).set({ form: formFull });
+    if (!edit) {
+      db.collection('formApplication').add({
+        form: formFull,
+        studen: user.uid
+      });
+    } else {
+      db.collection('formApplication').doc(internshipId).set({
+        form: formFull,
+        studen: user.uid,
+        name: user.name,
+        email: user.email
+      });
+    }
   }
 
   return (
@@ -63,12 +97,19 @@ function SendForm() {
           {formFull.map(
             (form, i) =>
               i === activeStep && (
-                <DynamicForm
-                  setForm={setFormFull}
-                  form={form.form}
-                  formFull={formFull}
-                  index={i}
-                />
+                // formview
+                <>
+                  <DynamicForm
+                    form={form.form}
+                    setForm={setFormFull}
+                    formFull={formFull}
+                    index={i}
+                    student
+                  />
+                  <Grid xs={12} md={12} justify='center'>
+                    <Button onClick={() => console.log(user)}>Back</Button>
+                  </Grid>
+                </>
               )
           )}
           <Button

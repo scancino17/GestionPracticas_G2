@@ -37,13 +37,13 @@ function ConstructorCamp({
     'Space',
     'predefinido'
   ]);
-  const [predefined, setPredefined] = useState(['Ciudad', 'Compania']);
-
+  const [predefined, setPredefined] = useState(['Ciudad', 'Empresa']);
   const [name, setName] = useState('');
   const [openSelect, setopenSelect] = useState('');
   const [openSelect2, setopenSelect2] = useState('');
   const [options, setOpctions] = useState([]);
   const [newOption, setNewOption] = useState('');
+
   function handlerAddCamp() {
     let temp;
     if (type === 'Input') {
@@ -101,12 +101,9 @@ function ConstructorCamp({
       }}>
       <Box justifyContent='center' width={1 / 5}>
         <Box bgcolor='white' padding={8} borderRadius='2%'>
-          
           <Grid container direction='column' spacing={5}>
-            <Typography variant='h5' >
-            Creación de Campo
-          </Typography>
-            <Grid item xs >
+            <Typography variant='h5'>Creación de Campo</Typography>
+            <Grid item>
               <FormControl fullWidth>
                 <InputLabel>Tipo de Campo</InputLabel>
                 <Select
@@ -116,7 +113,7 @@ function ConstructorCamp({
                   onClose={() => setopenSelect(false)}
                   onOpen={() => setopenSelect(true)}
                   onChange={(e) => setType(e.target.value)}>
-                  <MenuItem value={''}>None</MenuItem>
+                  <MenuItem value=''>None</MenuItem>
                   {types.map((option) => (
                     <MenuItem value={option}>{option}</MenuItem>
                   ))}
@@ -125,11 +122,10 @@ function ConstructorCamp({
             </Grid>
 
             {type === 'Input' ? (
-              <Grid item xs>
+              <Grid item>
                 <TextField
                   fullWidth
                   variant='outlined'
-                  xs={12}
                   required
                   id='standard-required'
                   label={'Nombre'}
@@ -137,13 +133,12 @@ function ConstructorCamp({
                 />
               </Grid>
             ) : type === 'Select' ? (
-              <Grid item xs>
+              <Grid item>
                 <h1>Select</h1>
-                <Grid item xs>
+                <Grid item>
                   <TextField
                     fullWidth
                     variant='outlined'
-                    xs={12}
                     required
                     id='standard-required'
                     label={'Nombre'}
@@ -151,24 +146,22 @@ function ConstructorCamp({
                   />
                 </Grid>
 
-                <Grid item xs>
+                <Grid item>
                   <Grid item width='auto' flex>
                     <Table>
                       <TableHead>
                         <TableRow>
-                          <TableCell scope='col' border='bottom'>
-                            opción
-                          </TableCell>
-                          <TableCell scope='col' border='bottom'></TableCell>
+                          <TableCell>opción</TableCell>
+                          <TableCell></TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {options.map((option) => (
                           <TableRow key={option.i}>
-                            <TableCell scope='col'>
+                            <TableCell>
                               <Typography>{option}</Typography>
                             </TableCell>
-                            <TableCell scope='col'>
+                            <TableCell>
                               <IconButton
                                 onClick={() =>
                                   setOpctions((prev) =>
@@ -181,11 +174,10 @@ function ConstructorCamp({
                           </TableRow>
                         ))}
                         <TableRow>
-                          <TableCell scope='col'>
+                          <TableCell>
                             <TextField
                               fullWidth
                               variant='outlined'
-                              xs={12}
                               required
                               value={newOption}
                               id='standard-required'
@@ -193,7 +185,7 @@ function ConstructorCamp({
                               onChange={(e) => setNewOption(e.target.value)}
                             />
                           </TableCell>
-                          <TableCell scope='col'>
+                          <TableCell>
                             <IconButton
                               onClick={() => {
                                 setOpctions((prev) => prev.concat(newOption));
@@ -214,7 +206,6 @@ function ConstructorCamp({
                 <TextField
                   fullWidth
                   variant='outlined'
-                  xs={12}
                   required
                   id='standard-required'
                   label={'Nombre'}
@@ -227,7 +218,6 @@ function ConstructorCamp({
                 <TextField
                   fullWidth
                   variant='outlined'
-                  xs={12}
                   required
                   id='standard-required'
                   label={'Titulo'}
@@ -236,42 +226,44 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'Space' ? (
               <></>
-            ) : type === 'predefinido' ? (
-              <FormControl fullWidth>
-                {/* select predefinido*/}
-                <InputLabel>Tipo de Campo</InputLabel>
-                <Select
-                  fullWidth
-                  value={type2}
-                  open={openSelect2}
-                  onClose={() => setopenSelect2(false)}
-                  onOpen={() => setopenSelect2(true)}
-                  onChange={(e) => setType2(e.target.value)}>
-                  <MenuItem value={''}>None</MenuItem>
-                  {predefined.map((option) => (
-                    <MenuItem value={option}>{option}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ) : null}
-            {type !== '' ? (
-              <Grid container
+            ) : (
+              type === 'predefinido' && (
+                <FormControl fullWidth>
+                  {/* select predefinido*/}
+                  <InputLabel>Tipo de Campo</InputLabel>
+                  <Select
+                    fullWidth
+                    value={type2}
+                    open={openSelect2}
+                    onClose={() => setopenSelect2(false)}
+                    onOpen={() => setopenSelect2(true)}
+                    onChange={(e) => setType2(e.target.value)}>
+                    <MenuItem value={''}>None</MenuItem>
+                    {predefined.map((option) => (
+                      <MenuItem value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )
+            )}
+            {type !== '' && (
+              <Grid
+                container
                 direction='column'
-                justify="center"
-                alignItems="center">
+                justify='center'
+                alignItems='center'>
                 <Button
-                  variant='contained' 
+                  variant='contained'
                   color='primary'
                   startIcon={<Save />}
                   onClick={() => {
                     handlerAddCamp();
                     setShow(false);
-                  }}
-                >
+                  }}>
                   Guardar Campo
-                </Button>  
+                </Button>
               </Grid>
-            ) : null}
+            )}
           </Grid>
         </Box>
       </Box>

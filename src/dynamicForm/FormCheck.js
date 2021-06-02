@@ -14,7 +14,6 @@ import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { Check, Clear } from '@material-ui/icons';
 import FormView from './FormView';
-import Selector from './Selector';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +29,6 @@ const useStyles = makeStyles((theme) => ({
   },
   topBottomPadding: {
     paddingTop: '1rem',
-
     paddingBottom: '1rem'
   },
   fabAccept: {
@@ -55,7 +53,7 @@ function FormCheck() {
   const classes = useStyles();
 
   useEffect(() => {
-    db.collection('formApplication')
+    db.collection('applicationsn')
       .doc(ApplicationId)
       .get()
       .then((doc) => {
@@ -90,7 +88,7 @@ function FormCheck() {
     setFlag(false);
   }, [flag]);
   function handleApprove() {
-    db.collection('formApplication')
+    db.collection('applications')
       .doc(ApplicationId)
       .update({ status: 'Aprobado' });
     db.collection('internships')
@@ -110,7 +108,7 @@ function FormCheck() {
 
   function handleReject() {
     setShow(false);
-    db.collection('formApplication')
+    db.collection('applications')
       .doc(ApplicationId)
       .update({ status: 'Rechazado', reason: rejectReason });
 
@@ -151,18 +149,18 @@ function FormCheck() {
           spacing={5}
           className={classes.topBottomPadding}>
           <Typography variant='h2'> Revisión Postulación</Typography>
+          <Typography variant='h4'> Información del Estudiante</Typography>
+
           {application.form &&
             application.form.map((step) => (
-              <>
-                <Grid item>
-                  <FormView
-                    readOnly
-                    form={step.form}
-                    flag={flag}
-                    setFlag={setFlag}
-                  />
-                </Grid>
-              </>
+              <Grid item>
+                <FormView
+                  readOnly
+                  form={step.form}
+                  flag={flag}
+                  setFlag={setFlag}
+                />
+              </Grid>
             ))}
         </Grid>
       </Container>
@@ -199,7 +197,7 @@ function FormCheck() {
                 variant='contained'
                 color='primary'
                 onClick={() => setShow(false)}>
-                salir
+                Salir
               </Button>
             </Grid>
           </Box>
@@ -208,4 +206,5 @@ function FormCheck() {
     </>
   );
 }
+
 export default FormCheck;

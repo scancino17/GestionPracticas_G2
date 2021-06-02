@@ -11,7 +11,6 @@ import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import PublishIcon from '@material-ui/icons/Publish';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';

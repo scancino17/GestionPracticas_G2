@@ -8,7 +8,6 @@ import {
   Grid,
   Hidden,
   Typography,
-  Divider,
   Card,
   Container
 } from '@material-ui/core';

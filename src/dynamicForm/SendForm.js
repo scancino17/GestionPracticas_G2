@@ -8,10 +8,8 @@ import {
   Stepper,
   Typography,
   Button,
-  Grid,
   Container
 } from '@material-ui/core';
-import FormView from './FormView';
 import useAuth from '../providers/Auth';
 
 function SendForm({ edit }) {
@@ -24,27 +22,19 @@ function SendForm({ edit }) {
   useEffect(() => {
     if (!edit) {
       db.collection('form')
-        .doc('3407')
+        .doc(userData.careerId)
         .get()
         .then((doc) => {
           const data = doc.data();
-          console.log(data);
-          if (data) {
-            setFormFull(data.form);
-            console.log(data);
-          }
+          if (data) setFormFull(data.form);
         });
     } else {
-      db.collection('formApplication')
+      db.collection('applications')
         .doc(internshipId)
         .get()
         .then((doc) => {
           const data = doc.data();
-          console.log(data);
-          if (data) {
-            setFormFull(data.form);
-            console.log(data);
-          }
+          if (data) setFormFull(data.form);
         });
     }
   }, []);
@@ -102,18 +92,13 @@ function SendForm({ edit }) {
             (form, i) =>
               i === activeStep && (
                 // formview
-                <>
-                  <DynamicForm
-                    form={form.form}
-                    setForm={setFormFull}
-                    formFull={formFull}
-                    index={i}
-                    student
-                  />
-                  <Grid xs={12} md={12} justify='center'>
-                    <Button onClick={() => console.log(user)}>Back</Button>
-                  </Grid>
-                </>
+                <DynamicForm
+                  form={form.form}
+                  setForm={setFormFull}
+                  formFull={formFull}
+                  index={i}
+                  student
+                />
               )
           )}
           <Button
@@ -121,10 +106,10 @@ function SendForm({ edit }) {
             color='primary'
             disabled={activeStep === 0}
             onClick={handleBack}>
-            Back
+            Anterior
           </Button>
           <Button variant='contained' color='primary' onClick={handleNext}>
-            {activeStep === formFull.length - 1 ? 'Finish' : 'Next'}
+            {activeStep === formFull.length - 1 ? 'Finalizar' : 'Siguiente'}
           </Button>
         </>
       )}

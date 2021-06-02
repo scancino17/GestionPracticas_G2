@@ -1,11 +1,11 @@
 import { Button } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase';
-import { approvedIntention } from '../../../InternshipStates';
+import { pendingIntention } from '../../../InternshipStates';
 
-const approvalState = approvedIntention;
+const approvalState = pendingIntention;
 
-function StudentIntention({ practica }) {
+function StudentIntention({ practica, altText }) {
   const [internshipState, setInternshipState] = useState(practica.status);
 
   const handleOnClick = () => {
@@ -27,7 +27,9 @@ function StudentIntention({ practica }) {
   return (
     <Button onClick={handleOnClick} disabled={isPendingApproval()}>
       {internshipState !== approvalState
-        ? 'Informar intención de práctica'
+        ? altText
+          ? altText
+          : 'Informar intención de práctica'
         : 'Intención enviada'}
     </Button>
   );

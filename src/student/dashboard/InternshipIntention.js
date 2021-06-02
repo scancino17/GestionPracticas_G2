@@ -16,10 +16,12 @@ import { db } from '../../firebase';
 import {
   approvedIntention,
   deniedIntention,
+  pendingApplication,
   pendingIntention
 } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
+import StudentIntention from './extras/StudentIntentionButton';
 
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
@@ -207,11 +209,12 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
   };
 
   const ApprovedActions = () => {
-    const { user } = useAuth();
-
     const handleStartInternship = (e) => {
+      console.log(internship.id);
       e.preventDefault();
-      db.collection('internship').doc(user.uid).update({ onGoingIntern: true });
+      db.collection('internships')
+        .doc(internship.id)
+        .update({ status: pendingApplication });
     };
 
     return (
@@ -222,7 +225,9 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
   };
 
   const DeniedActions = () => {
-    return <Button>Volver a postular</Button>;
+    return (
+      <StudentIntention practica={internship} altText='Volver a intentar' />
+    );
   };
 
   return (

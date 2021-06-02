@@ -21,9 +21,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { db, storage } from '../../firebase';
 import { useAuth } from '../../providers/Auth';
 
-const approvalState = 'Pendiente Aprobación';
-const confirmIntentionState = 'Pendiente';
-const deniendState = 'Rechazado';
+const pendingIntentionState = 'Intención Enviada';
+const approvedIntentionState = 'Intención Aprobada';
+const deniedIntentionState = 'Intención rechazada';
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -164,7 +164,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
     db.collection('internships')
       .doc(application.internshipId)
       .update({
-        status: deniendState,
+        status: deniedIntentionState,
         reason: reason,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
@@ -206,11 +206,11 @@ const ApprovalModal = ({
   showApprovalModal
 }) => {
   const { userData } = useAuth();
-  const [letterFile, setLetterFile] = useState();
+  const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
 
   const handleLetterFile = (files) => {
-    setLetterFile(files[0]);
+    setLetterFile(files);
   };
 
   useEffect(() => {
@@ -228,16 +228,18 @@ const ApprovalModal = ({
     db.collection('internships')
       .doc(internshipId)
       .update({
-        status: confirmIntentionState,
+        status: approvedIntentionState,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
-    storage
-      .ref()
-      .child(
-        `students-docs/${studentId}/${internshipId}/letter/${letterFile.name}`
-      )
-      .put(letterFile);
+    letterFile.forEach((file) => {
+      storage
+        .ref()
+        .child(
+          `students-docs/${studentId}/${internshipId}/internship-intention/${file.name}`
+        )
+        .put(file);
+    });
 
     closeModal();
     update();
@@ -248,9 +250,7 @@ const ApprovalModal = ({
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
       <DialogContent>
         <Typography>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</Typography>
-        <Typography>
-          Adjunte la carta de recomendación correspondiente.
-        </Typography>
+        <Typography>Adjunte los archivos correspondientes.</Typography>
         <DropzoneArea onChange={handleLetterFile} />
       </DialogContent>
       <DialogActions>
@@ -282,7 +282,7 @@ function InternshipIntention() {
     setApplications([]);
 
     db.collection('internships')
-      .where('status', '==', approvalState)
+      .where('status', '==', pendingIntentionState)
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {

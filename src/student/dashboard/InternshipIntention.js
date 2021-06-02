@@ -3,19 +3,52 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Container,
   Grid,
+  makeStyles,
   Typography
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { db } from '../../firebase';
 import useAuth from '../../providers/Auth';
+import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 
 const pendingApprovalState = 'Pendiente Aprobación';
 const approvedState = 'Pendiente';
 const deniedState = 'Rechazado';
+
+const useStyles = makeStyles((theme) => ({
+  list: {
+    padding: '1rem'
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    flexBasis: '33.33%',
+    flexShrink: 0
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary
+  },
+  deniedText: {
+    fontWeight: 'bold',
+    color: theme.palette.error.dark
+  },
+  approvedText: {
+    fontWeight: 'bold',
+    color: theme.palette.success.dark
+  },
+  reasonText: {
+    fontStyle: 'oblique'
+  },
+  evaluatingSupervisorText: {
+    color: theme.palette.text.secondary,
+    fontWeight: 'medium'
+  }
+}));
 
 const InternshipState = ({ internships }) => {
   const [expanded, setExpanded] = useState();
@@ -28,6 +61,7 @@ const InternshipState = ({ internships }) => {
     <Grid>
       {internships.map((internship) => (
         <IntentionItem
+          key={internship.id}
           internship={internship}
           expanded={expanded}
           changeExpanded={changeExpanded}
@@ -38,6 +72,8 @@ const InternshipState = ({ internships }) => {
 };
 
 const IntentionItem = ({ internship, expanded, changeExpanded }) => {
+  const classes = useStyles();
+
   const selectDetails = () => {
     switch (internship.status) {
       case approvedState:
@@ -57,18 +93,43 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
   const ApprovedState = () => {
     return (
-      <Grid>
-        <Typography>
-          ¡Felicitaciones! Tu intención de práctica ha sido aprobada.
-        </Typography>
-        <Typography>
-          Puedes descargar los archivos necesarios para postular a prácticas a
-          continuación.
-        </Typography>
-        <Typography>
-          Evaluado por {internship.evaluatingSupervisor.name}
-        </Typography>
-        <Typography>{internship.evaluatingSupervisor.email}</Typography>
+      <Grid container direction='column'>
+        <Grid item container direction='row' justify='flex-start'>
+          <Typography>
+            <Box style={{ paddingRight: '.3rem' }}>
+              ¡Felicitaciones! Tu intención de práctica ha sido
+            </Box>
+          </Typography>
+          <Typography>
+            <Box className={classes.approvedText}>aprobada.</Box>
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography>
+            Puedes descargar los archivos necesarios para postular a prácticas a
+            continuación:
+          </Typography>
+        </Grid>
+        <Grid item>
+          <InternshipIntentionFileList
+            internshipId={internship.id}
+            studentId={internship.studentId}
+          />
+        </Grid>
+        <Grid
+          item
+          container
+          direction='row'
+          justify='space-between'
+          alignItems='center'
+          style={{ paddingTop: '1rem' }}>
+          <Typography className={classes.evaluatingSupervisorText}>
+            Evaluado por {internship.evaluatingSupervisor.name}
+          </Typography>
+          <Typography className={classes.evaluatingSupervisorText}>
+            {internship.evaluatingSupervisor.email}
+          </Typography>
+        </Grid>
       </Grid>
     );
   };
@@ -88,21 +149,43 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
   const DeniedState = () => {
     return (
-      <Grid>
-        <Typography>
-          ¡Rayos! Tu intención de práctica ha sido rechazada.
-        </Typography>
-        <Typography>
-          No te preocupes, puedes volver a intentarlo. Tendrás mejores
-          resultados si te comunicas directamente con los encargados.
-        </Typography>
-        <Typography>
-          Aquí el por qué del rechazo: {internship.reason}
-        </Typography>
-        <Typography>
-          Evaluado por {internship.evaluatingSupervisor.name}
-        </Typography>
-        <Typography>{internship.evaluatingSupervisor.email}</Typography>
+      <Grid container direction='column'>
+        <Grid item container direction='row' justify='flex-start'>
+          <Typography>
+            <Box style={{ paddingRight: '.3rem' }}>
+              ¡Rayos! Tu intención de práctica ha sido
+            </Box>
+          </Typography>
+          <Typography>
+            <Box className={classes.deniedText}>rechazada.</Box>
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography>
+            No te preocupes, puedes volver a intentarlo. Tendrás mejores
+            resultados si te comunicas directamente con los encargados.
+          </Typography>
+        </Grid>
+        <Grid item style={{ paddingTop: '1rem' }}>
+          <Typography>Aquí el por qué del rechazo:</Typography>
+          <Typography className={classes.reasonText}>
+            {internship.reason}
+          </Typography>
+        </Grid>
+        <Grid
+          item
+          container
+          direction='row'
+          justify='space-between'
+          alignItems='center'
+          style={{ paddingTop: '1rem' }}>
+          <Typography className={classes.evaluatingSupervisorText}>
+            Evaluado por {internship.evaluatingSupervisor.name}
+          </Typography>
+          <Typography className={classes.evaluatingSupervisorText}>
+            {internship.evaluatingSupervisor.email}
+          </Typography>
+        </Grid>
       </Grid>
     );
   };
@@ -142,10 +225,12 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
       expanded={expanded === internship.id}
       onChange={changeExpanded(internship.id)}>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography>
+        <Typography className={classes.heading}>
           Estado de práctica {internship.applicationNumber}
         </Typography>
-        <Typography>{internship.status}</Typography>
+        <Typography className={classes.secondaryHeading}>
+          {internship.status}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>{selectDetails()}</AccordionDetails>
       <AccordionActions>{selectActions()}</AccordionActions>

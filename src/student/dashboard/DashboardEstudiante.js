@@ -64,8 +64,8 @@ function DashboardEstudiante(props) {
             {props.onGoingIntern ? (
               <DetailedHome done={true} />
             ) : (
-              <InternshipIntention internships={practicas} />
-              /*<EmptyHome practicas={practicas} />*/
+              /*<InternshipIntention internships={practicas} />*/
+              <EmptyHome practicas={practicas} />
             )}
           </>
         ) : (

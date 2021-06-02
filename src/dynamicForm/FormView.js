@@ -22,11 +22,13 @@ function FormView({ flag, setFlag, form, readOnly }) {
   };
 
   return (
-    <Grid container direction='column' spacing={5}>
+    <Grid container 
+      direction='column' 
+      spacing={5} >
       {form
         ? form.map((element, index) =>
             element.type === 'Select' ? (
-              <Grid item>
+              <Grid item >
                 <FormControl fullWidth>
                   <InputLabel>{element.name}</InputLabel>
                   <Select

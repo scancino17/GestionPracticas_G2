@@ -99,10 +99,14 @@ function ConstructorCamp({
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-      <Box justifyContent='center' width={1 / 2}>
-        <Box bgcolor='white' padding={8}>
+      <Box justifyContent='center' width={1 / 5}>
+        <Box bgcolor='white' padding={8} borderRadius='2%'>
+          
           <Grid container direction='column' spacing={5}>
-            <Grid item xs>
+            <Typography variant='h5' >
+            Creación de Campo
+          </Typography>
+            <Grid item xs >
               <FormControl fullWidth>
                 <InputLabel>Tipo de Campo</InputLabel>
                 <Select
@@ -251,13 +255,22 @@ function ConstructorCamp({
               </FormControl>
             ) : null}
             {type !== '' ? (
-              <Button
-                startIcon={<Save />}
-                onClick={() => {
-                  handlerAddCamp();
-                  setShow(false);
-                }}
-              />
+              <Grid container
+                direction='column'
+                justify="center"
+                alignItems="center">
+                <Button
+                  variant='contained' 
+                  color='primary'
+                  startIcon={<Save />}
+                  onClick={() => {
+                    handlerAddCamp();
+                    setShow(false);
+                  }}
+                >
+                  Guardar Campo
+                </Button>  
+              </Grid>
             ) : null}
           </Grid>
         </Box>

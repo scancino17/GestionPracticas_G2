@@ -35,7 +35,7 @@ const items = [
   {
     label: 'Intenciones de práctica',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/internship-intention'
   },
   {
     label: 'Postulaciones de práctica',

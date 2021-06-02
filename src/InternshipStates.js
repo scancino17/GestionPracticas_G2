@@ -9,7 +9,7 @@
  * Los siguientes pasos representan los pasos disponibles durante el proceso de
  * declaración de práctica.
  */
-export const availableInternship = 'Práctica Disponible';
+export const availableInternship = 'Práctica disponible';
 export const pendingIntention = 'Intención enviada';
 export const approvedIntention = 'Intención aprobada';
 export const deniedIntention = 'Intención rechazada';
@@ -38,3 +38,29 @@ export const finishedInternship = 'Práctica finalizada';
 export const sentExtension = 'Solicitud enviada';
 export const approvedExtension = 'Extensión aprobada';
 export const deniedExtension = 'Extensión rechazada';
+
+/**
+ * Funciones para ayudar a determinar el estado
+ */
+export const isAvailableInternship = (status) => status === availableInternship;
+export const isPendingIntention = (status) => status === pendingIntention;
+export const isApprovedIntention = (status) => status === approvedIntention;
+export const isDeniedIntention = (status) => status === deniedIntention;
+
+const checkOrItemEqualsStates = (status, states) => {
+  let value = null;
+  states.forEach((state) => {
+    if (value === null) value = status === state;
+    value = value || status === state;
+  });
+
+  return value;
+};
+
+export const finishedIntentionProcess = (status) =>
+  checkOrItemEqualsStates(status, [
+    availableInternship,
+    pendingIntention,
+    approvedIntention,
+    deniedIntention
+  ]);

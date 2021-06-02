@@ -18,6 +18,7 @@ import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import Formulario from './../../form/Formulario';
 import InternshipIntention from './InternshipIntention';
+import { finishedIntentionProcess } from '../../InternshipStates';
 
 function DashboardEstudiante(props) {
   const { user, userData } = useAuth();
@@ -27,6 +28,7 @@ function DashboardEstudiante(props) {
   const [practicas, setPracticas] = useState([]);
 
   useEffect(() => {
+    let desubscribe = () => {};
     if (userData) {
       db.collection('careerInternshipInfo')
         .where('careerId', '==', userData.careerId)
@@ -40,10 +42,10 @@ function DashboardEstudiante(props) {
         .listAll()
         .then((res) => setDocs(res.items));
 
-      db.collection('internships')
+      desubscribe = db
+        .collection('internships')
         .where('studentId', '==', user.uid)
-        .get()
-        .then((querySnapshot) => {
+        .onSnapshot((querySnapshot) => {
           const temp = [];
           querySnapshot.forEach((doc) =>
             temp.push({ id: doc.id, ...doc.data() })
@@ -52,6 +54,8 @@ function DashboardEstudiante(props) {
           setLoaded(true);
         });
     }
+
+    return desubscribe;
   }, [user, userData]);
 
   return (
@@ -89,11 +93,11 @@ function DashboardEstudiante(props) {
                 </Grid>
               </Card>
             </Container>
-            {props.onGoingIntern ? (
+            {practicas.filter((item) => !finishedIntentionProcess(item.status))
+              .length > 0 ? (
               <DetailedHome done={false} />
             ) : (
-              /*<InternshipIntention internships={practicas} />*/
-              <EmptyHome practicas={practicas} />
+              <InternshipIntention internships={practicas} />
             )}
           </>
         ) : (

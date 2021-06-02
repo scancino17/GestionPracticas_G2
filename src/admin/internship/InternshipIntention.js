@@ -19,11 +19,16 @@ import { ExpandMore } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useCallback, useEffect, useState } from 'react';
 import { db, storage } from '../../firebase';
+import {
+  approvedIntention,
+  deniedIntention,
+  pendingIntention
+} from '../../InternshipStates';
 import { useAuth } from '../../providers/Auth';
 
-const pendingIntentionState = 'Intención Enviada';
-const approvedIntentionState = 'Intención Aprobada';
-const deniedIntentionState = 'Intención rechazada';
+const pendingIntentionState = pendingIntention;
+const approvedIntentionState = approvedIntention;
+const deniedIntentionState = deniedIntention;
 
 const useStyles = makeStyles((theme) => ({
   list: {

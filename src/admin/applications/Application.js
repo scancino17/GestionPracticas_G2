@@ -13,6 +13,7 @@ import { Checkmark, Close } from 'grommet-icons';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { db, storage } from '../../firebase';
+import { approvedApplication } from '../../InternshipStates';
 import Documentos from '../../student/dashboard/extras/Documentos';
 
 function Application() {
@@ -45,7 +46,7 @@ function Application() {
     db.collection('applications').doc(id).update({ status: 'Aprobado' });
     db.collection('internships')
       .doc(data.internshipId)
-      .update({ status: 'En curso' });
+      .update({ status: approvedApplication });
 
     db.collection('mails').add({
       to: data.email,

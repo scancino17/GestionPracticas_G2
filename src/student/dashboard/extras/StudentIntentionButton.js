@@ -1,8 +1,9 @@
 import { Button } from '@material-ui/core';
 import React, { useState, useEffect } from 'react';
 import { db } from '../../../firebase';
+import { approvedIntention } from '../../../InternshipStates';
 
-const approvalState = 'Pendiente Aprobación';
+const approvalState = approvedIntention;
 
 function StudentIntention({ practica }) {
   const [internshipState, setInternshipState] = useState(practica.status);

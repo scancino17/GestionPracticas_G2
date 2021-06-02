@@ -13,12 +13,17 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { db } from '../../firebase';
+import {
+  approvedIntention,
+  deniedIntention,
+  pendingIntention
+} from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 
-const pendingApprovalState = 'Pendiente Aprobación';
-const approvedState = 'Pendiente';
-const deniedState = 'Rechazado';
+const pendingApprovalState = pendingIntention;
+const approvedState = approvedIntention;
+const deniedState = deniedIntention;
 
 const useStyles = makeStyles((theme) => ({
   list: {
@@ -206,7 +211,7 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
     const handleStartInternship = (e) => {
       e.preventDefault();
-      db.collection('users').doc(user.uid).update({ onGoingIntern: true });
+      db.collection('internship').doc(user.uid).update({ onGoingIntern: true });
     };
 
     return (

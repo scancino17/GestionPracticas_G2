@@ -2,7 +2,7 @@ import { Step, StepLabel, Stepper, Tooltip, Hidden } from '@material-ui/core';
 import React from 'react';
 
 function CustomStepper() {
-  const [activeStep, setActiveStep] = React.useState(1);
+  const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
 
   function getSteps() {

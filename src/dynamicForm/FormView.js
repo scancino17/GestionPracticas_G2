@@ -1,8 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   TextField,
@@ -10,8 +15,31 @@ import {
 } from '@material-ui/core';
 import Selector from './Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
+import { GetApp } from '@material-ui/icons';
+const UrlLink = ({ file }) => {
+  const [url, setUrl] = useState();
 
-function FormView({ flag, setFlag, form, readOnly }) {
+  const onDownload = () => {
+    const link = document.createElement(file);
+    link.download = `download.txt`;
+    link.href = './download.txt';
+    link.click();
+  };
+
+  return (
+    <Button onClick={onDownload} variant='contained' color='primary'>
+      Download
+    </Button>
+  );
+};
+function FormView({
+  flag,
+  setFlag,
+  form,
+  readOnly,
+  filesInnerInner,
+  setFilesInnerInner
+}) {
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
@@ -20,6 +48,9 @@ function FormView({ flag, setFlag, form, readOnly }) {
     form[index][whichvalue] = newvalue;
     setFlag(true);
   };
+  function setFiles(files) {
+    //filesInnerInner.push(files[0]);
+  }
 
   return (
     <Grid container direction='column' spacing={5}>
@@ -66,8 +97,10 @@ function FormView({ flag, setFlag, form, readOnly }) {
                     {element.name}
                   </Typography>
                   <DropzoneArea
+                    initialFiles={element.value}
                     filesLimit={1}
                     accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    onChange={(files) => setFiles(files)}
                   />
                 </>
               </Grid>
@@ -97,6 +130,7 @@ function FormView({ flag, setFlag, form, readOnly }) {
                 <Grid item>
                   <Typography variant='h4'>Empresa</Typography>
                   <Selector
+                    readOnly={readOnly}
                     valueinner={element.value}
                     camp={element.type2}
                     onParentChange={(newValue) => {

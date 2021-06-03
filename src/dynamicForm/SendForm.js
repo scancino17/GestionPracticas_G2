@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import DynamicForm from './DynamicForm';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import {
   Step,
   StepLabel,
@@ -14,12 +14,14 @@ import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
 import { useHistory } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
+import { ContactsOutlined } from '@material-ui/icons';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useAuth();
+  const [files, setFiles] = useState([]);
   const { internshipId } = useParams();
   const history = useHistory();
 
@@ -58,15 +60,41 @@ function SendForm({ edit }) {
   function handleBack() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }
-
+  function saveFiles(applicationId) {
+    formFull.map((step) =>
+      step.form.map((camp) => {
+        if (camp.type === 'File') {
+          if (camp.value) {
+            camp.value.map(
+              (value) => console.log(value)
+              /*storage
+                .ref()
+                .child(
+                  `/students-docs/${formFull.name}/${userData.currentInternship.id}/applications/${applicationId}/${value.name}`
+                )
+                .put(value)*/
+            );
+          }
+        }
+      })
+    );
+  }
   function handleSave() {
     if (!edit) {
-      db.collection('applications').add({
-        form: formFull,
-        student: user.uid,
-        email: userData.email,
-        careerId: userData.careerId
-      });
+      db.collection('applications')
+        .add({
+          form: formFull,
+          student: user.uid,
+          email: userData.email,
+          careerId: userData.careerId
+        })
+        .then(function (docRef) {
+          console.log('Document written with ID: ', docRef.id);
+          saveFiles(docRef.id);
+        })
+        .catch(function (error) {
+          console.error('Error adding document: ', error);
+        });
     } else {
       db.collection('applications').doc(internshipId).set({
         form: formFull,
@@ -105,10 +133,15 @@ function SendForm({ edit }) {
                   setForm={setFormFull}
                   formFull={formFull}
                   index={i}
+                  filesInner={files}
+                  setFilesInner={() => setFiles}
                   student
                 />
               )
           )}
+          <Button variant='contained' color='primary' onClick={saveFiles}>
+            Save File
+          </Button>
           <Button
             variant='contained'
             color='primary'

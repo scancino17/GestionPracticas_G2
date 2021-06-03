@@ -11,6 +11,8 @@ import {
   ArrowForward,
   CheckCircleOutline
 } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import {
   Box,
   Button,
@@ -41,7 +43,7 @@ function EditForm() {
   const [flag, setFlag] = useState(false);
   const [careers, setCareers] = useState([]);
   const [careerId, setCareerId] = useState();
-
+  const history = useHistory();
   useEffect(() => {
     db.collection('careers')
       .get()
@@ -190,32 +192,53 @@ function EditForm() {
                     )
                 )}
                 <Grid item>
-                  <Box pt={3}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    disabled={activeStep === 0}
+                    onClick={handleBack}>
+                    Anterior
+                  </Button>
+                  {activeStep !== formFull.length - 1 && (
                     <Button
                       variant='contained'
                       color='primary'
-                      disabled={activeStep === 0}
-                      startIcon={<ArrowBack />}
-                      onClick={handleBack}>
-                      Anterior
+                      onClick={handleNext}>
+                      Siguiente
                     </Button>
-
+                  )}
+                  {activeStep === formFull.length - 1 && (
                     <Button
                       variant='contained'
                       color='primary'
-                      onClick={handleNext}
-                      endIcon={
-                        activeStep === formFull.length - 1 ? (
-                          <CheckCircleOutline />
-                        ) : (
-                          <ArrowForward />
-                        )
-                      }>
-                      {activeStep === formFull.length - 1
-                        ? 'Terminar'
-                        : 'Siguiente'}
+                      onClick={() => {
+                        Swal.fire({
+                          title: '¿Desea Guardar los cambios?',
+                          showDenyButton: true,
+                          confirmButtonText: `Guardar`,
+                          denyButtonText: `Salir`
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            handleSave();
+                            Swal.fire(
+                              '¡Formulario Guardado!',
+                              '',
+                              'success'
+                            ).then((result) => {
+                              if (result.isConfirmed) history.push('/');
+                            });
+                          } else if (result.isDenied) {
+                            Swal.fire(
+                              'Revisa bien tu formulario antes de enviarlo',
+                              '',
+                              'info'
+                            );
+                          }
+                        });
+                      }}>
+                      Guardar
                     </Button>
-                  </Box>
+                  )}
                 </Grid>
               </Grid>
             )}

@@ -3,7 +3,16 @@ import { Grid } from '@material-ui/core';
 import FormBuilder from './FormBuilder';
 import FormView from './FormView';
 
-function DynamicForm({ admin, student, index, form, setForm, formFull }) {
+function DynamicForm({
+  admin,
+  student,
+  index,
+  form,
+  setForm,
+  formFull,
+  filesInner,
+  setFilesInner
+}) {
   const [flag, setFlag] = useState(false);
   return (
     <Grid container justify='center' spacing={8}>
@@ -21,6 +30,8 @@ function DynamicForm({ admin, student, index, form, setForm, formFull }) {
           </Grid>
           <Grid item xs={12} md={6}>
             <FormView
+              filesInnerInner={filesInner}
+              setFilesInnerInner={setFilesInner}
               setFlag={setFlag}
               flag={flag}
               indexInner={index}

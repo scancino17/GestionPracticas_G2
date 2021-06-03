@@ -11,9 +11,8 @@ import {
 } from '@material-ui/core';
 import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { ContactsOutlined } from '@material-ui/icons';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -96,13 +95,14 @@ function SendForm({ edit }) {
       //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
       //firestore no lo soporta
       extractFiles();
-      db.collection('applications').add({
-        form: formFull,
-        studentId: user.uid,
-        email: userData.email,
-        careerId: userData.careerId,
-        internshipId: internshipId
-      })
+      db.collection('applications')
+        .add({
+          form: formFull,
+          studentId: user.uid,
+          email: userData.email,
+          careerId: userData.careerId,
+          internshipId: internshipId
+        })
         .then(function (docRef) {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);

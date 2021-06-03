@@ -149,25 +149,23 @@ function EditForm() {
         </Grid>
       </Grid>
       {careerId && (
-        <Grid container direction='column' style={{padding: '3rem 0 0 0'}}>
-          <Grid container justify='center' spacing={8} >
+        <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
+          <Grid container justify='center' spacing={8}>
             <>
               <Grid
-                  item 
-                  direction='column'
-                  justify='center'
-                  alignItems='center'
-                  xs={12} 
-                  md={5}>
-                <Typography variant='h5'>
-                  Etapas
-                </Typography>
-                <Grid 
+                item
+                direction='column'
+                justify='center'
+                alignItems='center'
+                xs={12}
+                md={5}>
+                <Typography variant='h5'>Etapas</Typography>
+                <Grid
                   container
                   direction='column'
                   justify='center'
                   alignItems='center'
-                  style={{padding: '3rem 0 0 0'}}>
+                  style={{ padding: '3rem 0 0 0' }}>
                   <Button
                     variant='contained'
                     color='primary'
@@ -177,22 +175,22 @@ function EditForm() {
                   </Button>
                 </Grid>
               </Grid>
-            
 
-            <Divider orientation="vertical" flexItem/>
+              <Divider orientation='vertical' flexItem />
 
-            <Grid item xs={12} md={6}>
-              <Typography variant='h5'>
-                Previsualización
-              </Typography>
-              <Stepper activeStep={activeStep} alternativeLabel style={{backgroundColor: 'transparent'}}>
-                {formFull.map((step) => (
-                  <Step key={step.step}>
-                    <StepLabel>{step.step}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            </Grid>
+              <Grid item xs={12} md={6}>
+                <Typography variant='h5'>Previsualización</Typography>
+                <Stepper
+                  activeStep={activeStep}
+                  alternativeLabel
+                  style={{ backgroundColor: 'transparent' }}>
+                  {formFull.map((step) => (
+                    <Step key={step.step}>
+                      <StepLabel>{step.step}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Grid>
             </>
           </Grid>
           <>
@@ -224,26 +222,16 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid 
-                  container 
-                  justify='center' 
-                  spacing={8}>
-                  <Grid 
-                    item 
-                    xs={12} 
-                    md={5}>
-
-                  </Grid>
-                  <Divider 
-                   orientation='vertical' 
-                   flexItem/>
-                  <Grid 
-                    item 
-                    xs={12} 
-                    md={6} 
-                    style={{padding: '3rem 0 0 2rem'}}>
-                    <Grid 
-                      container 
+                <Grid container justify='center' spacing={8}>
+                  <Grid item xs={12} md={5}></Grid>
+                  <Divider orientation='vertical' flexItem />
+                  <Grid
+                    item
+                    xs={12}
+                    md={6}
+                    style={{ padding: '3rem 0 0 2rem' }}>
+                    <Grid
+                      container
                       direction='row'
                       justify='flex-start'
                       alignItems='center'
@@ -262,33 +250,36 @@ function EditForm() {
                         <Button
                           variant='contained'
                           color='primary'
-                          onClick={activeStep === formFull.length - 1 ? (() => {
-                        Swal.fire({
-                          title: '¿Desea Guardar los cambios?',
-                          showDenyButton: true,
-                          confirmButtonText: `Guardar`,
-                          denyButtonText: `Salir`
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            handleSave();
-                            Swal.fire(
-                              '¡Formulario Guardado!',
-                              '',
-                              'success'
-                            ).then((result) => {
-                              if (result.isConfirmed) history.push('/');
-                            });
-                          } else if (result.isDenied) {
-                            Swal.fire(
-                              'Revisa bien tu formulario antes de enviarlo',
-                              '',
-                              'info'
-                            );
+                          onClick={
+                            activeStep === formFull.length - 1
+                              ? () => {
+                                  Swal.fire({
+                                    title: '¿Desea Guardar los cambios?',
+                                    showDenyButton: true,
+                                    confirmButtonText: `Guardar`,
+                                    denyButtonText: `Salir`
+                                  }).then((result) => {
+                                    if (result.isConfirmed) {
+                                      handleSave();
+                                      Swal.fire(
+                                        '¡Formulario Guardado!',
+                                        '',
+                                        'success'
+                                      ).then((result) => {
+                                        if (result.isConfirmed)
+                                          history.push('/');
+                                      });
+                                    } else if (result.isDenied) {
+                                      Swal.fire(
+                                        'Revisa bien tu formulario antes de enviarlo',
+                                        '',
+                                        'info'
+                                      );
+                                    }
+                                  });
+                                }
+                              : handleNext
                           }
-                        });
-                      }) : (
-                              handleNext
-                            )}
                           endIcon={
                             activeStep === formFull.length - 1 ? (
                               <Save />

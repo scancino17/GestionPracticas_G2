@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(18)
   }
 }));
-function down() {}
+
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);

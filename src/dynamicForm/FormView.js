@@ -16,29 +16,53 @@ import {
 import Selector from './Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { GetApp } from '@material-ui/icons';
-const UrlLink = ({ file }) => {
-  const [url, setUrl] = useState();
+import { storage } from '../firebase';
 
-  const onDownload = () => {
-    const link = document.createElement(file);
-    link.download = `download.txt`;
-    link.href = './download.txt';
-    link.click();
-  };
-
+const UrlLink = ({ url, name }) => {
   return (
-    <Button onClick={onDownload} variant='contained' color='primary'>
-      Download
-    </Button>
+    <ListItem button component='a' href={url} target='_blank' rel='noopener'>
+      <ListItemIcon>
+        <GetApp />
+      </ListItemIcon>
+      <ListItemText primary={name} />
+    </ListItem>
   );
 };
+function InternshipIntentionFileList({
+  student,
+  internship,
+  application,
+  camp,
+  name
+}) {
+  const [urls, setUrl] = useState();
+
+  useEffect(() => {
+    storage
+      .ref(
+        `/students-docs/${student}/${internship}/applications/${application}/${camp}/${name}`
+      )
+      .getDownloadURL()
+      .then((url) => {
+        setUrl(url);
+      });
+  }, [student, internship, application, camp, name]);
+
+  return (
+    <List>
+      <UrlLink url={urls} name={name} />
+    </List>
+  );
+}
+
 function FormView({
   flag,
   setFlag,
   form,
   readOnly,
-  filesInnerInner,
-  setFilesInnerInner
+  studentId,
+  internshipId,
+  applicationId
 }) {
   useEffect(() => {
     setFlag(false);
@@ -48,9 +72,6 @@ function FormView({
     form[index][whichvalue] = newvalue;
     setFlag(true);
   };
-  function setFiles(files) {
-    //filesInnerInner.push(files[0]);
-  }
 
   return (
     <Grid container direction='column' spacing={5}>
@@ -96,12 +117,26 @@ function FormView({
                   <Typography variant='h6' gutterBottom>
                     {element.name}
                   </Typography>
-                  <DropzoneArea
-                    initialFiles={element.value}
-                    filesLimit={1}
-                    accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    onChange={(files) => setFiles(files)}
-                  />
+
+                  {
+                    //si el formulario es solo para ver se mostrarn los botones para descargar los archivos
+                    !readOnly ? (
+                      <DropzoneArea
+                        initialFiles={element.value}
+                        filesLimit={1}
+                        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        onChange={(files) => updateItem(index, 'value', files)}
+                      />
+                    ) : (
+                      <InternshipIntentionFileList
+                        student={studentId}
+                        internship={internshipId}
+                        application={applicationId}
+                        camp={element.name}
+                        name={element.value}
+                      />
+                    )
+                  }
                 </>
               </Grid>
             ) : element.type === 'Header' ? (

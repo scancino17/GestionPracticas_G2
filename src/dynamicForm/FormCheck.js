@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(18)
   }
 }));
-
+function down() {}
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
@@ -160,6 +160,9 @@ function FormCheck() {
               <Grid item>
                 <FormView
                   readOnly
+                  studentId={application.student}
+                  internshipId={application.internship}
+                  applicationId={applicationId}
                   form={step.form}
                   flag={flag}
                   setFlag={setFlag}

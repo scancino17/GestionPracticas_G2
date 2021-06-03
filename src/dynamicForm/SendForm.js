@@ -22,33 +22,35 @@ function SendForm({ edit }) {
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useAuth();
   const [files, setFiles] = useState([]);
-  const { internshipId } = useParams();
+  const { applicationId } = useParams();
   const history = useHistory();
+  const [internshipId, setInternshipId] = useState();
 
   useEffect(() => {
-    if (!edit) {
-      db.collection('form')
-        .doc(userData.careerId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
-    } else {
-      db.collection('applications')
-        .doc(internshipId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
+    if (userData) {
+      setInternshipId(userData.currentInternship.id);
+      if (!edit) {
+        db.collection('form')
+          .doc(userData.careerId)
+          .get()
+          .then((doc) => {
+            const data = doc.data();
+            if (data) setFormFull(data.form);
+          });
+      } else {
+        db.collection('applications')
+          .doc(applicationId)
+          .get()
+          .then((doc) => {
+            const data = doc.data();
+            if (data) setFormFull(data.form);
+          });
+      }
+      db.collection('internships')
+        .doc(userData.currentInternship.id)
+        .update({ status: sentApplication });
     }
-
-    db.collection('internships')
-      .doc(userData.currentInternship.id)
-      .update({ status: sentApplication });
-  }, []);
-
+  }, [userData]);
   useEffect(() => {
     setFlag(false);
   }, [flag]);
@@ -60,43 +62,57 @@ function SendForm({ edit }) {
   function handleBack() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }
-  function saveFiles(applicationId) {
-    formFull.map((step) =>
-      step.form.map((camp) => {
+  //se extraen los archivos del formfull para tenerlos en una lista aparte para poder subirlos al storage
+  function extractFiles() {
+    formFull.map((step, i) =>
+      step.form.map((camp, j) => {
         if (camp.type === 'File') {
           if (camp.value) {
-            camp.value.map(
-              (value) => console.log(value)
-              /*storage
-                .ref()
-                .child(
-                  `/students-docs/${formFull.name}/${userData.currentInternship.id}/applications/${applicationId}/${value.name}`
-                )
-                .put(value)*/
-            );
+            files.push({ campName: camp.name, file: camp.value[0] });
+            //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
+            //tambien ese name sirve para poder buscar el archivo
+            formFull[i].form[j].value = camp.value[0].name;
           }
         }
       })
     );
   }
+  //se guardan los archivos en el storage
+  function saveFiles(applicationId) {
+    files.map((file) => {
+      storage
+        .ref()
+        .child(
+          //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
+          //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
+          //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
+          `/students-docs/${user.uid}/${internshipId}/applications/${applicationId}/${file.campName}/${file.file.name}`
+        )
+        .put(file.file);
+    });
+  }
   function handleSave() {
     if (!edit) {
+      //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
+      //firestore no lo soporta
+      extractFiles();
       db.collection('applications')
         .add({
           form: formFull,
           student: user.uid,
           email: userData.email,
-          careerId: userData.careerId
+          careerId: userData.careerId,
+          internship: internshipId
         })
         .then(function (docRef) {
-          console.log('Document written with ID: ', docRef.id);
+          //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
         })
         .catch(function (error) {
           console.error('Error adding document: ', error);
         });
     } else {
-      db.collection('applications').doc(internshipId).set({
+      db.collection('applications').doc(applicationId).set({
         form: formFull,
         student: user.uid
       });
@@ -139,7 +155,7 @@ function SendForm({ edit }) {
                 />
               )
           )}
-          <Button variant='contained' color='primary' onClick={saveFiles}>
+          <Button variant='contained' color='primary' onClick={extractFiles}>
             Save File
           </Button>
           <Button

@@ -33,7 +33,8 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-
+import {makeStyles} from '@material-ui/styles'
+import { blueGrey } from '@material-ui/core/colors';
 function EditForm() {
   const [formFull, setFormFull] = useState([]);
   const [show, setShow] = useState('');
@@ -115,7 +116,6 @@ function EditForm() {
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing purposes
   }
-
   return (
     <Container>
       <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
@@ -146,24 +146,53 @@ function EditForm() {
       </Grid>
       {careerId && (
         <Grid container direction='column'>
-          <Grid item>
-            <Button
-              variant='contained'
-              color='primary'
-              startIcon={<Build />}
-              onClick={() => setShow(true)}>
-              Administrar Pasos
-            </Button>
-          </Grid>
-          <Grid item>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {formFull.map((step) => (
-                <Step key={step.step}>
-                  <StepLabel>{step.step}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Grid>
+          <Box pt={3}>
+            <Grid container spacing={8} >
+              
+              <Grid
+                item 
+                direction='column'
+                justify='center'
+                alignItems='center'
+                xs={12} 
+                md={5}>
+                <Typography variant='h5' style={{ padding: '0 0 0 4rem' }}>
+                  Etapas
+                </Typography>
+                <Box
+                  display='flex'
+                  justifyContent='center'
+                  alignItems='center'
+                  p={1}
+                  borderRight={1}
+                  borderColor="primary.main"
+                  height={1} 
+                  width={1}>
+                
+                <Button
+                  variant='contained'
+                  color='primary'
+                  startIcon={<Build />}
+                  onClick={() => setShow(true)}>
+                  Administrar Etapas
+                </Button>
+                </Box>
+                
+              </Grid>
+              <Grid item xs={12} md={7}>
+                <Typography variant='h5'>
+                  Previsualización
+                </Typography>
+                <Stepper activeStep={activeStep} alternativeLabel>
+                  {formFull.map((step) => (
+                    <Step key={step.step}>
+                      <StepLabel>{step.step}</StepLabel>
+                    </Step>
+                  ))}
+                </Stepper>
+              </Grid>
+            </Grid>
+          </Box>
           <>
             {activeStep === formFull.length ? (
               <>
@@ -177,6 +206,9 @@ function EditForm() {
               </>
             ) : (
               <Grid item>
+                <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
+                  Campos
+                </Typography>
                 {formFull.map(
                   (form, i) =>
                     i === activeStep && (
@@ -189,33 +221,38 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid item>
-                  <Box pt={3}>
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      disabled={activeStep === 0}
-                      startIcon={<ArrowBack />}
-                      onClick={handleBack}>
-                      Anterior
-                    </Button>
+                <Grid container>
+                  <Grid item xs={12} md={5}>
 
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={handleNext}
-                      endIcon={
-                        activeStep === formFull.length - 1 ? (
-                          <CheckCircleOutline />
-                        ) : (
-                          <ArrowForward />
-                        )
-                      }>
-                      {activeStep === formFull.length - 1
-                        ? 'Terminar'
-                        : 'Siguiente'}
-                    </Button>
-                  </Box>
+                  </Grid>
+                  <Grid item xs={12} md={7}>
+                    <Box pt={3}>
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        disabled={activeStep === 0}
+                        startIcon={<ArrowBack />}
+                        onClick={handleBack}>
+                        Anterior
+                      </Button>
+                      <Button m={2}
+                        variant='contained'
+                        color='primary'
+                        onClick={handleNext}
+                        endIcon={
+                          activeStep === formFull.length - 1 ? (
+                            <CheckCircleOutline />
+                          ) : (
+                            <ArrowForward />
+                          )
+                        }>
+                        {activeStep === formFull.length - 1
+                          ? 'Terminar'
+                          : 'Siguiente'}
+                      </Button>
+                    </Box>
+                  </Grid>
+                  
                 </Grid>
               </Grid>
             )}

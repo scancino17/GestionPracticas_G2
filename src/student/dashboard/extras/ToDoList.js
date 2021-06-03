@@ -11,8 +11,7 @@ import {
   Hidden,
   Typography
 } from '@material-ui/core';
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
@@ -21,6 +20,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import InternshipIntentionFileList from './InternshipIntentionFileList';
 import useAuth from '../../../providers/Auth';
 import { useHistory } from 'react-router-dom';
+import { db } from '../../../firebase';
+import {
+  changeDetailsApplication,
+  reportNeedsChanges,
+  sentApplication
+} from '../../../InternshipStates';
 
 const useStyles = makeStyles({
   icon: {
@@ -35,7 +40,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
+function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
   const classes = useStyles();
 
   return (
@@ -62,7 +67,8 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
           className={classes.button}
           variant='outlined'
           color='primary'
-          onClick={buttonOnClick}>
+          onClick={buttonOnClick}
+          disabled={disabled}>
           {buttonText}
         </Button>
       </Grid>
@@ -71,9 +77,18 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
 }
 
 function ToDoList({ done }) {
+  const [internship, setInternship] = useState();
+  const { userData } = useAuth();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const history = useHistory();
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('internships')
+      .doc(userData.currentInternship.id)
+      .onSnapshot((doc) => setInternship(doc.data()));
+    return unsubscribe;
+  }, []);
 
   return (
     <>
@@ -105,41 +120,66 @@ function ToDoList({ done }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              <ToDoItem
-                icon={<FaWpforms className={classes.icon} />}
-                title='Completar Formulario'
-                body='Completa el formulario de inscripción de práctica.'
-                buttonText='Completar'
-                buttonOnClick={() => history.push('/send-form')}
-              />
-              <Divider />
-              <ToDoItem
-                icon={<FaWpforms className={classes.icon} />}
-                title='Corregir Formulario'
-                body='El formulario que enviaste requiere correcciones.'
-                buttonText='Corregir'
-              />
-              <Divider />
-              <ToDoItem
-                icon={<IoDocumentAttachOutline className={classes.icon} />}
-                title='Enviar Informe'
-                body='Cuéntanos lo que has aprendido durante la práctica.'
-                buttonText='Enviar'
-              />
-              <Divider />
-              <ToDoItem
-                icon={<IoDocumentAttachOutline className={classes.icon} />}
-                title='Corregir Informe'
-                body='El informe que has enviado requiere correcciones.'
-                buttonText='Corregir'
-              />
-              <Divider />
-              <ToDoItem
-                icon={<RiSurveyLine className={classes.icon} />}
-                title='Responder Encuesta'
-                body='Cuéntanos tu experiencia durante las semanas práctica.'
-                buttonText='Responder'
-              />
+              {userData.step === 1 && (
+                <>
+                  <ToDoItem
+                    icon={<FaWpforms className={classes.icon} />}
+                    title='Completar Formulario'
+                    body='Completa el formulario de inscripción de práctica.'
+                    buttonText={
+                      internship && internship.status === sentApplication
+                        ? 'En revisión'
+                        : 'Completar'
+                    }
+                    buttonOnClick={() => history.push('/send-form')}
+                    disabled={
+                      internship && internship.status === sentApplication
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
+              {internship && internship.status === changeDetailsApplication && (
+                <>
+                  <ToDoItem
+                    icon={<FaWpforms className={classes.icon} />}
+                    title='Corregir Formulario'
+                    body='El formulario que enviaste requiere correcciones.'
+                    buttonText='Corregir'
+                  />
+                  <Divider />
+                </>
+              )}
+              {userData.step === 2 && (
+                <>
+                  <ToDoItem
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Enviar Informe'
+                    body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
+                    buttonText='Enviar'
+                  />
+                  <Divider />
+                </>
+              )}
+              {internship && internship.status === reportNeedsChanges && (
+                <>
+                  <ToDoItem
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Corregir Informe'
+                    body='El informe que has enviado requiere correcciones.'
+                    buttonText='Corregir'
+                  />
+                  <Divider />
+                </>
+              )}
+              {userData.step === 3 && (
+                <ToDoItem
+                  icon={<RiSurveyLine className={classes.icon} />}
+                  title='Responder Encuesta'
+                  body='Cuéntanos tu experiencia durante las semanas de práctica.'
+                  buttonText='Responder'
+                />
+              )}
             </Grid>
           )}
         </AccordionDetails>

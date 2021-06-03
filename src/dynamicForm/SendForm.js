@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import DynamicForm from './DynamicForm';
 import { db } from '../firebase';
 import {
@@ -20,32 +19,34 @@ function SendForm({ edit }) {
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useAuth();
-  const { internshipId } = useParams();
   const history = useHistory();
+  const [internshipId, setInternshipId] = useState();
 
   useEffect(() => {
-    if (!edit) {
-      db.collection('form')
-        .doc(userData.careerId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
-    } else {
-      db.collection('applications')
-        .doc(internshipId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
+    if (userData) {
+      setInternshipId(userData.currentInternship.id);
+      if (!edit) {
+        db.collection('form')
+          .doc(userData.careerId)
+          .get()
+          .then((doc) => {
+            const data = doc.data();
+            if (data) setFormFull(data.form);
+          });
+      } else {
+        db.collection('applications')
+          .doc(internshipId)
+          .get()
+          .then((doc) => {
+            const data = doc.data();
+            if (data) setFormFull(data.form);
+          });
+      }
+      db.collection('internships')
+        .doc(userData.currentInternship.id)
+        .update({ status: sentApplication });
     }
-
-    db.collection('internships')
-      .doc(userData.currentInternship.id)
-      .update({ status: sentApplication });
-  }, []);
+  }, [userData]);
 
   useEffect(() => {
     setFlag(false);
@@ -63,15 +64,13 @@ function SendForm({ edit }) {
     if (!edit) {
       db.collection('applications').add({
         form: formFull,
-        student: user.uid,
+        studentId: user.uid,
         email: userData.email,
-        careerId: userData.careerId
+        careerId: userData.careerId,
+        internshipId: internshipId
       });
     } else {
-      db.collection('applications').doc(internshipId).set({
-        form: formFull,
-        student: user.uid
-      });
+      db.collection('applications').doc(internshipId).set({ form: formFull });
     }
   }
 

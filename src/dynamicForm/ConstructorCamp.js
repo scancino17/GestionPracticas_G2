@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import {
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableRow,
   TextField,
   Button,
   IconButton,
-  Box,
-  Modal,
-  Typography
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@material-ui/core';
 import { Add, Delete, Save } from '@material-ui/icons';
 
@@ -29,19 +29,12 @@ function ConstructorCamp({
 }) {
   const [type, setType] = useState('');
   const [type2, setType2] = useState('');
-  const [types, setTypes] = useState([
-    'Input',
-    'Select',
-    'File',
-    'Header',
-    'Space',
-    'predefinido'
-  ]);
-  const [predefined, setPredefined] = useState(['Ciudad', 'Empresa']);
+  const types = ['Input', 'Select', 'File', 'Header', 'Space', 'Predefinido'];
+  const predefined = ['Ciudad', 'Empresa'];
   const [name, setName] = useState('');
   const [openSelect, setopenSelect] = useState('');
   const [openSelect2, setopenSelect2] = useState('');
-  const [options, setOpctions] = useState([]);
+  const [options, setOptions] = useState([]);
   const [newOption, setNewOption] = useState('');
 
   function handlerAddCamp() {
@@ -76,7 +69,7 @@ function ConstructorCamp({
       temp = {
         type: type
       };
-    } else if (type === 'predefinido') {
+    } else if (type === 'Predefinido') {
       temp = {
         type: type,
         type2: type2,
@@ -91,183 +84,133 @@ function ConstructorCamp({
   }
 
   return (
-    <Modal
-      open={show}
-      onClose={() => setShow(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-      <Box justifyContent='center' width={1 / 5}>
-        <Box bgcolor='white' padding={8} borderRadius='2%'>
-          <Grid container direction='column' spacing={5}>
-            <Typography variant='h5'>Creación de Campo</Typography>
-            <Grid item>
-              <FormControl fullWidth>
-                <InputLabel>Tipo de Campo</InputLabel>
-                <Select
-                  fullWidth
-                  value={type}
-                  open={openSelect}
-                  onClose={() => setopenSelect(false)}
-                  onOpen={() => setopenSelect(true)}
-                  onChange={(e) => setType(e.target.value)}>
-                  <MenuItem value=''>None</MenuItem>
-                  {types.map((option) => (
-                    <MenuItem value={option}>{option}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {type === 'Input' ? (
-              <Grid item>
-                <TextField
-                  fullWidth
-                  variant='outlined'
-                  required
-                  id='standard-required'
-                  label={'Nombre'}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Grid>
-            ) : type === 'Select' ? (
-              <Grid item>
-                <h1>Select</h1>
-                <Grid item>
-                  <TextField
-                    fullWidth
-                    variant='outlined'
-                    required
-                    id='standard-required'
-                    label={'Nombre'}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </Grid>
-
-                <Grid item>
-                  <Grid item width='auto' flex>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>opción</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {options.map((option) => (
-                          <TableRow key={option.i}>
-                            <TableCell>
-                              <Typography>{option}</Typography>
-                            </TableCell>
-                            <TableCell>
-                              <IconButton
-                                onClick={() =>
-                                  setOpctions((prev) =>
-                                    prev.filter((element) => element !== option)
-                                  )
-                                }>
-                                <Delete />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        <TableRow>
-                          <TableCell>
-                            <TextField
-                              fullWidth
-                              variant='outlined'
-                              required
-                              value={newOption}
-                              id='standard-required'
-                              label={'Nuevo opción'}
-                              onChange={(e) => setNewOption(e.target.value)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                setOpctions((prev) => prev.concat(newOption));
-                                setNewOption('');
-                              }}>
-                              <Add />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Grid>
-                </Grid>
-              </Grid>
-            ) : type === 'File' ? (
-              <Grid item xs>
-                <h1>File</h1>
-                <TextField
-                  fullWidth
-                  variant='outlined'
-                  required
-                  id='standard-required'
-                  label={'Nombre'}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Grid>
-            ) : type === 'Header' ? (
-              <Grid item xs>
-                <h1>Header</h1>
-                <TextField
-                  fullWidth
-                  variant='outlined'
-                  required
-                  id='standard-required'
-                  label={'Titulo'}
-                  onChange={(e) => setName(e.target.value)}
-                />
-              </Grid>
-            ) : type === 'Space' ? (
-              <></>
-            ) : (
-              type === 'predefinido' && (
-                <FormControl fullWidth>
-                  {/* select predefinido*/}
-                  <InputLabel>Tipo de Campo</InputLabel>
-                  <Select
-                    fullWidth
-                    value={type2}
-                    open={openSelect2}
-                    onClose={() => setopenSelect2(false)}
-                    onOpen={() => setopenSelect2(true)}
-                    onChange={(e) => setType2(e.target.value)}>
-                    <MenuItem value={''}>None</MenuItem>
-                    {predefined.map((option) => (
-                      <MenuItem value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )
-            )}
-            {type !== '' && (
-              <Grid
-                container
-                direction='column'
-                justify='center'
-                alignItems='center'>
-                <Button
-                  variant='contained'
-                  color='primary'
-                  startIcon={<Save />}
-                  onClick={() => {
-                    handlerAddCamp();
-                    setShow(false);
-                  }}>
-                  Guardar Campo
-                </Button>
-              </Grid>
-            )}
-          </Grid>
-        </Box>
-      </Box>
-    </Modal>
+    <Dialog open={show} onClose={() => setShow(false)} fullWidth>
+      <DialogTitle>Creación de Campo</DialogTitle>
+      <DialogContent>
+        <FormControl fullWidth style={{ marginBottom: '2rem' }}>
+          <InputLabel>Tipo de Campo</InputLabel>
+          <Select
+            fullWidth
+            value={type}
+            open={openSelect}
+            onClose={() => setopenSelect(false)}
+            onOpen={() => setopenSelect(true)}
+            onChange={(e) => setType(e.target.value)}>
+            <MenuItem value=''>None</MenuItem>
+            {types.map((option) => (
+              <MenuItem value={option}>{option}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {type === 'Input' ? (
+          <TextField
+            fullWidth
+            variant='outlined'
+            label='Nombre'
+            onChange={(e) => setName(e.target.value)}
+          />
+        ) : type === 'Select' ? (
+          <>
+            <TextField
+              fullWidth
+              variant='outlined'
+              label='Nombre'
+              onChange={(e) => setName(e.target.value)}
+            />
+            <Typography style={{ marginTop: '1rem' }}>Opciones</Typography>
+            <Table>
+              <TableBody>
+                {options.map((option) => (
+                  <TableRow key={option.i}>
+                    <TableCell>
+                      <Typography>{option}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <IconButton
+                        onClick={() =>
+                          setOptions((prev) =>
+                            prev.filter((element) => element !== option)
+                          )
+                        }>
+                        <Delete />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell>
+                    <TextField
+                      fullWidth
+                      variant='outlined'
+                      value={newOption}
+                      label='Nueva opción'
+                      onChange={(e) => setNewOption(e.target.value)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      disabled={!newOption}
+                      onClick={() => {
+                        setOptions((prev) => prev.concat(newOption));
+                        setNewOption('');
+                      }}>
+                      <Add />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </>
+        ) : type === 'File' ? (
+          <TextField
+            fullWidth
+            variant='outlined'
+            label='Nombre'
+            onChange={(e) => setName(e.target.value)}
+          />
+        ) : type === 'Header' ? (
+          <TextField
+            fullWidth
+            variant='outlined'
+            label='Título'
+            onChange={(e) => setName(e.target.value)}
+          />
+        ) : type === 'Space' ? (
+          <></>
+        ) : (
+          type === 'Predefinido' && (
+            <FormControl fullWidth>
+              {/* select predefinido*/}
+              <InputLabel>Tipo de Campo</InputLabel>
+              <Select
+                fullWidth
+                value={type2}
+                open={openSelect2}
+                onClose={() => setopenSelect2(false)}
+                onOpen={() => setopenSelect2(true)}
+                onChange={(e) => setType2(e.target.value)}>
+                <MenuItem value=''>None</MenuItem>
+                {predefined.map((option) => (
+                  <MenuItem value={option}>{option}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button
+          disabled={!type}
+          color='primary'
+          startIcon={<Save />}
+          onClick={() => {
+            handlerAddCamp();
+            setShow(false);
+          }}>
+          Guardar campo
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

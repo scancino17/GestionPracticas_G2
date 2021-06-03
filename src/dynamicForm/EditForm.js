@@ -15,12 +15,14 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   FormControl,
   Grid,
   IconButton,
   InputLabel,
   MenuItem,
-  Modal,
   Select,
   Step,
   StepLabel,
@@ -52,7 +54,7 @@ function EditForm() {
         });
         setCareers(temp);
       });
-  });
+  }, []);
 
   useEffect(() => {
     if (careerId)
@@ -190,130 +192,89 @@ function EditForm() {
                     )
                 )}
                 <Grid item>
-                  <Box pt={3}>
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      disabled={activeStep === 0}
-                      startIcon={<ArrowBack />}
-                      onClick={handleBack}>
-                      Anterior
-                    </Button>
-
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={handleNext}
-                      endIcon={
-                        activeStep === formFull.length - 1 ? (
-                          <CheckCircleOutline />
-                        ) : (
-                          <ArrowForward />
-                        )
-                      }>
-                      {activeStep === formFull.length - 1
-                        ? 'Terminar'
-                        : 'Siguiente'}
-                    </Button>
-                  </Box>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    disabled={activeStep === 0}
+                    startIcon={<ArrowBack />}
+                    onClick={handleBack}>
+                    Anterior
+                  </Button>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={handleNext}
+                    endIcon={
+                      activeStep === formFull.length - 1 ? (
+                        <CheckCircleOutline />
+                      ) : (
+                        <ArrowForward />
+                      )
+                    }>
+                    {activeStep === formFull.length - 1
+                      ? 'Terminar'
+                      : 'Siguiente'}
+                  </Button>
                 </Grid>
               </Grid>
             )}
             {/*Moddal */}
-            <Modal
-              open={show}
-              onClose={() => setShow(false)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-              <Box bgcolor='white' padding={8}>
-                <Grid container direction='column' spacing={5}>
-                  <Grid item xs>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>
-                            <Typography>Nombre</Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography>Acciones</Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {formFull.map((form, i) => (
-                          <TableRow key={form.i}>
-                            <TableCell>
-                              <Grid>
-                                <Typography>{form.step}</Typography>
-                              </Grid>
-                            </TableCell>
-                            <TableCell>
-                              <Grid container direction='colum' spacing={4}>
-                                <Grid xs={3}>
-                                  <IconButton
-                                    onClick={() => handleDelete(form)}>
-                                    <Delete />
-                                  </IconButton>
-                                </Grid>
-                                <Grid xs={3}>
-                                  {i !== 0 && (
-                                    <IconButton onClick={() => handleUp(i)}>
-                                      <ArrowUpward />
-                                    </IconButton>
-                                  )}
-                                  {i === 0 && (
-                                    <IconButton
-                                      disabled
-                                      onClick={() => handleUp(i)}>
-                                      <ArrowUpward />
-                                    </IconButton>
-                                  )}
-                                </Grid>
-                                <Grid xs={3}>
-                                  {i < formFull.length - 1 && (
-                                    <IconButton onClick={() => handleDown(i)}>
-                                      <ArrowDownward />
-                                    </IconButton>
-                                  )}
-                                  {i === formFull.length - 1 && (
-                                    <IconButton
-                                      disabled
-                                      onClick={() => handleDown(i)}>
-                                      <ArrowDownward />
-                                    </IconButton>
-                                  )}
-                                </Grid>
-                              </Grid>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        <TableRow>
-                          <TableCell>
-                            <TextField
-                              value={newOption}
-                              onChange={(e) => setNewOption(e.target.value)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                formFull.push({ step: newOption, form: [] });
-                                setFlag(true);
-                                setNewOption('');
-                              }}>
-                              <Add />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Modal>
+            <Dialog open={show} onClose={() => setShow(false)} fullWidth>
+              <DialogTitle>Pasos del formulario</DialogTitle>
+              <DialogContent>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {formFull.map((form, i) => (
+                      <TableRow key={form.i}>
+                        <TableCell>{form.step}</TableCell>
+                        <TableCell>
+                          <IconButton onClick={() => handleDelete(form)}>
+                            <Delete />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === 0}
+                            onClick={() => handleUp(i)}>
+                            <ArrowUpward />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === formFull.length - 1}
+                            onClick={() => handleDown(i)}>
+                            <ArrowDownward />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          value={newOption}
+                          label='Nuevo paso del formulario'
+                          onChange={(e) => setNewOption(e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          disabled={!newOption}
+                          onClick={() => {
+                            formFull.push({ step: newOption, form: [] });
+                            setFlag(true);
+                            setNewOption('');
+                          }}>
+                          <Add />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </DialogContent>
+            </Dialog>
           </>
         </Grid>
       )}

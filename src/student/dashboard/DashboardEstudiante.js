@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
 import {
@@ -100,7 +100,7 @@ function DashboardEstudiante() {
         <SendForm />
       </Route>
       {/**este es el que va al formulario dinamico para edicion */}
-      <Route path='/edit-form/:internshipId'>
+      <Route path='/edit-form'>
         <SendForm edit />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>

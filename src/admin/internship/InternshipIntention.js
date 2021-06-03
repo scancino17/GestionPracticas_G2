@@ -9,7 +9,6 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Grid,
   makeStyles,
@@ -79,7 +78,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
     setShowRejectModal(false);
   };
 
-  let { internshipId, name, applicationNumber } = application;
+  const { internshipId, name, applicationNumber } = application;
   return (
     <>
       <Accordion
@@ -184,10 +183,9 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
     <Dialog open={showRejectModal} onClose={closeModal}>
       <DialogTitle>Rechazar intención de práctica</DialogTitle>
       <DialogContent>
-        <DialogContentText>{`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}</DialogContentText>
-        <DialogContentText>
-          Esta operación no se podrá revertir.
-        </DialogContentText>
+        <Typography style={{ marginBottom: '1rem' }}>
+          {`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}
+        </Typography>
         <TextField
           label='Razón de Rechazo'
           onChange={handleReasonChange}
@@ -230,7 +228,7 @@ const ApprovalModal = ({
   }, [letterFile]);
 
   const handleApproval = () => {
-    let { studentId, internshipId } = application;
+    const { studentId, internshipId } = application;
 
     db.collection('internships')
       .doc(internshipId)
@@ -285,7 +283,7 @@ function InternshipIntention() {
   const addApplication = useCallback(
     (newItem) => {
       setApplications((prevState) => {
-        let newState = [];
+        const newState = [];
         prevState.forEach((item) => newState.push(item));
         newState.push(newItem);
         return newState;

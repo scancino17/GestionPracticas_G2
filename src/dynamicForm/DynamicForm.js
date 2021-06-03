@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 import FormBuilder from './FormBuilder';
 import FormView from './FormView';
 
@@ -18,7 +18,7 @@ function DynamicForm({
     <Grid container justify='center' spacing={8}>
       {admin && (
         <>
-          <Grid item xs={12} md={6} style={{ background: '#ffffff' }}>
+          <Grid item xs={12} md={5} >
             <FormBuilder
               flag={flag}
               setFlag={setFlag}
@@ -28,6 +28,7 @@ function DynamicForm({
               formFullInner={formFull}
             />
           </Grid>
+          <Divider orientation='vertical' flexItem/>
           <Grid item xs={12} md={6}>
             <FormView
               filesInnerInner={filesInner}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import DynamicForm from './DynamicForm';
 import { db, storage } from '../firebase';
 import {
@@ -51,6 +50,7 @@ function SendForm({ edit }) {
         .update({ status: sentApplication });
     }
   }, [userData]);
+
   useEffect(() => {
     setFlag(false);
   }, [flag]);
@@ -96,14 +96,13 @@ function SendForm({ edit }) {
       //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
       //firestore no lo soporta
       extractFiles();
-      db.collection('applications')
-        .add({
-          form: formFull,
-          student: user.uid,
-          email: userData.email,
-          careerId: userData.careerId,
-          internship: internshipId
-        })
+      db.collection('applications').add({
+        form: formFull,
+        studentId: user.uid,
+        email: userData.email,
+        careerId: userData.careerId,
+        internshipId: internshipId
+      })
         .then(function (docRef) {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
@@ -112,10 +111,7 @@ function SendForm({ edit }) {
           console.error('Error adding document: ', error);
         });
     } else {
-      db.collection('applications').doc(applicationId).set({
-        form: formFull,
-        student: user.uid
-      });
+      db.collection('applications').doc(internshipId).set({ form: formFull });
     }
   }
 

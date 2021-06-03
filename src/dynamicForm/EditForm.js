@@ -9,20 +9,22 @@ import {
   Build,
   ArrowBack,
   ArrowForward,
-  CheckCircleOutline
+  Save
 } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import {
-  Box,
+  Divider,
   Button,
   Container,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   FormControl,
   Grid,
   IconButton,
   InputLabel,
   MenuItem,
-  Modal,
   Select,
   Step,
   StepLabel,
@@ -54,7 +56,7 @@ function EditForm() {
         });
         setCareers(temp);
       });
-  });
+  }, []);
 
   useEffect(() => {
     if (careerId)
@@ -147,24 +149,51 @@ function EditForm() {
         </Grid>
       </Grid>
       {careerId && (
-        <Grid container direction='column'>
-          <Grid item>
-            <Button
-              variant='contained'
-              color='primary'
-              startIcon={<Build />}
-              onClick={() => setShow(true)}>
-              Administrar Pasos
-            </Button>
-          </Grid>
-          <Grid item>
-            <Stepper activeStep={activeStep} alternativeLabel>
-              {formFull.map((step) => (
-                <Step key={step.step}>
-                  <StepLabel>{step.step}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+        <Grid container direction='column' style={{padding: '3rem 0 0 0'}}>
+          <Grid container justify='center' spacing={8} >
+            <>
+              <Grid
+                  item 
+                  direction='column'
+                  justify='center'
+                  alignItems='center'
+                  xs={12} 
+                  md={5}>
+                <Typography variant='h5'>
+                  Etapas
+                </Typography>
+                <Grid 
+                  container
+                  direction='column'
+                  justify='center'
+                  alignItems='center'
+                  style={{padding: '3rem 0 0 0'}}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    startIcon={<Build />}
+                    onClick={() => setShow(true)}>
+                    Administrar Etapas
+                  </Button>
+                </Grid>
+              </Grid>
+            
+
+            <Divider orientation="vertical" flexItem/>
+
+            <Grid item xs={12} md={6}>
+              <Typography variant='h5'>
+                Previsualización
+              </Typography>
+              <Stepper activeStep={activeStep} alternativeLabel style={{backgroundColor: 'transparent'}}>
+                {formFull.map((step) => (
+                  <Step key={step.step}>
+                    <StepLabel>{step.step}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            </Grid>
+            </>
           </Grid>
           <>
             {activeStep === formFull.length ? (
@@ -173,12 +202,16 @@ function EditForm() {
                 <Button
                   variant='contained'
                   color='primary'
-                  onClick={handleSave}>
+                  onClick={handleSave}
+                  startIcon={<Save />}>
                   Guardar
                 </Button>
               </>
             ) : (
               <Grid item>
+                <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
+                  Campos
+                </Typography>
                 {formFull.map(
                   (form, i) =>
                     i === activeStep && (
@@ -191,27 +224,45 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === 0}
-                    onClick={handleBack}>
-                    Anterior
-                  </Button>
-                  {activeStep !== formFull.length - 1 && (
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={handleNext}>
-                      Siguiente
-                    </Button>
-                  )}
-                  {activeStep === formFull.length - 1 && (
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={() => {
+                <Grid 
+                  container 
+                  justify='center' 
+                  spacing={8}>
+                  <Grid 
+                    item 
+                    xs={12} 
+                    md={5}>
+
+                  </Grid>
+                  <Divider 
+                   orientation='vertical' 
+                   flexItem/>
+                  <Grid 
+                    item 
+                    xs={12} 
+                    md={6} 
+                    style={{padding: '3rem 0 0 2rem'}}>
+                    <Grid 
+                      container 
+                      direction='row'
+                      justify='flex-start'
+                      alignItems='center'
+                      spacing={4}>
+                      <Grid item>
+                        <Button
+                          variant='contained'
+                          color='primary'
+                          disabled={activeStep === 0}
+                          startIcon={<ArrowBack />}
+                          onClick={handleBack}>
+                          Anterior
+                        </Button>
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          variant='contained'
+                          color='primary'
+                          onClick={activeStep === formFull.length - 1 ? (() => {
                         Swal.fire({
                           title: '¿Desea Guardar los cambios?',
                           showDenyButton: true,
@@ -235,108 +286,83 @@ function EditForm() {
                             );
                           }
                         });
-                      }}>
-                      Guardar
-                    </Button>
-                  )}
+                      }) : (
+                              handleNext
+                            )}
+                          endIcon={
+                            activeStep === formFull.length - 1 ? (
+                              <Save />
+                            ) : (
+                              <ArrowForward />
+                            )
+                          }>
+                          {activeStep === formFull.length - 1
+                            ? 'Terminar'
+                            : 'Siguiente'}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
             )}
             {/*Moddal */}
-            <Modal
-              open={show}
-              onClose={() => setShow(false)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-              <Box bgcolor='white' padding={8}>
-                <Grid container direction='column' spacing={5}>
-                  <Grid item xs>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>
-                            <Typography>Nombre</Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Typography>Acciones</Typography>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {formFull.map((form, i) => (
-                          <TableRow key={form.i}>
-                            <TableCell>
-                              <Grid>
-                                <Typography>{form.step}</Typography>
-                              </Grid>
-                            </TableCell>
-                            <TableCell>
-                              <Grid container direction='colum' spacing={4}>
-                                <Grid xs={3}>
-                                  <IconButton
-                                    onClick={() => handleDelete(form)}>
-                                    <Delete />
-                                  </IconButton>
-                                </Grid>
-                                <Grid xs={3}>
-                                  {i !== 0 && (
-                                    <IconButton onClick={() => handleUp(i)}>
-                                      <ArrowUpward />
-                                    </IconButton>
-                                  )}
-                                  {i === 0 && (
-                                    <IconButton
-                                      disabled
-                                      onClick={() => handleUp(i)}>
-                                      <ArrowUpward />
-                                    </IconButton>
-                                  )}
-                                </Grid>
-                                <Grid xs={3}>
-                                  {i < formFull.length - 1 && (
-                                    <IconButton onClick={() => handleDown(i)}>
-                                      <ArrowDownward />
-                                    </IconButton>
-                                  )}
-                                  {i === formFull.length - 1 && (
-                                    <IconButton
-                                      disabled
-                                      onClick={() => handleDown(i)}>
-                                      <ArrowDownward />
-                                    </IconButton>
-                                  )}
-                                </Grid>
-                              </Grid>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                        <TableRow>
-                          <TableCell>
-                            <TextField
-                              value={newOption}
-                              onChange={(e) => setNewOption(e.target.value)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <IconButton
-                              onClick={() => {
-                                formFull.push({ step: newOption, form: [] });
-                                setFlag(true);
-                                setNewOption('');
-                              }}>
-                              <Add />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Modal>
+            <Dialog open={show} onClose={() => setShow(false)} fullWidth>
+              <DialogTitle>Pasos del formulario</DialogTitle>
+              <DialogContent>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {formFull.map((form, i) => (
+                      <TableRow key={form.i}>
+                        <TableCell>{form.step}</TableCell>
+                        <TableCell>
+                          <IconButton onClick={() => handleDelete(form)}>
+                            <Delete />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === 0}
+                            onClick={() => handleUp(i)}>
+                            <ArrowUpward />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === formFull.length - 1}
+                            onClick={() => handleDown(i)}>
+                            <ArrowDownward />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          value={newOption}
+                          label='Nuevo paso del formulario'
+                          onChange={(e) => setNewOption(e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          disabled={!newOption}
+                          onClick={() => {
+                            formFull.push({ step: newOption, form: [] });
+                            setFlag(true);
+                            setNewOption('');
+                          }}>
+                          <Add />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </DialogContent>
+            </Dialog>
           </>
         </Grid>
       )}

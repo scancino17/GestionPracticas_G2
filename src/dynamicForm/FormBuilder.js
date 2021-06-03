@@ -61,27 +61,24 @@ function FormBuilder({
   }
 
   return (
-    <Grid border={1} 
+    <Grid
+      border={1}
       container
-      direction="column"
-      justify="flex-start"
-      alignItems="flex-end">
-
-      <Grid container
-        direction="column"
-        justify="center"
-        alignItems="center">
+      direction='column'
+      justify='flex-start'
+      alignItems='flex-end'>
+      <Grid container direction='column' justify='center' alignItems='center'>
         <Box pl={6} pb={2}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell scope='col' border='bottom'>
+                <TableCell>
                   <Typography>Nombre</Typography>
                 </TableCell>
-                <TableCell scope='col' border='bottom' size='small'>
+                <TableCell>
                   <Typography>Tipo</Typography>
                 </TableCell>
-                <TableCell scope='col' border='bottom' size='small'>
+                <TableCell>
                   <Typography>Acciones</Typography>
                 </TableCell>
               </TableRow>
@@ -89,16 +86,16 @@ function FormBuilder({
             <TableBody>
               {formInner.map((rec, i) => (
                 <TableRow key={rec.i}>
-                  <TableCell scope='col'>
+                  <TableCell>
                     <Grid>
                       <Typography>{rec.name}</Typography>
                     </Grid>
                   </TableCell>
-                  <TableCell scope='col'>
+                  <TableCell>
                     <Typography>{rec.type}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Grid container direction='colum' spacing={4}>
+                    <Grid container spacing={4}>
                       <Grid xs={3}>
                         <IconButton onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
@@ -137,17 +134,13 @@ function FormBuilder({
         </Box>
       </Grid>
 
-      <Grid container
-        direction="column"
-        justify="center"
-        alignItems="center">
-        
-        <Button 
-          variant='contained' 
-          color='primary'  
-          startIcon={<Add />} 
+      <Grid container direction='column' justify='center' alignItems='center'>
+        <Button
+          variant='contained'
+          color='primary'
+          startIcon={<Add />}
           onClick={() => setShow(true)}>
-          Agregar Campo  
+          Agregar Campo
         </Button>
         {
           <ConstructorCamp

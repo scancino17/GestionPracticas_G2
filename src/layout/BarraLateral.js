@@ -11,9 +11,9 @@ import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import PublishIcon from '@material-ui/icons/Publish';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
 const useStyles = makeStyles({
   paper: {
@@ -34,7 +34,7 @@ const items = [
   {
     label: 'Intenciones de práctica',
     icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/internship-intention'
   },
   {
     label: 'Postulaciones de práctica',
@@ -53,7 +53,7 @@ const items = [
   },
   {
     label: 'Importar Alumnos',
-    icon: <PublishIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/import'
   },
   {

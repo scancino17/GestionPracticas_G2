@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import DynamicForm from './DynamicForm';
 import { db } from '../firebase';
-import { Add, ArrowDownward, ArrowUpward, Delete, Build, ArrowBack, ArrowForward, CheckCircleOutline } from '@material-ui/icons';
+import {
+  Add,
+  ArrowDownward,
+  ArrowUpward,
+  Delete,
+  Build,
+  ArrowBack,
+  ArrowForward,
+  CheckCircleOutline
+} from '@material-ui/icons';
 import {
   Box,
   Button,
@@ -76,16 +85,16 @@ function EditForm() {
     db.collection('form').doc(careerId).set({ form: formFull });
   }
 
-  function hadlerDelete(element) {
+  function handleDelete(element) {
     setFormFull((prev) => prev.filter((el) => el !== element));
   }
 
-  function handlerUp(index) {
+  function handleUp(index) {
     setFormFull((prev) => array_move(prev, index, index - 1));
     setFlag(true);
   }
 
-  function handlerDown(index) {
+  function handleDown(index) {
     setFormFull((prev) => array_move(prev, index, index + 1));
     setFlag(true);
   }
@@ -109,7 +118,7 @@ function EditForm() {
 
   return (
     <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
+      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
         Formularios de inscripción de práctica
       </Typography>
       <Grid container justify='flex-end' alignItems='center' spacing={4}>
@@ -136,18 +145,17 @@ function EditForm() {
         </Grid>
       </Grid>
       {careerId && (
-        <Grid container direction='column' >
+        <Grid container direction='column'>
           <Grid item>
             <Button
               variant='contained'
               color='primary'
-              startIcon={<Build />} 
+              startIcon={<Build />}
               onClick={() => setShow(true)}>
-              
-               Administrar Pasos
+              Administrar Pasos
             </Button>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item>
             <Stepper activeStep={activeStep} alternativeLabel>
               {formFull.map((step) => (
                 <Step key={step.step}>
@@ -181,26 +189,32 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid item >
+                <Grid item>
                   <Box pt={3}>
-                    
-                      <Button
-                        variant='contained'
-                        color='primary'
-                        disabled={activeStep === 0}
-                        startIcon={<ArrowBack />}
-                        onClick={handleBack}>
-                        Anterior
-                      </Button>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      startIcon={<ArrowBack />}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
 
-                      <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={handleNext}
-                        endIcon={activeStep === formFull.length - 1 ? <CheckCircleOutline/> : <ArrowForward/>}>
-                        {activeStep === formFull.length - 1 ? 'Terminar' : 'Siguiente'}
-                      </Button>
-                    
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleNext}
+                      endIcon={
+                        activeStep === formFull.length - 1 ? (
+                          <CheckCircleOutline />
+                        ) : (
+                          <ArrowForward />
+                        )
+                      }>
+                      {activeStep === formFull.length - 1
+                        ? 'Terminar'
+                        : 'Siguiente'}
+                    </Button>
                   </Box>
                 </Grid>
               </Grid>
@@ -220,10 +234,10 @@ function EditForm() {
                     <Table>
                       <TableHead>
                         <TableRow>
-                          <TableCell scope='col' border='bottom'>
+                          <TableCell>
                             <Typography>Nombre</Typography>
                           </TableCell>
-                          <TableCell scope='col' border='bottom'>
+                          <TableCell>
                             <Typography>Acciones</Typography>
                           </TableCell>
                         </TableRow>
@@ -231,7 +245,7 @@ function EditForm() {
                       <TableBody>
                         {formFull.map((form, i) => (
                           <TableRow key={form.i}>
-                            <TableCell scope='col'>
+                            <TableCell>
                               <Grid>
                                 <Typography>{form.step}</Typography>
                               </Grid>
@@ -240,34 +254,34 @@ function EditForm() {
                               <Grid container direction='colum' spacing={4}>
                                 <Grid xs={3}>
                                   <IconButton
-                                    onClick={() => hadlerDelete(form)}>
+                                    onClick={() => handleDelete(form)}>
                                     <Delete />
                                   </IconButton>
                                 </Grid>
                                 <Grid xs={3}>
                                   {i !== 0 && (
-                                    <IconButton onClick={() => handlerUp(i)}>
+                                    <IconButton onClick={() => handleUp(i)}>
                                       <ArrowUpward />
                                     </IconButton>
                                   )}
                                   {i === 0 && (
                                     <IconButton
                                       disabled
-                                      onClick={() => handlerUp(i)}>
+                                      onClick={() => handleUp(i)}>
                                       <ArrowUpward />
                                     </IconButton>
                                   )}
                                 </Grid>
                                 <Grid xs={3}>
                                   {i < formFull.length - 1 && (
-                                    <IconButton onClick={() => handlerDown(i)}>
+                                    <IconButton onClick={() => handleDown(i)}>
                                       <ArrowDownward />
                                     </IconButton>
                                   )}
                                   {i === formFull.length - 1 && (
                                     <IconButton
                                       disabled
-                                      onClick={() => handlerDown(i)}>
+                                      onClick={() => handleDown(i)}>
                                       <ArrowDownward />
                                     </IconButton>
                                   )}
@@ -277,13 +291,13 @@ function EditForm() {
                           </TableRow>
                         ))}
                         <TableRow>
-                          <TableCell scope='col'>
+                          <TableCell>
                             <TextField
                               value={newOption}
                               onChange={(e) => setNewOption(e.target.value)}
                             />
                           </TableCell>
-                          <TableCell scope='col'>
+                          <TableCell>
                             <IconButton
                               onClick={() => {
                                 formFull.push({ step: newOption, form: [] });

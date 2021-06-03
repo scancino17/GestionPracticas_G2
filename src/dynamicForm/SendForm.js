@@ -7,23 +7,44 @@ import {
   StepLabel,
   Stepper,
   Typography,
-  Button
+  Button,
+  Container
 } from '@material-ui/core';
+import useAuth from '../providers/Auth';
+import Swal from 'sweetalert2';
+import { useHistory } from 'react-router-dom';
+import { sentApplication } from '../InternshipStates';
 
-function SendForm() {
+function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
-  const { careerId } = useParams();
   const [activeStep, setActiveStep] = useState(0);
+  const { user, userData } = useAuth();
+  const { internshipId } = useParams();
+  const history = useHistory();
 
   useEffect(() => {
-    db.collection('form')
-      .doc(careerId)
-      .get()
-      .then((doc) => {
-        const data = doc.data();
-        if (data) setFormFull(data.form);
-      });
+    if (!edit) {
+      db.collection('form')
+        .doc(userData.careerId)
+        .get()
+        .then((doc) => {
+          const data = doc.data();
+          if (data) setFormFull(data.form);
+        });
+    } else {
+      db.collection('applications')
+        .doc(internshipId)
+        .get()
+        .then((doc) => {
+          const data = doc.data();
+          if (data) setFormFull(data.form);
+        });
+    }
+
+    db.collection('internships')
+      .doc(userData.currentInternship.id)
+      .update({ status: sentApplication });
   }, []);
 
   useEffect(() => {
@@ -39,12 +60,27 @@ function SendForm() {
   }
 
   function handleSave() {
-    db.collection('form').doc(careerId).set({ form: formFull });
+    if (!edit) {
+      db.collection('applications').add({
+        form: formFull,
+        student: user.uid,
+        email: userData.email,
+        careerId: userData.careerId
+      });
+    } else {
+      db.collection('applications').doc(internshipId).set({
+        form: formFull,
+        student: user.uid
+      });
+    }
   }
 
   return (
-    <>
-      <Stepper activeStep={activeStep} alternativeLabel>
+    <Container>
+      <Stepper
+        activeStep={activeStep}
+        alternativeLabel
+        style={{ margin: '2rem' }}>
         {formFull.map((step) => (
           <Step key={step.step}>
             <StepLabel>{step.step}</StepLabel>
@@ -63,11 +99,13 @@ function SendForm() {
           {formFull.map(
             (form, i) =>
               i === activeStep && (
+                // formview
                 <DynamicForm
-                  setForm={setFormFull}
                   form={form.form}
+                  setForm={setFormFull}
                   formFull={formFull}
                   index={i}
+                  student
                 />
               )
           )}
@@ -76,14 +114,46 @@ function SendForm() {
             color='primary'
             disabled={activeStep === 0}
             onClick={handleBack}>
-            Back
+            Anterior
           </Button>
-          <Button variant='contained' color='primary' onClick={handleNext}>
-            {activeStep === formFull.length - 1 ? 'Finish' : 'Next'}
-          </Button>
+          {activeStep !== formFull.length - 1 && (
+            <Button variant='contained' color='primary' onClick={handleNext}>
+              Siguiente
+            </Button>
+          )}
+          {activeStep === formFull.length - 1 && (
+            <Button
+              variant='contained'
+              color='primary'
+              onClick={() => {
+                Swal.fire({
+                  title: '¿Desea enviar su solicitud?',
+                  showDenyButton: true,
+                  confirmButtonText: `Enviar`,
+                  denyButtonText: `Salir`
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    handleSave();
+                    Swal.fire('¡Formulario enviado!', '', 'success').then(
+                      (result) => {
+                        if (result.isConfirmed) history.push('/');
+                      }
+                    );
+                  } else if (result.isDenied) {
+                    Swal.fire(
+                      'Revisa bien tu formulario antes de enviarlo',
+                      '',
+                      'info'
+                    );
+                  }
+                });
+              }}>
+              Enviar
+            </Button>
+          )}
         </>
       )}
-    </>
+    </Container>
   );
 }
 

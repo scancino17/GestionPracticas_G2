@@ -87,12 +87,12 @@ function ImportStudents() {
         });
     });*/
     console.log(list);
-    axios.post(
+    /*axios.post(
       'https://us-central1-gestion-practicas.cloudfunctions.net/importUsers',
       {
         data: list
       }
-    );
+    );*/
   }
 
   return (
@@ -125,7 +125,9 @@ function ImportStudents() {
           </TableBody>
         </Table>
       </TableContainer>
-      <Button label='Confirmar' onClick={handleSubmit} />
+      <Button onClick={handleSubmit} variant='contained'>
+        Confirmar
+      </Button>
     </Container>
   );
 }

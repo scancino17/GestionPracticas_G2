@@ -227,22 +227,24 @@ function ConstructorCamp({
               <></>
             ) : (
               type === 'Predefinido' && (
-                <FormControl fullWidth>
-                  {/* select Predefinido*/}
-                  <InputLabel>Tipo de Campo</InputLabel>
-                  <Select
-                    fullWidth
-                    value={type2}
-                    open={openSelect2}
-                    onClose={() => setopenSelect2(false)}
-                    onOpen={() => setopenSelect2(true)}
-                    onChange={(e) => setType2(e.target.value)}>
-                    <MenuItem value={''}>None</MenuItem>
-                    {predefined.map((option) => (
-                      <MenuItem value={option}>{option}</MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <Grid item xs>
+                  <FormControl fullWidth>
+                    {/* select Predefinido*/}
+                    <InputLabel>Tipo de Campo</InputLabel>
+                    <Select
+                      fullWidth
+                      value={type2}
+                      open={openSelect2}
+                      onClose={() => setopenSelect2(false)}
+                      onOpen={() => setopenSelect2(true)}
+                      onChange={(e) => setType2(e.target.value)}>
+                      <MenuItem value={''}>None</MenuItem>
+                      {predefined.map((option) => (
+                        <MenuItem value={option}>{option}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
               )
             )}
             {type !== '' && (

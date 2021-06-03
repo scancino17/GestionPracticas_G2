@@ -9,10 +9,11 @@ import {
   Build,
   ArrowBack,
   ArrowForward,
-  CheckCircleOutline
+  CheckCircleOutline,
+  Save
 } from '@material-ui/icons';
 import {
-  Box,
+  Divider ,
   Button,
   Container,
   FormControl,
@@ -146,9 +147,9 @@ function EditForm() {
       </Grid>
       {careerId && (
         <Grid container direction='column'>
-          <Box pt={3}>
-            <Grid container spacing={8} >
-              
+          
+            <Grid container justify='center' spacing={8} >
+              <>
               <Grid
                 item 
                 direction='column'
@@ -156,34 +157,31 @@ function EditForm() {
                 alignItems='center'
                 xs={12} 
                 md={5}>
-                <Typography variant='h5' style={{ padding: '0 0 0 4rem' }}>
+                <Typography variant='h5' style={{ padding: '0 0 0 0' }}>
                   Etapas
                 </Typography>
-                <Box
-                  display='flex'
-                  justifyContent='center'
+                <Grid 
+                  container
+                  direction='column'
+                  justify='center'
                   alignItems='center'
-                  p={1}
-                  borderRight={1}
-                  borderColor="grey.500"
-                  height={1} 
-                  width={1}>
-                
-                <Button
-                  variant='contained'
-                  color='primary'
-                  startIcon={<Build />}
-                  onClick={() => setShow(true)}>
-                  Administrar Etapas
-                </Button>
-                </Box>
+                  style={{padding: '3rem 0 0 0'}}>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    startIcon={<Build />}
+                    onClick={() => setShow(true)}>
+                    Administrar Etapas
+                  </Button>
+                </Grid>
                 
               </Grid>
-              <Grid item xs={12} md={7}>
+              <Divider orientation="vertical" flexItem />
+              <Grid item xs={12} md={6}>
                 <Typography variant='h5'>
                   Previsualización
                 </Typography>
-                <Stepper activeStep={activeStep} alternativeLabel>
+                <Stepper activeStep={activeStep} alternativeLabel style={{backgroundColor: 'transparent'}}>
                   {formFull.map((step) => (
                     <Step key={step.step}>
                       <StepLabel>{step.step}</StepLabel>
@@ -191,15 +189,16 @@ function EditForm() {
                   ))}
                 </Stepper>
               </Grid>
+              </>
             </Grid>
-          </Box>
+          
           <>
             {activeStep === formFull.length ? (
               <>
-                <Typography>Guardar</Typography>
                 <Button
                   variant='contained'
                   color='primary'
+                  startIcon={<Save />}
                   onClick={handleSave}>
                   Guardar
                 </Button>
@@ -222,11 +221,11 @@ function EditForm() {
                     )
                 )}
                 <Grid container>
-                  <Grid item xs={12} md={5}>
+                  <Grid item xs={12} md={6}>
 
                   </Grid>
-                  <Grid item xs={12} md={7}>
-                    <Box pt={3}>
+                  <Grid item xs={12} md={6} style={{padding: '3rem 0 0 0'}}>
+                    
                       <Button
                         variant='contained'
                         color='primary'
@@ -238,10 +237,14 @@ function EditForm() {
                       <Button m={2}
                         variant='contained'
                         color='primary'
-                        onClick={handleNext}
+                        onClick={activeStep === formFull.length - 1 ? (
+                            handleSave
+                          ) : (
+                            handleNext
+                          )}
                         endIcon={
                           activeStep === formFull.length - 1 ? (
-                            <CheckCircleOutline />
+                            <Save />
                           ) : (
                             <ArrowForward />
                           )
@@ -250,7 +253,7 @@ function EditForm() {
                           ? 'Terminar'
                           : 'Siguiente'}
                       </Button>
-                    </Box>
+                    
                   </Grid>
                   
                 </Grid>
@@ -265,7 +268,7 @@ function EditForm() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-              <Box bgcolor='white' padding={8}>
+              
                 <Grid container direction='column' spacing={5}>
                   <Grid item xs>
                     <Table>
@@ -349,7 +352,7 @@ function EditForm() {
                     </Table>
                   </Grid>
                 </Grid>
-              </Box>
+              
             </Modal>
           </>
         </Grid>

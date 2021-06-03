@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Box } from '@material-ui/core';
+import { Grid, Divider } from '@material-ui/core';
 import FormBuilder from './FormBuilder';
 import FormView from './FormView';
 
@@ -9,15 +9,8 @@ function DynamicForm({ admin, student, index, form, setForm, formFull }) {
     <Grid container justify='center' spacing={8}>
       {admin && (
         <>
-          <Grid item xs={12} md={5} >
-            <Box
-              display='flex'
-              justifyContent='center'
-              p={5}
-              borderRight={1} 
-              borderColor="grey.500"
-              height={1} 
-              width={1}>
+          <Grid item xs={12} md={5}>
+            
               <FormBuilder
                 flag={flag}
                 setFlag={setFlag}
@@ -26,9 +19,12 @@ function DynamicForm({ admin, student, index, form, setForm, formFull }) {
                 formInner={form}
                 formFullInner={formFull}
               />
-            </Box>
+             
           </Grid>
-          <Grid item xs={12} md={7}>
+
+          <Divider orientation="vertical" flexItem />
+
+          <Grid item xs={12} md={6}>
             <FormView
               setFlag={setFlag}
               flag={flag}

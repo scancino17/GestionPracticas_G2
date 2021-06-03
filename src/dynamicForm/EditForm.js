@@ -11,6 +11,8 @@ import {
   ArrowForward,
   Save
 } from '@material-ui/icons';
+import { useHistory } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import {
   Divider,
   Button,
@@ -43,7 +45,7 @@ function EditForm() {
   const [flag, setFlag] = useState(false);
   const [careers, setCareers] = useState([]);
   const [careerId, setCareerId] = useState();
-
+  const history = useHistory();
   useEffect(() => {
     db.collection('careers')
       .get()
@@ -260,9 +262,31 @@ function EditForm() {
                         <Button
                           variant='contained'
                           color='primary'
-                          onClick={activeStep === formFull.length - 1 ? (
-                              handleSave
-                            ) : (
+                          onClick={activeStep === formFull.length - 1 ? (() => {
+                        Swal.fire({
+                          title: '¿Desea Guardar los cambios?',
+                          showDenyButton: true,
+                          confirmButtonText: `Guardar`,
+                          denyButtonText: `Salir`
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            handleSave();
+                            Swal.fire(
+                              '¡Formulario Guardado!',
+                              '',
+                              'success'
+                            ).then((result) => {
+                              if (result.isConfirmed) history.push('/');
+                            });
+                          } else if (result.isDenied) {
+                            Swal.fire(
+                              'Revisa bien tu formulario antes de enviarlo',
+                              '',
+                              'info'
+                            );
+                          }
+                        });
+                      }) : (
                               handleNext
                             )}
                           endIcon={

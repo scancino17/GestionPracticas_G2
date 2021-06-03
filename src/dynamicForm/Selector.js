@@ -7,7 +7,7 @@ const createOption = (label) => ({
   value: label.toLowerCase().replaceAll(/\W/g, '')
 });
 
-function Selector({ valueinner, camp, onParentChange }) {
+function Selector({ valueinner, camp, onParentChange, edit }) {
   const [isLoading, setLoading] = useState(true);
   const [options, setOptions] = useState();
   const [value, setValue] = useState(valueinner);
@@ -46,6 +46,7 @@ function Selector({ valueinner, camp, onParentChange }) {
       onChange={handleOnChange}
       onCreateOption={handleCreate}
       options={options}
+      inputValue={value}
       value={value}
     />
   );

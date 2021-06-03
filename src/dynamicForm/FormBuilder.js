@@ -11,6 +11,7 @@ import {
   Button,
   IconButton
 } from '@material-ui/core';
+import Swal from 'sweetalert2';
 import { Delete, ArrowUpward, ArrowDownward, Add } from '@material-ui/icons';
 import ConstructorCamp from './ConstructorCamp';
 
@@ -97,7 +98,26 @@ function FormBuilder({
                   <TableCell>
                     <Grid container spacing={4}>
                       <Grid xs={3}>
-                        <IconButton onClick={() => hadlerDelete(rec, i)}>
+                        {/**/}
+                        <IconButton
+                          onClick={() => {
+                            Swal.fire({
+                              title: '¿Desea eliminar este campo?',
+                              showDenyButton: true,
+                              confirmButtonText: `salir`,
+                              denyButtonText: `Eliminar`
+                            }).then((result) => {
+                              if (result.isDenied) {
+                                hadlerDelete(rec, i);
+                                Swal.fire(
+                                  '¡Campo eliminado!',
+                                  '',
+                                  'info'
+                                ).then((result) => {});
+                              } else if (result.isConfirmed) {
+                              }
+                            });
+                          }}>
                           <Delete />
                         </IconButton>
                       </Grid>

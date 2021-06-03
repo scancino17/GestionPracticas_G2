@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import DynamicForm from './DynamicForm';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import {
   Step,
   StepLabel,
@@ -13,12 +13,15 @@ import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
 import { useHistory } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
+import { ContactsOutlined } from '@material-ui/icons';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useAuth();
+  const [files, setFiles] = useState([]);
+  const { applicationId } = useParams();
   const history = useHistory();
   const [internshipId, setInternshipId] = useState();
 
@@ -35,7 +38,7 @@ function SendForm({ edit }) {
           });
       } else {
         db.collection('applications')
-          .doc(internshipId)
+          .doc(applicationId)
           .get()
           .then((doc) => {
             const data = doc.data();
@@ -59,16 +62,54 @@ function SendForm({ edit }) {
   function handleBack() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }
-
+  //se extraen los archivos del formfull para tenerlos en una lista aparte para poder subirlos al storage
+  function extractFiles() {
+    formFull.map((step, i) =>
+      step.form.map((camp, j) => {
+        if (camp.type === 'File') {
+          if (camp.value) {
+            files.push({ campName: camp.name, file: camp.value[0] });
+            //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
+            //tambien ese name sirve para poder buscar el archivo
+            formFull[i].form[j].value = camp.value[0].name;
+          }
+        }
+      })
+    );
+  }
+  //se guardan los archivos en el storage
+  function saveFiles(applicationId) {
+    files.map((file) => {
+      storage
+        .ref()
+        .child(
+          //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
+          //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
+          //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
+          `/students-docs/${user.uid}/${internshipId}/applications/${applicationId}/${file.campName}/${file.file.name}`
+        )
+        .put(file.file);
+    });
+  }
   function handleSave() {
     if (!edit) {
+      //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
+      //firestore no lo soporta
+      extractFiles();
       db.collection('applications').add({
         form: formFull,
         studentId: user.uid,
         email: userData.email,
         careerId: userData.careerId,
         internshipId: internshipId
-      });
+      })
+        .then(function (docRef) {
+          //se guarda los archivos en la application correspondiente
+          saveFiles(docRef.id);
+        })
+        .catch(function (error) {
+          console.error('Error adding document: ', error);
+        });
     } else {
       db.collection('applications').doc(internshipId).set({ form: formFull });
     }
@@ -104,10 +145,15 @@ function SendForm({ edit }) {
                   setForm={setFormFull}
                   formFull={formFull}
                   index={i}
+                  filesInner={files}
+                  setFilesInner={() => setFiles}
                   student
                 />
               )
           )}
+          <Button variant='contained' color='primary' onClick={extractFiles}>
+            Save File
+          </Button>
           <Button
             variant='contained'
             color='primary'

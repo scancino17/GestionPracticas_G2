@@ -73,13 +73,13 @@ function FormBuilder({
             <TableHead>
               <TableRow>
                 <TableCell>
-                  <Typography>Nombre</Typography>
+                  <Typography variant='h6'>Nombre</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>Tipo</Typography>
+                  <Typography variant='h6'>Tipo</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography>Acciones</Typography>
+                  <Typography variant='h6'>Acciones</Typography>
                 </TableCell>
               </TableRow>
             </TableHead>
@@ -95,7 +95,7 @@ function FormBuilder({
                     <Typography>{rec.type}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Grid container spacing={4}>
+                    <Grid container spacing={6}>
                       <Grid xs={3}>
                         <IconButton onClick={() => hadlerDelete(rec, i)}>
                           <Delete />

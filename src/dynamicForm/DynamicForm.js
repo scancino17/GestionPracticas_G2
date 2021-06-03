@@ -15,7 +15,7 @@ function DynamicForm({ admin, student, index, form, setForm, formFull }) {
               justifyContent='center'
               p={5}
               borderRight={1} 
-              borderColor="primary.main"
+              borderColor="grey.500"
               height={1} 
               width={1}>
               <FormBuilder

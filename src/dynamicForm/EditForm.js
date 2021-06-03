@@ -165,7 +165,7 @@ function EditForm() {
                   alignItems='center'
                   p={1}
                   borderRight={1}
-                  borderColor="primary.main"
+                  borderColor="grey.500"
                   height={1} 
                   width={1}>
                 

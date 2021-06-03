@@ -35,7 +35,7 @@ function ConstructorCamp({
     'File',
     'Header',
     'Space',
-    'predefinido'
+    'Predefinido'
   ]);
   const [predefined, setPredefined] = useState(['Ciudad', 'Empresa']);
   const [name, setName] = useState('');
@@ -76,7 +76,7 @@ function ConstructorCamp({
       temp = {
         type: type
       };
-    } else if (type === 'predefinido') {
+    } else if (type === 'Predefinido') {
       temp = {
         type: type,
         type2: type2,
@@ -134,7 +134,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'Select' ? (
               <Grid item>
-                <h1>Select</h1>
+                <h2>Select</h2>
                 <Grid item>
                   <TextField
                     fullWidth
@@ -151,8 +151,7 @@ function ConstructorCamp({
                     <Table>
                       <TableHead>
                         <TableRow>
-                          <TableCell>opción</TableCell>
-                          <TableCell></TableCell>
+                          <TableCell><h3>Opciones</h3></TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -202,7 +201,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'File' ? (
               <Grid item xs>
-                <h1>File</h1>
+                <h2>File</h2>
                 <TextField
                   fullWidth
                   variant='outlined'
@@ -214,7 +213,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'Header' ? (
               <Grid item xs>
-                <h1>Header</h1>
+                <h2>Header</h2>
                 <TextField
                   fullWidth
                   variant='outlined'
@@ -227,9 +226,9 @@ function ConstructorCamp({
             ) : type === 'Space' ? (
               <></>
             ) : (
-              type === 'predefinido' && (
+              type === 'Predefinido' && (
                 <FormControl fullWidth>
-                  {/* select predefinido*/}
+                  {/* select Predefinido*/}
                   <InputLabel>Tipo de Campo</InputLabel>
                   <Select
                     fullWidth

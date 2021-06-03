@@ -23,7 +23,8 @@ import { useHistory } from 'react-router-dom';
 import { db } from '../../../firebase';
 import {
   changeDetailsApplication,
-  reportNeedsChanges
+  reportNeedsChanges,
+  sentApplication
 } from '../../../InternshipStates';
 
 const useStyles = makeStyles({
@@ -39,7 +40,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
+function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
   const classes = useStyles();
 
   return (
@@ -66,7 +67,8 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
           className={classes.button}
           variant='outlined'
           color='primary'
-          onClick={buttonOnClick}>
+          onClick={buttonOnClick}
+          disabled={disabled}>
           {buttonText}
         </Button>
       </Grid>
@@ -118,14 +120,25 @@ function ToDoList({ done }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              <ToDoItem
-                icon={<FaWpforms className={classes.icon} />}
-                title='Completar Formulario'
-                body='Completa el formulario de inscripción de práctica.'
-                buttonText='Completar'
-                buttonOnClick={() => history.push('/send-form')}
-              />
-              <Divider />
+              {userData.step === 1 && (
+                <>
+                  <ToDoItem
+                    icon={<FaWpforms className={classes.icon} />}
+                    title='Completar Formulario'
+                    body='Completa el formulario de inscripción de práctica.'
+                    buttonText={
+                      internship && internship.status === sentApplication
+                        ? 'En revisión'
+                        : 'Completar'
+                    }
+                    buttonOnClick={() => history.push('/send-form')}
+                    disabled={
+                      internship && internship.status === sentApplication
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
               {internship && internship.status === changeDetailsApplication && (
                 <>
                   <ToDoItem
@@ -137,13 +150,17 @@ function ToDoList({ done }) {
                   <Divider />
                 </>
               )}
-              <ToDoItem
-                icon={<IoDocumentAttachOutline className={classes.icon} />}
-                title='Enviar Informe'
-                body='Cuéntanos lo que has aprendido durante la práctica.'
-                buttonText='Enviar'
-              />
-              <Divider />
+              {userData.step === 2 && (
+                <>
+                  <ToDoItem
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Enviar Informe'
+                    body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
+                    buttonText='Enviar'
+                  />
+                  <Divider />
+                </>
+              )}
               {internship && internship.status === reportNeedsChanges && (
                 <>
                   <ToDoItem
@@ -155,12 +172,14 @@ function ToDoList({ done }) {
                   <Divider />
                 </>
               )}
-              <ToDoItem
-                icon={<RiSurveyLine className={classes.icon} />}
-                title='Responder Encuesta'
-                body='Cuéntanos tu experiencia durante las semanas práctica.'
-                buttonText='Responder'
-              />
+              {userData.step === 3 && (
+                <ToDoItem
+                  icon={<RiSurveyLine className={classes.icon} />}
+                  title='Responder Encuesta'
+                  body='Cuéntanos tu experiencia durante las semanas de práctica.'
+                  buttonText='Responder'
+                />
+              )}
             </Grid>
           )}
         </AccordionDetails>

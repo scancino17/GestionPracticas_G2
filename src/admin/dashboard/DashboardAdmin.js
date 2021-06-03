@@ -314,8 +314,10 @@ function DashboardAdmin({ sidebarProps }) {
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>
             <WarningIcon fontSize='large' />
-            <Typography variant='h3'>Página no encontrada!</Typography>
-            <Typography color='textSecondary'>Esta página no existe</Typography>
+            <Typography variant='h3'>Página en construcción</Typography>
+            <Typography color='textSecondary'>
+              Estamos trabajando para usted
+            </Typography>
           </Grid>
         </Route>
       </Switch>

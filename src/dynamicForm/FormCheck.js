@@ -14,6 +14,10 @@ import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { Check, Clear } from '@material-ui/icons';
 import FormView from './FormView';
+import {
+  approvedApplication,
+  changeDetailsApplication
+} from '../InternshipStates';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,18 +36,19 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '1rem'
   },
   fabAccept: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing(2),
     right: theme.spacing(2)
   },
   fabDecline: {
-    position: 'absolute',
+    position: 'fixed',
     bottom: theme.spacing(2),
     right: theme.spacing(18)
   }
 }));
+
 function FormCheck() {
-  const { ApplicationId } = useParams();
+  const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
   const [applicationUser, setApplicationUser] = useState([]);
 
@@ -53,23 +58,19 @@ function FormCheck() {
   const classes = useStyles();
 
   useEffect(() => {
-    db.collection('applicationsn')
-      .doc(ApplicationId)
+    db.collection('applications')
+      .doc(applicationId)
       .get()
       .then((doc) => {
         const data = doc.data();
-        if (data) {
-          setApplication(data);
-        }
+        if (data) setApplication(data);
       });
     db.collection('users')
       .doc(application.student)
       .get()
       .then((doc) => {
         const data = doc.data();
-        if (data) {
-          setApplication(data);
-        }
+        if (data) setApplication(data);
       });
   }, []);
 
@@ -79,21 +80,21 @@ function FormCheck() {
       .get()
       .then((doc) => {
         const data = doc.data();
-        if (data) {
-          setApplicationUser(data);
-        }
+        if (data) setApplicationUser(data);
       });
   }, [application]);
+
   useEffect(() => {
     setFlag(false);
   }, [flag]);
+
   function handleApprove() {
     db.collection('applications')
-      .doc(ApplicationId)
+      .doc(applicationId)
       .update({ status: 'Aprobado' });
     db.collection('internships')
       .doc(application.internshipId)
-      .update({ status: 'En curso' });
+      .update({ status: approvedApplication });
 
     db.collection('mails').add({
       to: applicationUser.email,
@@ -109,8 +110,11 @@ function FormCheck() {
   function handleReject() {
     setShow(false);
     db.collection('applications')
-      .doc(ApplicationId)
+      .doc(applicationId)
       .update({ status: 'Rechazado', reason: rejectReason });
+    db.collection('internships')
+      .doc(application.internshipId)
+      .update({ status: changeDetailsApplication });
 
     db.collection('mails').add({
       to: applicationUser.email,

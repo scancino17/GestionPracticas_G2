@@ -134,7 +134,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'Select' ? (
               <Grid item>
-                <h1>Select</h1>
+                <Typography variant='h4'>Select</Typography>
                 <Grid item>
                   <TextField
                     fullWidth
@@ -202,7 +202,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'File' ? (
               <Grid item xs>
-                <h1>File</h1>
+                <Typography variant='h4'>File</Typography>
                 <TextField
                   fullWidth
                   variant='outlined'
@@ -214,7 +214,7 @@ function ConstructorCamp({
               </Grid>
             ) : type === 'Header' ? (
               <Grid item xs>
-                <h1>Header</h1>
+                <Typography variant='h4'>Header</Typography>
                 <TextField
                   fullWidth
                   variant='outlined'

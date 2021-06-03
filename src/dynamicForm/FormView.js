@@ -84,7 +84,7 @@ function FormView({ flag, setFlag, form, readOnly }) {
             ) : element.type === 'predefinido' ? (
               element.type2 === 'Ciudad' ? (
                 <Grid item>
-                  <h1>Ciudad</h1>
+                  <Typography variant='h4'>Ciudad</Typography>
                   <Selector
                     valueinner={element.value}
                     camp={element.type2}
@@ -95,7 +95,7 @@ function FormView({ flag, setFlag, form, readOnly }) {
                 </Grid>
               ) : element.type2 === 'Empresa' ? (
                 <Grid item>
-                  <h1>Empresa</h1>
+                  <Typography variant='h4'>Empresa</Typography>
                   <Selector
                     valueinner={element.value}
                     camp={element.type2}

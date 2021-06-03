@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../providers/Auth';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
 import {

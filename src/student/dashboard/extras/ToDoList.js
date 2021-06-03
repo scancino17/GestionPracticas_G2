@@ -11,8 +11,7 @@ import {
   Hidden,
   Typography
 } from '@material-ui/core';
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
@@ -21,6 +20,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import InternshipIntentionFileList from './InternshipIntentionFileList';
 import useAuth from '../../../providers/Auth';
 import { useHistory } from 'react-router-dom';
+import { db } from '../../../firebase';
+import {
+  changeDetailsApplication,
+  reportNeedsChanges
+} from '../../../InternshipStates';
 
 const useStyles = makeStyles({
   icon: {
@@ -71,9 +75,18 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick }) {
 }
 
 function ToDoList({ done }) {
+  const [internship, setInternship] = useState();
+  const { userData } = useAuth();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const history = useHistory();
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('internships')
+      .doc(userData.currentInternship.id)
+      .onSnapshot((doc) => setInternship(doc.data()));
+    return unsubscribe;
+  }, []);
 
   return (
     <>
@@ -113,13 +126,17 @@ function ToDoList({ done }) {
                 buttonOnClick={() => history.push('/send-form')}
               />
               <Divider />
-              <ToDoItem
-                icon={<FaWpforms className={classes.icon} />}
-                title='Corregir Formulario'
-                body='El formulario que enviaste requiere correcciones.'
-                buttonText='Corregir'
-              />
-              <Divider />
+              {internship && internship.status === changeDetailsApplication && (
+                <>
+                  <ToDoItem
+                    icon={<FaWpforms className={classes.icon} />}
+                    title='Corregir Formulario'
+                    body='El formulario que enviaste requiere correcciones.'
+                    buttonText='Corregir'
+                  />
+                  <Divider />
+                </>
+              )}
               <ToDoItem
                 icon={<IoDocumentAttachOutline className={classes.icon} />}
                 title='Enviar Informe'
@@ -127,13 +144,17 @@ function ToDoList({ done }) {
                 buttonText='Enviar'
               />
               <Divider />
-              <ToDoItem
-                icon={<IoDocumentAttachOutline className={classes.icon} />}
-                title='Corregir Informe'
-                body='El informe que has enviado requiere correcciones.'
-                buttonText='Corregir'
-              />
-              <Divider />
+              {internship && internship.status === reportNeedsChanges && (
+                <>
+                  <ToDoItem
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Corregir Informe'
+                    body='El informe que has enviado requiere correcciones.'
+                    buttonText='Corregir'
+                  />
+                  <Divider />
+                </>
+              )}
               <ToDoItem
                 icon={<RiSurveyLine className={classes.icon} />}
                 title='Responder Encuesta'

@@ -7,8 +7,10 @@ import {
   TextField,
   Typography,
   Fab,
-  Modal,
-  Box
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
@@ -117,6 +119,7 @@ function FormCheck() {
       }
     });
   }
+
   return (
     <>
       <Fab
@@ -153,43 +156,27 @@ function FormCheck() {
           ))}
       </Container>
       {show && (
-        <Modal
-          open={show}
-          onClose={() => setShow(false)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-          <Box bgcolor='white' width='70%' padding={8}>
-            <Grid>
-              <Typography>Razón de rechazo:</Typography>
-              <TextField
-                fullWidth
-                variant='outlined'
-                xs={12}
-                required
-                id='standard-required'
-                label={'Razón'}
-                multiline
-                rowsMax={4}
-                onChange={(e) => setRejectReason(e.target.value)}
-              />
-              <Button
-                variant='contained'
-                color='secondary'
-                onClick={handleReject}>
-                Rechazar
-              </Button>
-              <Button
-                variant='contained'
-                color='primary'
-                onClick={() => setShow(false)}>
-                Salir
-              </Button>
-            </Grid>
-          </Box>
-        </Modal>
+        <Dialog open={show} onClose={() => setShow(false)} fullWidth>
+          <DialogTitle>Razón de rechazo</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              variant='outlined'
+              label={'Razón'}
+              multiline
+              rowsMax={4}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button color='primary' onClick={handleReject}>
+              Rechazar
+            </Button>
+            <Button color='primary' onClick={() => setShow(false)}>
+              Cancelar
+            </Button>
+          </DialogActions>
+        </Dialog>
       )}
     </>
   );

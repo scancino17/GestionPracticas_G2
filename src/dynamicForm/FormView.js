@@ -81,7 +81,7 @@ function FormView({ flag, setFlag, form, readOnly }) {
               <Grid item>
                 <Typography variant='h2' gutterBottom></Typography>
               </Grid>
-            ) : element.type === 'Predefinido' ? (
+            ) : element.type === 'predefinido' ? (
               element.type2 === 'Ciudad' ? (
                 <Grid item>
                   <h1>Ciudad</h1>

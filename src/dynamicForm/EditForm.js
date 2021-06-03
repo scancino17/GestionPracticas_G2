@@ -9,11 +9,10 @@ import {
   Build,
   ArrowBack,
   ArrowForward,
-  CheckCircleOutline,
-  Save
+  CheckCircleOutline
 } from '@material-ui/icons';
 import {
-  Divider ,
+  Box,
   Button,
   Container,
   FormControl,
@@ -34,8 +33,7 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import {makeStyles} from '@material-ui/styles'
-import { blueGrey } from '@material-ui/core/colors';
+
 function EditForm() {
   const [formFull, setFormFull] = useState([]);
   const [show, setShow] = useState('');
@@ -117,6 +115,7 @@ function EditForm() {
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing purposes
   }
+
   return (
     <Container>
       <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
@@ -147,67 +146,37 @@ function EditForm() {
       </Grid>
       {careerId && (
         <Grid container direction='column'>
-          
-            <Grid container justify='center' spacing={8} >
-              <>
-              <Grid
-                item 
-                direction='column'
-                justify='center'
-                alignItems='center'
-                xs={12} 
-                md={5}>
-                <Typography variant='h5' style={{ padding: '0 0 0 0' }}>
-                  Etapas
-                </Typography>
-                <Grid 
-                  container
-                  direction='column'
-                  justify='center'
-                  alignItems='center'
-                  style={{padding: '3rem 0 0 0'}}>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    startIcon={<Build />}
-                    onClick={() => setShow(true)}>
-                    Administrar Etapas
-                  </Button>
-                </Grid>
-                
-              </Grid>
-              <Divider orientation="vertical" flexItem />
-              <Grid item xs={12} md={6}>
-                <Typography variant='h5'>
-                  Previsualización
-                </Typography>
-                <Stepper activeStep={activeStep} alternativeLabel style={{backgroundColor: 'transparent'}}>
-                  {formFull.map((step) => (
-                    <Step key={step.step}>
-                      <StepLabel>{step.step}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Grid>
-              </>
-            </Grid>
-          
+          <Grid item>
+            <Button
+              variant='contained'
+              color='primary'
+              startIcon={<Build />}
+              onClick={() => setShow(true)}>
+              Administrar Pasos
+            </Button>
+          </Grid>
+          <Grid item>
+            <Stepper activeStep={activeStep} alternativeLabel>
+              {formFull.map((step) => (
+                <Step key={step.step}>
+                  <StepLabel>{step.step}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Grid>
           <>
             {activeStep === formFull.length ? (
               <>
+                <Typography>Guardar</Typography>
                 <Button
                   variant='contained'
                   color='primary'
-                  startIcon={<Save />}
                   onClick={handleSave}>
                   Guardar
                 </Button>
               </>
             ) : (
               <Grid item>
-                <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
-                  Campos
-                </Typography>
                 {formFull.map(
                   (form, i) =>
                     i === activeStep && (
@@ -220,42 +189,33 @@ function EditForm() {
                       />
                     )
                 )}
-                <Grid container>
-                  <Grid item xs={12} md={6}>
+                <Grid item>
+                  <Box pt={3}>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      startIcon={<ArrowBack />}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
 
-                  </Grid>
-                  <Grid item xs={12} md={6} style={{padding: '3rem 0 0 0'}}>
-                    
-                      <Button
-                        variant='contained'
-                        color='primary'
-                        disabled={activeStep === 0}
-                        startIcon={<ArrowBack />}
-                        onClick={handleBack}>
-                        Anterior
-                      </Button>
-                      <Button m={2}
-                        variant='contained'
-                        color='primary'
-                        onClick={activeStep === formFull.length - 1 ? (
-                            handleSave
-                          ) : (
-                            handleNext
-                          )}
-                        endIcon={
-                          activeStep === formFull.length - 1 ? (
-                            <Save />
-                          ) : (
-                            <ArrowForward />
-                          )
-                        }>
-                        {activeStep === formFull.length - 1
-                          ? 'Terminar'
-                          : 'Siguiente'}
-                      </Button>
-                    
-                  </Grid>
-                  
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      onClick={handleNext}
+                      endIcon={
+                        activeStep === formFull.length - 1 ? (
+                          <CheckCircleOutline />
+                        ) : (
+                          <ArrowForward />
+                        )
+                      }>
+                      {activeStep === formFull.length - 1
+                        ? 'Terminar'
+                        : 'Siguiente'}
+                    </Button>
+                  </Box>
                 </Grid>
               </Grid>
             )}
@@ -268,7 +228,7 @@ function EditForm() {
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-              
+              <Box bgcolor='white' padding={8}>
                 <Grid container direction='column' spacing={5}>
                   <Grid item xs>
                     <Table>
@@ -352,7 +312,7 @@ function EditForm() {
                     </Table>
                   </Grid>
                 </Grid>
-              
+              </Box>
             </Modal>
           </>
         </Grid>

@@ -19,6 +19,7 @@ import { storage } from '../firebase';
 import { customTypes, formTypes } from './formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import MomentUtils from '@date-io/moment';
+import moment from 'moment';
 
 function InternshipIntentionFileList({
   student,
@@ -199,7 +200,7 @@ function FormView({
                     fullWidth
                     disableToolbar
                     variant='inline'
-                    format='DD/MM/yyyy'
+                    format='DD/MM/YYYY'
                     label={customTypes.formStartDate}
                     value={element.value}
                     onChange={(date) =>
@@ -213,7 +214,7 @@ function FormView({
                     fullWidth
                     disableToolbar
                     variant='inline'
-                    format='DD/MM/yyyy'
+                    format='DD/MM/YYYY'
                     label={customTypes.formEndDate}
                     value={element.value}
                     onChange={(date) =>

@@ -19,6 +19,7 @@ import {
 } from '@material-ui/core';
 import { Add, Delete, Save } from '@material-ui/icons';
 import { customTypes, formTypes } from './formTypes';
+import moment from 'moment';
 
 function ConstructorCamp({
   show,
@@ -72,7 +73,7 @@ function ConstructorCamp({
       temp = {
         type: type,
         type2: type2,
-        value: new Date(),
+        value: '',
         name: type2
       };
     }

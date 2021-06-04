@@ -68,8 +68,7 @@ function DashboardEstudiante() {
                 {userData.step > 1 && (
                   <Hidden smDown>
                     <Typography color='textSecondary' variant='body2'>
-                      Supervisor: Sundar Pichai · Dirección: Palo Alto, CA ·
-                      Modalidad: Remoto
+                      Supervisor: Sundar Pichai · Modalidad: Remoto
                     </Typography>
                   </Hidden>
                 )}

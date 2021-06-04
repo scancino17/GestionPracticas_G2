@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogActions
 } from '@material-ui/core';
+import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { Check, Clear } from '@material-ui/icons';
@@ -20,7 +21,7 @@ import {
   approvedApplication,
   changeDetailsApplication
 } from '../InternshipStates';
-
+import { useHistory } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     // Este flex: auto está aqui para que los form abajo puedan ocupar todo el tamaño del grid que los contiene
@@ -39,11 +40,13 @@ const useStyles = makeStyles((theme) => ({
   },
   fabAccept: {
     position: 'fixed',
+    zIndex: 1,
     bottom: theme.spacing(2),
     right: theme.spacing(2)
   },
   fabDecline: {
     position: 'fixed',
+    zIndex: 1,
     bottom: theme.spacing(2),
     right: theme.spacing(18)
   }
@@ -53,7 +56,7 @@ function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
   const [applicationUser, setApplicationUser] = useState([]);
-
+  const history = useHistory();
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
@@ -126,7 +129,23 @@ function FormCheck() {
         variant='extended'
         color='primary'
         className={classes.fabAccept}
-        onClick={handleApprove}>
+        onClick={() => {
+          Swal.fire({
+            title: '¿Aprobar solicitud de práctica?',
+            showDenyButton: true,
+            confirmButtonText: `Aceptar`,
+            denyButtonText: `Cancelar`
+          }).then((result) => {
+            if (result.isConfirmed) {
+              handleApprove();
+              Swal.fire('¡Solicitud aprobada!', '', 'success').then(
+                (result) => {
+                  if (result.isConfirmed) history.push('/applications');
+                }
+              );
+            }
+          });
+        }}>
         <Check />
         Aprobar
       </Fab>
@@ -146,8 +165,14 @@ function FormCheck() {
         {application.form &&
           application.form.map((step) => (
             <Grid item>
+              <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
+                {step.step}
+              </Typography>
               <FormView
                 readOnly
+                studentId={application.studentId}
+                internshipId={application.internshipId}
+                applicationId={applicationId}
                 form={step.form}
                 flag={flag}
                 setFlag={setFlag}

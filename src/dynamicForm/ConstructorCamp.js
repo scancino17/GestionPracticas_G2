@@ -18,6 +18,7 @@ import {
   DialogActions
 } from '@material-ui/core';
 import { Add, Delete, Save } from '@material-ui/icons';
+import { customTypes, formTypes } from './formTypes';
 
 function ConstructorCamp({
   show,
@@ -29,8 +30,6 @@ function ConstructorCamp({
 }) {
   const [type, setType] = useState('');
   const [type2, setType2] = useState('');
-  const types = ['Input', 'Select', 'File', 'Header', 'Space', 'Predefinido'];
-  const predefined = ['Ciudad', 'Empresa'];
   const [name, setName] = useState('');
   const [openSelect, setopenSelect] = useState('');
   const [openSelect2, setopenSelect2] = useState('');
@@ -39,13 +38,13 @@ function ConstructorCamp({
 
   function handlerAddCamp() {
     let temp;
-    if (type === 'Input') {
+    if (type === formTypes.formTextInput) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === 'Select') {
+    } else if (type === formTypes.formSelect) {
       temp = {
         type: type,
         name: name,
@@ -53,27 +52,27 @@ function ConstructorCamp({
         value: '',
         open: false
       };
-    } else if (type === 'File') {
+    } else if (type === formTypes.formFileInput) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === 'Header') {
+    } else if (type === formTypes.formHeader) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === 'Space') {
+    } else if (type === formTypes.formSpace) {
       temp = {
         type: type
       };
-    } else if (type === 'Predefinido') {
+    } else if (type === formTypes.formCustom) {
       temp = {
         type: type,
         type2: type2,
-        value: '',
+        value: new Date(),
         name: type2
       };
     }
@@ -97,19 +96,19 @@ function ConstructorCamp({
             onOpen={() => setopenSelect(true)}
             onChange={(e) => setType(e.target.value)}>
             <MenuItem value=''>None</MenuItem>
-            {types.map((option) => (
+            {Object.values(formTypes).map((option) => (
               <MenuItem value={option}>{option}</MenuItem>
             ))}
           </Select>
         </FormControl>
-        {type === 'Input' ? (
+        {type === formTypes.formTextInput ? (
           <TextField
             fullWidth
             variant='outlined'
             label='Nombre'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === 'Select' ? (
+        ) : type === formTypes.formSelect ? (
           <>
             <TextField
               fullWidth
@@ -161,24 +160,24 @@ function ConstructorCamp({
               </TableBody>
             </Table>
           </>
-        ) : type === 'File' ? (
+        ) : type === formTypes.formFileInput ? (
           <TextField
             fullWidth
             variant='outlined'
             label='Nombre'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === 'Header' ? (
+        ) : type === formTypes.formHeader ? (
           <TextField
             fullWidth
             variant='outlined'
             label='Título'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === 'Space' ? (
+        ) : type === formTypes.formSpace ? (
           <></>
         ) : (
-          type === 'Predefinido' && (
+          type === formTypes.formCustom && (
             <FormControl fullWidth>
               {/* select predefinido*/}
               <InputLabel>Tipo de Campo</InputLabel>
@@ -190,7 +189,7 @@ function ConstructorCamp({
                 onOpen={() => setopenSelect2(true)}
                 onChange={(e) => setType2(e.target.value)}>
                 <MenuItem value=''>None</MenuItem>
-                {predefined.map((option) => (
+                {Object.values(customTypes).map((option) => (
                   <MenuItem value={option}>{option}</MenuItem>
                 ))}
               </Select>

@@ -233,7 +233,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         <SecondaryButton color='primary' onClick={closeModal}>
           Cancelar
         </SecondaryButton>
-        <DenyButton color='primary' onClick={handleRejecton}>
+        <DenyButton color='primary' onClick={handleReject}>
           Confirmar rechazo
         </DenyButton>
       </DialogActions>
@@ -319,7 +319,7 @@ const ApprovalModal = ({
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
-        <ApproveButton disabled={isConfirmDisabled} onClick={handleApproval}>
+        <ApproveButton disabled={isConfirmDisabled} onClick={handleApprove}>
           Confirmar Aprobación
         </ApproveButton>
       </DialogActions>

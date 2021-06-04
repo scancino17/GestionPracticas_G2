@@ -172,6 +172,19 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
+    db.collection('mails').add({
+      to: application.email,
+      template: {
+        name: 'FailedIntention',
+        data: {
+          from_name: application.name,
+          result: reason,
+          rechazado_por: userData.name,
+          rechazado_por_email: userData.email
+        }
+      }
+    });
+
     closeModal();
     update();
   }
@@ -245,6 +258,17 @@ const ApprovalModal = ({
           `students-docs/${studentId}/${internshipId}/internship-intention/${file.name}`
         )
         .put(file);
+    });
+
+    db.collection('mails').add({
+      to: application.email,
+      template: {
+        name: 'approvedIntention',
+        data: {
+          from_name: application.name,
+          aprobado_por: userData.name
+        }
+      }
     });
 
     db.collection('users')

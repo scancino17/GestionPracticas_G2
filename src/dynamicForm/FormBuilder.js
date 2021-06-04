@@ -11,7 +11,6 @@ import {
   Button,
   IconButton
 } from '@material-ui/core';
-import Swal from 'sweetalert2';
 import { Delete, ArrowUpward, ArrowDownward, Add } from '@material-ui/icons';
 import ConstructorCamp from './ConstructorCamp';
 
@@ -24,6 +23,13 @@ function FormBuilder({
   handlerSetFormInner
 }) {
   const [show, setShow] = useState(false);
+  const defaultInputs = [
+    'Información del estudiante',
+    'Nombre del estudiante',
+    'Rut del estudiante',
+    'Número de matrícula',
+    'Correo del estudiante'
+  ];
 
   useEffect(() => {
     setFlag(false);
@@ -88,43 +94,41 @@ function FormBuilder({
               {formInner.map((rec, i) => (
                 <TableRow key={rec.i}>
                   <TableCell>
-                    <Grid>
-                      <Typography>{rec.name}</Typography>
-                    </Grid>
+                    <Typography noWrap style={{ width: '10rem' }}>
+                      {rec.name}
+                    </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography>{rec.type}</Typography>
+                    <Typography noWrap style={{ width: '10rem' }}>
+                      {rec.type}
+                    </Typography>
                   </TableCell>
                   <TableCell>
-                    <Grid container spacing={4}>
-                      <Grid xs={3}>
-                        <IconButton onClick={() => hadlerDelete(rec, i)}>
+                    <Grid container>
+                      <Grid>
+                        <IconButton
+                          disabled={defaultInputs.includes(rec.name)}
+                          onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
                         </IconButton>
                       </Grid>
-                      <Grid xs={3}>
-                        {i !== 0 && (
-                          <IconButton onClick={() => handlerUp(i)}>
-                            <ArrowUpward />
-                          </IconButton>
-                        )}
-                        {i === 0 && (
-                          <IconButton disabled onClick={() => handlerUp(i)}>
-                            <ArrowUpward />
-                          </IconButton>
-                        )}
+                      <Grid>
+                        <IconButton
+                          disabled={defaultInputs.includes(rec.name) || i === 0}
+                          onClick={() => handlerUp(i)}>
+                          <ArrowUpward />
+                        </IconButton>
                       </Grid>
-                      <Grid xs={3}>
-                        {i < formInner.length - 1 && (
-                          <IconButton onClick={() => handlerDown(i)}>
-                            <ArrowDownward />
-                          </IconButton>
-                        )}
-                        {i === formInner.length - 1 && (
-                          <IconButton disabled onClick={() => handlerDown(i)}>
-                            <ArrowDownward />
-                          </IconButton>
-                        )}
+                      <Grid>
+                        <IconButton
+                          disabled={
+                            (defaultInputs.includes(rec.name) &&
+                              i <= defaultInputs.length) ||
+                            i === formInner.length - 1
+                          }
+                          onClick={() => handlerDown(i)}>
+                          <ArrowDownward />
+                        </IconButton>
                       </Grid>
                     </Grid>
                   </TableCell>
@@ -143,17 +147,15 @@ function FormBuilder({
           onClick={() => setShow(true)}>
           Agregar Campo
         </Button>
-        {
-          <ConstructorCamp
-            handlerSetFormInnerInner={handlerSetFormInner}
-            formInnerInner={formInner}
-            indexInnerInner={indexInner}
-            setShow={setShow}
-            formFullInnerInner={formFullInner}
-            setFlagInner={setFlag}
-            show={show}
-          />
-        }
+        <ConstructorCamp
+          handlerSetFormInnerInner={handlerSetFormInner}
+          formInnerInner={formInner}
+          indexInnerInner={indexInner}
+          setShow={setShow}
+          formFullInnerInner={formFullInner}
+          setFlagInner={setFlag}
+          show={show}
+        />
       </Grid>
     </Grid>
   );

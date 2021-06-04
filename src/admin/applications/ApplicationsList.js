@@ -20,7 +20,7 @@ import { db } from '../../firebase';
 
 function ApplicationsList() {
   const [careers, setCareers] = useState([]);
-  const [careerId, setCareerId] = useState();
+  const [careerId, setCareerId] = useState('general');
   const [applications, setApplications] = useState();
   const [filteredApplications, setFilteredApplications] = useState();
 
@@ -37,14 +37,6 @@ function ApplicationsList() {
   });
 
   useEffect(() => {
-    if (careerId)
-      db.collection('applications')
-        .doc(careerId)
-        .get()
-        .then((doc) => {});
-  }, [careerId]);
-
-  useEffect(() => {
     const unsubscribe = db
       .collection('applications')
       .onSnapshot((querySnapshot) => {
@@ -53,11 +45,22 @@ function ApplicationsList() {
           list.push({ id: doc.id, ...doc.data() })
         );
         setApplications(list);
-        const pending = list.filter((item) => item.status === 'En revisión');
-        setFilteredApplications(pending);
+        if (list) {
+          const pending = list.filter((item) => item.status === 'En revisión');
+          setFilteredApplications(pending);
+        }
       });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (applications && careerId)
+      setFilteredApplications(
+        applications.filter(
+          (item) => item.status === 'En revisión' && item.careerId === careerId
+        )
+      );
+  }, [careerId]);
 
   return (
     <Container>
@@ -89,8 +92,8 @@ function ApplicationsList() {
       </Grid>
 
       <List>
-        {applications &&
-          applications.map((application) => (
+        {filteredApplications &&
+          filteredApplications.map((application) => (
             <>
               <ApplicationItem application={application} />
               <Divider />
@@ -109,8 +112,8 @@ function ApplicationItem({ application }) {
       button
       onClick={() => history.push(`/check-form/${application.id}`)}>
       <ListItemText
-        primary={application.name}
-        secondary={`Práctica ${application.applicationNumber} - ${application.companyName}`}
+        primary={application.studentName}
+        secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}
       />
       <ListItemSecondaryAction>
         <IconButton

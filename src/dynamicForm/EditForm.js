@@ -37,15 +37,52 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
+import { formTypes } from './formTypes';
 
 function EditForm() {
-  const [formFull, setFormFull] = useState([]);
+  const [formFull, setFormFull] = useState([
+    {
+      step: 'Información del estudiante',
+      form: [
+        {
+          type: formTypes.formHeader,
+          name: 'Información del estudiante',
+          value: 'Información del estudiante'
+        },
+        {
+          type: formTypes.formTextInput,
+          name: 'Nombre del estudiante',
+          value: '',
+          readOnly: true
+        },
+        {
+          type: formTypes.formTextInput,
+          name: 'Rut del estudiante',
+          value: '',
+          readOnly: true
+        },
+        {
+          type: formTypes.formTextInput,
+          name: 'Número de matrícula',
+          value: '',
+          readOnly: true
+        },
+        {
+          type: formTypes.formTextInput,
+          name: 'Correo del estudiante',
+          value: '',
+          readOnly: true
+        }
+      ]
+    }
+  ]);
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [careers, setCareers] = useState([]);
   const [careerId, setCareerId] = useState();
   const history = useHistory();
+
   useEffect(() => {
     db.collection('careers')
       .get()
@@ -218,7 +255,7 @@ function EditForm() {
                     activeStep === formFull.length - 1
                       ? () => {
                           Swal.fire({
-                            title: '¿Desea Guardar los cambios?',
+                            title: '¿Desea guardar los cambios?',
                             showDenyButton: true,
                             confirmButtonText: `Guardar`,
                             denyButtonText: `Salir`
@@ -269,7 +306,9 @@ function EditForm() {
                 <TableRow key={form.i}>
                   <TableCell>{form.step}</TableCell>
                   <TableCell>
-                    <IconButton onClick={() => handleDelete(form)}>
+                    <IconButton
+                      disabled={form.step === 'Información del estudiante'}
+                      onClick={() => handleDelete(form)}>
                       <Delete />
                     </IconButton>
                     <IconButton disabled={i === 0} onClick={() => handleUp(i)}>

@@ -46,7 +46,7 @@ function Selector({ valueinner, camp, onParentChange, edit }) {
       onChange={handleOnChange}
       onCreateOption={handleCreate}
       options={options}
-      inputValue={value}
+      // inputValue={value}
       value={value}
     />
   );

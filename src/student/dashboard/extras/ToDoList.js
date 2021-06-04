@@ -5,6 +5,7 @@ import {
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   Divider,
   Grid,
@@ -157,6 +158,7 @@ function ToDoList({ done }) {
                     title='Enviar Informe'
                     body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
                     buttonText='Enviar'
+                    disabled
                   />
                   <Divider />
                 </>
@@ -197,12 +199,14 @@ function DocsDialog({ open, setOpen }) {
   }
 
   return (
-    <Dialog onClose={handleCloseDocsDialog} open={open}>
+    <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
       <DialogTitle>Descargar documentos</DialogTitle>
-      <InternshipIntentionFileList
-        studentId={user.uid}
-        internshipId={userData.currentInternship.id}
-      />
+      <DialogContent>
+        <InternshipIntentionFileList
+          studentId={user.uid}
+          internshipId={userData.currentInternship.id}
+        />
+      </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseDocsDialog} color='primary'>
           Cerrar

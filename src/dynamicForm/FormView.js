@@ -16,17 +16,10 @@ import Selector from './Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { GetApp } from '@material-ui/icons';
 import { storage } from '../firebase';
+import { customTypes, formTypes } from './formTypes';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
-const UrlLink = ({ url, name }) => {
-  return (
-    <ListItem button component='a' href={url} target='_blank' rel='noopener'>
-      <ListItemIcon>
-        <GetApp />
-      </ListItemIcon>
-      <ListItemText primary={name} />
-    </ListItem>
-  );
-};
 function InternshipIntentionFileList({
   student,
   internship,
@@ -34,7 +27,7 @@ function InternshipIntentionFileList({
   camp,
   name
 }) {
-  const [urls, setUrl] = useState();
+  const [url, setUrl] = useState();
 
   useEffect(() => {
     storage
@@ -45,11 +38,16 @@ function InternshipIntentionFileList({
       .then((url) => {
         setUrl(url);
       });
-  }, [student, internship, application, camp, name]);
+  }, []);
 
   return (
     <List>
-      <UrlLink url={urls} name={name} />
+      <ListItem button component='a' href={url} target='_blank' rel='noopener'>
+        <ListItemIcon>
+          <GetApp />
+        </ListItemIcon>
+        <ListItemText primary={name} />
+      </ListItem>
     </List>
   );
 }
@@ -73,102 +71,157 @@ function FormView({
   };
 
   return (
-    <Grid container direction='column' spacing={4}>
-      {form &&
-        form.map((element, index) =>
-          element.type === 'Select' ? (
-            <Grid item>
-              <FormControl fullWidth>
-                <InputLabel>{element.name}</InputLabel>
-                <Select
+    <MuiPickersUtilsProvider utils={MomentUtils}>
+      <Grid container direction='column' spacing={4}>
+        {form &&
+          form.map((element, index) =>
+            element.type === formTypes.formSelect ? (
+              <Grid item>
+                <FormControl fullWidth>
+                  <InputLabel>{element.name}</InputLabel>
+                  <Select
+                    fullWidth
+                    value={element.value}
+                    open={element.open}
+                    onClose={() => updateItem(index, 'open', false)}
+                    onOpen={() => updateItem(index, 'open', true)}
+                    onChange={(e) =>
+                      !readOnly && updateItem(index, 'value', e.target.value)
+                    }>
+                    <MenuItem value=''>None</MenuItem>
+                    {element.options.map((option) => (
+                      <MenuItem value={option}>{option}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            ) : element.type === formTypes.formTextInput ? (
+              <Grid item>
+                <TextField
                   fullWidth
+                  variant='outlined'
+                  label={element.name}
                   value={element.value}
-                  open={element.open}
-                  onClose={() => updateItem(index, 'open', false)}
-                  onOpen={() => updateItem(index, 'open', true)}
                   onChange={(e) =>
-                    !readOnly && updateItem(index, 'value', e.target.value)
-                  }>
-                  <MenuItem value=''>None</MenuItem>
-                  {element.options.map((option) => (
-                    <MenuItem value={option}>{option}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          ) : element.type === 'Input' ? (
-            <Grid item>
-              <TextField
-                fullWidth
-                variant='outlined'
-                label={element.name}
-                value={element.value}
-                onChange={(e) =>
-                  !readOnly && updateItem(index, 'value', e.target.value)
-                }
-              />
-            </Grid>
-          ) : element.type === 'File' ? (
-            <Grid item>
-              <>
-                <Typography variant='h4'>{element.name}</Typography>
-                {
-                  //si el formulario es solo para ver se mostrarn los botones para descargar los archivos
-                  !readOnly ? (
-                    <DropzoneArea
-                      initialFiles={element.value}
-                      filesLimit={1}
-                      accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                      onChange={(files) => updateItem(index, 'value', files)}
-                    />
+                    !readOnly &&
+                    !element.readOnly &&
+                    updateItem(index, 'value', e.target.value)
+                  }
+                />
+              </Grid>
+            ) : element.type === formTypes.formFileInput ? (
+              <Grid item>
+                <>
+                  <Typography variant='h5'>{element.name}</Typography>
+                  {
+                    //si el formulario es solo para ver se mostrarn los botones para descargar los archivos
+                    !readOnly ? (
+                      <DropzoneArea
+                        initialFiles={element.value}
+                        filesLimit={1}
+                        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                        onChange={(files) => updateItem(index, 'value', files)}
+                      />
+                    ) : (
+                      <InternshipIntentionFileList
+                        student={studentId}
+                        internship={internshipId}
+                        application={applicationId}
+                        camp={element.name}
+                        name={element.value}
+                      />
+                    )
+                  }
+                </>
+              </Grid>
+            ) : element.type === formTypes.formHeader ? (
+              <Grid item>
+                <Typography variant='h5'>{element.name}</Typography>
+              </Grid>
+            ) : element.type === formTypes.formSpace ? (
+              <Grid item>
+                <Typography variant='h5' />
+              </Grid>
+            ) : element.type === formTypes.formCustom ? (
+              element.type2 === customTypes.formCiudad ? (
+                <Grid item>
+                  {readOnly ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        variant='outlined'
+                        label={element.name}
+                        value={element.value}
+                      />
+                    </>
                   ) : (
-                    <InternshipIntentionFileList
-                      student={studentId}
-                      internship={internshipId}
-                      application={applicationId}
-                      camp={element.name}
-                      name={element.value}
-                    />
-                  )
-                }
-              </>
-            </Grid>
-          ) : element.type === 'Header' ? (
-            <Grid item>
-              <Typography variant='h5'>{element.name}</Typography>
-            </Grid>
-          ) : element.type === 'Space' ? (
-            <Grid item>
-              <Typography variant='h5' />
-            </Grid>
-          ) : element.type === 'predefinido' ? (
-            element.type2 === 'Ciudad' ? (
-              <Grid item>
-                <Typography variant='h5'>Ciudad</Typography>
-                <Selector
-                  valueinner={element.value}
-                  camp={element.type2}
-                  onParentChange={(newValue) => {
-                    updateItem(index, 'value', newValue.label);
-                  }}
-                />
-              </Grid>
-            ) : element.type2 === 'Empresa' ? (
-              <Grid item>
-                <Typography variant='h5'>Empresa</Typography>
-                <Selector
-                  readOnly={readOnly}
-                  valueinner={element.value}
-                  camp={element.type2}
-                  onParentChange={(newValue) => {
-                    updateItem(index, 'value', newValue.label);
-                  }}
-                />
-              </Grid>
+                    <>
+                      <Typography variant='h5'>Ciudad</Typography>
+                      <Selector
+                        readOnly={readOnly}
+                        valueinner={element.value}
+                        camp={element.type2}
+                        onParentChange={(newValue) => {
+                          updateItem(index, 'value', newValue.label);
+                        }}
+                      />
+                    </>
+                  )}
+                </Grid>
+              ) : element.type2 === customTypes.formEmpresa ? (
+                <Grid item>
+                  {readOnly ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        variant='outlined'
+                        label={element.name}
+                        value={element.value}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Typography variant='h5'>Empresa</Typography>
+                      <Selector
+                        readOnly={readOnly}
+                        valueinner={element.value}
+                        camp={element.type2}
+                        onParentChange={(newValue) => {
+                          updateItem(index, 'value', newValue.label);
+                        }}
+                      />
+                    </>
+                  )}
+                </Grid>
+              ) : element.type2 === customTypes.formStartDate ? (
+                <Grid item>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='DD/MM/yyyy'
+                    label={customTypes.formEndDate}
+                    value={element.value}
+                    onChange={(date) => updateItem(index, 'value', date)}
+                  />
+                </Grid>
+              ) : element.type2 === customTypes.formEndDate ? (
+                <Grid item>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='DD/MM/yyyy'
+                    label={customTypes.formEndDate}
+                    value={element.value}
+                    onChange={(date) => updateItem(index, 'value', date)}
+                  />
+                </Grid>
+              ) : null
             ) : null
-          ) : null
-        )}
-    </Grid>
+          )}
+      </Grid>
+    </MuiPickersUtilsProvider>
   );
 }
 

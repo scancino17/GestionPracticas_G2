@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   Grid,
   makeStyles,
@@ -162,7 +163,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
   const [reason, setReason] = useState('');
   const { userData } = useAuth();
 
-  const handleRejecton = () => {
+  function handleReject() {
     db.collection('internships')
       .doc(application.internshipId)
       .update({
@@ -173,19 +174,19 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
 
     closeModal();
     update();
-  };
+  }
 
-  const handleReasonChange = (e) => {
+  function handleReasonChange(e) {
     setReason(e.target.value);
-  };
+  }
 
   return (
-    <Dialog open={showRejectModal} onClose={closeModal}>
+    <Dialog fullWidth open={showRejectModal} onClose={closeModal}>
       <DialogTitle>Rechazar intención de práctica</DialogTitle>
       <DialogContent>
-        <Typography style={{ marginBottom: '1rem' }}>
+        <DialogContentText>
           {`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}
-        </Typography>
+        </DialogContentText>
         <TextField
           label='Razón de Rechazo'
           onChange={handleReasonChange}
@@ -196,7 +197,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         <Button color='primary' onClick={closeModal}>
           Cancelar
         </Button>
-        <Button color='primary' onClick={handleRejecton}>
+        <Button color='primary' onClick={handleReject}>
           Confirmar rechazo
         </Button>
       </DialogActions>
@@ -214,9 +215,9 @@ const ApprovalModal = ({
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
 
-  const handleLetterFile = (files) => {
+  function handleLetterFile(files) {
     setLetterFile(files);
-  };
+  }
 
   useEffect(() => {
     console.log(letterFile);
@@ -227,7 +228,7 @@ const ApprovalModal = ({
     }
   }, [letterFile]);
 
-  const handleApproval = () => {
+  function handleApprove() {
     const { studentId, internshipId } = application;
 
     db.collection('internships')
@@ -257,19 +258,26 @@ const ApprovalModal = ({
 
     closeModal();
     update();
-  };
+  }
 
   return (
-    <Dialog open={showApprovalModal} onClose={closeModal}>
+    <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
       <DialogContent>
-        <Typography>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</Typography>
-        <Typography>Adjunte los archivos correspondientes.</Typography>
+        <DialogContentText>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</DialogContentText>
+        <DialogContentText>
+          Adjunte los archivos correspondientes.
+        </DialogContentText>
         <DropzoneArea onChange={handleLetterFile} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeModal}>Cancelar</Button>
-        <Button disabled={isConfirmDisabled} onClick={handleApproval}>
+        <Button color='primary' onClick={closeModal}>
+          Cancelar
+        </Button>
+        <Button
+          color='primary'
+          disabled={isConfirmDisabled}
+          onClick={handleApprove}>
           Confirmar Aprobación
         </Button>
       </DialogActions>

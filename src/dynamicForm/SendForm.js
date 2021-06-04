@@ -7,7 +7,8 @@ import {
   Stepper,
   Typography,
   Button,
-  Container
+  Container,
+  Grid
 } from '@material-ui/core';
 import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
@@ -33,6 +34,10 @@ function SendForm({ edit }) {
           .get()
           .then((doc) => {
             const data = doc.data();
+            data.form[0].form[1].value = userData.name;
+            data.form[0].form[2].value = userData.rut;
+            data.form[0].form[3].value = userData.enrollmentNumber;
+            data.form[0].form[4].value = userData.email;
             if (data) setFormFull(data.form);
           });
       } else {
@@ -44,9 +49,6 @@ function SendForm({ edit }) {
             if (data) setFormFull(data.form);
           });
       }
-      db.collection('internships')
-        .doc(userData.currentInternship.id)
-        .update({ status: sentApplication });
     }
   }, [userData]);
 
@@ -63,8 +65,8 @@ function SendForm({ edit }) {
   }
   //se extraen los archivos del formfull para tenerlos en una lista aparte para poder subirlos al storage
   function extractFiles() {
-    formFull.map((step, i) =>
-      step.form.map((camp, j) => {
+    formFull.forEach((step, i) =>
+      step.form.forEach((camp, j) => {
         if (camp.type === 'File') {
           if (camp.value) {
             files.push({ campName: camp.name, file: camp.value[0] });
@@ -78,7 +80,7 @@ function SendForm({ edit }) {
   }
   //se guardan los archivos en el storage
   function saveFiles(applicationId) {
-    files.map((file) => {
+    files.forEach((file) => {
       storage
         .ref()
         .child(
@@ -95,13 +97,23 @@ function SendForm({ edit }) {
       //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
       //firestore no lo soporta
       extractFiles();
+      const values = {};
+      formFull.forEach((step) =>
+        step.form.forEach((camp) => {
+          values[camp.name] = camp.value;
+        })
+      );
+
       db.collection('applications')
         .add({
           form: formFull,
           studentId: user.uid,
+          studentName: userData.name,
           email: userData.email,
           careerId: userData.careerId,
-          internshipId: internshipId
+          internshipId: internshipId,
+          internshipNumber: userData.currentInternship.number,
+          ...values
         })
         .then(function (docRef) {
           //se guarda los archivos en la application correspondiente
@@ -113,6 +125,9 @@ function SendForm({ edit }) {
     } else {
       db.collection('applications').doc(internshipId).set({ form: formFull });
     }
+    db.collection('internships')
+      .doc(userData.currentInternship.id)
+      .update({ status: sentApplication });
   }
 
   return (
@@ -120,7 +135,7 @@ function SendForm({ edit }) {
       <Stepper
         activeStep={activeStep}
         alternativeLabel
-        style={{ margin: '2rem' }}>
+        style={{ margin: '2rem', backgroundColor: 'transparent' }}>
         {formFull.map((step) => (
           <Step key={step.step}>
             <StepLabel>{step.step}</StepLabel>
@@ -135,68 +150,76 @@ function SendForm({ edit }) {
           </Button>
         </>
       ) : (
-        <>
-          {formFull.map(
-            (form, i) =>
-              i === activeStep && (
-                // formview
-                <DynamicForm
-                  form={form.form}
-                  setForm={setFormFull}
-                  formFull={formFull}
-                  index={i}
-                  filesInner={files}
-                  setFilesInner={() => setFiles}
-                  student
-                />
-              )
-          )}
-          <Button variant='contained' color='primary' onClick={extractFiles}>
-            Save File
-          </Button>
-          <Button
-            variant='contained'
-            color='primary'
-            disabled={activeStep === 0}
-            onClick={handleBack}>
-            Anterior
-          </Button>
-          {activeStep !== formFull.length - 1 && (
-            <Button variant='contained' color='primary' onClick={handleNext}>
-              Siguiente
-            </Button>
-          )}
-          {activeStep === formFull.length - 1 && (
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={() => {
-                Swal.fire({
-                  title: '¿Desea enviar su solicitud?',
-                  showDenyButton: true,
-                  confirmButtonText: `Enviar`,
-                  denyButtonText: `Salir`
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    handleSave();
-                    Swal.fire('¡Formulario enviado!', '', 'success').then(
-                      (result) => {
-                        if (result.isConfirmed) history.push('/');
+        <Grid container direction='column' spacing={2}>
+          <Grid item>
+            {formFull.map(
+              (form, i) =>
+                i === activeStep && (
+                  // formview
+                  <DynamicForm
+                    form={form.form}
+                    setForm={setFormFull}
+                    formFull={formFull}
+                    index={i}
+                    filesInner={files}
+                    setFilesInner={() => setFiles}
+                    student
+                  />
+                )
+            )}
+          </Grid>
+          <Grid item container justify='flex-end' spacing={2}>
+            <Grid item>
+              <Button
+                variant='contained'
+                color='primary'
+                disabled={activeStep === 0}
+                onClick={handleBack}>
+                Anterior
+              </Button>
+            </Grid>
+            <Grid item>
+              {activeStep !== formFull.length - 1 && (
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={handleNext}>
+                  Siguiente
+                </Button>
+              )}
+              {activeStep === formFull.length - 1 && (
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={() => {
+                    Swal.fire({
+                      title: '¿Desea enviar su solicitud?',
+                      showDenyButton: true,
+                      confirmButtonText: `Enviar`,
+                      denyButtonText: `Salir`
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        handleSave();
+                        Swal.fire('¡Formulario enviado!', '', 'success').then(
+                          (result) => {
+                            if (result.isConfirmed) history.push('/');
+                          }
+                        );
+                      } else if (result.isDenied) {
+                        Swal.fire(
+                          'Revisa bien tu formulario antes de enviarlo',
+                          '',
+                          'info'
+                        );
                       }
-                    );
-                  } else if (result.isDenied) {
-                    Swal.fire(
-                      'Revisa bien tu formulario antes de enviarlo',
-                      '',
-                      'info'
-                    );
-                  }
-                });
-              }}>
-              Enviar
-            </Button>
-          )}
-        </>
+                    });
+                  }}>
+                  Enviar
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+        </Grid>
       )}
     </Container>
   );

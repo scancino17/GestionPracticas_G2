@@ -10,11 +10,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   makeStyles,
   TextField,
-  Typography
+  Typography,
+  withStyles
 } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
 import { ExpandMore } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -41,6 +44,24 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary
   }
 }));
+
+const DenyButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main
+  }
+}))(Button);
+
+const ApproveButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.primary.main
+  }
+}))(Button);
+
+const SecondaryButton = withStyles((theme) => ({
+  root: {
+    color: grey[700]
+  }
+}))(Button);
 
 const IntentionList = ({ applications, update }) => {
   const [expanded, setExpanded] = useState();
@@ -134,12 +155,14 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
           </Grid>
         </AccordionDetails>
         <AccordionActions>
-          <Button color='primary' onClick={() => setShowRejectModal(true)}>
+          <DenyButton color='primary' onClick={() => setShowRejectModal(true)}>
             Rechazar
-          </Button>
-          <Button color='primary' onClick={() => setShowApprovalModal(true)}>
+          </DenyButton>
+          <ApproveButton
+            color='primary'
+            onClick={() => setShowApprovalModal(true)}>
             Aprobar
-          </Button>
+          </ApproveButton>
         </AccordionActions>
       </Accordion>
       <ApprovalModal
@@ -193,12 +216,12 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button color='primary' onClick={closeModal}>
+        <SecondaryButton color='primary' onClick={closeModal}>
           Cancelar
-        </Button>
-        <Button color='primary' onClick={handleRejecton}>
+        </SecondaryButton>
+        <DenyButton color='primary' onClick={handleRejecton}>
           Confirmar rechazo
-        </Button>
+        </DenyButton>
       </DialogActions>
     </Dialog>
   );
@@ -268,10 +291,10 @@ const ApprovalModal = ({
         <DropzoneArea onChange={handleLetterFile} />
       </DialogContent>
       <DialogActions>
-        <Button onClick={closeModal}>Cancelar</Button>
-        <Button disabled={isConfirmDisabled} onClick={handleApproval}>
+        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
+        <ApproveButton disabled={isConfirmDisabled} onClick={handleApproval}>
           Confirmar Aprobación
-        </Button>
+        </ApproveButton>
       </DialogActions>
     </Dialog>
   );

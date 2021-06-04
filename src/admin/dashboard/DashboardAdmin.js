@@ -4,11 +4,7 @@ import CardBody from './extras/Card/CardBody.js';
 import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
 import {
-  MdAccessibility,
-  MdStore,
   MdUpdate,
-  MdInfoOutline,
-  MdContentCopy,
   MdTimeline,
   MdMultilineChart,
   MdEqualizer,
@@ -16,8 +12,12 @@ import {
   MdTrackChanges,
   MdDonutLarge
 } from 'react-icons/md';
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import ArchiveIcon from '@material-ui/icons/Archive';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import BusinessIcon from '@material-ui/icons/Business';
+import React, { useEffect, useState } from 'react';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import Application from '../applications/Application';
@@ -37,10 +37,31 @@ import GroupedBarChart from './extras/charts/GroupedBarChart';
 import LineChart from './extras/charts/LineChart';
 import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
+import { db } from '../../firebase';
+import { pendingIntention } from '../../InternshipStates';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
   const classes = useStyles();
+  const history = useHistory();
+  const [intentionsCount, setIntentionsCount] = useState(0);
+  const [formsCount, setFormsCount] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('internships')
+      .where('status', '==', pendingIntention)
+      .onSnapshot((querySnapshot) => setIntentionsCount(querySnapshot.size));
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('applications')
+      .where('status', '==', 'En revisión')
+      .onSnapshot((querySnapshot) => setFormsCount(querySnapshot.size));
+    return unsubscribe;
+  }, []);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -50,14 +71,14 @@ function DashboardAdmin({ sidebarProps }) {
           <Container>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
-                <Card>
+                <Card onClick={() => history.push('/internship-intention')}>
                   <CardHeader color='warning' stats icon>
                     <CardIcon color='warning'>
-                      <MdContentCopy />
+                      <ArchiveIcon />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Nuevas Declaraciones</p>
+                    <p className={classes.cardCategory}>Nuevas Intenciones</p>
                     <h3 className={classes.cardTitle}>
-                      <CountUp end={100} duration={3} />
+                      <CountUp end={intentionsCount} duration={3} />
                     </h3>
                   </CardHeader>
                   <CardFooter stats>
@@ -69,14 +90,14 @@ function DashboardAdmin({ sidebarProps }) {
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Card>
+                <Card onClick={() => history.push('/applications')}>
                   <CardHeader color='success' stats icon>
                     <CardIcon color='success'>
-                      <MdStore />
+                      <ListAltIcon />
                     </CardIcon>
                     <p className={classes.cardCategory}>Nuevos Formularios</p>
                     <h3 className={classes.cardTitle}>
-                      <CountUp end={50} duration={3} />
+                      <CountUp end={formsCount} duration={3} />
                     </h3>
                   </CardHeader>
                   <CardFooter stats>
@@ -91,11 +112,9 @@ function DashboardAdmin({ sidebarProps }) {
                 <Card>
                   <CardHeader color='danger' stats icon>
                     <CardIcon color='danger'>
-                      <MdInfoOutline />
+                      <AssignmentIcon />
                     </CardIcon>
-                    <p className={classes.cardCategory}>
-                      Formularios Corregidos
-                    </p>
+                    <p className={classes.cardCategory}>Informes pendientes</p>
                     <h3 className={classes.cardTitle}>
                       <CountUp end={10} duration={3} />
                     </h3>
@@ -112,9 +131,9 @@ function DashboardAdmin({ sidebarProps }) {
                 <Card>
                   <CardHeader color='info' stats icon>
                     <CardIcon color='info'>
-                      <MdAccessibility />
+                      <BusinessIcon />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Prácticas en Marcha</p>
+                    <p className={classes.cardCategory}>Prácticas en Curso</p>
                     <h3 className={classes.cardTitle}>
                       <CountUp end={1000} duration={3} />
                     </h3>

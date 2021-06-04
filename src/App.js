@@ -5,7 +5,6 @@ import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 import {
-  CircularProgress,
   createMuiTheme,
   CssBaseline,
   darken,

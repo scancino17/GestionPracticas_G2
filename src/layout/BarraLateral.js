@@ -4,9 +4,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
-
 import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
-
 import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';

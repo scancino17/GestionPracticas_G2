@@ -3,14 +3,7 @@ import useAuth from '../../providers/Auth';
 import { db } from '../../firebase';
 import { Route, Switch } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
-import {
-  CircularProgress,
-  Grid,
-  Hidden,
-  Typography,
-  Card,
-  Container
-} from '@material-ui/core';
+import { Grid, Hidden, Typography, Card, Container } from '@material-ui/core';
 import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';

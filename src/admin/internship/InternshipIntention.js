@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Divider,
   Grid,
   makeStyles,
   TextField,
@@ -29,10 +28,6 @@ import {
   pendingIntention
 } from '../../InternshipStates';
 import { useAuth } from '../../providers/Auth';
-
-const pendingIntentionState = pendingIntention;
-const approvedIntentionState = approvedIntention;
-const deniedIntentionState = deniedIntention;
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -190,7 +185,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
     db.collection('internships')
       .doc(application.internshipId)
       .update({
-        status: deniedIntentionState,
+        status: deniedIntention,
         reason: reason,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
@@ -256,12 +251,8 @@ const ApprovalModal = ({
   }
 
   useEffect(() => {
-    console.log(letterFile);
-    if (letterFile) {
-      setConfirmDisabled(false);
-    } else {
-      setConfirmDisabled(true);
-    }
+    if (letterFile) setConfirmDisabled(false);
+    else setConfirmDisabled(true);
   }, [letterFile]);
 
   function handleApprove() {
@@ -270,7 +261,7 @@ const ApprovalModal = ({
     db.collection('internships')
       .doc(internshipId)
       .update({
-        status: approvedIntentionState,
+        status: approvedIntention,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
@@ -346,7 +337,7 @@ function InternshipIntention() {
     setApplications([]);
 
     db.collection('internships')
-      .where('status', '==', pendingIntentionState)
+      .where('status', '==', pendingIntention)
       .get()
       .then((snapshot) => {
         snapshot.forEach((doc) => {

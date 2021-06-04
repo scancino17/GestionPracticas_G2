@@ -12,6 +12,7 @@ import {
   Grid,
   ThemeProvider
 } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
 
 const theme = createMuiTheme({
@@ -63,8 +64,18 @@ function App() {
               container
               justify='center'
               alignItems='center'
-              direction='row'>
-              <CircularProgress color='secondary' />
+              direction='column'
+              style={{ marginTop: '4rem' }}>
+              <Skeleton
+                variant='rect'
+                animation='wave'
+                height='5rem'
+                width='75%'
+                style={{ marginBottom: '2rem' }}
+              />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
             </Grid>
           )}
         </>

@@ -15,15 +15,15 @@ import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   paper: {
-    background: '#36568c'
+    background: theme.palette.primary.main
   },
   drawer: {
     width: 260,
     flexShrink: 0
   }
-});
+}));
 
 const items = [
   {

@@ -202,7 +202,9 @@ function FormView({
                     format='DD/MM/yyyy'
                     label={customTypes.formStartDate}
                     value={element.value}
-                    onChange={(date) => updateItem(index, 'value', date)}
+                    onChange={(date) =>
+                      updateItem(index, 'value', date.toDate())
+                    }
                   />
                 </Grid>
               ) : element.type2 === customTypes.formEndDate ? (
@@ -214,7 +216,9 @@ function FormView({
                     format='DD/MM/yyyy'
                     label={customTypes.formEndDate}
                     value={element.value}
-                    onChange={(date) => updateItem(index, 'value', date)}
+                    onChange={(date) =>
+                      updateItem(index, 'value', date.toDate())
+                    }
                   />
                 </Grid>
               ) : null

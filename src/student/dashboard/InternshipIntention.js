@@ -234,7 +234,6 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
   const ApprovedActions = () => {
     const handleStartInternship = (e) => {
-      console.log(internship.id);
       e.preventDefault();
       db.collection('internships')
         .doc(internship.id)

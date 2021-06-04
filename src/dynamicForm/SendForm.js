@@ -14,6 +14,7 @@ import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
 import { useHistory, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
+import { formTypes } from './formTypes';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -67,7 +68,7 @@ function SendForm({ edit }) {
   function extractFiles() {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
-        if (camp.type === 'File') {
+        if (camp.type === formTypes.formFileInput) {
           if (camp.value) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
@@ -93,6 +94,7 @@ function SendForm({ edit }) {
     });
   }
   function handleSave() {
+    console.log(formFull);
     if (!edit) {
       //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
       //firestore no lo soporta
@@ -104,6 +106,7 @@ function SendForm({ edit }) {
         })
       );
 
+      console.log(formFull);
       db.collection('applications')
         .add({
           form: formFull,
@@ -113,6 +116,7 @@ function SendForm({ edit }) {
           careerId: userData.careerId,
           internshipId: internshipId,
           internshipNumber: userData.currentInternship.number,
+          status: 'En revisión',
           ...values
         })
         .then(function (docRef) {

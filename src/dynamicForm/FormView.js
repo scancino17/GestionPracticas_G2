@@ -200,7 +200,7 @@ function FormView({
                     disableToolbar
                     variant='inline'
                     format='DD/MM/yyyy'
-                    label={customTypes.formEndDate}
+                    label={customTypes.formStartDate}
                     value={element.value}
                     onChange={(date) => updateItem(index, 'value', date)}
                   />

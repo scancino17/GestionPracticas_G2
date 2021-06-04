@@ -98,26 +98,7 @@ function FormBuilder({
                   <TableCell>
                     <Grid container spacing={4}>
                       <Grid xs={3}>
-                        {/**/}
-                        <IconButton
-                          onClick={() => {
-                            Swal.fire({
-                              title: '¿Desea eliminar este campo?',
-                              showDenyButton: true,
-                              confirmButtonText: `salir`,
-                              denyButtonText: `Eliminar`
-                            }).then((result) => {
-                              if (result.isDenied) {
-                                hadlerDelete(rec, i);
-                                Swal.fire(
-                                  '¡Campo eliminado!',
-                                  '',
-                                  'info'
-                                ).then((result) => {});
-                              } else if (result.isConfirmed) {
-                              }
-                            });
-                          }}>
+                        <IconButton onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
                         </IconButton>
                       </Grid>

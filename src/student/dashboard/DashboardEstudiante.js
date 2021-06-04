@@ -18,6 +18,7 @@ import Formulario from './../../form/Formulario';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../../InternshipStates';
 import SendForm from './../../dynamicForm/SendForm';
+import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
   const { user, userData } = useAuth();
@@ -87,8 +88,22 @@ function DashboardEstudiante() {
             )}
           </>
         ) : (
-          <Grid item container justify='center' alignItems='center' xs={12}>
-            <CircularProgress color='secondary' />
+          <Grid
+            container
+            justify='center'
+            alignItems='center'
+            direction='column'
+            style={{ marginTop: '4rem' }}>
+            <Skeleton
+              variant='rect'
+              animation='wave'
+              height='5rem'
+              width='75%'
+              style={{ marginBottom: '2rem' }}
+            />
+            <Skeleton animation='wave' width='75%' height='2rem' />
+            <Skeleton animation='wave' width='75%' height='2rem' />
+            <Skeleton animation='wave' width='75%' height='2rem' />
           </Grid>
         )}
       </Route>

@@ -110,7 +110,7 @@ function ApplicationItem({ application }) {
   return (
     <ListItem
       button
-      onClick={() => history.push(`/check-form/${application.id}`)}>
+      onClick={() => history.push(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
         secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}

@@ -20,7 +20,6 @@ import React, { useEffect, useState } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
-import Application from '../applications/Application';
 import CountUp from 'react-countup';
 import InternshipIntention from '../internship/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
@@ -315,13 +314,10 @@ function DashboardAdmin({ sidebarProps }) {
         <Route exact path='/applications'>
           <ApplicationsList />
         </Route>
-        <Route path='/applications/:id'>
-          <Application />
-        </Route>
         <Route path='/edit-form'>
           <EditForm />
         </Route>
-        <Route path='/check-form/:applicationId'>
+        <Route path='/applications/:applicationId'>
           <FormCheck />
         </Route>
         <Route path='/import'>

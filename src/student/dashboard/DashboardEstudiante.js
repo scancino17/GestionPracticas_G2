@@ -7,7 +7,6 @@ import { Grid, Hidden, Typography, Card, Container } from '@material-ui/core';
 import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
-import Formulario from './../../form/Formulario';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../../InternshipStates';
 import SendForm from './../../dynamicForm/SendForm';
@@ -98,9 +97,6 @@ function DashboardEstudiante() {
             <Skeleton animation='wave' width='75%' height='2rem' />
           </Grid>
         )}
-      </Route>
-      <Route path='/form/:userId/:internshipId'>
-        <Formulario />
       </Route>
       {/**este es el que va al formulario dinamico */}
       <Route path='/send-form'>

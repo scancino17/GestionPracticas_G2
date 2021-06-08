@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
   const [userData, setUserData] = useState();
   const [loaded, setLoaded] = useState(false);
 
-  const value = { user, userData, login, logout };
+  const value = { user, userData, login, logout, resetPassword };
 
   function login(email, password) {
     return auth.signInWithEmailAndPassword(email, password);
@@ -20,6 +20,10 @@ export function AuthProvider({ children }) {
 
   function logout() {
     return auth.signOut().then(() => setUserData(null));
+  }
+
+  function resetPassword(email) {
+    return auth.sendPasswordResetEmail(email);
   }
 
   useEffect(() => {
@@ -36,10 +40,7 @@ export function AuthProvider({ children }) {
 
         db.collection('users')
           .doc(user.uid)
-          .get()
-          .then((doc) => {
-            setUserData(doc.data());
-          });
+          .onSnapshot((doc) => setUserData(doc.data()));
       }
     });
     setLoaded(true);

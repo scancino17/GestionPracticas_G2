@@ -1,156 +1,342 @@
+import Card from './extras/Card/Card';
+import CardHeader from './extras/Card/CardHeader.js';
+import CardBody from './extras/Card/CardBody.js';
+import CardIcon from './extras/Card/CardIcon.js';
+import CardFooter from './extras/Card/CardFooter.js';
 import {
-  Heading,
-  Text,
-  Main,
-  Box,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Button,
-  Paragraph,
-  Chart
-} from 'grommet';
+  MdUpdate,
+  MdTimeline,
+  MdMultilineChart,
+  MdEqualizer,
+  MdPieChart,
+  MdTrackChanges,
+  MdDonutLarge
+} from 'react-icons/md';
+import ArchiveIcon from '@material-ui/icons/Archive';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import BusinessIcon from '@material-ui/icons/Business';
 import React, { useEffect, useState } from 'react';
-import QuickAccess from './QuickAccess';
-import useAuth from '../../providers/Auth';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
-import BarraLateral from '../../sideBar/BarraLateral';
-import Application from '../applications/Application';
-import {
-  List,
-  Group,
-  Task,
-  Upload,
-  DocumentText,
-  LinkNext,
-  Halt
-} from 'grommet-icons';
-
+import BarraLateral from '../../layout/BarraLateral';
+import CountUp from 'react-countup';
+import InternshipIntention from '../internship/InternshipIntention';
+import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
+import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
+import WarningIcon from '@material-ui/icons/Warning';
+import EditForm from '../../dynamicForm/EditForm';
+import FormCheck from '../../dynamicForm/FormCheck';
+import VerticalBar from './extras/charts/VerticalBar';
+import PieChart from './extras/charts/PieChart';
+import RadarChart from './extras/charts/RadarChart';
+import PolarChart from './extras/charts/PolarChart';
+import DoughnutChart from './extras/charts/DoughnutChart';
+import GroupedBarChart from './extras/charts/GroupedBarChart';
+import LineChart from './extras/charts/LineChart';
+import MultiTypeChart from './extras/charts/MultiTypeChart';
+import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
+import { pendingIntention } from '../../InternshipStates';
 
-function DashboardAdmin() {
-  const { user, userData } = useAuth();
-  const [applications, setApplications] = useState();
-  const [pendingApplications, setPendingApplications] = useState();
-
-  let updateApplications = () => {
-    db.collection('applications').onSnapshot((querySnapshot) => {
-      var list = [];
-      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      setApplications(list);
-      const pending = list.filter((item) => item.status === 'En revisión');
-      setPendingApplications(pending);
-    });
-  };
+function DashboardAdmin({ sidebarProps }) {
+  const useStyles = makeStyles(styles);
+  const classes = useStyles();
+  const history = useHistory();
+  const [intentionsCount, setIntentionsCount] = useState(0);
+  const [formsCount, setFormsCount] = useState(0);
 
   useEffect(() => {
-    updateApplications();
+    const unsubscribe = db
+      .collection('internships')
+      .where('status', '==', pendingIntention)
+      .onSnapshot((querySnapshot) => setIntentionsCount(querySnapshot.size));
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('applications')
+      .where('status', '==', 'En revisión')
+      .onSnapshot((querySnapshot) => setFormsCount(querySnapshot.size));
+    return unsubscribe;
   }, []);
 
   return (
-    <Box direction='row' fill responsive>
-      <BarraLateral />
-      <Box flex>
-        <Switch>
-          <Route exact path='/'>
-            <Main pad='xlarge'>
-              <Heading> ¡Hola, {userData && userData.name}!</Heading>
-              <Box alignSelf='center'>
-                <Box margin='medium' pad='small'>
-                  <Card background='light-1'>
-                    <CardHeader pad='medium'>Solicitudes pendientes</CardHeader>
-                    <CardBody align='center' pad='medium'>
-                      {pendingApplications && (
-                        <Text weight='bold'>{pendingApplications.length}</Text>
-                      )}
-                    </CardBody>
-                    <CardFooter justify='end' background='light-2'>
-                      <Link to='/applications'>
-                        <Button
-                          fill='horizontal'
-                          icon={<LinkNext color='plain' />}
-                          hoverIndicator
-                        />
-                      </Link>
-                    </CardFooter>
-                  </Card>
-                </Box>
-                <Box direction='row-responsive'>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>
-                      Gráfico: Por qué Paw Patrol es mejor que el resto
-                    </CardHeader>
-                    <CardBody>
-                      <Chart
-                        animate
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 100], label: 'zero' },
-                          { value: [1, 10], label: 'thirty' },
-                          { value: [2, 15], label: 'forty' },
-                          { value: [3, 12], label: 'sixty' },
-                          { value: [4, 8], label: 'seventy' },
-                          { value: [5, 4], label: 'sixty' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                  <Card background='light-1' margin='medium' pad='medium'>
-                    <CardHeader>Gráfico: Revenue OnlyFans del poio</CardHeader>
-                    <CardBody>
-                      <Chart
-                        animate
-                        bounds={[
-                          [0, 7],
-                          [0, 100]
-                        ]}
-                        values={[
-                          { value: [0, 5], label: 'zero' },
-                          { value: [1, 30], label: 'thirty' },
-                          { value: [2, 40], label: 'forty' },
-                          { value: [3, 60], label: 'sixty' },
-                          { value: [4, 70], label: 'seventy' },
-                          { value: [5, 60], label: 'sixty' },
-                          { value: [6, 80], label: 'eighty' },
-                          { value: [7, 100], label: 'one hundred' }
-                        ]}
-                        aria-label='chart'
-                      />
-                    </CardBody>
-                  </Card>
-                </Box>
-              </Box>
-            </Main>
-          </Route>
-          <Route exact path='/applications'>
-            <ApplicationsList applications={pendingApplications} />
-          </Route>
-          <Route path='/applications/:id'>
-            <Application />
-          </Route>
-          <Route exact path='/wip'>
-            <Box
-              fill
-              align='center'
-              pad={{ top: 'large', horizontal: 'small' }}>
-              <Halt size='xlarge' />
-              <Heading textAlign='center' level='2'>
-                Pagina no encontrada!
-              </Heading>
-              <Paragraph textAlign='center' color='dark-4'>
-                Esta pagina no existe
-              </Paragraph>
-            </Box>
-          </Route>
-        </Switch>
-      </Box>
-    </Box>
+    <div style={{ display: 'flex' }}>
+      <BarraLateral {...sidebarProps} />
+      <Switch>
+        <Route exact path='/'>
+          <Container>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card onClick={() => history.push('/internship-intention')}>
+                  <CardHeader color='warning' stats icon>
+                    <CardIcon color='warning'>
+                      <ArchiveIcon />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Nuevas Intenciones</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={intentionsCount} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card onClick={() => history.push('/applications')}>
+                  <CardHeader color='success' stats icon>
+                    <CardIcon color='success'>
+                      <ListAltIcon />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Nuevos Formularios</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={formsCount} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='danger' stats icon>
+                    <CardIcon color='danger'>
+                      <AssignmentIcon />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Informes pendientes</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={10} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card>
+                  <CardHeader color='info' stats icon>
+                    <CardIcon color='info'>
+                      <BusinessIcon />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Prácticas en Curso</p>
+                    <h3 className={classes.cardTitle}>
+                      <CountUp end={1000} duration={3} />
+                    </h3>
+                  </CardHeader>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            {/*Charts*/}
+            <Grid>
+              <Card>
+                <CardHeader color='rose' icon>
+                  <CardIcon color='rose'>
+                    <MdMultilineChart />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>MultiType Chart</p>
+                </CardHeader>
+                <CardBody>
+                  <MultiTypeChart />
+                </CardBody>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={8} md={8}>
+                <Card>
+                  <CardHeader color='warning' icon>
+                    <CardIcon color='warning'>
+                      <MdEqualizer />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Single Bars Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <VerticalBar />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4} md={4}>
+                <Card>
+                  <CardHeader color='info' icon>
+                    <CardIcon color='info'>
+                      <MdPieChart />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Pie Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <PieChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='danger' icon>
+                    <CardIcon color='danger'>
+                      <MdTrackChanges />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Radar Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <RadarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='success' icon>
+                    <CardIcon color='success'>
+                      <MdDonutLarge />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Doughnut Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <DoughnutChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardHeader color='warning' icon>
+                    <CardIcon color='warning'>
+                      <MdTrackChanges />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Polar Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <PolarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={6}>
+                <Card>
+                  <CardHeader color='info' icon>
+                    <CardIcon color='info'>
+                      <MdEqualizer />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Grouped Bars Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <GroupedBarChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={6}>
+                <Card>
+                  <CardHeader color='danger' icon>
+                    <CardIcon color='danger'>
+                      <MdTimeline />
+                    </CardIcon>
+                    <p className={classes.cardCategory}>Line Chart</p>
+                  </CardHeader>
+                  <CardBody>
+                    <LineChart />
+                  </CardBody>
+                  <CardFooter stats>
+                    <div className={classes.stats}>
+                      <MdUpdate />
+                      Actualizado recientemente
+                    </div>
+                  </CardFooter>
+                </Card>
+              </Grid>
+            </Grid>
+          </Container>
+        </Route>
+        <Route exact path='/applications'>
+          <ApplicationsList />
+        </Route>
+        <Route path='/edit-form'>
+          <EditForm />
+        </Route>
+        <Route path='/applications/:applicationId'>
+          <FormCheck />
+        </Route>
+        <Route path='/import'>
+          <ImportStudents />
+        </Route>
+        <Route path='/internship-intention'>
+          <InternshipIntention />
+        </Route>
+        <Route exact path='/wip'>
+          <Grid container direction='column' alignItems='center' mar>
+            <WarningIcon fontSize='large' />
+            <Typography variant='h3'>Página en construcción</Typography>
+            <Typography color='textSecondary'>
+              Estamos trabajando para usted
+            </Typography>
+          </Grid>
+        </Route>
+      </Switch>
+    </div>
   );
 }
 

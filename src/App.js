@@ -1,67 +1,87 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import { Box, Button, Grommet, Header, Image, Spinner } from 'grommet';
-import { useHistory } from 'react-router-dom';
 import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
+import {
+  createMuiTheme,
+  CssBaseline,
+  darken,
+  Grid,
+  ThemeProvider
+} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+import TopBar from './layout/TopBar';
 
-const theme = {
-  global: {
-    colors: {
-      brand: 'status-warning',
-      focus: 'neutral-3'
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#6782bc',
+      main: '#36568c',
+      dark: '#002e5e',
+      contrastText: '#ffffff'
     },
-    font: {
-      family: 'Roboto',
-      size: '18px',
-      height: '20px'
+    secondary: {
+      light: '#ffc057',
+      main: '#f28f25',
+      dark: '#ba6100',
+      contrastText: '#000000'
+    },
+    error: {
+      main: '#f44336',
+      dark: darken('#f44336', 0.15)
+    },
+    warning: {
+      main: '#ff9800'
+    },
+    success: {
+      main: '#4caf50',
+      dark: darken('#4caf50', 0.15)
     }
   }
-};
+});
 
 function App() {
-  const { user, userData, logout } = useAuth();
-  let history = useHistory();
+  const { user, userData } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <Grommet theme={theme} full>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       {user ? (
         <>
-          <Header background='brand' elevation='medium'>
-            <Button
-              onClick={() => history.push('/')}
-              icon={
-                <Box height='xxsmall'>
-                  <Image fill='vertical' src='logo.png' />
-                </Box>
-              }
-            />
-            <Button
-              label='Cerrar sesión'
-              onClick={(e) => {
-                e.preventDefault();
-                logout();
-                history.replace('/');
-              }}
-            />
-          </Header>
+          <TopBar setSidebarOpen={setSidebarOpen} />
           {(user.student || user.admin) && userData ? (
             user.student ? (
-              <DashboardEstudiante />
+              <DashboardEstudiante onGoingIntern={false} />
             ) : (
-              <DashboardAdmin />
+              <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
             )
           ) : (
-            <Box align='center'>
-              <Spinner margin='medium' size='large' />
-            </Box>
+            <Grid
+              container
+              justify='center'
+              alignItems='center'
+              direction='column'
+              style={{ marginTop: '4rem' }}>
+              <Skeleton
+                variant='rect'
+                animation='wave'
+                height='5rem'
+                width='75%'
+                style={{ marginBottom: '2rem' }}
+              />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+            </Grid>
           )}
         </>
       ) : (
         <Landing />
       )}
-    </Grommet>
+    </ThemeProvider>
   );
 }
 

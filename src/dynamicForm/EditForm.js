@@ -20,12 +20,8 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  FormControl,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   Step,
   StepLabel,
   Stepper,
@@ -38,6 +34,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { formTypes } from './formTypes';
+import CareerSelector from '../utils/CareerSelector';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([
@@ -79,38 +76,18 @@ function EditForm() {
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [careers, setCareers] = useState([]);
   const [careerId, setCareerId] = useState();
   const history = useHistory();
-
-  useEffect(() => {
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          if (doc.id !== 'general') temp.push({ id: doc.id, ...doc.data() });
-        });
-        setCareers(temp);
-      });
-  }, []);
 
   useEffect(() => {
     if (careerId)
       db.collection('form')
         .doc(careerId)
         .get()
-        .then((doc) => {
-          const data = doc.data();
-          if (data) {
-            setFormFull(data.form);
-          }
-        });
+        .then((doc) => setFormFull(doc.data().form));
   }, [careerId]);
 
-  useEffect(() => {
-    setFlag(false);
-  }, [flag]);
+  useEffect(() => setFlag(false), [flag]);
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -164,25 +141,11 @@ function EditForm() {
       </Typography>
       <Grid container justify='flex-end' alignItems='center' spacing={4}>
         <Grid item>
-          <Typography variant='h5'>Carrera:</Typography>
-        </Grid>
-        <Grid item>
-          <FormControl>
-            <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
-            <Select
-              labelId='select-career'
-              value={careerId}
-              onChange={(e) => setCareerId(e.target.value)}
-              style={{ minWidth: '12rem' }}>
-              {careers.map((career) => {
-                return (
-                  <MenuItem key={career.id} value={career.id}>
-                    {career.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
+          <CareerSelector
+            careerId={careerId}
+            setCareerId={setCareerId}
+            excludeGeneral
+          />
         </Grid>
       </Grid>
       {careerId && (

@@ -1,14 +1,8 @@
-import {
-  FormControl,
-  Grid,
-  InputLabel,
-  Select,
-  Typography
-} from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 
-function CareerSelector({ careerId, setCareerId, excludeGeneral }) {
+function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
   const [careers, setCareers] = useState([]);
 
   useEffect(() => {
@@ -17,36 +11,34 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral }) {
       .then((querySnapshot) => {
         const temp = [];
         querySnapshot.forEach((doc) => {
-          if (excludeGeneral && doc.id !== 'general')
-            temp.push({ id: doc.id, ...doc.data() });
+          temp.push({ id: doc.id, ...doc.data() });
         });
-        setCareers(temp);
+        setCareers(
+          excludeGeneral
+            ? temp.filter((career) => career.id !== 'general')
+            : temp
+        );
       });
   }, []);
 
   return (
-    <Grid container justify='flex-end' alignItems='center' spacing={4}>
-      <Grid item>
-        <Typography variant='h5'>Carrera:</Typography>
-      </Grid>
-      <Grid item>
-        <FormControl>
-          <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
-          <Select
-            labelId='select-career'
-            value={careerId}
-            onChange={(e) => setCareerId(e.target.value)}
-            style={{ minWidth: '12rem' }}>
-            {careers.map((career) => {
-              return (
-                <MenuItem key={career.id} value={career.id}>
-                  {career.name}
-                </MenuItem>
-              );
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
-    </Grid>
+    <FormControl>
+      <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
+      <Select
+        labelId='select-career'
+        value={careerId}
+        onChange={(e) => setCareerId(e.target.value)}
+        style={{ minWidth: '14rem' }}>
+        {careers.map((career) => {
+          return (
+            <MenuItem key={career.id} value={career.id}>
+              {career.name}
+            </MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
   );
 }
+
+export default CareerSelector;

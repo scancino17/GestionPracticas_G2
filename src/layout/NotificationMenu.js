@@ -164,7 +164,7 @@ function NotificationMenu() {
         <Box fontWeight='bold'>Notificaciones</Box>
       </Typography>
       <Divider />
-      {notifications.length === 0 && (
+      {Object.entries(userData.notifications).length === 0 && (
         <Typography>
           <Box style={{ padding: '1rem' }}>
             Nada que ver por aquí. ¡Vuelve más tarde!

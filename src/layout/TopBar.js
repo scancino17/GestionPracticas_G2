@@ -153,7 +153,9 @@ function TopBar({ setSidebarOpen }) {
               <Badge
                 color='secondary'
                 badgeContent={
-                  userData && Object.entries(userData.notifications).length
+                  userData &&
+                  userData.notifications &&
+                  Object.entries(userData.notifications).length
                 }>
                 <Notifications />
               </Badge>

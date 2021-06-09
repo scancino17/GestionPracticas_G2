@@ -32,8 +32,8 @@ function Stories() {
                 ¡Redacta un gran informe!
               </Typography>
               <Typography variant='body2' color='textSecondary'>
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Relata la experiencia que has ganado en tu práctica. ¡Registra
+                todo lo que hagas!
               </Typography>
             </CardContent>
           </CardActionArea>
@@ -52,8 +52,8 @@ function Stories() {
                 Prepara tu presentación
               </Typography>
               <Typography variant='body2' color='textSecondary'>
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Inspira a tus compañeros contandoles sobre tu primera
+                experiencia laboral.
               </Typography>
             </CardContent>
           </CardActionArea>
@@ -72,8 +72,8 @@ function Stories() {
                 En el ambiente de trabajo
               </Typography>
               <Typography variant='body2' color='textSecondary'>
-                Some quick example text to build on the card title and make up
-                the bulk of the card's content.
+                Te damos algunos consejos respecto a qué puedes esperar de un
+                ambiente laboral.
               </Typography>
             </CardContent>
           </CardActionArea>

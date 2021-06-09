@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Divider,
   Grid,
   makeStyles,
   TextField,
@@ -67,31 +68,36 @@ const IntentionList = ({ applications, update }) => {
   };
 
   return (
-    <Container>
+    <Grid container direction='row'>
       <Grid
         style={{
           backgroundImage: "url('AdminBanner-Intention.png')",
           backgroundSize: 'cover',
-          padding: '2rem',
-          borderRadius: '1rem'
+          backgroundPosition: 'center',
+          backgroundRepeat:'no-repeat',
+          padding: '2rem'
         }}
         container>
         <Typography variant='h4' >
           Estudiantes con intención de práctica
         </Typography>
       </Grid>
-      
-      <Grid>
-        {applications.map((application) => (
-          <IntentionItem
-            application={application}
-            update={update}
-            expanded={expanded}
-            changeExpanded={changeExpanded}
-          />
-        ))}
-      </Grid>
-    </Container>
+
+      <Container>
+        
+        
+        <Grid style={{margin: '2rem'}}>
+          {applications.map((application) => (
+            <IntentionItem
+              application={application}
+              update={update}
+              expanded={expanded}
+              changeExpanded={changeExpanded}
+            />
+          ))}
+        </Grid>
+      </Container>
+    </Grid>
   );
 };
 

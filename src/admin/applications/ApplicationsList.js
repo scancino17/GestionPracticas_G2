@@ -63,53 +63,56 @@ function ApplicationsList() {
   }, [careerId]);
 
   return (
-    <Container>
+    <Grid container direction='row' >
       <Grid
         style={{
           backgroundImage: "url('AdminBanner-Form.png')",
           backgroundSize: 'cover',
-          padding: '2rem',
-          borderRadius: '1rem'
+          backgroundPosition: 'center',
+          backgroundRepeat:'no-repeat',
+          padding: '2rem'
         }}
         container>
         <Typography variant='h4'>
           Postulaciones de práctica
         </Typography>
       </Grid>
-      <Grid container justify='flex-end' alignItems='center' spacing={4}>
-        <Grid item>
-          <Typography variant='h5'>Carrera:</Typography>
+      <Container>
+        <Grid container justify='flex-end' alignItems='center' spacing={4} style={{margin: '1rem'}}>
+          <Grid item>
+            <Typography variant='h5'>Carrera:</Typography>
+          </Grid>
+          <Grid item>
+            <FormControl>
+              <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
+              <Select
+                labelId='select-career'
+                value={careerId}
+                onChange={(e) => setCareerId(e.target.value)}
+                style={{ minWidth: '12rem' }}>
+                {careers.map((career) => {
+                  return (
+                    <MenuItem key={career.id} value={career.id}>
+                      {career.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
-        <Grid item>
-          <FormControl>
-            <InputLabel id='select-career'>Seleccionar carrera</InputLabel>
-            <Select
-              labelId='select-career'
-              value={careerId}
-              onChange={(e) => setCareerId(e.target.value)}
-              style={{ minWidth: '12rem' }}>
-              {careers.map((career) => {
-                return (
-                  <MenuItem key={career.id} value={career.id}>
-                    {career.name}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Grid>
-      </Grid>
 
-      <List>
-        {filteredApplications &&
-          filteredApplications.map((application) => (
-            <>
-              <ApplicationItem application={application} />
-              <Divider />
-            </>
-          ))}
-      </List>
-    </Container>
+        <List>
+          {filteredApplications &&
+            filteredApplications.map((application) => (
+              <>
+                <ApplicationItem application={application} />
+                <Divider />
+              </>
+            ))}
+        </List>
+      </Container>
+    </Grid>
   );
 }
 

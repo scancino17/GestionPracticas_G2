@@ -97,50 +97,52 @@ function ImportStudents() {
   }
 
   return (
-    <Container>
+    <Grid container direction='row' >
       <Grid
         style={{
           backgroundImage: "url('AdminBanner-Import.png')",
           backgroundSize: 'cover',
-          padding: '2rem',
-          borderRadius: '1rem'
+          backgroundPosition: 'center',
+          backgroundRepeat:'no-repeat',
+          padding: '2rem'
         }}
         container>
         <Typography variant='h4'>
           Importar estudiantes
         </Typography>
       </Grid>
-      
-      
-      <DropzoneArea
-        filesLimit={1}
-        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        onChange={handleFileUpload}
-      />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre alumno</TableCell>
-              <TableCell>Carrera</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map((row) => {
-              return (
-                <TableRow>
-                  <TableCell scope='row'>{row[4]}</TableCell>
-                  <TableCell scope='row'>{row[0]}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Button onClick={handleSubmit} variant='contained'>
-        Confirmar
-      </Button>
-    </Container>
+      <Container>
+        
+        <DropzoneArea
+          filesLimit={1}
+          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          onChange={handleFileUpload}
+        />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Nombre alumno</TableCell>
+                <TableCell>Carrera</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {list.map((row) => {
+                return (
+                  <TableRow>
+                    <TableCell scope='row'>{row[4]}</TableCell>
+                    <TableCell scope='row'>{row[0]}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Button onClick={handleSubmit} variant='contained'>
+          Confirmar
+        </Button>
+      </Container>
+    </Grid>
   );
 }
 

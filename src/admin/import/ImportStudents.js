@@ -12,7 +12,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  Grid
 } from '@material-ui/core';
 import { DropzoneArea, DropzoneAreaBase } from 'material-ui-dropzone';
 
@@ -96,40 +97,49 @@ function ImportStudents() {
   }
 
   return (
-    <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
-        Importar estudiantes
-      </Typography>
-      <DropzoneArea
-        filesLimit={1}
-        showFileNames
-        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        onChange={handleFileUpload}
-      />
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre alumno</TableCell>
-              <TableCell>Carrera</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {list.map((row) => {
-              return (
-                <TableRow>
-                  <TableCell scope='row'>{row[4]}</TableCell>
-                  <TableCell scope='row'>{row[0]}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Button onClick={handleSubmit} variant='contained'>
-        Confirmar
-      </Button>
-    </Container>
+    <Grid container direction='column'>
+      <div
+        style={{
+          backgroundImage: "url('AdminBanner-Import.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>Importar estudiantes</Typography>
+      </div>
+      <Container style={{ marginTop: '2rem' }}>
+        <DropzoneArea
+          filesLimit={1}
+          showFileNames
+          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+          onChange={handleFileUpload}
+        />
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Nombre alumno</TableCell>
+                <TableCell>Carrera</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {list.map((row) => {
+                return (
+                  <TableRow>
+                    <TableCell scope='row'>{row[4]}</TableCell>
+                    <TableCell scope='row'>{row[0]}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Button onClick={handleSubmit} variant='contained'>
+          Confirmar
+        </Button>
+      </Container>
+    </Grid>
   );
 }
 

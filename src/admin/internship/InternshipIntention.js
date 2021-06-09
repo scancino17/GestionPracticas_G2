@@ -69,11 +69,20 @@ const IntentionList = ({ applications, update }) => {
   };
 
   return (
-    <Container>
-      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-        Estudiantes con intención de práctica
-      </Typography>
-      <Grid>
+    <Grid container direction='column'>
+      <div
+        style={{
+          backgroundImage: "url('AdminBanner-Intention.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>
+          Estudiantes con intención de práctica
+        </Typography>
+      </div>
+      <Container style={{ marginTop: '2rem' }}>
         {applications.map((application) => (
           <IntentionItem
             application={application}
@@ -82,8 +91,8 @@ const IntentionList = ({ applications, update }) => {
             changeExpanded={changeExpanded}
           />
         ))}
-      </Grid>
-    </Container>
+      </Container>
+    </Grid>
   );
 };
 

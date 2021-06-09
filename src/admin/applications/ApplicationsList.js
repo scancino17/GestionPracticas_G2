@@ -74,69 +74,78 @@ function ApplicationsList() {
   }
 
   return (
-    <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
-        Postulaciones de práctica
-      </Typography>
-      <Grid container justify='flex-end' alignItems='center' spacing={4}>
-        <Grid item>
-          <TextField
-            label='Buscar estudiante'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+    <Grid container direction='column'>
+      <div
+        style={{
+          backgroundImage: "url('AdminBanner-Form.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>Postulaciones de práctica</Typography>
+      </div>
+      <Container style={{ marginTop: '2rem' }}>
+        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+          <Grid item>
+            <TextField
+              label='Buscar estudiante'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <FormControl>
+              <FormLabel>Estado</FormLabel>
+              <FormGroup row>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={reviewing}
+                      onChange={handleCheckboxes}
+                      name='reviewing'
+                    />
+                  }
+                  label='En revisión'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={approved}
+                      onChange={handleCheckboxes}
+                      name='approved'
+                    />
+                  }
+                  label='Aprobadas'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={rejected}
+                      onChange={handleCheckboxes}
+                      name='rejected'
+                    />
+                  }
+                  label='Rechazadas'
+                />
+              </FormGroup>
+            </FormControl>
+          </Grid>
+          <Grid item>
+            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+          </Grid>
         </Grid>
-        <Grid item>
-          <FormControl>
-            <FormLabel>Estado</FormLabel>
-            <FormGroup row>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={reviewing}
-                    onChange={handleCheckboxes}
-                    name='reviewing'
-                  />
-                }
-                label='En revisión'
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={approved}
-                    onChange={handleCheckboxes}
-                    name='approved'
-                  />
-                }
-                label='Aprobadas'
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={rejected}
-                    onChange={handleCheckboxes}
-                    name='rejected'
-                  />
-                }
-                label='Rechazadas'
-              />
-            </FormGroup>
-          </FormControl>
-        </Grid>
-        <Grid item>
-          <CareerSelector careerId={careerId} setCareerId={setCareerId} />
-        </Grid>
-      </Grid>
-      <List>
-        {filteredApplications &&
-          filteredApplications.map((application) => (
-            <>
-              <ApplicationItem application={application} />
-              <Divider />
-            </>
-          ))}
-      </List>
-    </Container>
+        <List>
+          {filteredApplications &&
+            filteredApplications.map((application) => (
+              <>
+                <ApplicationItem application={application} />
+                <Divider />
+              </>
+            ))}
+        </List>
+      </Container>
+    </Grid>
   );
 }
 

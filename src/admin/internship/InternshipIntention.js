@@ -323,7 +323,7 @@ const ApprovalModal = ({
         <DialogContentText>
           Adjunte los archivos correspondientes.
         </DialogContentText>
-        <DropzoneArea onChange={handleLetterFile} />
+        <DropzoneArea showFileNames onChange={handleLetterFile} />
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>

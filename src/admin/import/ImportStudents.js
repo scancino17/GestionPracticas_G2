@@ -14,7 +14,7 @@ import {
   TableRow,
   Typography
 } from '@material-ui/core';
-import { DropzoneArea } from 'material-ui-dropzone';
+import { DropzoneArea, DropzoneAreaBase } from 'material-ui-dropzone';
 
 function ImportStudents() {
   const [list, setList] = useState([]);
@@ -102,6 +102,7 @@ function ImportStudents() {
       </Typography>
       <DropzoneArea
         filesLimit={1}
+        showFileNames
         accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         onChange={handleFileUpload}
       />

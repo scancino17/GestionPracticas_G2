@@ -103,7 +103,7 @@ function DashboardEstudiante() {
         <SendForm />
       </Route>
       {/**este es el que va al formulario dinamico para edicion */}
-      <Route path='/edit-form'>
+      <Route path='/edit-form/:applicationId'>
         <SendForm edit />
       </Route>
       <Route path='/internship/:studentId/:internshipId'>

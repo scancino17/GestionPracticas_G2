@@ -40,7 +40,6 @@ function Selector({ valueinner, camp, onParentChange, edit }) {
 
   return (
     <CreatableSelect
-      styles={{ zindex: 10000000000000000000000000000000000000000 }}
       isClearable
       isDisabled={isLoading}
       isLoading={isLoading}

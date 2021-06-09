@@ -127,7 +127,17 @@ function SendForm({ edit }) {
           console.error('Error adding document: ', error);
         });
     } else {
-      db.collection('applications').doc(internshipId).set({ form: formFull });
+      console.log(formFull);
+      const values = {};
+      formFull.forEach((step) =>
+        step.form.forEach((camp) => {
+          values[camp.name] = camp.value;
+        })
+      );
+
+      db.collection('applications')
+        .doc(applicationId)
+        .update({ form: formFull, ...values });
     }
     db.collection('internships')
       .doc(userData.currentInternship.id)

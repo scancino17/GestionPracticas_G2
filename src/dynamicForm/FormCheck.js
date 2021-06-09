@@ -92,11 +92,13 @@ const SecondaryButton = withStyles((theme) => ({
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
-  const [applicationBackUp, setApplicationBackUp] = useState([]);
+  const [minorChanges, setMinorChanges] = useState('');
   const [applicationUser, setApplicationUser] = useState([]);
   const history = useHistory();
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
+  const [showMinorChanges, setShowMinorChanges] = useState(false);
+
   const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const classes = useStyles();
@@ -171,6 +173,15 @@ function FormCheck() {
       }
     });
   }
+  function handleMinorChanges() {
+    db.collection('internships')
+      .doc(application.internshipId)
+      .update({ status: changeDetailsApplication });
+    //cambiar estado a la application
+    db.collection('users')
+      .doc(application.studentId)
+      .update({ 'currentInternship.lastApplication': applicationId });
+  }
   function handleSave() {
     const values = {};
     application.form.forEach((step) =>
@@ -224,7 +235,9 @@ function FormCheck() {
             variant='extended'
             color='secondary'
             className={classes.fabMinorChanges}
-            onClick={() => console.log(applicationBackUp)}>
+            onClick={() => {
+              handleMinorChanges();
+            }}>
             <Clear />
             Cambios menores
           </Fab>
@@ -259,25 +272,18 @@ function FormCheck() {
             color='primary'
             className={classes.fabSave}
             onClick={() => {
-              {
-                Swal.fire({
-                  title: '¿Desea Aplicar los cambios?',
-                  showDenyButton: true,
-                  confirmButtonText: `Aceptar`,
-                  denyButtonText: `Cancelar`
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    handleSave();
-                    Swal.fire('¡Cambios Guardados!', '', 'success').then(
-                      (result) => {
-                        if (result.isConfirmed) {
-                          setEdit(false);
-                        }
-                      }
-                    );
-                  }
-                });
-              }
+              Swal.fire({
+                title: '¿Desea Aplicar los cambios?',
+                showDenyButton: true,
+                confirmButtonText: `Aceptar`,
+                denyButtonText: `Cancelar`
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  handleSave();
+                  Swal.fire('¡Cambios Guardados!', '', 'success');
+                  setEdit(false);
+                }
+              });
             }}>
             <Save />
             Guardar
@@ -329,6 +335,35 @@ function FormCheck() {
             </SecondaryButton>
             <DenyButton color='primary' onClick={handleReject}>
               Confirmar rechazo
+            </DenyButton>
+          </DialogActions>
+        </Dialog>
+      )}
+      {showMinorChanges && (
+        <Dialog
+          open={showMinorChanges}
+          onClose={() => setShowMinorChanges(false)}
+          fullWidth>
+          <DialogTitle>Solicitud de cambios</DialogTitle>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label={'Cambios necesarios'}
+              multiline
+              rowsMax={4}
+              onChange={(e) => setMinorChanges(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <SecondaryButton
+              color='primary'
+              onClick={() => setShowMinorChanges(false)}>
+              Cancelar
+            </SecondaryButton>
+            <DenyButton
+              color='primary'
+              onClick={(handleMinorChanges, setShowMinorChanges(false))}>
+              Confirmar solicitud
             </DenyButton>
           </DialogActions>
         </Dialog>

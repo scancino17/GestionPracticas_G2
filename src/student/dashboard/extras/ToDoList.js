@@ -147,6 +147,11 @@ function ToDoList({ done }) {
                     title='Corregir Formulario'
                     body='El formulario que enviaste requiere correcciones.'
                     buttonText='Corregir'
+                    buttonOnClick={() =>
+                      history.push(
+                        `/edit-form/${userData.currentInternship.lastApplication}`
+                      )
+                    }
                   />
                   <Divider />
                 </>

@@ -18,7 +18,7 @@ import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
-import { Check, Clear } from '@material-ui/icons';
+import { Check, Clear, Save } from '@material-ui/icons';
 import FormView from './FormView';
 import {
   approvedApplication,
@@ -52,6 +52,31 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     bottom: theme.spacing(2),
     right: theme.spacing(18)
+  },
+
+  fabMinorChanges: {
+    position: 'fixed',
+    zIndex: 1,
+    bottom: theme.spacing(2),
+    right: theme.spacing(50)
+  },
+  fabEdit: {
+    position: 'fixed',
+    zIndex: 1,
+    bottom: theme.spacing(2),
+    right: theme.spacing(35)
+  },
+  fabExitEdit: {
+    position: 'fixed',
+    zIndex: 1,
+    bottom: theme.spacing(2),
+    right: theme.spacing(20)
+  },
+  fabSave: {
+    position: 'fixed',
+    zIndex: 1,
+    bottom: theme.spacing(2),
+    right: theme.spacing(2)
   }
 }));
 const DenyButton = withStyles((theme) => ({
@@ -67,10 +92,12 @@ const SecondaryButton = withStyles((theme) => ({
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
+  const [applicationBackUp, setApplicationBackUp] = useState([]);
   const [applicationUser, setApplicationUser] = useState([]);
   const history = useHistory();
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
+  const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const classes = useStyles();
 
@@ -89,6 +116,16 @@ function FormCheck() {
           });
       });
   }, []);
+
+  function BackUp() {
+    db.collection('applications')
+      .doc(applicationId)
+      .get()
+      .then((doc) => {
+        const data = doc.data();
+        setApplication(data);
+      });
+  }
 
   useEffect(() => {
     setFlag(false);
@@ -134,41 +171,119 @@ function FormCheck() {
       }
     });
   }
+  function handleSave() {
+    const values = {};
+    application.form.forEach((step) =>
+      step.form.forEach((camp) => {
+        values[camp.name] = camp.value;
+      })
+    );
 
+    db.collection('applications')
+      .doc(applicationId)
+      .update({ form: application.form, ...values });
+  }
   return (
     <>
-      <Fab
-        variant='extended'
-        color='primary'
-        className={classes.fabAccept}
-        onClick={() => {
-          Swal.fire({
-            title: '¿Aprobar solicitud de práctica?',
-            showDenyButton: true,
-            confirmButtonText: `Aceptar`,
-            denyButtonText: `Cancelar`
-          }).then((result) => {
-            if (result.isConfirmed) {
-              handleApprove();
-              Swal.fire('¡Solicitud aprobada!', '', 'success').then(
-                (result) => {
-                  if (result.isConfirmed) history.push('/applications');
+      {!edit && (
+        <>
+          <Fab
+            variant='extended'
+            color='primary'
+            className={classes.fabAccept}
+            onClick={() => {
+              Swal.fire({
+                title: '¿Aprobar solicitud de práctica?',
+                showDenyButton: true,
+                confirmButtonText: `Aceptar`,
+                denyButtonText: `Cancelar`
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  handleApprove();
+                  Swal.fire('¡Solicitud aprobada!', '', 'success').then(
+                    (result) => {
+                      if (result.isConfirmed) history.push('/applications');
+                    }
+                  );
                 }
-              );
-            }
-          });
-        }}>
-        <Check />
-        Aprobar
-      </Fab>
-      <Fab
-        variant='extended'
-        color='secondary'
-        className={classes.fabDecline}
-        onClick={() => setShow(true)}>
-        <Clear />
-        Rechazar
-      </Fab>
+              });
+            }}>
+            <Check />
+            Aprobar
+          </Fab>
+          <Fab
+            variant='extended'
+            color='secondary'
+            className={classes.fabDecline}
+            onClick={() => setShow(true)}>
+            <Clear />
+            Rechazar
+          </Fab>
+
+          <Fab
+            variant='extended'
+            color='secondary'
+            className={classes.fabMinorChanges}
+            onClick={() => console.log(applicationBackUp)}>
+            <Clear />
+            Cambios menores
+          </Fab>
+          <Fab
+            variant='extended'
+            color='secondary'
+            className={classes.fabEdit}
+            onClick={() => {
+              setEdit(!edit);
+            }}>
+            <Clear />
+            Editar
+          </Fab>
+        </>
+      )}
+      {edit && (
+        <>
+          <Fab
+            variant='extended'
+            color='secondary'
+            className={classes.fabExitEdit}
+            onClick={() => {
+              BackUp();
+
+              setEdit(!edit);
+            }}>
+            <Clear />
+            Salir de la Edición
+          </Fab>
+          <Fab
+            variant='extended'
+            color='primary'
+            className={classes.fabSave}
+            onClick={() => {
+              {
+                Swal.fire({
+                  title: '¿Desea Aplicar los cambios?',
+                  showDenyButton: true,
+                  confirmButtonText: `Aceptar`,
+                  denyButtonText: `Cancelar`
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    handleSave();
+                    Swal.fire('¡Cambios Guardados!', '', 'success').then(
+                      (result) => {
+                        if (result.isConfirmed) {
+                          setEdit(false);
+                        }
+                      }
+                    );
+                  }
+                });
+              }
+            }}>
+            <Save />
+            Guardar
+          </Fab>
+        </>
+      )}
 
       <Container>
         <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
@@ -181,13 +296,14 @@ function FormCheck() {
                 {step.step}
               </Typography>
               <FormView
-                readOnly
+                readOnly={!edit}
                 studentId={application.studentId}
                 internshipId={application.internshipId}
                 applicationId={applicationId}
                 form={step.form}
                 flag={flag}
                 setFlag={setFlag}
+                admin
               />
             </Grid>
           ))}

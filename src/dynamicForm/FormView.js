@@ -18,8 +18,7 @@ import { GetApp } from '@material-ui/icons';
 import { storage } from '../firebase';
 import { customTypes, formTypes } from './formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import MomentUtils from '@date-io/moment';
-import moment from 'moment';
+import DateFnsUtils from '@date-io/date-fns';
 
 function InternshipIntentionFileList({
   student,
@@ -66,13 +65,15 @@ function FormView({
     setFlag(false);
   }, [form, flag]);
 
+  useEffect(() => console.log(form), []);
+
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);
   };
 
   return (
-    <MuiPickersUtilsProvider utils={MomentUtils}>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
       <Grid container direction='column' spacing={4}>
         {form &&
           form.map((element, index) =>
@@ -200,12 +201,14 @@ function FormView({
                     fullWidth
                     disableToolbar
                     variant='inline'
-                    format='DD/MM/YYYY'
+                    format='dd/MM/yyyy'
                     label={customTypes.formStartDate}
-                    value={element.value}
-                    onChange={(date) =>
-                      updateItem(index, 'value', date.toDate())
+                    value={
+                      element.value instanceof Date
+                        ? element.value
+                        : element.value.toDate()
                     }
+                    onChange={(date) => updateItem(index, 'value', date)}
                   />
                 </Grid>
               ) : element.type2 === customTypes.formEndDate ? (
@@ -214,12 +217,14 @@ function FormView({
                     fullWidth
                     disableToolbar
                     variant='inline'
-                    format='DD/MM/YYYY'
+                    format='dd/MM/yyyy'
                     label={customTypes.formEndDate}
-                    value={element.value}
-                    onChange={(date) =>
-                      updateItem(index, 'value', date.toDate())
+                    value={
+                      element.value instanceof Date
+                        ? element.value
+                        : element.value.toDate()
                     }
+                    onChange={(date) => updateItem(index, 'value', date)}
                   />
                 </Grid>
               ) : null

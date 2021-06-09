@@ -73,6 +73,8 @@ function DashboardAdmin({ sidebarProps }) {
                 backgroundImage: "url('HomeBanner-Admin.png')",
                 backgroundSize: 'cover',
                 padding: '2rem',
+                marginTop: '2rem',
+                marginBottom: '1rem',
                 borderRadius: '1rem'
               }}
               container>
@@ -163,6 +165,8 @@ function DashboardAdmin({ sidebarProps }) {
                 backgroundImage: "url('HomeBanner-Admin-1-b.png')",
                 backgroundSize: 'cover',
                 padding: '2rem',
+                marginTop: '2rem',
+                marginBottom: '2rem',
                 borderRadius: '1rem'
               }}
               container>

@@ -22,6 +22,9 @@ import {
   changeDetailsApplication
 } from '../InternshipStates';
 import { useHistory } from 'react-router-dom';
+import firebase from 'firebase';
+import { StudentNotificationTypes } from '../layout/NotificationMenu';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     // Este flex: auto está aqui para que los form abajo puedan ocupar todo el tamaño del grid que los contiene
@@ -89,7 +92,16 @@ function FormCheck() {
     db.collection('internships')
       .doc(application.internshipId)
       .update({ status: approvedApplication });
-    db.collection('users').doc(application.studentId).update({ step: 2 });
+    db.collection('users')
+      .doc(application.studentId)
+      .update({
+        step: 2,
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: StudentNotificationTypes.approvedApplication,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
 
     db.collection('mails').add({
       to: applicationUser.email,
@@ -110,6 +122,17 @@ function FormCheck() {
     db.collection('internships')
       .doc(application.internshipId)
       .update({ status: changeDetailsApplication });
+
+    db.collection('users')
+      .doc(application.studentId)
+      .update({
+        step: 2,
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: StudentNotificationTypes.deniedApplication,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
 
     db.collection('mails').add({
       to: applicationUser.email,

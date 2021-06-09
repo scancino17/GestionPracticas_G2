@@ -15,7 +15,7 @@ import {
   Typography,
   Grid
 } from '@material-ui/core';
-import { DropzoneArea } from 'material-ui-dropzone';
+import { DropzoneArea, DropzoneAreaBase } from 'material-ui-dropzone';
 
 function ImportStudents() {
   const [list, setList] = useState([]);
@@ -97,24 +97,21 @@ function ImportStudents() {
   }
 
   return (
-    <Grid container direction='row' >
-      <Grid
+    <Grid container direction='column'>
+      <div
         style={{
           backgroundImage: "url('AdminBanner-Import.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat:'no-repeat',
+          backgroundRepeat: 'no-repeat',
           padding: '2rem'
-        }}
-        container>
-        <Typography variant='h4'>
-          Importar estudiantes
-        </Typography>
-      </Grid>
-      <Container>
-        
+        }}>
+        <Typography variant='h4'>Importar estudiantes</Typography>
+      </div>
+      <Container style={{ marginTop: '2rem' }}>
         <DropzoneArea
           filesLimit={1}
+          showFileNames
           accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
           onChange={handleFileUpload}
         />

@@ -70,7 +70,9 @@ function DashboardAdmin({ sidebarProps }) {
           <Container>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
-                <Card onClick={() => history.push('/internship-intention')}>
+                <Card
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => history.push('/internship-intention')}>
                   <CardHeader color='warning' stats icon>
                     <CardIcon color='warning'>
                       <ArchiveIcon />
@@ -89,7 +91,9 @@ function DashboardAdmin({ sidebarProps }) {
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Card onClick={() => history.push('/applications')}>
+                <Card
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => history.push('/applications')}>
                   <CardHeader color='success' stats icon>
                     <CardIcon color='success'>
                       <ListAltIcon />

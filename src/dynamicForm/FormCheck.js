@@ -10,8 +10,11 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  withStyles,
+  DialogContentText
 } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
@@ -51,7 +54,16 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(18)
   }
 }));
-
+const DenyButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main
+  }
+}))(Button);
+const SecondaryButton = withStyles((theme) => ({
+  root: {
+    color: grey[700]
+  }
+}))(Button);
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
@@ -182,24 +194,26 @@ function FormCheck() {
       </Container>
       {show && (
         <Dialog open={show} onClose={() => setShow(false)} fullWidth>
-          <DialogTitle>Razón de rechazo</DialogTitle>
+          <DialogTitle>Rechazar postulación de práctica</DialogTitle>
           <DialogContent>
+            <DialogContentText>
+              {`¿Está seguro de rechazar postulación de Práctica ?`}
+            </DialogContentText>
             <TextField
               fullWidth
-              variant='outlined'
-              label={'Razón'}
+              label={'Razón de rechazo'}
               multiline
               rowsMax={4}
               onChange={(e) => setRejectReason(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
-            <Button color='primary' onClick={handleReject}>
-              Rechazar
-            </Button>
-            <Button color='primary' onClick={() => setShow(false)}>
+            <SecondaryButton color='primary' onClick={() => setShow(false)}>
               Cancelar
-            </Button>
+            </SecondaryButton>
+            <DenyButton color='primary' onClick={handleReject}>
+              Confirmar rechazo
+            </DenyButton>
           </DialogActions>
         </Dialog>
       )}

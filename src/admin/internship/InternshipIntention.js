@@ -219,6 +219,8 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
           {`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}
         </DialogContentText>
         <TextField
+          multiline
+          rowsMax={4}
           label='Razón de Rechazo'
           onChange={handleReasonChange}
           fullWidth
@@ -228,6 +230,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         <SecondaryButton color='primary' onClick={closeModal}>
           Cancelar
         </SecondaryButton>
+
         <DenyButton color='primary' onClick={handleReject}>
           Confirmar rechazo
         </DenyButton>

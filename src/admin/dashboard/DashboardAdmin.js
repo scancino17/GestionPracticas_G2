@@ -23,7 +23,7 @@ import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../internship/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
-import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Container, Hidden, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import EditForm from '../../dynamicForm/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
@@ -68,6 +68,18 @@ function DashboardAdmin({ sidebarProps }) {
       <Switch>
         <Route exact path='/'>
           <Container>
+            <Grid
+              style={{
+                backgroundImage: "url('HomeBanner-Admin.png')",
+                backgroundSize: 'cover',
+                padding: '2rem',
+                borderRadius: '1rem'
+              }}
+              container>
+              <Typography variant='h4'>
+                Resumen del proceso
+              </Typography>
+            </Grid>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card onClick={() => history.push('/internship-intention')}>
@@ -146,7 +158,18 @@ function DashboardAdmin({ sidebarProps }) {
                 </Card>
               </Grid>
             </Grid>
-
+            <Grid
+              style={{
+                backgroundImage: "url('HomeBanner-Admin-1-b.png')",
+                backgroundSize: 'cover',
+                padding: '2rem',
+                borderRadius: '1rem'
+              }}
+              container>
+              <Typography variant='h4'>
+                Estadística  uwu
+              </Typography>
+            </Grid>
             {/*Charts*/}
             <Grid>
               <Card>

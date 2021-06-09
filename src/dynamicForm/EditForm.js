@@ -38,6 +38,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { formTypes } from './formTypes';
+import { container } from '../admin/dashboard/extras/assets/jss/material-dashboard-react';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([
@@ -159,9 +160,18 @@ function EditForm() {
 
   return (
     <Container maxWidth='xl'>
-      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-        Formularios de inscripción de práctica
-      </Typography>
+      <Grid
+        style={{
+          backgroundImage: "url('AdminBanner-Edit.png')",
+          backgroundSize: 'cover',
+          padding: '2rem',
+          borderRadius: '1rem'
+        }}
+        container>
+        <Typography variant='h4'>
+          Formularios de inscripción de práctica
+        </Typography>
+      </Grid>
       <Grid container justify='flex-end' alignItems='center' spacing={4}>
         <Grid item>
           <Typography variant='h5'>Carrera:</Typography>

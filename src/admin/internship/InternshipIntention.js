@@ -68,9 +68,19 @@ const IntentionList = ({ applications, update }) => {
 
   return (
     <Container>
-      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-        Estudiantes con intención de práctica
-      </Typography>
+      <Grid
+        style={{
+          backgroundImage: "url('AdminBanner-Intention.png')",
+          backgroundSize: 'cover',
+          padding: '2rem',
+          borderRadius: '1rem'
+        }}
+        container>
+        <Typography variant='h4' >
+          Estudiantes con intención de práctica
+        </Typography>
+      </Grid>
+      
       <Grid>
         {applications.map((application) => (
           <IntentionItem

@@ -12,7 +12,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  Grid
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 
@@ -97,9 +98,20 @@ function ImportStudents() {
 
   return (
     <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
-        Importar estudiantes
-      </Typography>
+      <Grid
+        style={{
+          backgroundImage: "url('AdminBanner-Import.png')",
+          backgroundSize: 'cover',
+          padding: '2rem',
+          borderRadius: '1rem'
+        }}
+        container>
+        <Typography variant='h4'>
+          Importar estudiantes
+        </Typography>
+      </Grid>
+      
+      
       <DropzoneArea
         filesLimit={1}
         accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'

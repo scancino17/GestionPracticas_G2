@@ -64,9 +64,18 @@ function ApplicationsList() {
 
   return (
     <Container>
-      <Typography variant='h4' style={{ marginTop: '3rem' }}>
-        Postulaciones de práctica
-      </Typography>
+      <Grid
+        style={{
+          backgroundImage: "url('AdminBanner-Form.png')",
+          backgroundSize: 'cover',
+          padding: '2rem',
+          borderRadius: '1rem'
+        }}
+        container>
+        <Typography variant='h4'>
+          Postulaciones de práctica
+        </Typography>
+      </Grid>
       <Grid container justify='flex-end' alignItems='center' spacing={4}>
         <Grid item>
           <Typography variant='h5'>Carrera:</Typography>

@@ -8,7 +8,8 @@ import {
   Box,
   Typography,
   Button,
-  Divider
+  Divider,
+  makeStyles
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import { db } from '../firebase';
@@ -32,7 +33,19 @@ export const StudentNotificationTypes = Object.freeze({
   deniedExtension: 'deniedExtension'
 });
 
+const useStyles = makeStyles((theme) => ({
+  heading: {
+    fontSize: theme.typography.pxToRem(15)
+  },
+  secondaryHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.text.secondary
+  }
+}));
+
 const NotificationItem = ({ type, time, handleDiscard }) => {
+  const classes = useStyles();
+
   const notificationTitle = (type) => {
     switch (type) {
       case StudentNotificationTypes.approvedIntention:
@@ -97,9 +110,13 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
   return (
     <Accordion>
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <Typography>{notificationTitle(type)}</Typography>
+        <Typography className={classes.heading}>
+          {notificationTitle(type)}
+        </Typography>
         <div style={{ flexGrow: 1 }} />
-        <Typography>{formatDate(time.toDate())}</Typography>
+        <Typography className={classes.secondaryHeading}>
+          {formatDate(time.toDate())}
+        </Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Typography>{notificationBody(type)}</Typography>

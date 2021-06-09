@@ -158,10 +158,12 @@ function DashboardAdmin({ sidebarProps }) {
                   <CardIcon color='rose'>
                     <MdMultilineChart />
                   </CardIcon>
-                  <p className={classes.cardCategory}>MultiType Chart</p>
+                  <p className={classes.cardCategory}>
+                    Estado de los Alumnos por Carrera
+                  </p>
                 </CardHeader>
                 <CardBody>
-                  <MultiTypeChart />
+                  <GroupedBarChart />
                 </CardBody>
                 <CardFooter stats>
                   <div className={classes.stats}>
@@ -179,7 +181,9 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='warning'>
                       <MdEqualizer />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Single Bars Chart</p>
+                    <p className={classes.cardCategory}>
+                      Empresas más Elegidas por los Practicantes
+                    </p>
                   </CardHeader>
                   <CardBody>
                     <VerticalBar />
@@ -280,10 +284,10 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='info'>
                       <MdEqualizer />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Grouped Bars Chart</p>
+                    <p className={classes.cardCategory}>MultiType Chart</p>
                   </CardHeader>
                   <CardBody>
-                    <GroupedBarChart />
+                    <MultiTypeChart />
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>

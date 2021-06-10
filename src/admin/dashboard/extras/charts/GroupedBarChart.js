@@ -73,7 +73,7 @@ function GroupedBar() {
               backgroundColor: 'rgb(255, 99, 132)'
             },
             {
-              label: 'Declarando Intención',
+              label: 'En Proceso de Inscripción',
               data: Array.from(applying.values()),
               backgroundColor: 'rgb(54, 162, 235)'
             },

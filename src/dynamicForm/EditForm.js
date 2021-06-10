@@ -158,7 +158,7 @@ function EditForm() {
             />
           </Grid>
         </Grid>
-        {careerId && (
+        {careerId ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container justify='center' spacing={8}>
               <Grid item direction='column' xs={12} md={5}>
@@ -260,6 +260,16 @@ function EditForm() {
                   </Button>
                 </Grid>
               </Grid>
+            </Grid>
+          </Grid>
+        ) : (
+          <Grid
+            container
+            align='center'
+            justify='center'
+            style={{ margin: '4rem' }}>
+            <Grid item>
+              <img src='edit-forms-empty.jpg' />
             </Grid>
           </Grid>
         )}

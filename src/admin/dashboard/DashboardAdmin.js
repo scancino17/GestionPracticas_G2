@@ -23,7 +23,7 @@ import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../internship/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
-import { Container, Hidden, Divider, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import EditForm from '../../dynamicForm/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
@@ -78,9 +78,7 @@ function DashboardAdmin({ sidebarProps }) {
                 borderRadius: '1rem'
               }}
               container>
-              <Typography variant='h4'>
-                Resumen del proceso
-              </Typography>
+              <Typography variant='h4'>Resumen del proceso</Typography>
             </Grid>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
@@ -174,9 +172,7 @@ function DashboardAdmin({ sidebarProps }) {
                 borderRadius: '1rem'
               }}
               container>
-              <Typography variant='h4'>
-                Estadística  uwu
-              </Typography>
+              <Typography variant='h4'>Estadísticas</Typography>
             </Grid>
             {/*Charts*/}
             <Grid>

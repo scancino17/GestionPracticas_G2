@@ -125,8 +125,8 @@ function ToDoList({ done }) {
                 <>
                   <ToDoItem
                     icon={<FaWpforms className={classes.icon} />}
-                    title='Completar Formulario'
-                    body='Completa el formulario de inscripción de práctica.'
+                    title='Completar Formulario de Inscripción de Práctica'
+                    body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
                     buttonText={
                       internship && internship.status === sentApplication
                         ? 'En revisión'

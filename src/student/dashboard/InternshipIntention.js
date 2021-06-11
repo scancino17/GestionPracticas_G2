@@ -64,7 +64,10 @@ const InternshipState = ({ internships }) => {
 
   useEffect(() => {
     isPending(
-      internships.filter((item) => item.status === pendingIntention) > 0
+      internships.filter(
+        (item) =>
+          item.status === pendingIntention || item.status === approvedIntention
+      ).length > 0
     );
   }, [internships]);
 

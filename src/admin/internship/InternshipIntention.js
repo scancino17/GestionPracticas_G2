@@ -342,13 +342,14 @@ const ApprovalModal = ({
           Adjunte los archivos correspondientes.
         </DialogContentText>
         <DropzoneArea showFileNames onChange={handleLetterFile} />
+        <DialogContentText />
         <DialogContentText>
-          Puede añadir observaciones pertinentes en el siguiente campo.
+          Puede añadir observaciones pertinentes en el siguiente campo:
         </DialogContentText>
         <TextField
           multiline
           rowsMax={4}
-          label='Razón de Rechazo'
+          label='Observaciones'
           onChange={handleReasonChange}
           fullWidth
         />

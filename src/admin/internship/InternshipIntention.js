@@ -269,6 +269,7 @@ const ApprovalModal = ({
   const { userData } = useAuth();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
+  const [reason, setReason] = useState();
 
   function handleLetterFile(files) {
     setLetterFile(files);
@@ -286,6 +287,7 @@ const ApprovalModal = ({
       .doc(internshipId)
       .update({
         status: approvedIntention,
+        reason: reason,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
@@ -327,6 +329,10 @@ const ApprovalModal = ({
     update();
   }
 
+  function handleReasonChange(e) {
+    setReason(e.target.value);
+  }
+
   return (
     <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
@@ -336,6 +342,16 @@ const ApprovalModal = ({
           Adjunte los archivos correspondientes.
         </DialogContentText>
         <DropzoneArea showFileNames onChange={handleLetterFile} />
+        <DialogContentText>
+          Puede añadir observaciones pertinentes en el siguiente campo.
+        </DialogContentText>
+        <TextField
+          multiline
+          rowsMax={4}
+          label='Razón de Rechazo'
+          onChange={handleReasonChange}
+          fullWidth
+        />
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>

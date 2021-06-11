@@ -142,6 +142,16 @@ const IntentionItem = ({
             <Box className={classes.approvedText}>aprobada.</Box>
           </Typography>
         </Grid>
+        {internship.reason && (
+          <Grid item style={{ paddingTop: '1rem' }}>
+            <Typography>
+              Tu intención ha sido aprobada con las siguientes observaciones:
+            </Typography>
+            <Typography className={classes.reasonText}>
+              {internship.reason}
+            </Typography>
+          </Grid>
+        )}
         <Grid item>
           <Typography>
             Puedes descargar los archivos necesarios para postular a prácticas a

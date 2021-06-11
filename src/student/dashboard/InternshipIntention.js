@@ -60,6 +60,13 @@ const useStyles = makeStyles((theme) => ({
 
 const InternshipState = ({ internships }) => {
   const [expanded, setExpanded] = useState();
+  const [pending, isPending] = useState(false);
+
+  useEffect(() => {
+    isPending(
+      internships.filter((item) => item.status === pendingIntention) > 0
+    );
+  }, [internships]);
 
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -73,13 +80,19 @@ const InternshipState = ({ internships }) => {
           internship={internship}
           expanded={expanded}
           changeExpanded={changeExpanded}
+          forceDisable={pending}
         />
       ))}
     </Grid>
   );
 };
 
-const IntentionItem = ({ internship, expanded, changeExpanded }) => {
+const IntentionItem = ({
+  internship,
+  expanded,
+  changeExpanded,
+  forceDisable
+}) => {
   const classes = useStyles();
 
   const selectDetails = () => {
@@ -229,7 +242,9 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
   };
 
   const AvailableActions = () => {
-    return <StudentIntention practica={internship} />;
+    return (
+      <StudentIntention practica={internship} forceDisable={forceDisable} />
+    );
   };
 
   const ApprovedActions = () => {
@@ -250,7 +265,11 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
   const DeniedActions = () => {
     return (
-      <StudentIntention practica={internship} altText='Volver a intentar' />
+      <StudentIntention
+        practica={internship}
+        altText='Volver a intentar'
+        forceDisable={forceDisable}
+      />
     );
   };
 

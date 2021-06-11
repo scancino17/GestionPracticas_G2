@@ -137,7 +137,7 @@ function SendForm({ edit }) {
 
       db.collection('applications')
         .doc(applicationId)
-        .update({ form: formFull, ...values });
+        .update({ form: formFull, status: 'En revisión', ...values });
     }
     db.collection('internships')
       .doc(userData.currentInternship.id)

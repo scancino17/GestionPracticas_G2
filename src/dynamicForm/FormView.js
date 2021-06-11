@@ -231,6 +231,18 @@ function FormView({
                     }
                   />
                 </Grid>
+              ) : element.type2 === customTypes.formCountry ? (
+                <Grid item>
+                  <Typography variant='h5'>País</Typography>
+                  <Selector
+                    readOnly={readOnly}
+                    valueinner={element.value}
+                    camp={element.type2}
+                    onParentChange={(newValue) => {
+                      updateItem(index, 'value', newValue.label);
+                    }}
+                  />
+                </Grid>
               ) : null
             ) : null
           )}

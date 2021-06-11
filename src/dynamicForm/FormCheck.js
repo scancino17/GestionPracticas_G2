@@ -18,7 +18,14 @@ import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
-import { Check, Clear, Save } from '@material-ui/icons';
+import {
+  Assignment,
+  AssignmentLate,
+  Check,
+  Clear,
+  Edit,
+  Save
+} from '@material-ui/icons';
 import FormView from './FormView';
 import {
   approvedApplication,
@@ -177,7 +184,9 @@ function FormCheck() {
     db.collection('internships')
       .doc(application.internshipId)
       .update({ status: changeDetailsApplication });
-    //cambiar estado a la application
+    db.collection('applications')
+      .doc(applicationId)
+      .update({ status: 'En revision' });
     db.collection('users')
       .doc(application.studentId)
       .update({ 'currentInternship.lastApplication': applicationId });
@@ -235,10 +244,8 @@ function FormCheck() {
             variant='extended'
             color='secondary'
             className={classes.fabMinorChanges}
-            onClick={() => {
-              handleMinorChanges();
-            }}>
-            <Clear />
+            onClick={() => setShowMinorChanges(true)}>
+            <AssignmentLate />
             Cambios menores
           </Fab>
           <Fab
@@ -248,7 +255,7 @@ function FormCheck() {
             onClick={() => {
               setEdit(!edit);
             }}>
-            <Clear />
+            <Edit />
             Editar
           </Fab>
         </>
@@ -264,7 +271,7 @@ function FormCheck() {
 
               setEdit(!edit);
             }}>
-            <Clear />
+            <Edit />
             Salir de la Edición
           </Fab>
           <Fab
@@ -333,7 +340,12 @@ function FormCheck() {
             <SecondaryButton color='primary' onClick={() => setShow(false)}>
               Cancelar
             </SecondaryButton>
-            <DenyButton color='primary' onClick={handleReject}>
+            <DenyButton
+              color='primary'
+              onClick={() => {
+                handleReject();
+                history.push('/applications');
+              }}>
               Confirmar rechazo
             </DenyButton>
           </DialogActions>
@@ -362,7 +374,11 @@ function FormCheck() {
             </SecondaryButton>
             <DenyButton
               color='primary'
-              onClick={(handleMinorChanges, setShowMinorChanges(false))}>
+              onClick={() => (
+                handleMinorChanges,
+                setShowMinorChanges(false),
+                history.push('/applications')
+              )}>
               Confirmar solicitud
             </DenyButton>
           </DialogActions>

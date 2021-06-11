@@ -17,5 +17,6 @@ export const customTypes = {
   formCiudad: 'Ciudad',
   formEmpresa: 'Empresa',
   formStartDate: 'Fecha de inicio',
-  formEndDate: 'Fecha de término'
+  formEndDate: 'Fecha de término',
+  formCountry: 'País'
 };

@@ -41,6 +41,22 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary
   },
+  secondaryDeniedHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#cf0000'
+  },
+  secondaryApprovedHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#2cab00'
+  },
+  secondaryPendingApprovalHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#cbc201'
+  },
+  secondaryAvailableHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#6782bc'
+  },
   deniedText: {
     fontWeight: 'bold',
     color: theme.palette.error.dark
@@ -253,6 +269,57 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
       <StudentIntention practica={internship} altText='Volver a intentar' />
     );
   };
+  
+  const Emoji = props => (
+    <span
+      className="emoji"
+      role="img"
+      aria-label={props.label ? props.label : ""}
+      aria-hidden={props.label ? "false" : "true"}
+    >
+      {props.symbol}
+    </span>
+  )
+
+  const StateIcon = () => {
+    switch (internship.status) {
+      case approvedState:
+        return (
+        <Typography className={classes.secondaryApprovedHeading}>
+          {internship.status+' '}
+          <Emoji symbol='✔️'/>
+        </Typography>
+        );
+      case pendingApprovalState:
+        return (
+        <Typography className={classes.secondaryPendingApprovalHeading}>
+          {internship.status+' '}
+          <Emoji symbol='📨'/>
+        </Typography>
+        );
+      case deniedState:
+        return (
+        <Typography className={classes.secondaryDeniedHeading}>
+          {internship.status+' '}
+          <Emoji symbol='❌'/>
+        </Typography>
+        );
+      case availableInternship:
+        return (
+        <Typography className={classes.secondaryAvailableHeading}>
+          {internship.status+' '}
+          <Emoji symbol='📑'/>
+        </Typography>
+        );
+      default:
+        return (
+          <Typography>
+            Que raro, habíamos pensado que esto no podía ocurrir D:
+          </Typography>
+        );
+    }
+    
+  };
 
   return (
     <Accordion
@@ -262,9 +329,9 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
         <Typography className={classes.heading}>
           Estado de práctica {internship.applicationNumber}
         </Typography>
-        <Typography className={classes.secondaryHeading}>
-          {internship.status}
-        </Typography>
+        {StateIcon()}
+        
+         
       </AccordionSummary>
       <AccordionDetails>{selectDetails()}</AccordionDetails>
       <AccordionActions>{selectActions()}</AccordionActions>

@@ -21,7 +21,6 @@ function StudentIntention({ practica, altText }) {
   const isPendingApproval = () => {
     return internshipState === approvalState;
   };
-
   return (
     <Button
       onClick={handleOnClick}
@@ -35,5 +34,8 @@ function StudentIntention({ practica, altText }) {
     </Button>
   );
 }
-
+export const availableInternshipa = 'Práctica disponible 📑';
+export const pendingIntentiona = 'Intención enviada 📨';
+export const approvedIntentiona = 'Intención aprobada ✔️';
+export const deniedIntentiona = 'Intención rechazada ❌';
 export default StudentIntention;

@@ -59,7 +59,8 @@ function FormView({
   readOnly,
   studentId,
   internshipId,
-  applicationId
+  applicationId,
+  admin
 }) {
   useEffect(() => {
     setFlag(false);
@@ -118,13 +119,20 @@ function FormView({
                   {
                     //si el formulario es solo para ver se mostrarn los botones para descargar los archivos
                     !readOnly ? (
-                      <DropzoneArea
-                        initialFiles={element.value}
-                        filesLimit={1}
-                        showFileNames
-                        accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        onChange={(files) => updateItem(index, 'value', files)}
-                      />
+                      !admin ? (
+                        <DropzoneArea
+                          initialFiles={element.value}
+                          filesLimit={1}
+                          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                          onChange={(files) =>
+                            updateItem(index, 'value', files)
+                          }
+                        />
+                      ) : (
+                        <Typography>
+                          Los archivos no pueden ser modificados
+                        </Typography>
+                      )
                     ) : (
                       <InternshipIntentionFileList
                         student={studentId}
@@ -226,6 +234,18 @@ function FormView({
                         : element.value.toDate()
                     }
                     onChange={(date) => updateItem(index, 'value', date)}
+                  />
+                </Grid>
+              ) : element.type2 === customTypes.formCountry ? (
+                <Grid item>
+                  <Typography variant='h5'>País</Typography>
+                  <Selector
+                    readOnly={readOnly}
+                    valueinner={element.value}
+                    camp={element.type2}
+                    onParentChange={(newValue) => {
+                      updateItem(index, 'value', newValue.label);
+                    }}
                   />
                 </Grid>
               ) : null

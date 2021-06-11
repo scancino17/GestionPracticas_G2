@@ -68,6 +68,18 @@ function DashboardAdmin({ sidebarProps }) {
       <Switch>
         <Route exact path='/'>
           <Container>
+            <Grid
+              style={{
+                backgroundImage: "url('HomeBanner-Admin.png')",
+                backgroundSize: 'cover',
+                padding: '2rem',
+                marginTop: '2rem',
+                marginBottom: '1rem',
+                borderRadius: '1rem'
+              }}
+              container>
+              <Typography variant='h4'>Resumen del proceso</Typography>
+            </Grid>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card
@@ -150,7 +162,18 @@ function DashboardAdmin({ sidebarProps }) {
                 </Card>
               </Grid>
             </Grid>
-
+            <Grid
+              style={{
+                backgroundImage: "url('HomeBanner-Admin-1-b.png')",
+                backgroundSize: 'cover',
+                padding: '2rem',
+                marginTop: '2rem',
+                marginBottom: '2rem',
+                borderRadius: '1rem'
+              }}
+              container>
+              <Typography variant='h4'>Estadísticas</Typography>
+            </Grid>
             {/*Charts*/}
             <Grid>
               <Card>
@@ -158,10 +181,12 @@ function DashboardAdmin({ sidebarProps }) {
                   <CardIcon color='rose'>
                     <MdMultilineChart />
                   </CardIcon>
-                  <p className={classes.cardCategory}>MultiType Chart</p>
+                  <p className={classes.cardCategory}>
+                    Estado de los Alumnos por Carrera
+                  </p>
                 </CardHeader>
                 <CardBody>
-                  <MultiTypeChart />
+                  <GroupedBarChart />
                 </CardBody>
                 <CardFooter stats>
                   <div className={classes.stats}>
@@ -179,7 +204,9 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='warning'>
                       <MdEqualizer />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Single Bars Chart</p>
+                    <p className={classes.cardCategory}>
+                      Empresas más Elegidas por los Practicantes
+                    </p>
                   </CardHeader>
                   <CardBody>
                     <VerticalBar />
@@ -280,10 +307,10 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='info'>
                       <MdEqualizer />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Grouped Bars Chart</p>
+                    <p className={classes.cardCategory}>MultiType Chart</p>
                   </CardHeader>
                   <CardBody>
-                    <GroupedBarChart />
+                    <MultiTypeChart />
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>

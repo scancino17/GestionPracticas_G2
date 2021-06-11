@@ -28,6 +28,8 @@ import {
   pendingIntention
 } from '../../InternshipStates';
 import { useAuth } from '../../providers/Auth';
+import { StudentNotificationTypes } from '../../layout/NotificationMenu';
+import firebase from 'firebase';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -67,11 +69,20 @@ const IntentionList = ({ applications, update }) => {
   };
 
   return (
-    <Container>
-      <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-        Estudiantes con intención de práctica
-      </Typography>
-      <Grid>
+    <Grid container direction='column'>
+      <div
+        style={{
+          backgroundImage: "url('AdminBanner-Intention.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>
+          Estudiantes con intención de práctica
+        </Typography>
+      </div>
+      <Container style={{ marginTop: '2rem' }}>
         {applications.map((application) => (
           <IntentionItem
             application={application}
@@ -80,8 +91,8 @@ const IntentionList = ({ applications, update }) => {
             changeExpanded={changeExpanded}
           />
         ))}
-      </Grid>
-    </Container>
+      </Container>
+    </Grid>
   );
 };
 
@@ -190,6 +201,16 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
+    db.collection('users')
+      .doc(application.studentId)
+      .update({
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: StudentNotificationTypes.deniedIntention,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
+
     db.collection('mails').add({
       to: application.email,
       template: {
@@ -294,6 +315,11 @@ const ApprovalModal = ({
         currentInternship: {
           id: internshipId,
           number: application.applicationNumber
+        },
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: StudentNotificationTypes.approvedIntention,
+          time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });
 
@@ -309,7 +335,7 @@ const ApprovalModal = ({
         <DialogContentText>
           Adjunte los archivos correspondientes.
         </DialogContentText>
-        <DropzoneArea onChange={handleLetterFile} />
+        <DropzoneArea showFileNames onChange={handleLetterFile} />
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>

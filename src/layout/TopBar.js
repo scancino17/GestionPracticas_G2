@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Badge,
   Hidden,
   IconButton,
   makeStyles,
@@ -8,12 +9,13 @@ import {
   Snackbar,
   Toolbar
 } from '@material-ui/core';
-import { AccountCircle } from '@material-ui/icons';
+import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import useAuth from '../providers/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
+import NotificationMenu from './NotificationMenu';
 
 const useStyles = makeStyles((theme) => ({
   logo: {
@@ -30,20 +32,44 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const ProfileMenu = ({ func }) => {
+  return (
+    <>
+      <MenuItem onClick={func.handleResetPassword}>Cambiar contraseña</MenuItem>
+      <MenuItem onClick={func.handleLogout}>Cerrar sesión</MenuItem>
+    </>
+  );
+};
+
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { user, logout, resetPassword } = useAuth();
+  const { user, logout, resetPassword, userData } = useAuth();
   const [anchorEl, setAnchorEl] = useState();
+  const [selectedMenu, setSelectedMenu] = useState();
   const history = useHistory();
   const isMenuOpen = Boolean(anchorEl);
   const [resetPasswordSnack, setResetPasswordSnack] = useState();
 
   function handleProfileMenuOpen(e) {
     setAnchorEl(e.currentTarget);
+    setSelectedMenu(
+      <ProfileMenu
+        func={{
+          handleResetPassword: handleResetPassword,
+          handleLogout: handleLogout
+        }}
+      />
+    );
+  }
+
+  function handleNotificationMenuOpen(e) {
+    setAnchorEl(e.currentTarget);
+    setSelectedMenu(<NotificationMenu />);
   }
 
   function handleMenuClose() {
     setAnchorEl(null);
+    setSelectedMenu(null);
   }
 
   function handleLogout() {
@@ -63,9 +89,16 @@ function TopBar({ setSidebarOpen }) {
       anchorEl={anchorEl}
       keepMounted
       open={isMenuOpen}
-      onClose={handleMenuClose}>
-      <MenuItem onClick={handleResetPassword}>Cambiar contraseña</MenuItem>
-      <MenuItem onClick={handleLogout}>Cerrar sesión</MenuItem>
+      onClose={handleMenuClose}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'left'
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right'
+      }}>
+      {selectedMenu}
     </Menu>
   );
 
@@ -112,6 +145,22 @@ function TopBar({ setSidebarOpen }) {
             <img className={classes.logo} src='logo5b.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
+          {user.student && (
+            <IconButton
+              color='inherit'
+              onClick={handleNotificationMenuOpen}
+              className={classes.icon}>
+              <Badge
+                color='secondary'
+                badgeContent={
+                  userData &&
+                  userData.notifications &&
+                  Object.entries(userData.notifications).length
+                }>
+                <Notifications />
+              </Badge>
+            </IconButton>
+          )}
           <IconButton
             onClick={handleProfileMenuOpen}
             color='inherit'

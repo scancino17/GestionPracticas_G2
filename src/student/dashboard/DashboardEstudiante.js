@@ -45,8 +45,12 @@ function DashboardEstudiante() {
             <Hidden smDown>
               <Grid
                 style={{
-                  backgroundImage: "url('HomeBanner-2x.png')",
-                  backgroundSize: 'cover',
+                  backgroundImage: "url('HomeBanner-3x.png')",
+                  backgroundColor: '#e0f3f7',
+                  backgroundSize: '100%',
+                  backgroundPosition: 'center',
+                  backgroundRepeat:'no-repeat',
+                  position: 'relative',
                   padding: '2rem'
                 }}>
                 <Typography variant='h4'>

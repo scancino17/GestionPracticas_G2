@@ -38,6 +38,7 @@ import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
+import CareerSelector from '../../utils/CareerSelector';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -45,6 +46,7 @@ function DashboardAdmin({ sidebarProps }) {
   const history = useHistory();
   const [intentionsCount, setIntentionsCount] = useState(0);
   const [formsCount, setFormsCount] = useState(0);
+  const [careerId, setCareerId] = useState('3407');
 
   useEffect(() => {
     const unsubscribe = db
@@ -225,10 +227,17 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='info'>
                       <MdPieChart />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Pie Chart</p>
+                    <p className={classes.cardCategory}>
+                      Aprobados y Rechazados por Carrera
+                    </p>
+                    <CareerSelector
+                      careerId={careerId}
+                      setCareerId={setCareerId}
+                      excludeGeneral
+                    />
                   </CardHeader>
                   <CardBody>
-                    <PieChart />
+                    <PieChart careerId={careerId} />
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>

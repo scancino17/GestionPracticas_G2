@@ -11,25 +11,38 @@ function VerticalBar() {
       .onSnapshot((querySnapshot) => {
         let companyCounter = new Map();
 
-        querySnapshot.forEach((doc) => {
-          if (companyCounter.has(doc.data().Empresa)) {
-            let counter = companyCounter.get(doc.data().Empresa);
-            companyCounter.set(doc.data().Empresa, counter + 1);
+        const temp = [];
+
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+
+        temp.forEach((doc) => {
+          if (companyCounter.has(doc.Empresa)) {
+            let counter = companyCounter.get(doc.Empresa);
+            companyCounter.set(doc.Empresa, counter + 1);
           } else {
-            companyCounter.set(doc.data().Empresa, 1);
+            companyCounter.set(doc.Empresa, 1);
           }
         });
 
-        companyCounter[Symbol.iterator] = function* () {
-          yield* [...this.entries()].sort((a, b) => b[1] - a[1]);
-        };
+        let list = Array.from(companyCounter.entries());
+        list = list
+          .sort(function (a, b) {
+            return b[1] - a[1];
+          })
+          .slice(0, 6);
 
         let config = {
-          labels: Array.from(companyCounter.keys()).slice(0, 6),
+          labels: list.map(function (i) {
+            return i[0];
+          }),
           datasets: [
             {
               label: 'Total Practicantes',
-              data: Array.from(companyCounter.values()).slice(0, 6),
+              data: list.map(function (i) {
+                return i[1];
+              }),
               backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',

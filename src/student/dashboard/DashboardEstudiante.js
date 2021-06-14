@@ -10,6 +10,7 @@ import ApplicationDetails from './applications/ApplicationDetails';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../../InternshipStates';
 import SendForm from './../../dynamicForm/SendForm';
+import SendReport from './SendReport';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
@@ -49,7 +50,7 @@ function DashboardEstudiante() {
                   backgroundColor: '#e0f3f7',
                   backgroundSize: '100%',
                   backgroundPosition: 'center',
-                  backgroundRepeat:'no-repeat',
+                  backgroundRepeat: 'no-repeat',
                   position: 'relative',
                   padding: '2rem'
                 }}>
@@ -110,6 +111,10 @@ function DashboardEstudiante() {
       <Route path='/edit-form/:applicationId'>
         <SendForm edit />
       </Route>
+      <Route path='/evaluation-report/'>
+        <SendReport />
+      </Route>
+
       <Route path='/internship/:studentId/:internshipId'>
         <StudentApplications />
       </Route>

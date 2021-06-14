@@ -25,7 +25,8 @@ import { db } from '../../../firebase';
 import {
   changeDetailsApplication,
   reportNeedsChanges,
-  sentApplication
+  sentApplication,
+  sentReport
 } from '../../../InternshipStates';
 
 const useStyles = makeStyles({
@@ -163,7 +164,8 @@ function ToDoList({ done }) {
                     title='Enviar Informe'
                     body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
                     buttonText='Enviar'
-                    disabled
+                    buttonOnClick={() => history.push('/evaluation-report/')}
+                    disabled={internship && internship.status === sentReport}
                   />
                   <Divider />
                 </>

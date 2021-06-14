@@ -25,7 +25,9 @@ import { db } from '../../../firebase';
 import {
   changeDetailsApplication,
   reportNeedsChanges,
-  sentApplication
+  sentApplication,
+  deniedApplication,
+  pendingApplication
 } from '../../../InternshipStates';
 
 const useStyles = makeStyles({
@@ -41,7 +43,15 @@ const useStyles = makeStyles({
   }
 });
 
-function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
+function ToDoItem({
+  icon,
+  title,
+  body,
+  buttonText,
+  buttonOnClick,
+  disabled,
+  reason
+}) {
   const classes = useStyles();
 
   return (
@@ -77,7 +87,7 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
   );
 }
 
-function ToDoList({ done }) {
+function ToDoList({ done, reason }) {
   const [internship, setInternship] = useState();
   const { userData } = useAuth();
   const classes = useStyles();
@@ -121,25 +131,33 @@ function ToDoList({ done }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              {userData.step === 1 && (
-                <>
-                  <ToDoItem
-                    icon={<FaWpforms className={classes.icon} />}
-                    title='Completar Formulario de Inscripción de Práctica'
-                    body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
-                    buttonText={
-                      internship && internship.status === sentApplication
-                        ? 'En revisión'
-                        : 'Completar'
-                    }
-                    buttonOnClick={() => history.push('/send-form')}
-                    disabled={
-                      internship && internship.status === sentApplication
-                    }
-                  />
-                  <Divider />
-                </>
-              )}
+              {userData.step === 1 &&
+                !(
+                  internship && internship.status === changeDetailsApplication
+                ) && (
+                  <>
+                    <ToDoItem
+                      icon={<FaWpforms className={classes.icon} />}
+                      title='Completar Formulario de Inscripción de Práctica'
+                      body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
+                      buttonText={
+                        internship && internship.status === sentApplication
+                          ? 'En revisión'
+                          : 'Completar'
+                      }
+                      buttonOnClick={() => history.push('/send-form')}
+                      disabled={
+                        internship && internship.status === sentApplication
+                      }
+                    />
+                    {!(
+                      internship &&
+                      internship.status === sentApplication &&
+                      internship.status !== pendingApplication
+                    ) && <Typography>Razón de rechazo: {reason}</Typography>}
+                    <Divider />
+                  </>
+                )}
               {internship && internship.status === changeDetailsApplication && (
                 <>
                   <ToDoItem
@@ -153,6 +171,7 @@ function ToDoList({ done }) {
                       )
                     }
                   />
+                  <Typography>Correcciones necesarias:{reason} </Typography>
                   <Divider />
                 </>
               )}

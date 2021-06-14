@@ -18,6 +18,8 @@ function DashboardEstudiante() {
   const [practicas, setPracticas] = useState([]);
   const [step, setStep] = useState(0);
 
+  const [reason, setReason] = useState('');
+
   useEffect(() => {
     let unsubscribe;
     if (userData) {
@@ -33,6 +35,15 @@ function DashboardEstudiante() {
           setPracticas(temp);
           setLoaded(true);
         });
+      if (userData.currentInternship.lastApplication) {
+        db.collection('applications')
+          .doc(userData.currentInternship.lastApplication)
+          .get()
+          .then((last) => {
+            console.log(last.data());
+            setReason(last.data().reason);
+          });
+      }
     }
     return unsubscribe;
   }, [user, userData]);
@@ -49,7 +60,7 @@ function DashboardEstudiante() {
                   backgroundColor: '#e0f3f7',
                   backgroundSize: '100%',
                   backgroundPosition: 'center',
-                  backgroundRepeat:'no-repeat',
+                  backgroundRepeat: 'no-repeat',
                   position: 'relative',
                   padding: '2rem'
                 }}>
@@ -77,7 +88,7 @@ function DashboardEstudiante() {
             </Container>
             {practicas.filter((item) => !finishedIntentionProcess(item.status))
               .length > 0 ? (
-              <DetailedHome done={false} />
+              <DetailedHome done={false} reason={reason} />
             ) : (
               <InternshipIntention internships={practicas} />
             )}

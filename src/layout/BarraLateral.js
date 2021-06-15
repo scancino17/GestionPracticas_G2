@@ -42,7 +42,7 @@ const items = [
   {
     label: 'Evaluar Prácticas',
     icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/evaluate-practice'
   },
   {
     label: 'Editar Formulario',

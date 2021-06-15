@@ -30,12 +30,14 @@ function SendReport() {
       .update({ status: sentReport });
     history.push('/');
   }
-
+  function handleBack() {
+    history.push('/');
+  }
   return (
     <>
       <div
         style={{
-          backgroundImage: "url('HomeBanner-4x.png')",
+          backgroundImage: "url('../HomeBanner-4x.png')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',

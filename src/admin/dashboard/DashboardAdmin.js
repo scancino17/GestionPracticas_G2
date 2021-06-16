@@ -10,7 +10,8 @@ import {
   MdEqualizer,
   MdPieChart,
   MdTrackChanges,
-  MdDonutLarge
+  MdDonutLarge,
+  MdPublic
 } from 'react-icons/md';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -29,9 +30,7 @@ import EditForm from '../../dynamicForm/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
-import RadarChart from './extras/charts/RadarChart';
-import PolarChart from './extras/charts/PolarChart';
-import DoughnutChart from './extras/charts/DoughnutChart';
+import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import LineChart from './extras/charts/LineChart';
 import MultiTypeChart from './extras/charts/MultiTypeChart';
@@ -249,64 +248,26 @@ function DashboardAdmin({ sidebarProps }) {
               </Grid>
             </Grid>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='danger' icon>
-                    <CardIcon color='danger'>
-                      <MdTrackChanges />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Radar Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <RadarChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='success' icon>
-                    <CardIcon color='success'>
-                      <MdDonutLarge />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Doughnut Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <DoughnutChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='warning' icon>
-                    <CardIcon color='warning'>
-                      <MdTrackChanges />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Polar Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <PolarChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
+            <Grid>
+              <Card>
+                <CardHeader color='success' icon>
+                  <CardIcon color='success'>
+                    <MdPublic />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>
+                    Prácticas registradas en el extranjero
+                  </p>
+                </CardHeader>
+                <CardBody>
+                  <TableChart />
+                </CardBody>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
             </Grid>
 
             <Grid container spacing={3}>

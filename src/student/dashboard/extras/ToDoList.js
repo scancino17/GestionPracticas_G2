@@ -89,6 +89,7 @@ function ToDoList({ done }) {
       .collection('internships')
       .doc(userData.currentInternship.id)
       .onSnapshot((doc) => setInternship(doc.data()));
+    console.log(internship);
     return unsubscribe;
   }, []);
 
@@ -157,19 +158,24 @@ function ToDoList({ done }) {
                   <Divider />
                 </>
               )}
-              {userData.step === 2 && (
-                <>
-                  <ToDoItem
-                    icon={<IoDocumentAttachOutline className={classes.icon} />}
-                    title='Enviar Informe'
-                    body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
-                    buttonText='Enviar'
-                    buttonOnClick={() => history.push('/evaluation-report/')}
-                    disabled={internship && internship.status === sentReport}
-                  />
-                  <Divider />
-                </>
-              )}
+              {userData.step === 2 &&
+                internship &&
+                internship.status !== reportNeedsChanges && (
+                  <>
+                    <ToDoItem
+                      icon={
+                        <IoDocumentAttachOutline className={classes.icon} />
+                      }
+                      title='Enviar Informe'
+                      body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
+                      buttonText='Enviar'
+                      buttonOnClick={() => history.push('/evaluation-report/')}
+                      disabled={internship && internship.status === sentReport}
+                    />
+
+                    <Divider />
+                  </>
+                )}
               {internship && internship.status === reportNeedsChanges && (
                 <>
                   <ToDoItem
@@ -177,7 +183,11 @@ function ToDoList({ done }) {
                     title='Corregir Informe'
                     body='El informe que has enviado requiere correcciones.'
                     buttonText='Corregir'
+                    buttonOnClick={() => history.push('/evaluation-report/')}
                   />
+                  <Typography color='error'>
+                    Cambios necesarios: {internship.reason}
+                  </Typography>
                   <Divider />
                 </>
               )}

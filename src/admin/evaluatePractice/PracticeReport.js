@@ -42,7 +42,7 @@ function PracticeReport({ edit }) {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Postulaciones de práctica</Typography>
+        <Typography variant='h4'>Evaluar informes de prácticas</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         {interships.map((intership) => (

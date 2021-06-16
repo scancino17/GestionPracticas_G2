@@ -11,16 +11,11 @@ function SendReport() {
   const history = useHistory();
 
   function handleSend() {
-    console.log(userData);
-    console.log(userData.currentInternship.id);
     files.forEach((file) => {
       console.log(file);
       storage
         .ref()
         .child(
-          //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
-          //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
-          //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
           `/students-docs/${user.uid}/${userData.currentInternship.id}/reports/${userData.currentInternship.id}.pdf`
         )
         .put(file);
@@ -30,9 +25,7 @@ function SendReport() {
       .update({ status: sentReport });
     history.push('/');
   }
-  function handleBack() {
-    history.push('/');
-  }
+
   return (
     <>
       <div
@@ -45,28 +38,41 @@ function SendReport() {
         }}>
         <Typography variant='h4'>Informe de Práctica</Typography>
       </div>
-      <Grid container justify='center' alignItems='center' spacing={4}>
+
+      <Grid container direccion='row' justify='center'>
         <Grid item xs={8}>
-          <DropzoneArea
-            filesLimit={1}
-            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            onChange={(file) => (console.log(file), setFiles(file))}
-          />
-        </Grid>
-      </Grid>
-      <Grid container direction='row' justify='flex-end' spacing={3}>
-        <Grid item>
-          <Button color='primary'>cancelar</Button>
-        </Grid>
-        <Grid item>
-          <Button
-            style={{ marginRight: '14rem' }}
-            variant='contained'
-            disabled={files.length === 0 ? true : false}
-            color='primary'
-            onClick={() => handleSend()}>
-            enviar
-          </Button>
+          <Grid container direction='column' spacing={4}>
+            <Grid>
+              <Typography variant='h5' style={{ padding: '2rem 0 0 1rem' }}>
+                Sube tu informe aquí
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12}>
+              <DropzoneArea
+                filesLimit={1}
+                accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                onChange={(file) => (console.log(file), setFiles(file))}
+              />
+            </Grid>
+
+            <Grid item>
+              <Grid container direction='row' justify='flex-end' spacing={3}>
+                <Grid item>
+                  <Button color='primary'>cancelar</Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    variant='contained'
+                    disabled={files.length === 0 ? true : false}
+                    color='primary'
+                    onClick={() => handleSend()}>
+                    enviar
+                  </Button>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </>

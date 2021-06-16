@@ -213,6 +213,17 @@ function FormCheck() {
     db.collection('users')
       .doc(application.studentId)
       .update({ 'currentInternship.lastApplication': applicationId });
+
+    db.collection('mails').add({
+      to: applicationUser.email,
+      template: {
+        name: 'FailedMinorChanges',
+        data: {
+          from_name: applicationUser.name,
+          result: rejectReason
+        }
+      }
+    });
   }
   function handleSave() {
     const values = {};

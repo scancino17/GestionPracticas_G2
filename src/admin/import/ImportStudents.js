@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import XLSX from 'xlsx';
-import { auth, db } from '../../firebase';
-import axios from 'axios';
+import { auth, db, functions } from '../../firebase';
 import {
   Button,
   Container,
@@ -15,7 +14,7 @@ import {
   Typography,
   Grid
 } from '@material-ui/core';
-import { DropzoneArea, DropzoneAreaBase } from 'material-ui-dropzone';
+import { DropzoneArea } from 'material-ui-dropzone';
 
 function ImportStudents() {
   const [list, setList] = useState([]);
@@ -53,47 +52,28 @@ function ImportStudents() {
   }
 
   function handleSubmit() {
-    /*list.forEach((row) => {
-      auth
-        .createUserWithEmailAndPassword(row[5], 'testtest')
-        .then((userCredential) => {
-          db.collection('users')
-            .doc(userCredential.user.uid)
-            .set({
-              able: true,
-              birthDate: Date.parse(row[8]),
-              careerId: row[1],
-              careerPlan: row[9],
-              communeOrigin: row[16],
-              email: row[5],
-              enrollmentNumber: row[2],
-              entryMean: row[11],
-              entryYear: row[10],
-              level: row[18],
-              name: row[4],
-              region: row[17],
-              rut: row[3],
-              sex: row[7]
-            });
-          db.collection('internships').add({
-            applicationNumber: 1,
-            status: 'Pendiente',
-            studentId: userCredential.user.uid
-          });
-          db.collection('internships').add({
-            applicationNumber: 2,
-            status: 'No disponible',
-            studentId: userCredential.user.uid
-          });
-        });
-    });*/
     console.log(list);
-    /*axios.post(
-      'https://us-central1-gestion-practicas.cloudfunctions.net/importUsers',
-      {
-        data: list
-      }
-    );*/
+    const importStudents = functions.httpsCallable('importStudents');
+    list.forEach((row) => {
+      importStudents({
+        able: true,
+        birthDate: Date.parse(row[8]),
+        careerId: row[1],
+        careerPlan: row[9],
+        communeOrigin: row[16],
+        email: row[5],
+        enrollmentNumber: row[2],
+        entryMean: row[11],
+        entryYear: row[10],
+        level: row[18],
+        name: row[4],
+        password: 'testtest',
+        region: row[17],
+        rut: row[3],
+        sex: row[7],
+        step: 0
+      }).then((result) => console.log(result));
+    });
   }
 
   return (
@@ -126,7 +106,7 @@ function ImportStudents() {
             <TableBody>
               {list.map((row) => {
                 return (
-                  <TableRow>
+                  <TableRow key={row[2]}>
                     <TableCell scope='row'>{row[4]}</TableCell>
                     <TableCell scope='row'>{row[0]}</TableCell>
                   </TableRow>
@@ -137,6 +117,19 @@ function ImportStudents() {
         </TableContainer>
         <Button onClick={handleSubmit} variant='contained'>
           Confirmar
+        </Button>
+        <Button
+          onClick={() => {
+            const actionCodeSettings = {
+              url: 'http://localhost:3000',
+              handleCodeInApp: true
+            };
+            auth.sendSignInLinkToEmail(
+              'tgnpyuxkjugxuwznoh@twzhhq.online',
+              actionCodeSettings
+            );
+          }}>
+          Enviar email
         </Button>
       </Container>
     </Grid>

@@ -306,7 +306,8 @@ const ApprovalModal = ({
         name: 'approvedIntention',
         data: {
           from_name: application.name,
-          aprobado_por: userData.name
+          aprobado_por: userData.name,
+          razon_aprobacion: reason ? reason : 'Sin observaciones'
         }
       }
     });

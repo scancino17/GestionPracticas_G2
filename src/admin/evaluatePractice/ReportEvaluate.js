@@ -103,7 +103,7 @@ function ReportEvaluate() {
         data: {
           from_name: infoStudent.name,
           grade: value,
-          reason: evaluateComment,
+          reason: evaluateComment ? evaluateComment : 'Sin observaciones',
           aprovado_por: userData.name
         }
       }

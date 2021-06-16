@@ -13,7 +13,8 @@ import {
   Typography,
   Slider,
   Container,
-  Input
+  Input,
+  Divider
 } from '@material-ui/core';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -56,19 +57,16 @@ function ReportEvaluate() {
     }, []);
 
     return (
-      <List>
-        <ListItem
-          button
-          component='a'
-          href={url}
+      <>
+        <Button
+          startIcon={<GetApp />}
+          variant='contained'
           target='_blank'
+          href={url}
           rel='noopener'>
-          <ListItemIcon>
-            <GetApp />
-          </ListItemIcon>
-          <ListItemText primary={'Informe'} />
-        </ListItem>
-      </List>
+          Informe
+        </Button>
+      </>
     );
   }
 
@@ -118,63 +116,103 @@ function ReportEvaluate() {
         <Grid
           item
           style={{
-            backgroundImage: "url('AdminBanner-Evaluate.png')",
+            backgroundImage: "url('../../AdminBanner-Evaluate.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             padding: '2rem'
           }}>
-          <Typography variant='h4'>Información del Estudiante</Typography>
+          <Typography variant='h4'>
+            Evaluación de informe de practica
+          </Typography>
         </Grid>
         {infoStudent && (
           <Container style={{ marginTop: '2rem' }}>
-            <Grid item style={{ marginTop: '2rem' }}>
-              <TextField
-                id='outlined-basic'
-                label='Nombre'
-                variant='outlined'
-                defaultValue={infoStudent.name}
-                disabled='true'
-              />
+            <Grid container direction='row' justify='space-around'>
+              <Grid item>
+                <Grid
+                  container
+                  direction='column'
+                  spacing={3}
+                  justify='space-evenly'>
+                  <Typography variant='h5'>
+                    Información del estudiante
+                  </Typography>
+                  <Grid item style={{ marginTop: '2rem' }}>
+                    <TextField
+                      id='outlined-basic'
+                      label='Nombre'
+                      variant='outlined'
+                      value={infoStudent.name}
+                    />
+                  </Grid>
+                  <Grid item style={{ marginTop: '2rem' }}>
+                    <TextField
+                      id='outlined-basic'
+                      label='Matricula'
+                      variant='outlined'
+                      value={infoStudent.enrollmentNumber}
+                    />
+                  </Grid>
+                  <Grid item style={{ marginTop: '2rem' }}>
+                    <TextField
+                      id='outlined-basic'
+                      label='Email'
+                      variant='outlined'
+                      value={infoStudent.email}
+                    />
+                  </Grid>
+                  <Grid item style={{ marginTop: '2rem' }}>
+                    <Grid container spacing={3} direction='column'>
+                      <Grid item>
+                        <Typography variant='h5'>Documento </Typography>
+                      </Grid>
+                      <Grid item>
+                        <Container>
+                          <InternshipIntentionFileList />
+                        </Container>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <Grid item>
+                <Grid container align='center' justify='center'>
+                  <Grid item>
+                    <img
+                      height='500'
+                      src='../../AdminBanner-Evaluate-Divider.png'
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item style={{ marginTop: '2rem' }}>
-              <TextField
-                id='outlined-basic'
-                label='Matricula'
-                variant='outlined'
-                defaultValue={infoStudent.enrollmentNumber}
-                disabled='true'
-              />
-            </Grid>
-            <Grid item style={{ marginTop: '2rem' }}>
-              <TextField
-                id='outlined-basic'
-                label='Email'
-                variant='outlined'
-                defaultValue={infoStudent.email}
-                disabled='true'
-              />
-            </Grid>
-            <Grid item style={{ marginTop: '2rem' }}>
-              <Container>
-                <InternshipIntentionFileList />
-              </Container>
+
+            <Grid
+              style={{ marginTop: '1rem' }}
+              container
+              direction='row'
+              justify='flex-end'
+              spacing={3}>
+              <Grid item>
+                <Button
+                  color='primary'
+                  variant='outlined'
+                  onClick={() => SetShowChanges(true)}>
+                  Solicitar Cambios
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  color='primary'
+                  variant='contained'
+                  onClick={() => SetShowEvaluate(true)}>
+                  Calificar
+                </Button>
+              </Grid>
             </Grid>
           </Container>
         )}
-
-        <Container item>
-          <Grid container direction='row' justify='center'>
-            <Grid item>
-              <Button onClick={() => SetShowEvaluate(true)}>Calificar</Button>
-            </Grid>
-            <Grid item>
-              <Button onClick={() => SetShowChanges(true)}>
-                Solicitar Cambios
-              </Button>
-            </Grid>
-          </Grid>
-        </Container>
       </Grid>
 
       {/*Modals */}
@@ -277,7 +315,7 @@ function ReportEvaluate() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color='primary' onClick={() => SetShowChanges(false)}>
+          <Button color='primary' onClick={() => SetShowEvaluate(false)}>
             Cancelar
           </Button>
           <Button

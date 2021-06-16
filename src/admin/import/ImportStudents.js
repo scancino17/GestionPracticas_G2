@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import XLSX from 'xlsx';
-import { auth, db, functions } from '../../firebase';
+import { db, functions } from '../../firebase';
 import {
   Button,
   Container,
@@ -72,7 +72,7 @@ function ImportStudents() {
         rut: row[3],
         sex: row[7],
         step: 0
-      }).then((result) => console.log(result));
+      });
     });
   }
 
@@ -117,19 +117,6 @@ function ImportStudents() {
         </TableContainer>
         <Button onClick={handleSubmit} variant='contained'>
           Confirmar
-        </Button>
-        <Button
-          onClick={() => {
-            const actionCodeSettings = {
-              url: 'http://localhost:3000',
-              handleCodeInApp: true
-            };
-            auth.sendSignInLinkToEmail(
-              'tgnpyuxkjugxuwznoh@twzhhq.online',
-              actionCodeSettings
-            );
-          }}>
-          Enviar email
         </Button>
       </Container>
     </Grid>

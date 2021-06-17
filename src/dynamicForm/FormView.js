@@ -66,8 +66,6 @@ function FormView({
     setFlag(false);
   }, [form, flag]);
 
-  useEffect(() => console.log(form), []);
-
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);

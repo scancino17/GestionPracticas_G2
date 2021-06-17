@@ -5,7 +5,7 @@ import { pendingIntention } from '../../../InternshipStates';
 
 const approvalState = pendingIntention;
 
-function StudentIntention({ practica, altText }) {
+function StudentIntention({ practica, altText, forceDisable }) {
   const [internshipState, setInternshipState] = useState(practica.status);
 
   const handleOnClick = () => {
@@ -24,7 +24,7 @@ function StudentIntention({ practica, altText }) {
   return (
     <Button
       onClick={handleOnClick}
-      disabled={isPendingApproval()}
+      disabled={forceDisable || isPendingApproval()}
       color='primary'>
       {internshipState !== approvalState
         ? altText

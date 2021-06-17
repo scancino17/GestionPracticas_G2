@@ -94,7 +94,6 @@ function SendForm({ edit }) {
     });
   }
   function handleSave() {
-    console.log(formFull);
     if (!edit) {
       //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
       //firestore no lo soporta
@@ -106,7 +105,6 @@ function SendForm({ edit }) {
         })
       );
 
-      console.log(formFull);
       db.collection('applications')
         .add({
           form: formFull,
@@ -127,7 +125,6 @@ function SendForm({ edit }) {
           console.error('Error adding document: ', error);
         });
     } else {
-      console.log(formFull);
       const values = {};
       formFull.forEach((step) =>
         step.form.forEach((camp) => {

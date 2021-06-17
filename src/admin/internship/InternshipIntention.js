@@ -30,6 +30,7 @@ import {
 import { useAuth } from '../../providers/Auth';
 import { StudentNotificationTypes } from '../../layout/NotificationMenu';
 import firebase from 'firebase';
+import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -61,8 +62,10 @@ const SecondaryButton = withStyles((theme) => ({
   }
 }))(Button);
 
-const IntentionList = ({ applications, update }) => {
+function IntentionList({ applications, update }) {
   const [expanded, setExpanded] = useState();
+  const itemsPerPage = 14;
+  const [page, setPage] = useState(1);
 
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -83,18 +86,30 @@ const IntentionList = ({ applications, update }) => {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        {applications.map((application) => (
-          <IntentionItem
-            application={application}
-            update={update}
-            expanded={expanded}
-            changeExpanded={changeExpanded}
-          />
-        ))}
+        {applications
+          .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+          .map((application) => (
+            <IntentionItem
+              application={application}
+              update={update}
+              expanded={expanded}
+              changeExpanded={changeExpanded}
+            />
+          ))}
+        <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+          {applications && (
+            <Pagination
+              count={Math.ceil(applications.length / itemsPerPage)}
+              page={page}
+              color='primary'
+              onChange={(_, val) => setPage(val)}
+            />
+          )}
+        </Grid>
       </Container>
     </Grid>
   );
-};
+}
 
 const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
   const classes = useStyles();
@@ -269,6 +284,7 @@ const ApprovalModal = ({
   const { userData } = useAuth();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
+  const [reason, setReason] = useState();
 
   function handleLetterFile(files) {
     setLetterFile(files);
@@ -286,6 +302,7 @@ const ApprovalModal = ({
       .doc(internshipId)
       .update({
         status: approvedIntention,
+        reason: reason,
         evaluatingSupervisor: { name: userData.name, email: userData.email }
       });
 
@@ -327,6 +344,10 @@ const ApprovalModal = ({
     update();
   }
 
+  function handleReasonChange(e) {
+    setReason(e.target.value);
+  }
+
   return (
     <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
@@ -336,6 +357,17 @@ const ApprovalModal = ({
           Adjunte los archivos correspondientes.
         </DialogContentText>
         <DropzoneArea showFileNames onChange={handleLetterFile} />
+        <DialogContentText />
+        <DialogContentText>
+          Puede añadir observaciones pertinentes en el siguiente campo:
+        </DialogContentText>
+        <TextField
+          multiline
+          rowsMax={4}
+          label='Observaciones'
+          onChange={handleReasonChange}
+          fullWidth
+        />
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>

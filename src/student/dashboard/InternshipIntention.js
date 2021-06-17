@@ -76,6 +76,16 @@ const useStyles = makeStyles((theme) => ({
 
 const InternshipState = ({ internships }) => {
   const [expanded, setExpanded] = useState();
+  const [pending, isPending] = useState(false);
+
+  useEffect(() => {
+    isPending(
+      internships.filter(
+        (item) =>
+          item.status === pendingIntention || item.status === approvedIntention
+      ).length > 0
+    );
+  }, [internships]);
 
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -89,13 +99,19 @@ const InternshipState = ({ internships }) => {
           internship={internship}
           expanded={expanded}
           changeExpanded={changeExpanded}
+          forceDisable={pending}
         />
       ))}
     </Grid>
   );
 };
 
-const IntentionItem = ({ internship, expanded, changeExpanded }) => {
+const IntentionItem = ({
+  internship,
+  expanded,
+  changeExpanded,
+  forceDisable
+}) => {
   const classes = useStyles();
 
   const selectDetails = () => {
@@ -145,6 +161,16 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
             <Box className={classes.approvedText}>aprobada.</Box>
           </Typography>
         </Grid>
+        {internship.reason && (
+          <Grid item style={{ paddingTop: '1rem' }}>
+            <Typography>
+              Tu intención ha sido aprobada con las siguientes observaciones:
+            </Typography>
+            <Typography className={classes.reasonText}>
+              {internship.reason}
+            </Typography>
+          </Grid>
+        )}
         <Grid item>
           <Typography>
             Puedes descargar los archivos necesarios para postular a prácticas a
@@ -245,7 +271,9 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
   };
 
   const AvailableActions = () => {
-    return <StudentIntention practica={internship} />;
+    return (
+      <StudentIntention practica={internship} forceDisable={forceDisable} />
+    );
   };
 
   const ApprovedActions = () => {
@@ -266,7 +294,11 @@ const IntentionItem = ({ internship, expanded, changeExpanded }) => {
 
   const DeniedActions = () => {
     return (
-      <StudentIntention practica={internship} altText='Volver a intentar' />
+      <StudentIntention
+        practica={internship}
+        altText='Volver a intentar'
+        forceDisable={forceDisable}
+      />
     );
   };
   

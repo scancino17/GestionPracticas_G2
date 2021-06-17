@@ -18,10 +18,13 @@ import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { RiSurveyLine } from 'react-icons/ri';
 import { makeStyles } from '@material-ui/core/styles';
-import InternshipIntentionFileList from './InternshipIntentionFileList';
 import useAuth from '../../../providers/Auth';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../../firebase';
+import InternshipIntentionFileList, {
+  SeguroPracticaFileList
+} from './InternshipIntentionFileList';
+
 import {
   changeDetailsApplication,
   reportNeedsChanges,
@@ -83,12 +86,23 @@ function ToDoList({ done }) {
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const history = useHistory();
+  const [practicalinsurance, setPracticalinsurance] = useState([]);
+  const [openSecure, setOpenSecure] = useState(false);
   useEffect(() => {
     const unsubscribe = db
       .collection('internships')
       .doc(userData.currentInternship.id)
       .onSnapshot((doc) => setInternship(doc.data()));
     return unsubscribe;
+  }, []);
+  useEffect(() => {
+    db.collection('applications')
+      .where('internshipId', '==', userData.currentInternship.id)
+      .onSnapshot((doc) =>
+        doc.forEach((app) => {
+          setPracticalinsurance(app.data());
+        })
+      );
   }, []);
 
   return (
@@ -159,6 +173,24 @@ function ToDoList({ done }) {
               {userData.step === 2 && (
                 <>
                   <ToDoItem
+                    icon={<FiDownload className={classes.icon} />}
+                    title='Seguro de práctica'
+                    body='Para comenzar tu práctica necesitas descargar el seguro.'
+                    buttonText={
+                      practicalinsurance.seguroDisponible === false ||
+                      practicalinsurance.seguroDisponible === undefined
+                        ? 'En proceso'
+                        : 'Descargar'
+                    }
+                    buttonOnClick={() => setOpenSecure(true)}
+                    disabled={
+                      practicalinsurance.seguroDisponible === false ||
+                      practicalinsurance.seguroDisponible === undefined
+                    }
+                  />
+                  <Divider />
+
+                  <ToDoItem
                     icon={<IoDocumentAttachOutline className={classes.icon} />}
                     title='Enviar Informe'
                     body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
@@ -192,7 +224,32 @@ function ToDoList({ done }) {
         </AccordionDetails>
       </Accordion>
       <DocsDialog open={openDocs} setOpen={setOpenDocs} />
+      <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
     </>
+  );
+}
+function DocsDialogSeguro({ open, setOpen }) {
+  const { user, userData } = useAuth();
+
+  function handleCloseDocsDialog() {
+    setOpen(false);
+  }
+
+  return (
+    <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
+      <DialogTitle>Seguro para práctica</DialogTitle>
+      <DialogContent>
+        <SeguroPracticaFileList
+          studentId={user.uid}
+          internshipId={userData.currentInternship.id}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCloseDocsDialog} color='primary'>
+          Cerrar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

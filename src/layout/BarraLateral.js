@@ -12,6 +12,7 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import { LocalHospital } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -39,6 +40,12 @@ const items = [
     icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/applications'
   },
+  {
+    label: 'Importar seguro de práctica',
+    icon: <LocalHospital style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/import-insurance'
+  },
+
   {
     label: 'Evaluar Prácticas',
     icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,

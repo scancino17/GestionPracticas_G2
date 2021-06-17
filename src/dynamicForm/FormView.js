@@ -211,7 +211,9 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formStartDate}
                     value={
-                      element.value instanceof Date
+                      element.value === ''
+                        ? new Date()
+                        : element.value instanceof Date
                         ? element.value
                         : element.value.toDate()
                     }
@@ -227,7 +229,9 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formEndDate}
                     value={
-                      element.value instanceof Date
+                      element.value === ''
+                        ? new Date()
+                        : element.value instanceof Date
                         ? element.value
                         : element.value.toDate()
                     }

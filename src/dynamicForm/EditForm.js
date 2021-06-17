@@ -265,11 +265,17 @@ function EditForm() {
         ) : (
           <Grid
             container
+            direction='column'
             align='center'
             justify='center'
-            style={{ margin: '4rem' }}>
+            style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='EmptyState-3x.png' />
+              <img src='EmptyState-3x.png' width='300' />
+            </Grid>
+            <Grid item>
+              <Typography variant='h5' color='textSecondary'>
+                Selecciona una carrera para continuar
+              </Typography>
             </Grid>
           </Grid>
         )}

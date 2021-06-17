@@ -269,7 +269,7 @@ function EditForm() {
             justify='center'
             style={{ margin: '4rem' }}>
             <Grid item>
-              <img src='edit-forms-empty.jpg' />
+              <img src='EmptyState-3x.png' />
             </Grid>
           </Grid>
         )}

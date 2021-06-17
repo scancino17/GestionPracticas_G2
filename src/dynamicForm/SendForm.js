@@ -142,97 +142,114 @@ function SendForm({ edit }) {
   }
 
   return (
-    <Container>
-      <Stepper
-        activeStep={activeStep}
-        alternativeLabel
-        style={{ margin: '2rem', backgroundColor: 'transparent' }}>
-        {formFull.map((step) => (
-          <Step key={step.step}>
-            <StepLabel>{step.step}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-      {activeStep === formFull.length ? (
-        <>
-          <Typography>Guardar</Typography>
-          <Button variant='contained' color='primary' onClick={handleSave}>
-            Guardar
-          </Button>
-        </>
-      ) : (
-        <Grid container direction='column' spacing={2}>
-          <Grid item>
-            {formFull.map(
-              (form, i) =>
-                i === activeStep && (
-                  // formview
-                  <DynamicForm
-                    form={form.form}
-                    setForm={setFormFull}
-                    formFull={formFull}
-                    index={i}
-                    filesInner={files}
-                    setFilesInner={() => setFiles}
-                    student
-                  />
-                )
-            )}
-          </Grid>
-          <Grid item container justify='flex-end' spacing={2}>
+    <Grid container direction='column'>
+      <Grid
+        style={{
+          backgroundImage: "url('HomeBanner-4x.png')",
+          backgroundColor: '#e0f3f7',
+          backgroundSize: '100%',
+          backgroundPosition: 'center',
+          backgroundRepeat:'no-repeat',
+          position: 'relative',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>
+          Formulario
+        </Typography>
+      </Grid>
+              
+      <Container>
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel
+          style={{ margin: '2rem', backgroundColor: 'transparent' }}>
+          {formFull.map((step) => (
+            <Step key={step.step}>
+              <StepLabel>{step.step}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        {activeStep === formFull.length ? (
+          <>
+            <Typography>Guardar</Typography>
+            <Button variant='contained' color='primary' onClick={handleSave}>
+              Guardar
+            </Button>
+          </>
+        ) : (
+          <Grid container direction='column' spacing={2}>
             <Grid item>
-              <Button
-                variant='contained'
-                color='primary'
-                disabled={activeStep === 0}
-                onClick={handleBack}>
-                Anterior
-              </Button>
+              {formFull.map(
+                (form, i) =>
+                  i === activeStep && (
+                    // formview
+                    <DynamicForm
+                      form={form.form}
+                      setForm={setFormFull}
+                      formFull={formFull}
+                      index={i}
+                      filesInner={files}
+                      setFilesInner={() => setFiles}
+                      student
+                    />
+                  )
+              )}
             </Grid>
-            <Grid item>
-              {activeStep !== formFull.length - 1 && (
+            <Grid item container justify='flex-end' spacing={2}>
+              <Grid item>
                 <Button
                   variant='contained'
                   color='primary'
-                  onClick={handleNext}>
-                  Siguiente
+                  disabled={activeStep === 0}
+                  onClick={handleBack}>
+                  Anterior
                 </Button>
-              )}
-              {activeStep === formFull.length - 1 && (
-                <Button
-                  variant='contained'
-                  color='primary'
-                  onClick={() => {
-                    Swal.fire({
-                      title: '¿Desea enviar su solicitud?',
-                      showDenyButton: true,
-                      confirmButtonText: `Enviar`,
-                      denyButtonText: `Salir`
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        handleSave();
-                        Swal.fire('¡Formulario enviado!', '', 'success').then(
-                          (result) => {
-                            if (result.isConfirmed) history.push('/');
-                          }
-                        );
-                      } else if (result.isDenied) {
-                        Swal.fire(
-                          'Revisa bien tu formulario antes de enviarlo',
-                          '',
-                          'info'
-                        );
-                      }
-                    });
-                  }}>
-                  Enviar
-                </Button>
-              )}
+              </Grid>
+              <Grid item>
+                {activeStep !== formFull.length - 1 && (
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={handleNext}>
+                    Siguiente
+                  </Button>
+                )}
+                {activeStep === formFull.length - 1 && (
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={() => {
+                      Swal.fire({
+                        title: '¿Desea enviar su solicitud?',
+                        showDenyButton: true,
+                        confirmButtonText: `Enviar`,
+                        denyButtonText: `Salir`
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          handleSave();
+                          Swal.fire('¡Formulario enviado!', '', 'success').then(
+                            (result) => {
+                              if (result.isConfirmed) history.push('/');
+                            }
+                          );
+                        } else if (result.isDenied) {
+                          Swal.fire(
+                            'Revisa bien tu formulario antes de enviarlo',
+                            '',
+                            'info'
+                          );
+                        }
+                      });
+                    }}>
+                    Enviar
+                  </Button>
+                )}
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      )}
-    </Container>
+        )}
+      </Container>
+    </Grid>
   );
 }
 

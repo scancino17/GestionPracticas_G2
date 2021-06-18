@@ -38,6 +38,8 @@ import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
+import PracticeReport from '../evaluatePractice/PracticeReport';
+import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -356,6 +358,12 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/internship-intention'>
           <InternshipIntention />
+        </Route>
+        <Route path='/evaluate-practice'>
+          <PracticeReport />
+        </Route>
+        <Route path='/report-evaluated/:studentId/:internshipId'>
+          <ReportEvaluate />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

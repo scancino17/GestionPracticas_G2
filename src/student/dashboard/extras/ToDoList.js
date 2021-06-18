@@ -26,6 +26,8 @@ import {
   changeDetailsApplication,
   reportNeedsChanges,
   sentApplication,
+  deniedApplication,
+  pendingApplication,
   sentReport
 } from '../../../InternshipStates';
 
@@ -42,7 +44,17 @@ const useStyles = makeStyles({
   }
 });
 
-function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
+function ToDoItem({
+  icon,
+  title,
+  body,
+  buttonText,
+  buttonOnClick,
+  disabled,
+  reason,
+  internship,
+  minorChanges
+}) {
   const classes = useStyles();
 
   return (
@@ -61,6 +73,22 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
             <Typography color='textSecondary' variant='body2'>
               {body}
             </Typography>
+
+            {reason &&
+              !(
+                internship &&
+                internship.status === sentApplication &&
+                internship.status !== pendingApplication
+              ) && (
+                <Typography variant='body1' color='error'>
+                  Razón de rechazo: {reason}
+                </Typography>
+              )}
+            {minorChanges && (
+              <Typography variant='body1'>
+                Cambios necesarios: {minorChanges}
+              </Typography>
+            )}
           </Hidden>
         </Grid>
       </Grid>
@@ -78,7 +106,7 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
   );
 }
 
-function ToDoList({ done }) {
+function ToDoList({ done, reason }) {
   const [internship, setInternship] = useState();
   const { userData } = useAuth();
   const classes = useStyles();
@@ -123,32 +151,38 @@ function ToDoList({ done }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              {userData.step === 1 && (
-                <>
-                  <ToDoItem
-                    icon={<FaWpforms className={classes.icon} />}
-                    title='Completar Formulario de Inscripción de Práctica'
-                    body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
-                    buttonText={
-                      internship && internship.status === sentApplication
-                        ? 'En revisión'
-                        : 'Completar'
-                    }
-                    buttonOnClick={() => history.push('/send-form')}
-                    disabled={
-                      internship && internship.status === sentApplication
-                    }
-                  />
-                  <Divider />
-                </>
-              )}
+              {userData.step === 1 &&
+                !(
+                  internship && internship.status === changeDetailsApplication
+                ) && (
+                  <>
+                    <ToDoItem
+                      icon={<FaWpforms className={classes.icon} />}
+                      title='Completar Formulario de Inscripción de Práctica'
+                      body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
+                      buttonText={
+                        internship && internship.status === sentApplication
+                          ? 'En revisión'
+                          : 'Completar'
+                      }
+                      reason={reason}
+                      internship={internship}
+                      buttonOnClick={() => history.push('/send-form')}
+                      disabled={
+                        internship && internship.status === sentApplication
+                      }
+                    />
+
+                    <Divider />
+                  </>
+                )}
               {internship && internship.status === changeDetailsApplication && (
                 <>
                   <ToDoItem
                     icon={<FaWpforms className={classes.icon} />}
                     title='Corregir Formulario'
-                    body='El formulario que enviaste requiere correcciones.'
                     buttonText='Corregir'
+                    minorChanges={reason}
                     buttonOnClick={() =>
                       history.push(
                         `/edit-form/${userData.currentInternship.lastApplication}`

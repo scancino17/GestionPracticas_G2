@@ -213,9 +213,10 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formStartDate}
                     value={
-                      element.value instanceof Date
-                        ? element.value
-                        : element.value.toDate()
+                      '05/09/1998'
+                      // element.value instanceof Date
+                      // ? element.value
+                      //: element.value.toDate()
                     }
                     onChange={(date) => updateItem(index, 'value', date)}
                   />
@@ -229,9 +230,10 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formEndDate}
                     value={
-                      element.value instanceof Date
-                        ? element.value
-                        : element.value.toDate()
+                      '05/09/1998'
+                      //element.value instanceof Date
+                      // ? element.value
+                      //: element.value.toDate()
                     }
                     onChange={(date) => updateItem(index, 'value', date)}
                   />

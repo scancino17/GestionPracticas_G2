@@ -29,7 +29,8 @@ import {
 import FormView from './FormView';
 import {
   approvedApplication,
-  changeDetailsApplication
+  changeDetailsApplication,
+  deniedApplication
 } from '../InternshipStates';
 import { useHistory } from 'react-router-dom';
 import firebase from 'firebase';
@@ -108,9 +109,11 @@ function FormCheck() {
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
   const [showMinorChanges, setShowMinorChanges] = useState(false);
+  const [showApproved, setShowApproved] = useState(false);
 
   const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
+  const [approvedReason, setApproverdReason] = useState('');
   const classes = useStyles();
 
   useEffect(() => {
@@ -153,6 +156,8 @@ function FormCheck() {
     db.collection('users')
       .doc(application.studentId)
       .update({
+        reason: rejectReason,
+        'currentInternship.lastApplication': applicationId,
         step: 2,
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
@@ -179,12 +184,12 @@ function FormCheck() {
       .update({ status: 'Rechazado', reason: rejectReason });
     db.collection('internships')
       .doc(application.internshipId)
-      .update({ status: changeDetailsApplication });
+      .update({ status: deniedApplication });
 
     db.collection('users')
       .doc(application.studentId)
       .update({
-        step: 2,
+        'currentInternship.lastApplication': applicationId,
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.deniedApplication,
@@ -207,12 +212,24 @@ function FormCheck() {
     db.collection('internships')
       .doc(application.internshipId)
       .update({ status: changeDetailsApplication });
+
     db.collection('applications')
       .doc(applicationId)
-      .update({ status: 'En revision' });
+      .update({ status: 'Necesita cambios menores', reason: minorChanges });
     db.collection('users')
       .doc(application.studentId)
       .update({ 'currentInternship.lastApplication': applicationId });
+
+    db.collection('mails').add({
+      to: applicationUser.email,
+      template: {
+        name: 'FailedMinorChanges',
+        data: {
+          from_name: applicationUser.name,
+          result: rejectReason
+        }
+      }
+    });
   }
   function handleSave() {
     const values = {};
@@ -235,21 +252,7 @@ function FormCheck() {
             color='primary'
             className={classes.fabAccept}
             onClick={() => {
-              Swal.fire({
-                title: '¿Aprobar solicitud de práctica?',
-                showDenyButton: true,
-                confirmButtonText: `Aceptar`,
-                denyButtonText: `Cancelar`
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  handleApprove();
-                  Swal.fire('¡Solicitud aprobada!', '', 'success').then(
-                    (result) => {
-                      if (result.isConfirmed) history.push('/applications');
-                    }
-                  );
-                }
-              });
+              setShowApproved(true);
             }}>
             <Check />
             Aprobar
@@ -386,6 +389,42 @@ function FormCheck() {
           </DialogActions>
         </Dialog>
       )}
+      {showApproved && (
+        <Dialog
+          open={showApproved}
+          onClose={() => setShowApproved(false)}
+          fullWidth>
+          <DialogTitle>Aprovar postulación de práctica</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {`¿Está seguro de aceptar la postulación de Práctica ?`}
+            </DialogContentText>
+            <TextField
+              fullWidth
+              label={'Razón de aprovación'}
+              multiline
+              rowsMax={4}
+              onChange={(e) => setApproverdReason(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <SecondaryButton
+              color='primary'
+              onClick={() => setShowApproved(false)}>
+              Cancelar
+            </SecondaryButton>
+            <Button
+              color='primary'
+              onClick={() => {
+                handleApprove();
+                setShowApproved(false);
+                history.push('/applications');
+              }}>
+              Confirmar aprovación
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
       {showMinorChanges && (
         <Dialog
           open={showMinorChanges}
@@ -409,11 +448,11 @@ function FormCheck() {
             </SecondaryButton>
             <DenyButton
               color='primary'
-              onClick={() => (
-                handleMinorChanges,
-                setShowMinorChanges(false),
-                history.push('/applications')
-              )}>
+              onClick={() => {
+                handleMinorChanges();
+                setShowMinorChanges(false);
+                history.push('/applications');
+              }}>
               Confirmar solicitud
             </DenyButton>
           </DialogActions>

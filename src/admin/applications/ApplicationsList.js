@@ -85,7 +85,7 @@ function ApplicationsList() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Postulaciones de práctica</Typography>
+        <Typography variant='h4'>Informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container justify='flex-end' alignItems='center' spacing={4}>

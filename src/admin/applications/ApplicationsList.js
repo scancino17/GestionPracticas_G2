@@ -20,6 +20,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
+import { Pagination } from '@material-ui/lab';
 
 function ApplicationsList() {
   const [careerId, setCareerId] = useState('general');
@@ -32,6 +33,8 @@ function ApplicationsList() {
     rejected: false
   });
   const { reviewing, approved, rejected } = statuses;
+  const itemsPerPage = 8;
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const unsubscribe = db
@@ -55,7 +58,6 @@ function ApplicationsList() {
     let filtered = list.slice();
     if (careerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === careerId);
-    console.log(filtered);
     if (name !== '')
       filtered = filtered.filter((item) => item.studentName.includes(name));
     if (!reviewing)
@@ -83,7 +85,7 @@ function ApplicationsList() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Postulaciones de práctica</Typography>
+        <Typography variant='h4'>Informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container justify='flex-end' alignItems='center' spacing={4}>
@@ -137,13 +139,25 @@ function ApplicationsList() {
         </Grid>
         <List>
           {filteredApplications &&
-            filteredApplications.map((application) => (
-              <>
-                <ApplicationItem application={application} />
-                <Divider />
-              </>
-            ))}
+            filteredApplications
+              .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+              .map((application) => (
+                <>
+                  <ApplicationItem application={application} />
+                  <Divider />
+                </>
+              ))}
         </List>
+        <Grid container justify='flex-end'>
+          {filteredApplications && (
+            <Pagination
+              count={Math.ceil(filteredApplications.length / itemsPerPage)}
+              page={page}
+              color='primary'
+              onChange={(_, val) => setPage(val)}
+            />
+          )}
+        </Grid>
       </Container>
     </Grid>
   );

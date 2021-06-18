@@ -66,8 +66,6 @@ function FormView({
     setFlag(false);
   }, [form, flag]);
 
-  useEffect(() => console.log(form), []);
-
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);
@@ -213,7 +211,9 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formStartDate}
                     value={
-                      element.value instanceof Date
+                      element.value === ''
+                        ? new Date()
+                        : element.value instanceof Date
                         ? element.value
                         : element.value.toDate()
                     }
@@ -229,7 +229,9 @@ function FormView({
                     format='dd/MM/yyyy'
                     label={customTypes.formEndDate}
                     value={
-                      element.value instanceof Date
+                      element.value === ''
+                        ? new Date()
+                        : element.value instanceof Date
                         ? element.value
                         : element.value.toDate()
                     }
@@ -238,15 +240,28 @@ function FormView({
                 </Grid>
               ) : element.type2 === customTypes.formCountry ? (
                 <Grid item>
-                  <Typography variant='h5'>País</Typography>
-                  <Selector
-                    readOnly={readOnly}
-                    valueinner={element.value}
-                    camp={element.type2}
-                    onParentChange={(newValue) => {
-                      updateItem(index, 'value', newValue.label);
-                    }}
-                  />
+                  {readOnly ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        variant='outlined'
+                        label={element.name}
+                        value={element.value}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Typography variant='h5'>País</Typography>
+                      <Selector
+                        readOnly={readOnly}
+                        valueinner={element.value}
+                        camp={element.type2}
+                        onParentChange={(newValue) => {
+                          updateItem(index, 'value', newValue.label);
+                        }}
+                      />
+                    </>
+                  )}
                 </Grid>
               ) : null
             ) : null

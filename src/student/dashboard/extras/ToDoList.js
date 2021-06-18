@@ -50,7 +50,9 @@ function ToDoItem({
   buttonText,
   buttonOnClick,
   disabled,
-  reason
+  reason,
+  internship,
+  minorChanges
 }) {
   const classes = useStyles();
 
@@ -70,6 +72,22 @@ function ToDoItem({
             <Typography color='textSecondary' variant='body2'>
               {body}
             </Typography>
+
+            {reason &&
+              !(
+                internship &&
+                internship.status === sentApplication &&
+                internship.status !== pendingApplication
+              ) && (
+                <Typography variant='body1' color='error'>
+                  Razón de rechazo: {reason}
+                </Typography>
+              )}
+            {minorChanges && (
+              <Typography variant='body1'>
+                Cambios necesarios: {minorChanges}
+              </Typography>
+            )}
           </Hidden>
         </Grid>
       </Grid>
@@ -145,16 +163,14 @@ function ToDoList({ done, reason }) {
                           ? 'En revisión'
                           : 'Completar'
                       }
+                      reason={reason}
+                      internship={internship}
                       buttonOnClick={() => history.push('/send-form')}
                       disabled={
                         internship && internship.status === sentApplication
                       }
                     />
-                    {!(
-                      internship &&
-                      internship.status === sentApplication &&
-                      internship.status !== pendingApplication
-                    ) && <Typography>Razón de rechazo: {reason}</Typography>}
+
                     <Divider />
                   </>
                 )}
@@ -163,15 +179,14 @@ function ToDoList({ done, reason }) {
                   <ToDoItem
                     icon={<FaWpforms className={classes.icon} />}
                     title='Corregir Formulario'
-                    body='El formulario que enviaste requiere correcciones.'
                     buttonText='Corregir'
+                    minorChanges={reason}
                     buttonOnClick={() =>
                       history.push(
                         `/edit-form/${userData.currentInternship.lastApplication}`
                       )
                     }
                   />
-                  <Typography>Correcciones necesarias:{reason} </Typography>
                   <Divider />
                 </>
               )}

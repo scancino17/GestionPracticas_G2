@@ -24,6 +24,7 @@ import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { finishedInternship, reportNeedsChanges } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
+import CareerSelector from '../../utils/CareerSelector';
 
 function ReportEvaluate() {
   const [value, setValue] = useState(40);
@@ -126,6 +127,7 @@ function ReportEvaluate() {
             Evaluación de informe de practica
           </Typography>
         </Grid>
+
         {infoStudent && (
           <Container style={{ marginTop: '2rem' }}>
             <Grid container direction='row' justify='space-around'>

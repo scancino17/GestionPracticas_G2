@@ -7,30 +7,90 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton,
-  Divider
+  Divider,
+  TextField,
+  List
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
-import { Skeleton } from '@material-ui/lab';
+
+import CareerSelector from '../../utils/CareerSelector';
+import { set } from 'date-fns';
 
 function PracticeReport({ edit }) {
-  const [interships, setInternships] = useState([]);
+  const [name, setName] = useState('');
+  const [careerId, setCareerId] = useState('general');
+  const [internships, setInternships] = useState([]);
+  const [filterInterships, setFilterInternships] = useState([]);
+
+  function applyFilter(list) {
+    console.log('original', list);
+
+    let filtered = [...list];
+    console.log('before holi', filtered);
+
+    if (careerId !== 'general')
+      filtered = filtered.filter((item) => item.careerId === careerId);
+    if (name !== '')
+      filtered = filtered.filter((item) => item.name.includes(name));
+    return filtered;
+  }
+
+  function getInfoStudent(list, id) {
+    for (let index = 0; index < list.length; index++) {
+      const element = list[index];
+      if (element.id === id) {
+        return { name: element.name, careerId: element.careerId };
+      }
+    }
+  }
 
   useEffect(() => {
+    let users = [];
+    db.collection('users')
+      .get()
+      .then((student) =>
+        student.forEach((element) => {
+          const studentData = element.data();
+          users.push({
+            id: element.id,
+            name: studentData.name,
+            careerId: studentData.careerId
+          });
+        })
+      );
+
     const unsubscribe = db
       .collection('internships')
       .onSnapshot((querySnapshot) => {
-        const list = [];
+        let list = [];
+        let info;
         querySnapshot.forEach((doc) => {
-          if (doc.data().status === sentReport) {
-            list.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          if (data.status === sentReport) {
+            info = getInfoStudent(users, data.studentId);
+            console.log('info', info);
+            list.push({
+              id: doc.id,
+              name: info.name,
+              careerId: info.careerId,
+              ...data
+            });
           }
         });
+
         setInternships(list);
+        console.log('despues del la db', list);
+        if (list) setFilterInternships(applyFilter(list));
       });
+    return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (internships) setFilterInternships(applyFilter(internships));
+  }, [careerId, name]);
 
   return (
     <Grid container direction='column'>
@@ -45,12 +105,28 @@ function PracticeReport({ edit }) {
         <Typography variant='h4'>Evaluar informes de prácticas</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        {interships.map((intership) => (
-          <>
-            <IntershipItem intership={intership} />
-            <Divider />
-          </>
-        ))}
+        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+          <Grid item>
+            <TextField
+              label='Buscar estudiante'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+          </Grid>
+        </Grid>
+      </Container>
+      <Container style={{ marginTop: '2rem' }}>
+        <List>
+          {filterInterships.map((intership) => (
+            <>
+              <IntershipItem intership={intership} />
+              <Divider />
+            </>
+          ))}
+        </List>
       </Container>
     </Grid>
   );
@@ -58,45 +134,25 @@ function PracticeReport({ edit }) {
 
 function IntershipItem({ intership }) {
   const history = useHistory();
-  const [student, setStudent] = useState('');
-  const [studentId, setStudenId] = useState('');
-  useEffect(() => {
-    db.collection('users')
-      .doc(intership.studentId)
-      .get()
-      .then((user) => {
-        setStudent(user.data());
-        setStudenId(user.id);
-      });
-  }, []);
 
   return (
-    <>
-      <ListItem
-        button
-        onClick={() =>
-          history.push(`/report-evaluated/${studentId}/${intership.id}`)
-        }>
-        {!student && (
-          <div style={{ width: '18rem' }}>
-            <Skeleton />
-          </div>
-        )}
-        {student && (
-          <>
-            <ListItemText primary={student.name} />
-            <ListItemSecondaryAction>
-              <IconButton
-                onClick={() =>
-                  history.push(`/report-evaluated/${studentId}/${intership.id}`)
-                }>
-                <NavigateNext />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </>
-        )}
-      </ListItem>
-    </>
+    <ListItem
+      button
+      onClick={() =>
+        history.push(`/report-evaluated/${intership.studentId}/${intership.id}`)
+      }>
+      <ListItemText primary={intership.name} />
+      <ListItemSecondaryAction>
+        <IconButton
+          onClick={() =>
+            history.push(
+              `/report-evaluated/${intership.studentId}/${intership.id}`
+            )
+          }>
+          <NavigateNext />
+        </IconButton>
+      </ListItemSecondaryAction>
+    </ListItem>
   );
 }
 export default PracticeReport;

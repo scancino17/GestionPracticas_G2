@@ -323,13 +323,23 @@ function FormCheck() {
           </Fab>
         </>
       )}
-
+      <Grid container direction='column'>
+      <Grid
+        style={{
+          backgroundImage: "url('../AdminBanner-Form.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography variant='h4'>Revisión Postulación</Typography>
+      </Grid>
       <Container>
-        <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-          Revisión Postulación
-        </Typography>
+        
         {application.form &&
           application.form.map((step) => (
+          
+          
             <Grid item>
               <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
                 {step.step}
@@ -345,8 +355,10 @@ function FormCheck() {
                 admin
               />
             </Grid>
+            
           ))}
       </Container>
+      </Grid>
       {show && (
         <Dialog open={show} onClose={() => setShow(false)} fullWidth>
           <DialogTitle>Rechazar postulación de práctica</DialogTitle>

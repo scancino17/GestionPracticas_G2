@@ -30,6 +30,7 @@ import {
 import { useAuth } from '../../providers/Auth';
 import { StudentNotificationTypes } from '../../layout/NotificationMenu';
 import firebase from 'firebase';
+import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -61,8 +62,10 @@ const SecondaryButton = withStyles((theme) => ({
   }
 }))(Button);
 
-const IntentionList = ({ applications, update }) => {
+function IntentionList({ applications, update }) {
   const [expanded, setExpanded] = useState();
+  const itemsPerPage = 14;
+  const [page, setPage] = useState(1);
 
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -83,18 +86,30 @@ const IntentionList = ({ applications, update }) => {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        {applications.map((application) => (
-          <IntentionItem
-            application={application}
-            update={update}
-            expanded={expanded}
-            changeExpanded={changeExpanded}
-          />
-        ))}
+        {applications
+          .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+          .map((application) => (
+            <IntentionItem
+              application={application}
+              update={update}
+              expanded={expanded}
+              changeExpanded={changeExpanded}
+            />
+          ))}
+        <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+          {applications && (
+            <Pagination
+              count={Math.ceil(applications.length / itemsPerPage)}
+              page={page}
+              color='primary'
+              onChange={(_, val) => setPage(val)}
+            />
+          )}
+        </Grid>
       </Container>
     </Grid>
   );
-};
+}
 
 const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
   const classes = useStyles();

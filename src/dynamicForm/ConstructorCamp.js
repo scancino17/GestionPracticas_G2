@@ -72,11 +72,7 @@ function ConstructorCamp({
       temp = {
         type: type,
         type2: type2,
-        value:
-          type2 === customTypes.formStartDate ||
-          type2 === customTypes.formEndDate
-            ? new Date()
-            : '',
+        value: '',
         name: type2
       };
     }

@@ -10,7 +10,8 @@ import {
   MdEqualizer,
   MdPieChart,
   MdTrackChanges,
-  MdDonutLarge
+  MdDonutLarge,
+  MdPublic
 } from 'react-icons/md';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -29,15 +30,14 @@ import EditForm from '../../dynamicForm/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
-import RadarChart from './extras/charts/RadarChart';
-import PolarChart from './extras/charts/PolarChart';
-import DoughnutChart from './extras/charts/DoughnutChart';
+import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import LineChart from './extras/charts/LineChart';
 import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
+import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
 
@@ -47,6 +47,7 @@ function DashboardAdmin({ sidebarProps }) {
   const history = useHistory();
   const [intentionsCount, setIntentionsCount] = useState(0);
   const [formsCount, setFormsCount] = useState(0);
+  const [careerId, setCareerId] = useState('3407');
 
   useEffect(() => {
     const unsubscribe = db
@@ -227,10 +228,17 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardIcon color='info'>
                       <MdPieChart />
                     </CardIcon>
-                    <p className={classes.cardCategory}>Pie Chart</p>
+                    <p className={classes.cardCategory}>
+                      Aprobados y Rechazados por Carrera
+                    </p>
+                    <CareerSelector
+                      careerId={careerId}
+                      setCareerId={setCareerId}
+                      excludeGeneral
+                    />
                   </CardHeader>
                   <CardBody>
-                    <PieChart />
+                    <PieChart careerId={careerId} />
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>
@@ -242,64 +250,26 @@ function DashboardAdmin({ sidebarProps }) {
               </Grid>
             </Grid>
 
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='danger' icon>
-                    <CardIcon color='danger'>
-                      <MdTrackChanges />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Radar Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <RadarChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='success' icon>
-                    <CardIcon color='success'>
-                      <MdDonutLarge />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Doughnut Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <DoughnutChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Card>
-                  <CardHeader color='warning' icon>
-                    <CardIcon color='warning'>
-                      <MdTrackChanges />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Polar Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <PolarChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
+            <Grid>
+              <Card>
+                <CardHeader color='success' icon>
+                  <CardIcon color='success'>
+                    <MdPublic />
+                  </CardIcon>
+                  <p className={classes.cardCategory}>
+                    Prácticas registradas en el extranjero
+                  </p>
+                </CardHeader>
+                <CardBody>
+                  <TableChart />
+                </CardBody>
+                <CardFooter stats>
+                  <div className={classes.stats}>
+                    <MdUpdate />
+                    Actualizado recientemente
+                  </div>
+                </CardFooter>
+              </Card>
             </Grid>
 
             <Grid container spacing={3}>

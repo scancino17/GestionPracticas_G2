@@ -19,7 +19,25 @@ const UrlLink = ({ file }) => {
     </ListItem>
   );
 };
+export function SeguroPracticaFileList({ studentId, internshipId }) {
+  const [files, setFiles] = useState([]);
 
+  useEffect(() => {
+    storage
+      .ref()
+      .child(`students-docs/${studentId}/${internshipId}/seguro-practica/`)
+      .listAll()
+      .then((res) => setFiles(res.items));
+  }, [internshipId, studentId]);
+
+  return (
+    <List>
+      {files.map((file) => (
+        <UrlLink file={file} />
+      ))}
+    </List>
+  );
+}
 function InternshipIntentionFileList({ studentId, internshipId }) {
   const [files, setFiles] = useState([]);
 

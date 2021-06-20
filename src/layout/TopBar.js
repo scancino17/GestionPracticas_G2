@@ -142,11 +142,7 @@ function TopBar({ setSidebarOpen }) {
             disableRipple
             onClick={() => history.push('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img
-              className={classes.logo}
-              src='https://i.ibb.co/D4pryr8/logo5b.png'
-              alt='logo'
-            />
+            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
           {user.student && (
@@ -179,7 +175,7 @@ function TopBar({ setSidebarOpen }) {
             disableRipple
             onClick={() => history.push('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img className={classes.logo} src='logo5b.png' alt='logo' />
+            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>
         </Toolbar>
       )}

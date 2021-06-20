@@ -3,6 +3,7 @@ import CardHeader from './extras/Card/CardHeader.js';
 import CardBody from './extras/Card/CardBody.js';
 import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
+
 import {
   MdUpdate,
   MdTimeline,
@@ -37,6 +38,7 @@ import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
+import ImportPracticeInsurance from '../import/ImportPracticeInsurance';
 import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
@@ -328,6 +330,9 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/internship-intention'>
           <InternshipIntention />
+        </Route>
+        <Route path='/import-insurance'>
+          <ImportPracticeInsurance />
         </Route>
         <Route path='/evaluate-practice'>
           <PracticeReport />

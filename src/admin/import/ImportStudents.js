@@ -52,7 +52,6 @@ function ImportStudents() {
   }
 
   function handleSubmit() {
-    console.log(list);
     const importStudents = functions.httpsCallable('importStudents');
     list.forEach((row) => {
       importStudents({

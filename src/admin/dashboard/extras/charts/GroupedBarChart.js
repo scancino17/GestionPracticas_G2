@@ -4,6 +4,10 @@ import { db } from '../../../../firebase';
 
 function GroupedBar() {
   const [data, setData] = useState();
+  let careers = new Map();
+  let noAction = new Map();
+  let applying = new Map();
+  let onIntern = new Map();
 
   const options = {
     scales: {
@@ -17,49 +21,51 @@ function GroupedBar() {
     }
   };
 
-  useEffect(() => {
+  function getStudentsStatus() {
     const unsubscribe = db
       .collection('users')
       .orderBy('careerId')
       .onSnapshot((querySnapshot) => {
-        let noAction = new Map();
-        let applying = new Map();
-        let onIntern = new Map();
+        const temp = [];
 
-        querySnapshot.forEach((doc) => {
-          if (doc.data().step) {
-            switch (doc.data().step) {
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+
+        temp.forEach((doc) => {
+          if (doc.step) {
+            switch (doc.step) {
               case 0:
-                if (noAction.has(doc.data().careerId)) {
-                  let counter = noAction.get(doc.data().careerId);
-                  noAction.set(doc.data().careerId, counter + 1);
+                if (noAction.has(careers.get(doc.careerId))) {
+                  let counter = noAction.get(careers.get(doc.careerId));
+                  noAction.set(careers.get(doc.careerId), counter + 1);
                 } else {
-                  noAction.set(doc.data().careerId, 1);
+                  noAction.set(careers.get(doc.careerId), 1);
                 }
                 break;
               case 1:
-                if (applying.has(doc.data().careerId)) {
-                  let counter = applying.get(doc.data().careerId);
-                  applying.set(doc.data().careerId, counter + 1);
+                if (applying.has(careers.get(doc.careerId))) {
+                  let counter = applying.get(careers.get(doc.careerId));
+                  applying.set(careers.get(doc.careerId), counter + 1);
                 } else {
-                  applying.set(doc.data().careerId, 1);
+                  applying.set(careers.get(doc.careerId), 1);
                 }
                 break;
               default:
-                if (onIntern.has(doc.data().careerId)) {
-                  let counter = onIntern.get(doc.data().careerId);
-                  onIntern.set(doc.data().careerId, counter + 1);
+                if (onIntern.has(careers.get(doc.careerId))) {
+                  let counter = onIntern.get(careers.get(doc.careerId));
+                  onIntern.set(careers.get(doc.careerId), counter + 1);
                 } else {
-                  onIntern.set(doc.data().careerId, 1);
+                  onIntern.set(careers.get(doc.careerId), 1);
                 }
                 break;
             }
           } else {
-            if (noAction.has(doc.data().careerId)) {
-              let counter = noAction.get(doc.data().careerId);
-              noAction.set(doc.data().careerId, counter + 1);
+            if (noAction.has(careers.get(doc.careerId))) {
+              let counter = noAction.get(careers.get(doc.careerId));
+              noAction.set(careers.get(doc.careerId), counter + 1);
             } else {
-              noAction.set(doc.data().careerId, 1);
+              noAction.set(careers.get(doc.careerId), 1);
             }
           }
         });
@@ -86,6 +92,19 @@ function GroupedBar() {
         };
 
         setData(config);
+      });
+    return unsubscribe;
+  }
+
+  useEffect(() => {
+    let unsubscribe = null;
+    db.collection('careers')
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== 'general') careers.set(doc.id, doc.data().name);
+        });
+        unsubscribe = getStudentsStatus();
       });
     return unsubscribe;
   }, []);

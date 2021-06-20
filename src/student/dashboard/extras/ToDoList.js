@@ -28,7 +28,10 @@ import InternshipIntentionFileList, {
 import {
   changeDetailsApplication,
   reportNeedsChanges,
-  sentApplication
+  sentApplication,
+  deniedApplication,
+  pendingApplication,
+  sentReport
 } from '../../../InternshipStates';
 
 const useStyles = makeStyles({
@@ -44,7 +47,17 @@ const useStyles = makeStyles({
   }
 });
 
-function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
+function ToDoItem({
+  icon,
+  title,
+  body,
+  buttonText,
+  buttonOnClick,
+  disabled,
+  reason,
+  internship,
+  minorChanges
+}) {
   const classes = useStyles();
 
   return (
@@ -63,6 +76,22 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
             <Typography color='textSecondary' variant='body2'>
               {body}
             </Typography>
+
+            {reason &&
+              !(
+                internship &&
+                internship.status === sentApplication &&
+                internship.status !== pendingApplication
+              ) && (
+                <Typography variant='body1' color='error'>
+                  Razón de rechazo: {reason}
+                </Typography>
+              )}
+            {minorChanges && (
+              <Typography variant='body1'>
+                Cambios necesarios: {minorChanges}
+              </Typography>
+            )}
           </Hidden>
         </Grid>
       </Grid>
@@ -80,7 +109,7 @@ function ToDoItem({ icon, title, body, buttonText, buttonOnClick, disabled }) {
   );
 }
 
-function ToDoList({ done }) {
+function ToDoList({ done, reason }) {
   const [internship, setInternship] = useState();
   const { userData } = useAuth();
   const classes = useStyles();
@@ -93,6 +122,7 @@ function ToDoList({ done }) {
       .collection('internships')
       .doc(userData.currentInternship.id)
       .onSnapshot((doc) => setInternship(doc.data()));
+    console.log(internship);
     return unsubscribe;
   }, []);
   useEffect(() => {
@@ -135,32 +165,38 @@ function ToDoList({ done }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              {userData.step === 1 && (
-                <>
-                  <ToDoItem
-                    icon={<FaWpforms className={classes.icon} />}
-                    title='Completar Formulario de Inscripción de Práctica'
-                    body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
-                    buttonText={
-                      internship && internship.status === sentApplication
-                        ? 'En revisión'
-                        : 'Completar'
-                    }
-                    buttonOnClick={() => history.push('/send-form')}
-                    disabled={
-                      internship && internship.status === sentApplication
-                    }
-                  />
-                  <Divider />
-                </>
-              )}
+              {userData.step === 1 &&
+                !(
+                  internship && internship.status === changeDetailsApplication
+                ) && (
+                  <>
+                    <ToDoItem
+                      icon={<FaWpforms className={classes.icon} />}
+                      title='Completar Formulario de Inscripción de Práctica'
+                      body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
+                      buttonText={
+                        internship && internship.status === sentApplication
+                          ? 'En revisión'
+                          : 'Completar'
+                      }
+                      reason={reason}
+                      internship={internship}
+                      buttonOnClick={() => history.push('/send-form')}
+                      disabled={
+                        internship && internship.status === sentApplication
+                      }
+                    />
+
+                    <Divider />
+                  </>
+                )}
               {internship && internship.status === changeDetailsApplication && (
                 <>
                   <ToDoItem
                     icon={<FaWpforms className={classes.icon} />}
                     title='Corregir Formulario'
-                    body='El formulario que enviaste requiere correcciones.'
                     buttonText='Corregir'
+                    minorChanges={reason}
                     buttonOnClick={() =>
                       history.push(
                         `/edit-form/${userData.currentInternship.lastApplication}`
@@ -189,17 +225,25 @@ function ToDoList({ done }) {
                     }
                   />
                   <Divider />
-
-                  <ToDoItem
-                    icon={<IoDocumentAttachOutline className={classes.icon} />}
-                    title='Enviar Informe'
-                    body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
-                    buttonText='Enviar'
-                    disabled
-                  />
-                  <Divider />
                 </>
               )}
+              {userData.step === 2 &&
+                internship &&
+                internship.status !== reportNeedsChanges && (
+                  <>
+                    <ToDoItem
+                      icon={
+                        <IoDocumentAttachOutline className={classes.icon} />
+                      }
+                      title='Enviar Informe'
+                      body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
+                      buttonText='Enviar'
+                      buttonOnClick={() => history.push('/evaluation-report/')}
+                      disabled={internship && internship.status === sentReport}
+                    />
+                    <Divider />
+                  </>
+                )}
               {internship && internship.status === reportNeedsChanges && (
                 <>
                   <ToDoItem
@@ -207,7 +251,11 @@ function ToDoList({ done }) {
                     title='Corregir Informe'
                     body='El informe que has enviado requiere correcciones.'
                     buttonText='Corregir'
+                    buttonOnClick={() => history.push('/evaluation-report/')}
                   />
+                  <Typography color='error'>
+                    Cambios necesarios: {internship.reason}
+                  </Typography>
                   <Divider />
                 </>
               )}

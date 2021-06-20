@@ -14,9 +14,9 @@ export const formTypes = {
  * Tipos de campos para los campos predefinidos (obligatorios)
  */
 export const customTypes = {
-  formCiudad: 'Ciudad',
   formEmpresa: 'Empresa',
+  formCountry: 'País',
+  formCiudad: 'Ciudad',
   formStartDate: 'Fecha de inicio',
-  formEndDate: 'Fecha de término',
-  formCountry: 'País'
+  formEndDate: 'Fecha de término'
 };

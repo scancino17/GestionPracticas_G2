@@ -63,7 +63,7 @@ function CareersSettings() {
               />
             </Grid>
           </Grid>
-          {career && (
+          {career ? (
             <>
               <Grid item container alignItems='center' spacing={2}>
                 <Grid item>
@@ -92,6 +92,22 @@ function CareersSettings() {
                 </Grid>
               </Grid>
             </>
+          ) : (
+            <Grid
+              container
+              direction='column'
+              align='center'
+              justify='center'
+              style={{ marginTop: '6rem' }}>
+              <Grid item>
+                <img src='EmptyState-3x.png' width='300' />
+              </Grid>
+              <Grid item>
+                <Typography variant='h5' color='textSecondary'>
+                  Selecciona una carrera para continuar
+                </Typography>
+              </Grid>
+            </Grid>
           )}
         </Grid>
       </Container>

@@ -2,27 +2,6 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.processSignUp = functions.auth.user().onCreate((user) => {
-  if (user.email && user.email.endsWith('@alumnos.utalca.cl')) {
-    const customClaims = { student: true };
-    return admin
-      .auth()
-      .setCustomUserClaims(user.uid, customClaims)
-      .catch((error) => {
-        functions.logger.error(error);
-      });
-  }
-  if (user.email && user.email.endsWith('@utalca.cl')) {
-    const customClaims = { admin: true };
-    return admin
-      .auth()
-      .setCustomUserClaims(user.uid, customClaims)
-      .catch((error) => {
-        functions.logger.error(error);
-      });
-  }
-});
-
 exports.importStudents = functions.https.onCall((data, context) => {
   let userCreationRequestRef;
   admin
@@ -44,16 +23,39 @@ exports.importStudents = functions.https.onCall((data, context) => {
       displayName: data.name
     })
     .then((userRecord) => {
-      admin.firestore().collection('users').doc(userRecord.uid).set(data);
-      // TODO: add the internships correctly
-      admin.firestore().collection('internships').add({
-        applicationNumber: 1,
-        careerId: data.careerId,
-        status: 'Práctica disponible',
-        studentId: userRecord.uid
+      const dataWithoutPassword = Object.assign({}, data);
+      delete dataWithoutPassword.password;
+      admin.auth().setCustomUserClaims(userRecord.uid, {
+        student: true,
+        careerId: data.careerId
       });
-      userCreationRequestRef.update({ status: 'Treated' });
-      return { result: `Student ${userRecord.uid} created successfully.` };
+      admin
+        .firestore()
+        .collection('users')
+        .doc(userRecord.uid)
+        .set(dataWithoutPassword);
+      admin
+        .firestore()
+        .collection('careers')
+        .doc(data.careerId)
+        .get()
+        .then((careerDoc) => {
+          const internships = careerDoc.data().internships;
+          for (let i = 0; i < internships; i++)
+            admin
+              .firestore()
+              .collection('internships')
+              .add({
+                applicationNumber: i + 1,
+                careerId: data.careerId,
+                status: 'Práctica disponible',
+                studentId: userRecord.uid
+              });
+          userCreationRequestRef.update({ status: 'Treated' });
+          functions.logger.info(
+            `Student ${userRecord.uid} created successfully.`
+          );
+        });
     });
 });
 
@@ -77,12 +79,14 @@ exports.createSupervisor = functions.https.onCall((data, context) => {
       password: data.password,
       displayName: data.name
     })
-    .then((user) => {
-      admin.auth().setCustomUserClaims(user.uid, {
+    .then((userRecord) => {
+      admin.auth().setCustomUserClaims(userRecord.uid, {
         supervisor: true,
         careerId: data.careerId
       });
       userCreationRequestRef.update({ status: 'Treated' });
-      return { result: `Supervisor ${userRecord.uid} created successfully.` };
+      functions.logger.info(
+        `Supervisor ${userRecord.uid} created successfully.`
+      );
     });
 });

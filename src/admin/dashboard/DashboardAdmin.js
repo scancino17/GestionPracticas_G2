@@ -42,6 +42,7 @@ import ImportPracticeInsurance from '../import/ImportPracticeInsurance';
 import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
+import CareersSettings from '../careersSettings/CareersSettings';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -331,14 +332,17 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/internship-intention'>
           <InternshipIntention />
         </Route>
-        <Route path='/import-insurance'>
+        <Route path='/insurance-list'>
           <ImportPracticeInsurance />
         </Route>
-        <Route path='/evaluate-practice'>
+        <Route path='/internship-evaluation'>
           <PracticeReport />
         </Route>
         <Route path='/report-evaluated/:studentId/:internshipId'>
           <ReportEvaluate />
+        </Route>
+        <Route path='/careers-settings'>
+          <CareersSettings />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

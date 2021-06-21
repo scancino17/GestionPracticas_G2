@@ -4,15 +4,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
-import NavigateNext from '@material-ui/icons/NavigateNext';
-import {
-  Drawer,
-  Hidden,
-  makeStyles,
-  Toolbar,
-  ListItemSecondaryAction,
-  IconButton
-} from '@material-ui/core';
+import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
 import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
@@ -20,7 +12,8 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import DescriptionIcon from '@material-ui/icons/Description';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import { LocalHospital } from '@material-ui/icons';
+import SettingsIcon from '@material-ui/icons/Settings';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -49,20 +42,25 @@ const items = [
     path: '/applications'
   },
   {
-    label: 'Importar seguro de práctica',
-    icon: <LocalHospital style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/import-insurance'
+    label: 'Estudiantes para seguro',
+    icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/insurance-list'
   },
 
   {
     label: 'Evaluar Prácticas',
     icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/evaluate-practice'
+    path: '/internship-evaluation'
   },
   {
     label: 'Editar Formulario',
     icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/edit-form'
+  },
+  {
+    label: 'Ajustes por carrera',
+    icon: <SettingsIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/careers-settings'
   },
   {
     label: 'Importar Alumnos',
@@ -129,4 +127,5 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     </>
   );
 }
+
 export default BarraLateral;

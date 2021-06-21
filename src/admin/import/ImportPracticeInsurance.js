@@ -185,7 +185,9 @@ function ExportApprovedStudent() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Importar seguro de práctica</Typography>
+        <Typography variant='h4'>
+          Lista de estudiantes para solicitar seguro
+        </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Button onClick={downloadTxtFile}>

@@ -33,8 +33,9 @@ export function AuthProvider({ children }) {
         user.getIdTokenResult().then((token) => {
           setUser((prevState) => ({
             ...prevState,
+            admin: token.claims.admin,
             student: token.claims.student,
-            admin: token.claims.admin
+            careerId: token.claims.careerId
           }));
         });
 

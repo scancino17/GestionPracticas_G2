@@ -43,6 +43,7 @@ import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
 import CareersSettings from '../careersSettings/CareersSettings';
+import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -343,6 +344,9 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/careers-settings'>
           <CareersSettings />
+        </Route>
+        <Route path='supervisor-management'>
+          <SupervisorManagement />
         </Route>
         <Route exact path='/wip'>
           <Grid container direction='column' alignItems='center' mar>

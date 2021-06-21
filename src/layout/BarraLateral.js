@@ -70,7 +70,7 @@ const items = [
   {
     label: 'Administrar Encargados',
     icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
+    path: '/supervisor-management'
   }
 ];
 

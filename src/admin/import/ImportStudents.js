@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import XLSX from 'xlsx';
 import { db, functions } from '../../firebase';
 import {
@@ -15,24 +15,27 @@ import {
   Grid
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
+import Swal from 'sweetalert2';
 
 function ImportStudents() {
   const [list, setList] = useState([]);
+  const [currentUsersEmails, setCurrentUsersEmails] = useState([]);
+
+  useEffect(() => {
+    db.collection('users')
+      .get()
+      .then((querySnapshot) => {
+        const emails = [];
+        querySnapshot.forEach((user) => emails.push(user.data().email));
+        setCurrentUsersEmails(emails);
+      });
+  }, []);
 
   const reader = new FileReader();
   reader.onload = (e) => {
     const wb = XLSX.read(e.target.result, { type: 'binary' });
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
-    const currentUsersEmails = [];
-    db.collection('users')
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((user) =>
-          currentUsersEmails.push(user.data().email)
-        );
-      });
 
     const temp = [];
     data.forEach((row) => {
@@ -45,6 +48,13 @@ function ImportStudents() {
       }
     });
     setList(temp);
+
+    if (temp.length === 0)
+      Swal.fire(
+        'No hay nuevos alumnos',
+        'El archivo seleccionado no contiene nuevos alumnos para registrar',
+        'info'
+      );
   };
 
   function handleFileUpload(files) {
@@ -88,35 +98,63 @@ function ImportStudents() {
         <Typography variant='h4'>Importar estudiantes</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <DropzoneArea
-          filesLimit={1}
-          showFileNames
-          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-          onChange={handleFileUpload}
-        />
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre alumno</TableCell>
-                <TableCell>Carrera</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {list.map((row) => {
-                return (
-                  <TableRow key={row[2]}>
-                    <TableCell scope='row'>{row[4]}</TableCell>
-                    <TableCell scope='row'>{row[0]}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Button onClick={handleSubmit} variant='contained'>
-          Confirmar
-        </Button>
+        <Grid container direction='column' spacing={2}>
+          {list.length === 0 && (
+            <>
+              <Grid item>
+                <Typography variant='h6'>
+                  Seleccione el archivo con la información de los estudiantes:
+                </Typography>
+              </Grid>
+              <Grid item>
+                <DropzoneArea
+                  filesLimit={1}
+                  showFileNames
+                  acceptedFiles={[
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                  ]}
+                  onChange={handleFileUpload}
+                />
+              </Grid>
+            </>
+          )}
+          {list.length !== 0 && (
+            <>
+              <Grid item>
+                <TableContainer component={Paper}>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Nombre alumno</TableCell>
+                        <TableCell>Carrera</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {list.map((row) => {
+                        return (
+                          <TableRow key={row[2]}>
+                            <TableCell>{row[4]}</TableCell>
+                            <TableCell>{row[0]}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Grid>
+              <Grid item container justify='flex-end'>
+                <Grid item>
+                  <Button
+                    onClick={handleSubmit}
+                    color='primary'
+                    variant='contained'>
+                    Confirmar
+                  </Button>
+                </Grid>
+              </Grid>
+            </>
+          )}
+        </Grid>
       </Container>
     </Grid>
   );

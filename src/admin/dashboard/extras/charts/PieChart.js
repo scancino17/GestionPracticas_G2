@@ -30,72 +30,95 @@ const noData = () => ({
 
 function PieChart(props) {
   const [data, setData] = useState(genData());
-  let approved = new Map();
-  let rejected = new Map();
+  const [careers, setCareers] = useState();
+  const [approved, setApproved] = useState();
+  const [rejected, setRejected] = useState();
+
+  function getApplicationsStatus(careers) {
+    let tempApproved = new Map();
+    let tempRejected = new Map();
+
+    const unsubscribe = db
+      .collection('applications')
+      .onSnapshot((querySnapshot) => {
+        const temp = [];
+
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+
+        temp.forEach((doc) => {
+          switch (doc.status) {
+            case 'Aprobado':
+              if (tempApproved.has(careers.get(doc.careerId))) {
+                let counter = tempApproved.get(careers.get(doc.careerId));
+                tempApproved.set(careers.get(doc.careerId), counter + 1);
+              } else {
+                tempApproved.set(careers.get(doc.careerId), 1);
+              }
+
+              if (!tempRejected.has(careers.get(doc.careerId)))
+                tempRejected.set(careers.get(doc.careerId), 0);
+
+              break;
+            case 'Rechazado':
+              if (tempRejected.has(careers.get(doc.careerId))) {
+                let counter = tempRejected.get(careers.get(doc.careerId));
+                tempRejected.set(careers.get(doc.careerId), counter + 1);
+              } else {
+                tempRejected.set(careers.get(doc.careerId), 1);
+              }
+
+              if (!tempApproved.has(careers.get(doc.careerId)))
+                tempApproved.set(careers.get(doc.careerId), 0);
+
+              break;
+            default:
+              break;
+          }
+        });
+
+        setApproved(tempApproved);
+        setRejected(tempRejected);
+
+        props.setExportable([
+          Array.from(tempApproved.keys()),
+          [Object.fromEntries(tempApproved), Object.fromEntries(tempRejected)]
+        ]);
+
+        if (tempApproved.has(careers.get(props.careerId)))
+          setData(
+            genData(
+              tempApproved.get(careers.get(props.careerId)),
+              tempRejected.get(careers.get(props.careerId))
+            )
+          );
+        else setData(noData());
+      });
+    return unsubscribe;
+  }
 
   useEffect(() => {
-    if (approved.size === 0 && rejected.size === 0) {
-      const unsubscribe = db
-        .collection('applications')
-        .onSnapshot((querySnapshot) => {
-          const temp = [];
-
-          querySnapshot.forEach((doc) =>
-            temp.push({ id: doc.id, ...doc.data() })
-          );
-
-          temp.forEach((doc) => {
-            switch (doc.status) {
-              case 'Aprobado':
-                if (approved.has(doc.careerId)) {
-                  let counter = approved.get(doc.careerId);
-                  approved.set(doc.careerId, counter + 1);
-                } else {
-                  approved.set(doc.careerId, 1);
-                }
-
-                if (!rejected.has(doc.careerId)) rejected.set(doc.careerId, 0);
-
-                break;
-              case 'Rechazado':
-                if (rejected.has(doc.careerId)) {
-                  let counter = rejected.get(doc.careerId);
-                  rejected.set(doc.careerId, counter + 1);
-                } else {
-                  rejected.set(doc.careerId, 1);
-                }
-
-                if (!approved.has(doc.careerId)) approved.set(doc.careerId, 0);
-
-                break;
-              default:
-                break;
-            }
+    let temp = new Map();
+    if (typeof careers === 'undefined') {
+      let unsubscribe = null;
+      db.collection('careers')
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (doc.id !== 'general') temp.set(doc.id, doc.data().name);
           });
-
-          props.setExportable([
-            Array.from(approved.keys()),
-            [Object.fromEntries(approved), Object.fromEntries(rejected)]
-          ]);
-          if (approved.has(props.careerId))
-            setData(
-              genData(
-                approved.get(props.careerId),
-                rejected.get(props.careerId)
-              )
-            );
-          else setData(noData());
+          unsubscribe = getApplicationsStatus(temp);
         });
+      setCareers(temp);
       return unsubscribe;
     } else {
-      props.setExportable([
-        Array.from(approved.keys()),
-        [Object.fromEntries(approved), Object.fromEntries(rejected)]
-      ]);
-
-      if (approved.has(props.careerId))
+      if (approved.has(careers.get(props.careerId)))
         setData(
-          genData(approved.get(props.careerId), rejected.get(props.careerId))
+          genData(
+            approved.get(careers.get(props.careerId)),
+            rejected.get(careers.get(props.careerId))
+          )
         );
       else setData(noData());
     }

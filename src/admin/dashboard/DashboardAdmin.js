@@ -5,13 +5,11 @@ import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
 
 import {
-  MdUpdate,
+  MdFileDownload,
   MdTimeline,
   MdMultilineChart,
   MdEqualizer,
   MdPieChart,
-  MdTrackChanges,
-  MdDonutLarge,
   MdPublic
 } from 'react-icons/md';
 import ArchiveIcon from '@material-ui/icons/Archive';
@@ -43,6 +41,7 @@ import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
 import CareersSettings from '../careersSettings/CareersSettings';
+import { CSVLink } from 'react-csv';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -51,6 +50,10 @@ function DashboardAdmin({ sidebarProps }) {
   const [intentionsCount, setIntentionsCount] = useState(0);
   const [formsCount, setFormsCount] = useState(0);
   const [careerId, setCareerId] = useState('3407');
+  const [topCompaniesRegistered, setTopCompaniesRegistered] = useState([]);
+  const [internStatus, setInternStatus] = useState([]);
+  const [internCountries, setInternCountries] = useState([]);
+  const [applicationsStatus, setApplicationsStatus] = useState([]);
 
   useEffect(() => {
     const unsubscribe = db
@@ -102,8 +105,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>
@@ -123,8 +126,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>
@@ -142,8 +145,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>
@@ -161,8 +164,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>
@@ -192,13 +195,17 @@ function DashboardAdmin({ sidebarProps }) {
                   </p>
                 </CardHeader>
                 <CardBody>
-                  <GroupedBarChart />
+                  <GroupedBarChart setExportable={setInternStatus} />
                 </CardBody>
                 <CardFooter stats>
-                  <div className={classes.stats}>
-                    <MdUpdate />
-                    Actualizado recientemente
-                  </div>
+                  <CSVLink
+                    data={internStatus}
+                    filename={'Estado de los Alumnos por Carrera.csv'}>
+                    <div className={classes.stats}>
+                      <MdFileDownload />
+                      Exportar datos
+                    </div>
+                  </CSVLink>
                 </CardFooter>
               </Card>
             </Grid>
@@ -215,13 +222,19 @@ function DashboardAdmin({ sidebarProps }) {
                     </p>
                   </CardHeader>
                   <CardBody>
-                    <VerticalBar />
+                    <VerticalBar setExportable={setTopCompaniesRegistered} />
                   </CardBody>
                   <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
+                    <CSVLink
+                      data={topCompaniesRegistered}
+                      filename={
+                        'Empresas mas Elegidas por los Practicantes.csv'
+                      }>
+                      <div className={classes.stats}>
+                        <MdFileDownload />
+                        Exportar datos
+                      </div>
+                    </CSVLink>
                   </CardFooter>
                 </Card>
               </Grid>
@@ -241,13 +254,20 @@ function DashboardAdmin({ sidebarProps }) {
                     />
                   </CardHeader>
                   <CardBody>
-                    <PieChart careerId={careerId} />
+                    <PieChart
+                      careerId={careerId}
+                      setExportable={setApplicationsStatus}
+                    />
                   </CardBody>
                   <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
-                    </div>
+                    <CSVLink
+                      data={applicationsStatus}
+                      filename={`Aprobados y Rechazados en ${careerId}.csv`}>
+                      <div className={classes.stats}>
+                        <MdFileDownload />
+                        Exportar datos
+                      </div>
+                    </CSVLink>
                   </CardFooter>
                 </Card>
               </Grid>
@@ -264,13 +284,17 @@ function DashboardAdmin({ sidebarProps }) {
                   </p>
                 </CardHeader>
                 <CardBody>
-                  <TableChart />
+                  <TableChart setExportable={setInternCountries} />
                 </CardBody>
                 <CardFooter stats>
-                  <div className={classes.stats}>
-                    <MdUpdate />
-                    Actualizado recientemente
-                  </div>
+                  <CSVLink
+                    data={internCountries}
+                    filename={'Practicas registradas en el extranjero.csv'}>
+                    <div className={classes.stats}>
+                      <MdFileDownload />
+                      Exportar datos
+                    </div>
+                  </CSVLink>
                 </CardFooter>
               </Card>
             </Grid>
@@ -289,8 +313,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>
@@ -308,8 +332,8 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardBody>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdUpdate />
-                      Actualizado recientemente
+                      <MdFileDownload />
+                      Exportar datos
                     </div>
                   </CardFooter>
                 </Card>

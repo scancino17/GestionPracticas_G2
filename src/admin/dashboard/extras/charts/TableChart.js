@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { Grid } from '@material-ui/core';
-import { CardMedia } from '@material-ui/core';
 import { db } from '../../../../firebase';
 
 const columns = [
@@ -9,7 +8,7 @@ const columns = [
   { field: 'interns', headerName: 'Total Practicantes', flex: 1 }
 ];
 
-function TableChart() {
+function TableChart(props) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -36,6 +35,7 @@ function TableChart() {
         });
 
         let entries = Array.from(countryCounter.entries());
+        props.setExportable(entries);
 
         const rows = [];
         let i = 0;

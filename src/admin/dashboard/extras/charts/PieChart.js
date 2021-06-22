@@ -28,7 +28,7 @@ const noData = () => ({
   ]
 });
 
-function PieChart(careerId) {
+function PieChart(props) {
   const [data, setData] = useState(genData());
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function PieChart(careerId) {
 
     const unsubscribe = db
       .collection('applications')
-      .where('careerId', '==', careerId.careerId)
+      .where('careerId', '==', props.careerId)
       .onSnapshot((querySnapshot) => {
         const temp = [];
 
@@ -58,12 +58,14 @@ function PieChart(careerId) {
           }
         });
 
+        props.setExportable([{ Aprobado: approved, Rechazado: rejected }]);
+
         if (approved !== 0 || rejected !== 0)
           setData(genData(approved, rejected));
         else setData(noData());
       });
     return unsubscribe;
-  }, [careerId]);
+  }, [props.careerId]);
 
   return <Pie data={data} />;
 }

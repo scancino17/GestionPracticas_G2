@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 
-function VerticalBar() {
+function VerticalBar(props) {
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -32,6 +32,8 @@ function VerticalBar() {
             return b[1] - a[1];
           })
           .slice(0, 6);
+
+        props.setExportable(list);
 
         let config = {
           labels: list.map(function (i) {

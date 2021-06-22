@@ -83,32 +83,33 @@ function GroupedBar(props) {
           }
         });
 
-        //Setting data to be exported
-        let list = [];
-        list.push(
+        let list = [
           Array.from(noAction.keys()),
-          Array.from(noAction.values()),
-          Array.from(applying.values()),
-          Array.from(onIntern.values())
-        );
+          [
+            Object.fromEntries(noAction),
+            Object.fromEntries(applying),
+            Object.fromEntries(onIntern)
+          ]
+        ];
+
         props.setExportable(list);
 
         let config = {
-          labels: list[0],
+          labels: Array.from(noAction.keys()),
           datasets: [
             {
               label: 'Sin Práctica',
-              data: list[1],
+              data: Array.from(noAction.values()),
               backgroundColor: 'rgb(255, 99, 132)'
             },
             {
               label: 'En Proceso de Inscripción',
-              data: list[2],
+              data: Array.from(applying.values()),
               backgroundColor: 'rgb(54, 162, 235)'
             },
             {
               label: 'En Práctica',
-              data: list[3],
+              data: Array.from(onIntern.values()),
               backgroundColor: 'rgb(75, 192, 192)'
             }
           ]

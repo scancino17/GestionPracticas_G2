@@ -30,41 +30,75 @@ const noData = () => ({
 
 function PieChart(props) {
   const [data, setData] = useState(genData());
+  let approved = new Map();
+  let rejected = new Map();
 
   useEffect(() => {
-    var approved = 0;
-    var rejected = 0;
+    if (approved.size === 0 && rejected.size === 0) {
+      const unsubscribe = db
+        .collection('applications')
+        .onSnapshot((querySnapshot) => {
+          const temp = [];
 
-    const unsubscribe = db
-      .collection('applications')
-      .where('careerId', '==', props.careerId)
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
+          querySnapshot.forEach((doc) =>
+            temp.push({ id: doc.id, ...doc.data() })
+          );
 
-        querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
-        );
+          temp.forEach((doc) => {
+            switch (doc.status) {
+              case 'Aprobado':
+                if (approved.has(doc.careerId)) {
+                  let counter = approved.get(doc.careerId);
+                  approved.set(doc.careerId, counter + 1);
+                } else {
+                  approved.set(doc.careerId, 1);
+                }
 
-        temp.forEach((doc) => {
-          switch (doc.status) {
-            case 'Aprobado':
-              approved++;
-              break;
-            case 'Rechazado':
-              rejected++;
-              break;
-            default:
-              break;
-          }
+                if (!rejected.has(doc.careerId)) rejected.set(doc.careerId, 0);
+
+                break;
+              case 'Rechazado':
+                if (rejected.has(doc.careerId)) {
+                  let counter = rejected.get(doc.careerId);
+                  rejected.set(doc.careerId, counter + 1);
+                } else {
+                  rejected.set(doc.careerId, 1);
+                }
+
+                if (!approved.has(doc.careerId)) approved.set(doc.careerId, 0);
+
+                break;
+              default:
+                break;
+            }
+          });
+
+          props.setExportable([
+            Array.from(approved.keys()),
+            [Object.fromEntries(approved), Object.fromEntries(rejected)]
+          ]);
+          if (approved.has(props.careerId))
+            setData(
+              genData(
+                approved.get(props.careerId),
+                rejected.get(props.careerId)
+              )
+            );
+          else setData(noData());
         });
+      return unsubscribe;
+    } else {
+      props.setExportable([
+        Array.from(approved.keys()),
+        [Object.fromEntries(approved), Object.fromEntries(rejected)]
+      ]);
 
-        props.setExportable([{ Aprobado: approved, Rechazado: rejected }]);
-
-        if (approved !== 0 || rejected !== 0)
-          setData(genData(approved, rejected));
-        else setData(noData());
-      });
-    return unsubscribe;
+      if (approved.has(props.careerId))
+        setData(
+          genData(approved.get(props.careerId), rejected.get(props.careerId))
+        );
+      else setData(noData());
+    }
   }, [props.careerId]);
 
   return <Pie data={data} />;

@@ -34,8 +34,12 @@ function TableChart(props) {
           }
         });
 
+        props.setExportable([
+          Array.from(countryCounter.keys()),
+          [Object.fromEntries(countryCounter)]
+        ]);
+
         let entries = Array.from(countryCounter.entries());
-        props.setExportable(entries);
 
         const rows = [];
         let i = 0;

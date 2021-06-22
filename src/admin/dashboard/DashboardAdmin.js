@@ -42,6 +42,7 @@ import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
 import CareersSettings from '../careersSettings/CareersSettings';
 import { CSVLink } from 'react-csv';
+import ExcelExporter from '../../utils/ExcelExporter';
 
 function DashboardAdmin({ sidebarProps }) {
   const useStyles = makeStyles(styles);
@@ -198,14 +199,10 @@ function DashboardAdmin({ sidebarProps }) {
                   <GroupedBarChart setExportable={setInternStatus} />
                 </CardBody>
                 <CardFooter stats>
-                  <CSVLink
+                  <ExcelExporter
+                    filename={'Estado de los Alumnos por Carrera'}
                     data={internStatus}
-                    filename={'Estado de los Alumnos por Carrera.csv'}>
-                    <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
-                    </div>
-                  </CSVLink>
+                  />
                 </CardFooter>
               </Card>
             </Grid>
@@ -225,16 +222,10 @@ function DashboardAdmin({ sidebarProps }) {
                     <VerticalBar setExportable={setTopCompaniesRegistered} />
                   </CardBody>
                   <CardFooter stats>
-                    <CSVLink
+                    <ExcelExporter
+                      filename={'Empresas mas Elegidas por los Practicantes'}
                       data={topCompaniesRegistered}
-                      filename={
-                        'Empresas mas Elegidas por los Practicantes.csv'
-                      }>
-                      <div className={classes.stats}>
-                        <MdFileDownload />
-                        Exportar datos
-                      </div>
-                    </CSVLink>
+                    />
                   </CardFooter>
                 </Card>
               </Grid>
@@ -260,14 +251,10 @@ function DashboardAdmin({ sidebarProps }) {
                     />
                   </CardBody>
                   <CardFooter stats>
-                    <CSVLink
+                    <ExcelExporter
+                      filename={'Aprobados y Rechazados por Carrera'}
                       data={applicationsStatus}
-                      filename={`Aprobados y Rechazados en ${careerId}.csv`}>
-                      <div className={classes.stats}>
-                        <MdFileDownload />
-                        Exportar datos
-                      </div>
-                    </CSVLink>
+                    />
                   </CardFooter>
                 </Card>
               </Grid>
@@ -287,14 +274,10 @@ function DashboardAdmin({ sidebarProps }) {
                   <TableChart setExportable={setInternCountries} />
                 </CardBody>
                 <CardFooter stats>
-                  <CSVLink
+                  <ExcelExporter
+                    filename={'Practicas registradas en el extranjero'}
                     data={internCountries}
-                    filename={'Practicas registradas en el extranjero.csv'}>
-                    <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
-                    </div>
-                  </CSVLink>
+                  />
                 </CardFooter>
               </Card>
             </Grid>

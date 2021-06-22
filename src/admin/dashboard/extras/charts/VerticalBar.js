@@ -26,14 +26,17 @@ function VerticalBar(props) {
           }
         });
 
+        props.setExportable([
+          Array.from(companyCounter.keys()),
+          [Object.fromEntries(companyCounter)]
+        ]);
+
         let list = Array.from(companyCounter.entries());
         list = list
           .sort(function (a, b) {
             return b[1] - a[1];
           })
           .slice(0, 6);
-
-        props.setExportable(list);
 
         let config = {
           labels: list.map(function (i) {

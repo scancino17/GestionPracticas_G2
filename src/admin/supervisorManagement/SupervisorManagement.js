@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Grid, Typography } from '@material-ui/core';
+import SupervisorTable from './SupervisorTable';
 
 function SupervisorManagement() {
   return (
@@ -12,17 +13,14 @@ function SupervisorManagement() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Ajustes por carrera</Typography>
+        <Typography variant='h4'>Administrar encargados</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container direction='column' spacing={2}>
-          <Grid
-            item
-            container
-            justify='flex-end'
-            alignItems='center'
-            spacing={4}>
-            <Grid item></Grid>
+          <Grid item container justify='center' alignItems='center' spacing={4}>
+            <Grid item>
+              <SupervisorTable />
+            </Grid>
           </Grid>
         </Grid>
       </Container>

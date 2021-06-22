@@ -345,7 +345,7 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/careers-settings'>
           <CareersSettings />
         </Route>
-        <Route path='supervisor-management'>
+        <Route path='/supervisor-management'>
           <SupervisorManagement />
         </Route>
         <Route exact path='/wip'>

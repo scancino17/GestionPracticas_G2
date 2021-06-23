@@ -117,6 +117,7 @@ function ToDoList({ done, reason }) {
   const history = useHistory();
   const [practicalinsurance, setPracticalinsurance] = useState([]);
   const [openSecure, setOpenSecure] = useState(false);
+  const [survey, setSurvey] = useState([]);
   useEffect(() => {
     const unsubscribe = db
       .collection('internships')
@@ -133,6 +134,11 @@ function ToDoList({ done, reason }) {
           setPracticalinsurance(app.data());
         })
       );
+  }, []);
+  useEffect(() => {
+    db.collection('careers')
+      .doc(userData.careerId)
+      .onSnapshot((doc) => setSurvey(doc.data()));
   }, []);
 
   return (
@@ -265,6 +271,10 @@ function ToDoList({ done, reason }) {
                   title='Responder Encuesta'
                   body='Cuéntanos tu experiencia durante las semanas de práctica.'
                   buttonText='Responder'
+                  buttonOnClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = survey.satisfactionSurvey;
+                  }}
                 />
               )}
             </Grid>

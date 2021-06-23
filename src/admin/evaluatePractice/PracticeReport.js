@@ -33,50 +33,43 @@ function PracticeReport() {
     return filtered;
   }
 
-  function getInfoStudent(list, id) {
-    for (let index = 0; index < list.length; index++) {
-      const element = list[index];
-      if (element.id === id) {
-        return { name: element.name, careerId: element.careerId };
-      }
-    }
-  }
-
   useEffect(() => {
-    let users = [];
+    let unsubscribe;
     db.collection('users')
       .get()
-      .then((student) =>
-        student.forEach((element) => {
+      .then((students) => {
+        const users = [];
+        students.forEach((element) => {
           const studentData = element.data();
           users.push({
             id: element.id,
             name: studentData.name,
             careerId: studentData.careerId
           });
-        })
-      );
-
-    const unsubscribe = db
-      .collection('internships')
-      .onSnapshot((querySnapshot) => {
-        let list = [];
-        let info;
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.status === sentReport) {
-            info = getInfoStudent(users, data.studentId);
-            list.push({
-              id: doc.id,
-              name: info.name,
-              careerId: info.careerId,
-              ...data
-            });
-          }
         });
 
-        setInternships(list);
-        if (list) setFilterInternships(applyFilter(list));
+        unsubscribe = db
+          .collection('internships')
+          .onSnapshot((querySnapshot) => {
+            const list = [];
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              if (data.status === sentReport) {
+                users.forEach((usr) => {
+                  if (usr.id === data.studentId)
+                    list.push({
+                      id: doc.id,
+                      name: usr.name,
+                      careerId: usr.careerId,
+                      ...data
+                    });
+                });
+              }
+            });
+
+            setInternships(list);
+            if (list) setFilterInternships(applyFilter(list));
+          });
       });
     return unsubscribe;
   }, []);

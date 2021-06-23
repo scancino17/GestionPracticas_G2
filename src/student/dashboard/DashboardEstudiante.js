@@ -36,7 +36,10 @@ function DashboardEstudiante() {
           setPracticas(temp);
           setLoaded(true);
         });
-      if (userData.currentInternship.lastApplication) {
+      if (
+        userData.currentInternship &&
+        userData.currentInternship.lastApplication
+      ) {
         db.collection('applications')
           .doc(userData.currentInternship.lastApplication)
           .get()

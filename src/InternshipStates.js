@@ -63,5 +63,6 @@ export const finishedIntentionProcess = (status) =>
     availableInternship,
     pendingIntention,
     approvedIntention,
-    deniedIntention
+    deniedIntention,
+    finishedInternship
   ]);

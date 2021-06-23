@@ -36,10 +36,11 @@ import {
   sentReport,
   sentExtension,
   deniedExtension,
-  approvedExtension
+  approvedExtension,
+  finishedInternship
 } from '../../../InternshipStates';
 import { AlarmAdd } from '@material-ui/icons';
-
+import Swal from 'sweetalert2';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
@@ -145,7 +146,7 @@ function ToDoItem({
 
 function ToDoList({ done, reason }) {
   const [internship, setInternship] = useState();
-  const { userData } = useAuth();
+  const { userData, user } = useAuth();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const history = useHistory();
@@ -158,26 +159,37 @@ function ToDoList({ done, reason }) {
   const [dateExtension, setDateExtension] = useState(new Date());
   const [survey, setSurvey] = useState([]);
 
+  function handleFinish() {
+    db.collection('internships').doc(userData.currentInternship.id).update({
+      status: finishedInternship
+    });
+    db.collection('users').doc(user.uid).update({
+      step: 0
+    });
+  }
   useEffect(() => {
-    const unsubscribe = db
-      .collection('internships')
-      .doc(userData.currentInternship.id)
-      .onSnapshot((doc) => {
-        setInternship(doc.data());
-        setReasonExtension(doc.data().reasonExtension);
-        setStatusExtension(doc.data().extensionStatus);
-      });
-
-    return unsubscribe;
+    if (userData.currentInternship) {
+      const unsubscribe = db
+        .collection('internships')
+        .doc(userData.currentInternship.id)
+        .onSnapshot((doc) => {
+          setInternship(doc.data());
+          setReasonExtension(doc.data().reasonExtension);
+          setStatusExtension(doc.data().extensionStatus);
+        });
+      return unsubscribe;
+    }
   }, []);
   useEffect(() => {
-    db.collection('applications')
-      .where('internshipId', '==', userData.currentInternship.id)
-      .onSnapshot((doc) =>
-        doc.forEach((app) => {
-          setPracticalinsurance(app.data());
-        })
-      );
+    if (userData.currentInternship) {
+      db.collection('applications')
+        .where('internshipId', '==', userData.currentInternship.id)
+        .onSnapshot((doc) =>
+          doc.forEach((app) => {
+            setPracticalinsurance(app.data());
+          })
+        );
+    }
   }, []);
 
   function handleSendExtension() {
@@ -355,6 +367,32 @@ function ToDoList({ done, reason }) {
                     }}
                   />
                 )}
+                {userData.step === 4 && (
+                  <ToDoItem
+                    icon={<RiSurveyLine className={classes.icon} />}
+                    title='Terminar proceso'
+                    body='Termina el proceso para ver tu nota'
+                    buttonText='Terminar'
+                    buttonOnClick={() => {
+                      Swal.fire({
+                        title: '¿Desea terminar su proceso de práctica?',
+                        showDenyButton: true,
+                        confirmButtonText: `Terminar`,
+                        denyButtonText: `Salir`
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          Swal.fire('¡Proceso terminado!', '', 'success').then(
+                            (result) => {
+                              if (result.isConfirmed) handleFinish();
+                            }
+                          );
+                        } else if (result.isDenied) {
+                          Swal.fire('¿No quieres ver tu nota?', '', 'info');
+                        }
+                      });
+                    }}
+                  />
+                )}
               </Grid>
             )}
           </AccordionDetails>
@@ -442,10 +480,12 @@ function DocsDialogSeguro({ open, setOpen }) {
     <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
       <DialogTitle>Seguro para práctica</DialogTitle>
       <DialogContent>
-        <SeguroPracticaFileList
-          studentId={user.uid}
-          internshipId={userData.currentInternship.id}
-        />
+        {userData.currentInternship && (
+          <SeguroPracticaFileList
+            studentId={user.uid}
+            internshipId={userData.currentInternship.id}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseDocsDialog} color='primary'>
@@ -467,10 +507,12 @@ function DocsDialog({ open, setOpen }) {
     <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
       <DialogTitle>Descargar documentos</DialogTitle>
       <DialogContent>
-        <InternshipIntentionFileList
-          studentId={user.uid}
-          internshipId={userData.currentInternship.id}
-        />
+        {userData.currentInternship && (
+          <InternshipIntentionFileList
+            studentId={user.uid}
+            internshipId={userData.currentInternship.id}
+          />
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCloseDocsDialog} color='primary'>

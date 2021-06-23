@@ -92,7 +92,6 @@ function ReportEvaluate() {
 
   function handleEvaluate() {
     db.collection('internships').doc(internshipId).update({
-      status: finishedInternship,
       reason: evaluateComment,
       grade: value
     });

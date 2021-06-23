@@ -56,7 +56,7 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
   );
 }
 
-const CreateSupervisorModal = ({ closeModal, showCreateModal }) => {
+const CreateSupervisorModal = ({ closeModal, update }) => {
   const [supervisorName, setSupervisorName] = useState('');
   const [supervisorEmail, setSupervisorEmail] = useState('');
   const [careerId, setCareerId] = useState('');
@@ -71,6 +71,7 @@ const CreateSupervisorModal = ({ closeModal, showCreateModal }) => {
       password: 'testtest'
     });
     closeModal();
+    update();
   };
 
   useEffect(
@@ -79,7 +80,7 @@ const CreateSupervisorModal = ({ closeModal, showCreateModal }) => {
   );
 
   return (
-    <Dialog fullWidth open={showCreateModal} onClose={closeModal}>
+    <Dialog fullWidth open onClose={closeModal}>
       <DialogTitle>Crear nuevo encargado</DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -109,7 +110,64 @@ const CreateSupervisorModal = ({ closeModal, showCreateModal }) => {
           Cancelar
         </Button>
         <Button color='primary' onClick={handleSubmit} disabled={disableSubmit}>
-          Crear cuenta de usuario
+          Crear cuenta de supervisor
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
+  const [supervisorName, setSupervisorName] = useState('');
+  const [careerId, setCareerId] = useState('');
+  const [disableSubmit, setDisableSubmit] = useState(true);
+
+  useEffect(() => {
+    setDisableSubmit(
+      !(
+        supervisor.displayName !== supervisorName ||
+        supervisor.customClaims.careerId !== careerId
+      )
+    );
+  }, [supervisorName, careerId, supervisor]);
+
+  useEffect(() => {
+    setSupervisorName(supervisor.displayName);
+    setCareerId(supervisor.customClaims.careerId);
+  }, [supervisor]);
+
+  const handleSubmit = () => {
+    console.log('TODO');
+    closeModal();
+    update();
+  };
+
+  return (
+    <Dialog fullWidth open onClose={closeModal}>
+      <DialogTitle>Editar encargado</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Edite los campos a continuación para editar la información
+          correspondiente.
+        </DialogContentText>
+        <TextField
+          label='Nombre de encargado'
+          fullWidth
+          value={supervisorName}
+          onChange={(e) => setSupervisorName(e.target.value)}
+        />
+        <CareerSelector
+          careerId={careerId}
+          setCareerId={setCareerId}
+          excludeGeneral
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button color='primary' onClick={closeModal}>
+          Cancelar
+        </Button>
+        <Button color='primary' onClick={handleSubmit} disabled={disableSubmit}>
+          Editar cuenta de supervisor
         </Button>
       </DialogActions>
     </Dialog>
@@ -117,11 +175,23 @@ const CreateSupervisorModal = ({ closeModal, showCreateModal }) => {
 };
 
 function SupervisorTable() {
-  const [createModal, showCreateModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [supervisors, setSupervisors] = useState([]);
 
   const closeModal = () => {
-    showCreateModal(false);
+    setShowModal(false);
   };
+
+  const updateSupervisorList = () => {
+    const listSupervisors = functions.httpsCallable('listSupervisors');
+    listSupervisors().then((res) => {
+      setSupervisors(res.data);
+    });
+  };
+
+  useEffect(() => {
+    updateSupervisorList();
+  }, []);
 
   return (
     <>
@@ -130,7 +200,14 @@ function SupervisorTable() {
           <Button
             color='primary'
             variant='contained'
-            onClick={() => showCreateModal(true)}>
+            onClick={() =>
+              setShowModal(
+                <CreateSupervisorModal
+                  closeModal={closeModal}
+                  update={updateSupervisorList}
+                />
+              )
+            }>
             Crear Encargado
           </Button>
         </Grid>
@@ -140,16 +217,39 @@ function SupervisorTable() {
               <TableCell>Nombre</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>ID Carrera</TableCell>
-              <TableCell></TableCell>
+              <TableCell>Fecha de creación</TableCell>
+              <TableCell>Último Ingreso</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody></TableBody>
+          <TableBody>
+            {supervisors.map((supervisor) => (
+              <TableRow key={supervisor.uid}>
+                <TableCell>{supervisor.displayName}</TableCell>
+                <TableCell>{supervisor.email}</TableCell>
+                <TableCell>{supervisor.customClaims.careerId}</TableCell>
+                <TableCell>{supervisor.metadata.creationTime}</TableCell>
+                <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
+                <TableCell>
+                  <Button
+                    onClick={() =>
+                      setShowModal(
+                        <EditSupervisorModal
+                          closeModal={closeModal}
+                          supervisor={supervisor}
+                          update={updateSupervisorList}
+                        />
+                      )
+                    }>
+                    Editar
+                  </Button>
+                  <Button>Eliminar</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </TableContainer>
-      <CreateSupervisorModal
-        closeModal={closeModal}
-        showCreateModal={createModal}
-      />
+      {showModal}
     </>
   );
 }

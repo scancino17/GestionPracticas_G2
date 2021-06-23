@@ -32,14 +32,13 @@ import {
   changeDetailsApplication,
   reportNeedsChanges,
   sentApplication,
-  deniedApplication,
   pendingApplication,
   sentReport,
   sentExtension,
   deniedExtension,
   approvedExtension
 } from '../../../InternshipStates';
-import { AlarmAdd, TextFields } from '@material-ui/icons';
+import { AlarmAdd } from '@material-ui/icons';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -86,11 +85,9 @@ function ToDoItem({
         <Grid item>
           <Typography variant='h6'>{title}</Typography>
           <Hidden smDown>
-            {!reasonExtension && (
-              <Typography color='textSecondary' variant='body2'>
-                {body}
-              </Typography>
-            )}
+            <Typography color='textSecondary' variant='body2'>
+              {body}
+            </Typography>
             {reasonExtension && statusExtension === deniedExtension && (
               <>
                 <Typography color='error' variant='body2'>
@@ -101,13 +98,15 @@ function ToDoItem({
                 </Typography>
               </>
             )}
-            {reasonExtension && statusExtension === approvedExtension && (
+            {statusExtension === approvedExtension && (
               <>
                 <Typography style={{ color: '#4caf50' }} variant='body2'>
-                  Aprovado
+                  Aprobado
                 </Typography>
                 <Typography variant='body2'>
-                  Observacion: {reasonExtension}
+                  {`Observación: ${
+                    reasonExtension ? reasonExtension : 'Sin observaciones'
+                  }`}
                 </Typography>
               </>
             )}
@@ -166,8 +165,7 @@ function ToDoList({ done, reason }) {
       .onSnapshot((doc) => {
         setInternship(doc.data());
         setReasonExtension(doc.data().reasonExtension);
-        setStatusExtension(doc.data().exceptionStatus);
-        console.log(doc.data());
+        setStatusExtension(doc.data().extensionStatus);
       });
 
     return unsubscribe;
@@ -184,7 +182,7 @@ function ToDoList({ done, reason }) {
 
   function handleSendExtension() {
     db.collection('internships').doc(userData.currentInternship.id).update({
-      exceptionStatus: sentExtension,
+      extensionStatus: sentExtension,
       dateExtension: dateExtension,
       reasonExtension: reasonRequestExtension
     });
@@ -332,13 +330,13 @@ function ToDoList({ done, reason }) {
                     <ToDoItem
                       icon={<AlarmAdd className={classes.icon} />}
                       title='Solicitar extensión'
-                      body='Se enviara una solicitud para extender la fechad e termino de su practica'
+                      body='Se enviará una solicitud para extender la fecha de término de su práctica'
                       buttonText='Solicitar'
                       reasonExtension={reasonExtension}
                       statusExtension={statusExtension}
                       disabled={
                         internship &&
-                        internship.exceptionStatus === sentExtension
+                        internship.extensionStatus === sentExtension
                       }
                       buttonOnClick={() => setShowExtension(true)}
                     />
@@ -351,10 +349,10 @@ function ToDoList({ done, reason }) {
                     title='Responder Encuesta'
                     body='Cuéntanos tu experiencia durante las semanas de práctica.'
                     buttonText='Responder'
-                      buttonOnClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = survey.satisfactionSurvey;
-                  }}
+                    buttonOnClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = survey.satisfactionSurvey;
+                    }}
                   />
                 )}
               </Grid>

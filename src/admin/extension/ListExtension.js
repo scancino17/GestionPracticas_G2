@@ -14,22 +14,18 @@ import {
   DialogTitle,
   DialogActions,
   DialogContent,
-  Buttonm,
   Slide,
   Button
 } from '@material-ui/core';
-import { CameraSharp, NavigateNext } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { NavigateNext } from '@material-ui/icons';
 import { db } from '../../firebase';
 import {
   approvedExtension,
   deniedExtension,
-  sentExtension,
-  sentReport
+  sentExtension
 } from '../../InternshipStates';
 
 import CareerSelector from '../../utils/CareerSelector';
-import { set } from 'date-fns';
 import useAuth from '../../providers/Auth';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -51,7 +47,7 @@ const months = [
   'Diciembre'
 ];
 
-function ListExtension({ edit }) {
+function ListExtension() {
   let users = [];
 
   const [name, setName] = useState('');
@@ -97,10 +93,9 @@ function ListExtension({ edit }) {
       .collection('internships')
       .onSnapshot((querySnapshot) => {
         let list = [];
-        let info;
         querySnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.exceptionStatus === sentExtension) {
+          if (data.extensionStatus === sentExtension) {
             list.push({
               id: doc.id,
               name: getInfoStudent(users, data.studentId).name,
@@ -178,7 +173,7 @@ function IntershipItem({ intership, users }) {
     db.collection('internships')
       .doc(internshipsExtension.id)
       .update({
-        exceptionStatus: deniedExtension,
+        extensionStatus: deniedExtension,
         dateExtension: '',
         reasonExtension: reason ? reason : ''
 
@@ -217,7 +212,7 @@ function IntershipItem({ intership, users }) {
       });
 
     db.collection('internships').doc(internshipsExtension.id).update({
-      exceptionStatus: approvedExtension,
+      extensionStatus: approvedExtension,
       dateExtension: '',
       reasonExtension: reason
 
@@ -259,6 +254,7 @@ function IntershipItem({ intership, users }) {
       <ListItem
         button
         onClick={() => {
+          setInternshipsExtension(intership);
           setShowExtension(true);
         }}>
         <ListItemText primary={intership.name} />
@@ -395,4 +391,5 @@ function IntershipItem({ intership, users }) {
     </>
   );
 }
+
 export default ListExtension;

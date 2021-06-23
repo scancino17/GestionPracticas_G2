@@ -76,9 +76,10 @@ function ListExtension() {
   }
 
   useEffect(() => {
+    let unsubscribe;
     db.collection('users')
       .get()
-      .then((student) =>
+      .then((student) => {
         student.forEach((element) => {
           const studentData = element.data();
           users.push({
@@ -86,28 +87,28 @@ function ListExtension() {
             name: studentData.name,
             careerId: studentData.careerId
           });
-        })
-      );
+          unsubscribe = db
+            .collection('internships')
+            .onSnapshot((querySnapshot) => {
+              let list = [];
+              querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                if (data.extensionStatus === sentExtension) {
+                  list.push({
+                    id: doc.id,
+                    name: getInfoStudent(users, data.studentId).name,
+                    careerId: getInfoStudent(users, data.studentId).careerId,
+                    ...data
+                  });
+                }
+              });
 
-    const unsubscribe = db
-      .collection('internships')
-      .onSnapshot((querySnapshot) => {
-        let list = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.extensionStatus === sentExtension) {
-            list.push({
-              id: doc.id,
-              name: getInfoStudent(users, data.studentId).name,
-              careerId: getInfoStudent(users, data.studentId).careerId,
-              ...data
+              setInternships(list);
+              if (list) setFilterInternships(applyFilter(list));
             });
-          }
         });
-
-        setInternships(list);
-        if (list) setFilterInternships(applyFilter(list));
       });
+
     return unsubscribe;
   }, []);
 
@@ -143,9 +144,9 @@ function ListExtension() {
       </Container>
       <Container style={{ marginTop: '2rem' }}>
         <List>
-          {filterInterships.map((intership) => (
+          {filterInterships.map((internship) => (
             <>
-              <IntershipItem intership={intership} users={users} />
+              <IntershipItem key={internship.id} intership={internship} />
               <Divider />
             </>
           ))}
@@ -155,7 +156,7 @@ function ListExtension() {
   );
 }
 
-function IntershipItem({ intership, users }) {
+function IntershipItem({ intership }) {
   const [showApproved, setShowApproved] = useState(false);
   const [showDeined, setShowDeined] = useState(false);
   const [showExtension, setShowExtension] = useState(false);

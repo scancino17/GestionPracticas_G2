@@ -15,6 +15,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
+import useAuth from '../providers/Auth';
 const useStyles = makeStyles((theme) => ({
   paper: {
     background: theme.palette.primary.main
@@ -25,89 +26,64 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const items = [
-  {
-    label: 'Dashboard',
-    icon: <PollIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/'
-  },
-  {
-    label: 'Intenciones de práctica',
-    icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/internship-intention'
-  },
-  {
-    label: 'Postulaciones de práctica',
-    icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/applications'
-  },
-  {
-    label: 'Estudiantes para seguro',
-    icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/insurance-list'
-  },
-
-  {
-    label: 'Evaluar Prácticas',
-    icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/internship-evaluation'
-  },
-  {
-    label: 'Editar Formulario',
-    icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/edit-form'
-  },
-  {
-    label: 'Ajustes por carrera',
-    icon: <SettingsIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/careers-settings'
-  },
-  {
-    label: 'Importar Alumnos',
-    icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/import'
-  },
-  {
-    label: 'Administrar Encargados',
-    icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/wip'
-  },
-  {
-    label: 'Extensión de Prácticas',
-    icon: <AddAlarmIcon style={{ color: 'inherit', fontSize: 27 }} />,
-    path: '/extension-list'
-  }
-];
-
-const drawer = (
-  <List>
-    {items.map((item) => (
-      <Link
-        style={{
-          color: 'inherit',
-          textDecoration: 'none',
-          margin: '10px 0 0 10px'
-        }}
-        to={item.path}>
-        <ListItem button>
-          <Button
-            disableRipple
-            style={{
-              backgroundColor: 'transparent',
-              fontSize: 12,
-              color: '#ffffff'
-            }}
-            startIcon={item.icon}>
-            {item.label}
-          </Button>
-        </ListItem>
-      </Link>
-    ))}
-  </List>
-);
-
 function BarraLateral({ sidebarOpen, setSidebarOpen }) {
   const classes = useStyles();
+
+  const items = [
+    {
+      label: 'Dashboard',
+      icon: <PollIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/'
+    },
+    {
+      label: 'Intenciones de práctica',
+      icon: <ArchiveIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/internship-intention'
+    },
+    {
+      label: 'Postulaciones de práctica',
+      icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/applications'
+    },
+    {
+      label: 'Estudiantes para seguro',
+      icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/insurance-list'
+    },
+    {
+      label: 'Evaluar Prácticas',
+      icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/internship-evaluation'
+    },
+    {
+      label: 'Extensión de Prácticas',
+      icon: <AddAlarmIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/extension-list'
+    },
+    {
+      label: 'Editar Formulario',
+      icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/edit-form'
+    },
+    {
+      label: 'Ajustes por carrera',
+      icon: <SettingsIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/careers-settings'
+    },
+    {
+      label: 'Importar Alumnos',
+      icon: <PersonAddIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/import',
+      adminOnly: true
+    },
+    {
+      label: 'Administrar Encargados',
+      icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/wip',
+      adminOnly: true
+    }
+  ];
+
   return (
     <>
       <Hidden mdUp>
@@ -116,7 +92,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           onOpen={() => {}}>
-          {drawer}
+          <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>
       <Hidden smDown>
@@ -126,10 +102,44 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
           variant='permanent'
           open>
           <Toolbar />
-          {drawer}
+          <SidebarItems items={items} />
         </Drawer>
       </Hidden>
     </>
+  );
+}
+
+function SidebarItems({ items }) {
+  const { user } = useAuth();
+
+  return (
+    <List>
+      {items.map(
+        (item) =>
+          (user.admin || !item.adminOnly) && (
+            <Link
+              style={{
+                color: 'inherit',
+                textDecoration: 'none',
+                margin: '10px 0 0 10px'
+              }}
+              to={item.path}>
+              <ListItem button>
+                <Button
+                  disableRipple
+                  style={{
+                    backgroundColor: 'transparent',
+                    fontSize: 12,
+                    color: '#ffffff'
+                  }}
+                  startIcon={item.icon}>
+                  {item.label}
+                </Button>
+              </ListItem>
+            </Link>
+          )
+      )}
+    </List>
   );
 }
 

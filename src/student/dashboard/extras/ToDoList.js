@@ -157,6 +157,8 @@ function ToDoList({ done, reason }) {
   const [reasonRequestExtension, setReasonRequestExtension] = useState('');
   const [statusExtension, setStatusExtension] = useState('');
   const [dateExtension, setDateExtension] = useState(new Date());
+  const [survey, setSurvey] = useState([]);
+
   useEffect(() => {
     const unsubscribe = db
       .collection('internships')
@@ -179,6 +181,7 @@ function ToDoList({ done, reason }) {
         })
       );
   }, []);
+
   function handleSendExtension() {
     db.collection('internships').doc(userData.currentInternship.id).update({
       exceptionStatus: sentExtension,
@@ -186,6 +189,13 @@ function ToDoList({ done, reason }) {
       reasonExtension: reasonRequestExtension
     });
   }
+
+  useEffect(() => {
+    db.collection('careers')
+      .doc(userData.careerId)
+      .onSnapshot((doc) => setSurvey(doc.data()));
+  }, []);
+
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -341,6 +351,10 @@ function ToDoList({ done, reason }) {
                     title='Responder Encuesta'
                     body='Cuéntanos tu experiencia durante las semanas de práctica.'
                     buttonText='Responder'
+                      buttonOnClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = survey.satisfactionSurvey;
+                  }}
                   />
                 )}
               </Grid>

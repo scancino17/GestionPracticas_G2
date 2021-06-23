@@ -15,9 +15,46 @@ import {
   TextField,
   DialogContentText,
   DialogActions,
-  MenuItem
+  MenuItem,
+  FormControlLabel,
+  Checkbox,
+  IconButton,
+  makeStyles,
+  withStyles
 } from '@material-ui/core';
 import { db, functions } from '../../firebase';
+import { grey } from '@material-ui/core/colors';
+import { DeleteForever, Edit, Replay } from '@material-ui/icons';
+
+const useStyles = makeStyles(() => ({
+  tableCell: {
+    '& .appear-item': {
+      opacity: '0'
+    },
+    '&:hover .appear-item': {
+      opacity: '1'
+    }
+  },
+  buttonMargin: {
+    marginLeft: '.5rem',
+    marginRight: '.5rem'
+  },
+  textFieldMargin: {
+    marginBottom: '1rem'
+  }
+}));
+
+const DenyButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main
+  }
+}))(Button);
+
+const SecondaryButton = withStyles((theme) => ({
+  root: {
+    color: grey[700]
+  }
+}))(Button);
 
 function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
   const [careers, setCareers] = useState([]);
@@ -36,7 +73,7 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
             : temp
         );
       });
-  }, []);
+  }, [excludeGeneral]);
 
   return (
     <TextField
@@ -57,6 +94,7 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
 }
 
 const CreateSupervisorModal = ({ closeModal, update }) => {
+  const classes = useStyles();
   const [supervisorName, setSupervisorName] = useState('');
   const [supervisorEmail, setSupervisorEmail] = useState('');
   const [careerId, setCareerId] = useState('');
@@ -88,12 +126,14 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
           enviará un correo al email ingresado para establecer una contraseña.
         </DialogContentText>
         <TextField
+          className={classes.textFieldMargin}
           label='Nombre de encargado'
           fullWidth
           value={supervisorName}
           onChange={(e) => setSupervisorName(e.target.value)}
         />
         <TextField
+          className={classes.textFieldMargin}
           label='Email encargado'
           fullWidth
           value={supervisorEmail}
@@ -106,9 +146,9 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button color='primary' onClick={closeModal}>
+        <SecondaryButton color='primary' onClick={closeModal}>
           Cancelar
-        </Button>
+        </SecondaryButton>
         <Button color='primary' onClick={handleSubmit} disabled={disableSubmit}>
           Crear cuenta de supervisor
         </Button>
@@ -118,6 +158,7 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
 };
 
 const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
+  const classes = useStyles();
   const [supervisorName, setSupervisorName] = useState('');
   const [careerId, setCareerId] = useState('');
   const [disableSubmit, setDisableSubmit] = useState(true);
@@ -151,21 +192,23 @@ const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
           correspondiente.
         </DialogContentText>
         <TextField
+          className={classes.textFieldMargin}
           label='Nombre de encargado'
           fullWidth
           value={supervisorName}
           onChange={(e) => setSupervisorName(e.target.value)}
         />
         <CareerSelector
+          className={classes.textFieldMargin}
           careerId={careerId}
           setCareerId={setCareerId}
           excludeGeneral
         />
       </DialogContent>
       <DialogActions>
-        <Button color='primary' onClick={closeModal}>
+        <SecondaryButton color='primary' onClick={closeModal}>
           Cancelar
-        </Button>
+        </SecondaryButton>
         <Button color='primary' onClick={handleSubmit} disabled={disableSubmit}>
           Editar cuenta de supervisor
         </Button>
@@ -174,7 +217,51 @@ const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
   );
 };
 
+const DeleteSupervisorModal = ({ closeModal, supervisor, update }) => {
+  const [disableSubmit, setDisableSubmit] = useState(true);
+
+  const handleSubmit = () => {
+    console.log('TODO');
+    closeModal();
+    update();
+  };
+
+  return (
+    <Dialog fullWidth open onClose={closeModal}>
+      <DialogTitle>Eliminar encargado</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          ¿Está seguro de eliminar este encargado? Esta acción no puede ser
+          revertida.
+        </DialogContentText>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={!disableSubmit}
+              onChange={() => setDisableSubmit(!disableSubmit)}
+              color='primary'
+            />
+          }
+          label={`Si, deseo eliminar la cuenta de ${supervisor.displayName}`}
+        />
+      </DialogContent>
+      <DialogActions>
+        <SecondaryButton color='primary' onClick={closeModal}>
+          Cancelar
+        </SecondaryButton>
+        <DenyButton
+          color='primary'
+          onClick={handleSubmit}
+          disabled={disableSubmit}>
+          Eliminar cuenta de supervisor
+        </DenyButton>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 function SupervisorTable() {
+  const classes = useStyles();
   const [showModal, setShowModal] = useState(false);
   const [supervisors, setSupervisors] = useState([]);
 
@@ -210,27 +297,42 @@ function SupervisorTable() {
             }>
             Crear Encargado
           </Button>
+          <IconButton
+            className={classes.buttonMargin}
+            onClick={updateSupervisorList}>
+            <Replay />
+          </IconButton>
         </Grid>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Nombre</TableCell>
+              <TableCell style={{ paddingLeft: '2rem' }}>Nombre</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>ID Carrera</TableCell>
               <TableCell>Fecha de creación</TableCell>
               <TableCell>Último Ingreso</TableCell>
+              <TableCell style={{ paddingRight: '2rem' }}></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {supervisors.map((supervisor) => (
-              <TableRow key={supervisor.uid}>
-                <TableCell>{supervisor.displayName}</TableCell>
+              <TableRow
+                className={classes.tableCell}
+                hover
+                key={supervisor.uid}>
+                <TableCell style={{ paddingLeft: '2rem' }}>
+                  {supervisor.displayName}
+                </TableCell>
                 <TableCell>{supervisor.email}</TableCell>
                 <TableCell>{supervisor.customClaims.careerId}</TableCell>
                 <TableCell>{supervisor.metadata.creationTime}</TableCell>
                 <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
-                <TableCell>
-                  <Button
+                <TableCell
+                  className='appear-item'
+                  style={{ paddingRight: '2rem' }}>
+                  <IconButton
+                    size='small'
+                    className={classes.buttonMargin}
                     onClick={() =>
                       setShowModal(
                         <EditSupervisorModal
@@ -240,9 +342,22 @@ function SupervisorTable() {
                         />
                       )
                     }>
-                    Editar
-                  </Button>
-                  <Button>Eliminar</Button>
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    size='small'
+                    className={classes.buttonMargin}
+                    onClick={() =>
+                      setShowModal(
+                        <DeleteSupervisorModal
+                          closeModal={closeModal}
+                          supervisor={supervisor}
+                          update={updateSupervisorList}
+                        />
+                      )
+                    }>
+                    <DeleteForever />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}

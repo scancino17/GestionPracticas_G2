@@ -16,13 +16,7 @@ function SupervisorManagement() {
         <Typography variant='h4'>Administrar encargados</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container direction='column' spacing={2}>
-          <Grid item container justify='center' alignItems='center' spacing={4}>
-            <Grid item>
-              <SupervisorTable />
-            </Grid>
-          </Grid>
-        </Grid>
+        <SupervisorTable />
       </Container>
     </Grid>
   );

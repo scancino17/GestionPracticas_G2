@@ -22,7 +22,7 @@ import { RiSurveyLine } from 'react-icons/ri';
 import { makeStyles } from '@material-ui/core/styles';
 import useAuth from '../../../providers/Auth';
 import { useHistory } from 'react-router-dom';
-import { db } from '../../../firebase';
+import { db, storage } from '../../../firebase';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import InternshipIntentionFileList, {
   SeguroPracticaFileList
@@ -41,6 +41,7 @@ import {
 } from '../../../InternshipStates';
 import { AlarmAdd } from '@material-ui/icons';
 import Swal from 'sweetalert2';
+import { DropzoneArea } from 'material-ui-dropzone';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
@@ -69,7 +70,8 @@ function ToDoItem({
   reasonExtension,
   internship,
   statusExtension,
-  minorChanges
+  minorChanges,
+  rejectREport
 }) {
   const classes = useStyles();
 
@@ -154,10 +156,11 @@ function ToDoList({ done, reason }) {
   const [openSecure, setOpenSecure] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reasonExtension, setReasonExtension] = useState('');
-  const [reasonRequestExtension, setReasonRequestExtension] = useState('');
+
   const [statusExtension, setStatusExtension] = useState('');
   const [dateExtension, setDateExtension] = useState(new Date());
   const [survey, setSurvey] = useState([]);
+  const [openSendReport, setOpenSendReport] = useState(false);
 
   function handleFinish() {
     db.collection('internships').doc(userData.currentInternship.id).update({
@@ -191,14 +194,6 @@ function ToDoList({ done, reason }) {
         );
     }
   }, []);
-
-  function handleSendExtension() {
-    db.collection('internships').doc(userData.currentInternship.id).update({
-      extensionStatus: sentExtension,
-      dateExtension: dateExtension,
-      reasonExtension: reasonRequestExtension
-    });
-  }
 
   useEffect(() => {
     db.collection('careers')
@@ -310,8 +305,9 @@ function ToDoList({ done, reason }) {
                         title='Enviar Informe'
                         body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
                         buttonText='Enviar'
-                        buttonOnClick={() =>
-                          history.push('/evaluation-report/')
+                        buttonOnClick={
+                          () => setOpenSendReport(true)
+                          //history.push('/evaluation-report/')
                         }
                         disabled={
                           internship && internship.status === sentReport
@@ -329,11 +325,11 @@ function ToDoList({ done, reason }) {
                       title='Corregir Informe'
                       body='El informe que has enviado requiere correcciones.'
                       buttonText='Corregir'
-                      buttonOnClick={() => history.push('/evaluation-report/')}
+                      minorChanges={internship.reason}
+                      buttonOnClick={() => setOpenSendReport(true)}
+                      rejectREport
                     />
-                    <Typography color='error'>
-                      Cambios necesarios: {internship.reason}
-                    </Typography>
+
                     <Divider />
                   </>
                 )}
@@ -397,76 +393,141 @@ function ToDoList({ done, reason }) {
             )}
           </AccordionDetails>
         </Accordion>
+        <SendReportDialog open={openSendReport} setOpen={setOpenSendReport} />
         <DocsDialog open={openDocs} setOpen={setOpenDocs} />
         <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
-        <Dialog
-          open={showExtension}
-          onClose={() => setShowExtension(false)}
-          TransitionComponent={Transition}
-          maxWidth='sm'
-          fullWidth={true}>
-          <DialogTitle>Solicitud de extensión</DialogTitle>
-
-          <DialogContent>
-            <Grid container direction='column' spacing={2}>
-              <Grid item>
-                <TextField
-                  multiline
-                  rowsMax={4}
-                  fullWidth
-                  variant='outlined'
-                  label={'Razon de la solicitud'}
-                  value={reasonRequestExtension}
-                  onChange={(e) => setReasonRequestExtension(e.target.value)}
-                />
-              </Grid>
-              <Grid item>
-                <Grid
-                  container
-                  direction='column'
-                  justify='center'
-                  alignItems='flex-start'>
-                  <Grid item>
-                    <DatePicker
-                      fullWidth
-                      disableToolbar
-                      variant='inline'
-                      format='dd/MM/yyyy'
-                      label={'Nueva fecha de termino'}
-                      value={
-                        dateExtension === ''
-                          ? new Date()
-                          : dateExtension instanceof Date
-                          ? dateExtension
-                          : dateExtension.toDate()
-                      }
-                      onChange={(date) => setDateExtension(date)}
-                    />
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button
-              variant='outlined'
-              color='primary'
-              onClick={() => setShowExtension(false)}>
-              Cerrar
-            </Button>
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={() => {
-                handleSendExtension();
-                setShowExtension(false);
-              }}>
-              Solicitar
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <DialogExtension open={showExtension} setOpen={setShowExtension} />
       </MuiPickersUtilsProvider>
     </>
+  );
+}
+function DialogExtension({ open, setOpen }) {
+  const [dateExtension, setDateExtension] = useState(new Date());
+  const [reasonRequestExtension, setReasonRequestExtension] = useState('');
+  const { userData } = useAuth();
+
+  function handleSendExtension() {
+    db.collection('internships').doc(userData.currentInternship.id).update({
+      extensionStatus: sentExtension,
+      dateExtension: dateExtension,
+      reasonExtension: reasonRequestExtension
+    });
+  }
+  return (
+    <Dialog
+      open={open}
+      onClose={() => setOpen(false)}
+      TransitionComponent={Transition}
+      maxWidth='sm'
+      fullWidth={true}>
+      <DialogTitle>Solicitud de extensión</DialogTitle>
+
+      <DialogContent>
+        <Grid container direction='column' spacing={2}>
+          <Grid item>
+            <TextField
+              multiline
+              rowsMax={4}
+              fullWidth
+              variant='outlined'
+              label={'Razon de la solicitud'}
+              value={reasonRequestExtension}
+              onChange={(e) => setReasonRequestExtension(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
+            <Grid
+              container
+              direction='column'
+              justify='center'
+              alignItems='flex-start'>
+              <Grid item>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Nueva fecha de termino'}
+                  value={
+                    dateExtension === ''
+                      ? new Date()
+                      : dateExtension instanceof Date
+                      ? dateExtension
+                      : dateExtension.toDate()
+                  }
+                  onChange={(date) => setDateExtension(date)}
+                />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button
+          variant='outlined'
+          color='primary'
+          onClick={() => setOpen(false)}>
+          Cerrar
+        </Button>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={() => {
+            handleSendExtension();
+            setOpen(false);
+          }}>
+          Solicitar
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+function SendReportDialog({ open, setOpen }) {
+  const [files, setFiles] = useState([]);
+  const { user, userData } = useAuth();
+
+  function handleSend() {
+    files.forEach((file) => {
+      storage
+        .ref()
+        .child(
+          `/students-docs/${user.uid}/${userData.currentInternship.id}/reports/${userData.currentInternship.id}.pdf`
+        )
+        .put(file);
+    });
+    db.collection('internships')
+      .doc(userData.currentInternship.id)
+      .update({ status: sentReport });
+  }
+
+  return (
+    <Dialog fullWidth onClose={() => setOpen(false)} open={open}>
+      <DialogTitle>Enviar informe de práctica</DialogTitle>
+      <DialogContent>
+        <Grid item xs={12}>
+          <DropzoneArea
+            filesLimit={1}
+            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            onChange={(file) => setFiles(file)}
+          />
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button color='primary' onClick={() => setOpen(false)}>
+          cancelar
+        </Button>
+        <Button
+          variant='contained'
+          disabled={files.length === 0 ? true : false}
+          color='primary'
+          onClick={() => {
+            handleSend();
+            setOpen(false);
+          }}>
+          enviar
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 function DocsDialogSeguro({ open, setOpen }) {

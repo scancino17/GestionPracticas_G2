@@ -31,6 +31,7 @@ export const authorizedInternship = 'Práctica autorizada';
 export const onGoingIntenship = 'Práctica en curso';
 export const sentReport = 'Informe enviado';
 export const reportNeedsChanges = 'Informe necesita cambios';
+export const evaluatedInternship = 'Práctica evaluada';
 export const finishedInternship = 'Práctica finalizada';
 
 /**

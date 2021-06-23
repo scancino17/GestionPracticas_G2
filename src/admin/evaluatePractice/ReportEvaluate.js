@@ -17,7 +17,11 @@ import { db, storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { finishedInternship, reportNeedsChanges } from '../../InternshipStates';
+import {
+  evaluatedInternship,
+  finishedInternship,
+  reportNeedsChanges
+} from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 
 function ReportEvaluate() {
@@ -87,6 +91,7 @@ function ReportEvaluate() {
 
   function handleEvaluate() {
     db.collection('internships').doc(internshipId).update({
+      status: evaluatedInternship,
       reason: evaluateComment,
       grade: value
     });
@@ -237,7 +242,7 @@ function ReportEvaluate() {
               onClick={() => (
                 handleChanges(),
                 SetShowChanges(false),
-                history.push('/evaluate-practice')
+                history.push('/internship-evaluation')
               )}>
               Confirmar solicitud
             </Button>
@@ -320,7 +325,7 @@ function ReportEvaluate() {
             onClick={() => (
               handleEvaluate(),
               SetShowEvaluate(false),
-              history.push('/evaluate-practice')
+              history.push('/internship-evaluation')
             )}>
             Confirmar Evaluación
           </Button>

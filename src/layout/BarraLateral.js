@@ -14,7 +14,7 @@ import ArchiveIcon from '@material-ui/icons/Archive';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
-
+import AddAlarmIcon from '@material-ui/icons/AddAlarm';
 const useStyles = makeStyles((theme) => ({
   paper: {
     background: theme.palette.primary.main
@@ -71,6 +71,11 @@ const items = [
     label: 'Administrar Encargados',
     icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
     path: '/wip'
+  },
+  {
+    label: 'Extensión de Prácticas',
+    icon: <AddAlarmIcon style={{ color: 'inherit', fontSize: 27 }} />,
+    path: '/extension-list'
   }
 ];
 

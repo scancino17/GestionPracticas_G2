@@ -35,6 +35,7 @@ import {
 } from '@material-ui/core';
 import { formTypes } from './formTypes';
 import CareerSelector from '../utils/CareerSelector';
+import useAuth from '../providers/Auth';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([
@@ -73,10 +74,13 @@ function EditForm() {
       ]
     }
   ]);
+  const { user } = useAuth();
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [careerId, setCareerId] = useState();
+  const [careerId, setCareerId] = useState(
+    user.careerId ? user.careerId : null
+  );
   const history = useHistory();
 
   useEffect(() => {
@@ -149,15 +153,17 @@ function EditForm() {
         </Typography>
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
-          <Grid item>
-            <CareerSelector
-              careerId={careerId}
-              setCareerId={setCareerId}
-              excludeGeneral
-            />
+        {!user.careerId && (
+          <Grid container justify='flex-end' alignItems='center' spacing={4}>
+            <Grid item>
+              <CareerSelector
+                careerId={careerId}
+                setCareerId={setCareerId}
+                excludeGeneral
+              />
+            </Grid>
           </Grid>
-        </Grid>
+        )}
         {careerId ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container justify='center' spacing={8}>

@@ -48,7 +48,8 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     {
       label: 'Estudiantes para seguro',
       icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
-      path: '/insurance-list'
+      path: '/insurance-list',
+      adminOnly: true
     },
     {
       label: 'Evaluar Prácticas',

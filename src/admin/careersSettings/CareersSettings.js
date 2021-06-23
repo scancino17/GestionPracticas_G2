@@ -3,13 +3,18 @@ import { Container, Grid, TextField, Typography } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { db } from '../../firebase';
+import useAuth from '../../providers/Auth';
 import CareerSelector from '../../utils/CareerSelector';
 
 function CareersSettings() {
-  const [careerId, setCareerId] = useState();
+  const { user } = useAuth();
+  const [careerId, setCareerId] = useState(
+    user.careerId ? user.careerId : null
+  );
   const [career, setCareer] = useState();
   const [internships, setInternships] = useState(1);
   const [survey, setSurvey] = useState('');
+
   useEffect(() => {
     if (careerId)
       db.collection('careers')
@@ -53,20 +58,17 @@ function CareersSettings() {
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container direction='column' spacing={2}>
-          <Grid
-            item
-            container
-            justify='flex-end'
-            alignItems='center'
-            spacing={4}>
-            <Grid item>
-              <CareerSelector
-                careerId={careerId}
-                setCareerId={setCareerId}
-                excludeGeneral
-              />
+          {!user.careerId && (
+            <Grid item container justify='flex-end' spacing={4}>
+              <Grid item>
+                <CareerSelector
+                  careerId={careerId}
+                  setCareerId={setCareerId}
+                  excludeGeneral
+                />
+              </Grid>
             </Grid>
-          </Grid>
+          )}
           {career ? (
             <>
               <Grid item container alignItems='center' spacing={2}>
@@ -94,7 +96,8 @@ function CareersSettings() {
                     value={survey}
                     onChange={(e) => {
                       setSurvey(e.target.value);
-                    }}></TextField>
+                    }}
+                  />
                 </Grid>
               </Grid>
               <Grid item container justify='flex-end'>

@@ -15,21 +15,18 @@ import { NavigateNext } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
-
 import CareerSelector from '../../utils/CareerSelector';
-import { set } from 'date-fns';
+import useAuth from '../../providers/Auth';
 
-function PracticeReport({ edit }) {
+function PracticeReport() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
   const [filterInterships, setFilterInternships] = useState([]);
+  const { user } = useAuth();
 
   function applyFilter(list) {
-    console.log('original', list);
-
     let filtered = [...list];
-    console.log('before holi', filtered);
 
     if (careerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === careerId);
@@ -38,52 +35,44 @@ function PracticeReport({ edit }) {
     return filtered;
   }
 
-  function getInfoStudent(list, id) {
-    for (let index = 0; index < list.length; index++) {
-      const element = list[index];
-      if (element.id === id) {
-        return { name: element.name, careerId: element.careerId };
-      }
-    }
-  }
-
   useEffect(() => {
-    let users = [];
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
+    let unsubscribe;
     db.collection('users')
       .get()
-      .then((student) =>
-        student.forEach((element) => {
+      .then((students) => {
+        const users = [];
+        students.forEach((element) => {
           const studentData = element.data();
           users.push({
             id: element.id,
             name: studentData.name,
             careerId: studentData.careerId
           });
-        })
-      );
-
-    const unsubscribe = db
-      .collection('internships')
-      .onSnapshot((querySnapshot) => {
-        let list = [];
-        let info;
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.status === sentReport) {
-            info = getInfoStudent(users, data.studentId);
-            console.log('info', info);
-            list.push({
-              id: doc.id,
-              name: info.name,
-              careerId: info.careerId,
-              ...data
-            });
-          }
         });
 
-        setInternships(list);
-        console.log('despues del la db', list);
-        if (list) setFilterInternships(applyFilter(list));
+        unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+          const list = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.status === sentReport) {
+              users.forEach((usr) => {
+                if (usr.id === data.studentId)
+                  list.push({
+                    id: doc.id,
+                    name: usr.name,
+                    careerId: usr.careerId,
+                    ...data
+                  });
+              });
+            }
+          });
+
+          setInternships(list);
+          if (list) setFilterInternships(applyFilter(list));
+        });
       });
     return unsubscribe;
   }, []);
@@ -102,7 +91,7 @@ function PracticeReport({ edit }) {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Evaluar informes de prácticas</Typography>
+        <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container justify='flex-end' alignItems='center' spacing={4}>
@@ -113,9 +102,11 @@ function PracticeReport({ edit }) {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          <Grid item>
-            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
-          </Grid>
+          {!user.careerId && (
+            <Grid item>
+              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+            </Grid>
+          )}
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>

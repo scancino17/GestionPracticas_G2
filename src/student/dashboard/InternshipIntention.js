@@ -17,6 +17,7 @@ import {
   approvedIntention,
   availableInternship,
   deniedIntention,
+  finishedInternship,
   pendingApplication,
   pendingIntention
 } from '../../InternshipStates';
@@ -124,6 +125,8 @@ const IntentionItem = ({
         return <DeniedState />;
       case availableInternship:
         return <AvailableState />;
+      case finishedInternship:
+        return <FinishedState />;
       default:
         return (
           <Typography>
@@ -131,6 +134,46 @@ const IntentionItem = ({
           </Typography>
         );
     }
+  };
+
+  const FinishedState = () => {
+    return (
+      <Grid container direction='column'>
+        <Grid item container direction='row' justify='flex-start'>
+          <Typography>
+            <Box style={{ paddingRight: '.3rem' }}>
+              ¡Felicitaciones! Terminaste tu proceso de practica
+            </Box>
+          </Typography>
+        </Grid>
+        <Typography variant='h5'>Tu nota es: {internship.grade}</Typography>
+        {internship.reason && (
+          <Grid item style={{ paddingTop: '1rem' }}>
+            <Typography>
+              Tu evaluación tiene las siguientes observaciones:
+            </Typography>
+            <Typography className={classes.reasonText}>
+              {internship.reason}
+            </Typography>
+          </Grid>
+        )}
+
+        <Grid
+          item
+          container
+          direction='row'
+          justify='space-between'
+          alignItems='center'
+          style={{ paddingTop: '1rem' }}>
+          <Typography className={classes.evaluatingSupervisorText}>
+            Evaluado por {internship.evaluatingSupervisor.name}
+          </Typography>
+          <Typography className={classes.evaluatingSupervisorText}>
+            {internship.evaluatingSupervisor.email}
+          </Typography>
+        </Grid>
+      </Grid>
+    );
   };
 
   const AvailableState = () => {
@@ -301,47 +344,53 @@ const IntentionItem = ({
       />
     );
   };
-  
-  const Emoji = props => (
+
+  const Emoji = (props) => (
     <span
-      className="emoji"
-      role="img"
-      aria-label={props.label ? props.label : ""}
-      aria-hidden={props.label ? "false" : "true"}
-    >
+      className='emoji'
+      role='img'
+      aria-label={props.label ? props.label : ''}
+      aria-hidden={props.label ? 'false' : 'true'}>
       {props.symbol}
     </span>
-  )
+  );
 
   const StateIcon = () => {
     switch (internship.status) {
       case approvedState:
         return (
-        <Typography className={classes.secondaryApprovedHeading}>
-          {internship.status+' '}
-          <Emoji symbol='✔️'/>
-        </Typography>
+          <Typography className={classes.secondaryApprovedHeading}>
+            {internship.status + ' '}
+            <Emoji symbol='✔️' />
+          </Typography>
         );
       case pendingApprovalState:
         return (
-        <Typography className={classes.secondaryPendingApprovalHeading}>
-          {internship.status+' '}
-          <Emoji symbol='📨'/>
-        </Typography>
+          <Typography className={classes.secondaryPendingApprovalHeading}>
+            {internship.status + ' '}
+            <Emoji symbol='📨' />
+          </Typography>
         );
       case deniedState:
         return (
-        <Typography className={classes.secondaryDeniedHeading}>
-          {internship.status+' '}
-          <Emoji symbol='❌'/>
-        </Typography>
+          <Typography className={classes.secondaryDeniedHeading}>
+            {internship.status + ' '}
+            <Emoji symbol='❌' />
+          </Typography>
         );
       case availableInternship:
         return (
-        <Typography className={classes.secondaryAvailableHeading}>
-          {internship.status+' '}
-          <Emoji symbol='📑'/>
-        </Typography>
+          <Typography className={classes.secondaryAvailableHeading}>
+            {internship.status + ' '}
+            <Emoji symbol='📑' />
+          </Typography>
+        );
+      case finishedInternship:
+        return (
+          <Typography className={classes.secondaryAvailableHeading}>
+            {internship.status + ' '}
+            <Emoji symbol='😄' />
+          </Typography>
         );
       default:
         return (
@@ -350,7 +399,6 @@ const IntentionItem = ({
           </Typography>
         );
     }
-    
   };
 
   return (
@@ -362,8 +410,6 @@ const IntentionItem = ({
           Estado de práctica {internship.applicationNumber}
         </Typography>
         {StateIcon()}
-        
-         
       </AccordionSummary>
       <AccordionDetails>{selectDetails()}</AccordionDetails>
       <AccordionActions>{selectActions()}</AccordionActions>
@@ -373,10 +419,9 @@ const IntentionItem = ({
 
 function InternshipIntention({ internships }) {
   const [noneDeclarated, isNoneDeclarated] = useState(true);
-
   useEffect(() => {
     isNoneDeclarated(
-      internships.filter((item) => item.status !== availableInternship)
+      internships.filter((item) => !(item.status === availableInternship))
         .length === 0
     );
   }, [internships]);

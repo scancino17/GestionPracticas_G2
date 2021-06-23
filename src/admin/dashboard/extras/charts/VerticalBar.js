@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 
-function VerticalBar() {
+function VerticalBar(props) {
   const [data, setData] = useState();
 
   useEffect(() => {
@@ -25,6 +25,11 @@ function VerticalBar() {
             companyCounter.set(doc.Empresa, 1);
           }
         });
+
+        props.setExportable([
+          Array.from(companyCounter.keys()),
+          [Object.fromEntries(companyCounter)]
+        ]);
 
         let list = Array.from(companyCounter.entries());
         list = list

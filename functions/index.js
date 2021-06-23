@@ -90,3 +90,16 @@ exports.createSupervisor = functions.https.onCall((data, context) => {
         });
     });
 });
+
+exports.listSupervisors = functions.https.onCall((data, context) => {
+  return admin
+    .auth()
+    .listUsers()
+    .then((listUsersResult) => {
+      const supervisors = [];
+      listUsersResult.users.forEach((userRecord) => {
+        if (userRecord.customClaims.supervisor) supervisors.push(userRecord);
+      });
+      return supervisors;
+    });
+});

@@ -41,7 +41,6 @@ function DashboardEstudiante() {
           .doc(userData.currentInternship.lastApplication)
           .get()
           .then((last) => {
-            console.log(last.data());
             setReason(last.data().reason);
           });
       }

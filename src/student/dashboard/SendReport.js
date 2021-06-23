@@ -12,7 +12,6 @@ function SendReport() {
 
   function handleSend() {
     files.forEach((file) => {
-      console.log(file);
       storage
         .ref()
         .child(
@@ -52,7 +51,7 @@ function SendReport() {
               <DropzoneArea
                 filesLimit={1}
                 accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                onChange={(file) => (console.log(file), setFiles(file))}
+                onChange={(file) => setFiles(file)}
               />
             </Grid>
 

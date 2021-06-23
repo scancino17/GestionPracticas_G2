@@ -40,6 +40,7 @@ import ImportPracticeInsurance from '../import/ImportPracticeInsurance';
 import CareerSelector from '../../utils/CareerSelector';
 import PracticeReport from '../evaluatePractice/PracticeReport';
 import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
+import ListExtension from '../extension/ListExtension';
 import CareersSettings from '../careersSettings/CareersSettings';
 import { CSVLink } from 'react-csv';
 import ExcelExporter from '../../utils/ExcelExporter';
@@ -347,6 +348,9 @@ function DashboardAdmin({ sidebarProps }) {
         </Route>
         <Route path='/report-evaluated/:studentId/:internshipId'>
           <ReportEvaluate />
+        </Route>
+        <Route path='/extension-list/'>
+          <ListExtension />
         </Route>
         <Route path='/careers-settings'>
           <CareersSettings />

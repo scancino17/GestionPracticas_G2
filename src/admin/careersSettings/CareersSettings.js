@@ -9,7 +9,7 @@ function CareersSettings() {
   const [careerId, setCareerId] = useState();
   const [career, setCareer] = useState();
   const [internships, setInternships] = useState(1);
-
+  const [survey, setSurvey] = useState('');
   useEffect(() => {
     if (careerId)
       db.collection('careers')
@@ -19,13 +19,17 @@ function CareersSettings() {
           const data = doc.data();
           setCareer(data);
           setInternships(data.internships);
+          setSurvey(data.satisfactionSurvey);
         });
   }, [careerId]);
 
   function handleSave() {
     db.collection('careers')
       .doc(careerId)
-      .update({ internships: parseInt(internships) })
+      .update({
+        internships: parseInt(internships),
+        satisfactionSurvey: survey
+      })
       .then(() =>
         Swal.fire(
           'Cambios guardados',
@@ -80,7 +84,19 @@ function CareersSettings() {
                   />
                 </Grid>
               </Grid>
-              <Grid item>{/* Aqui debiese ir lo de la URL */}</Grid>
+              <Grid item container alignItems='center' spacing={2}>
+                <Grid item>
+                  <Typography variant='h5'>Encuesta de satisfacción</Typography>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    label='Url de la encuesta'
+                    value={survey}
+                    onChange={(e) => {
+                      setSurvey(e.target.value);
+                    }}></TextField>
+                </Grid>
+              </Grid>
               <Grid item container justify='flex-end'>
                 <Grid item>
                   <Button

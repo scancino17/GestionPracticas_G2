@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 
-function GroupedBar() {
+function GroupedBar(props) {
   const [data, setData] = useState();
   let careers = new Map();
   let noAction = new Map();
@@ -20,6 +20,15 @@ function GroupedBar() {
       ]
     }
   };
+
+  function standardizeMaps(doc) {
+    if (!noAction.has(careers.get(doc.careerId)))
+      noAction.set(careers.get(doc.careerId), 0);
+    if (!applying.has(careers.get(doc.careerId)))
+      applying.set(careers.get(doc.careerId), 0);
+    if (!onIntern.has(careers.get(doc.careerId)))
+      onIntern.set(careers.get(doc.careerId), 0);
+  }
 
   function getStudentsStatus() {
     const unsubscribe = db
@@ -42,6 +51,7 @@ function GroupedBar() {
                 } else {
                   noAction.set(careers.get(doc.careerId), 1);
                 }
+                standardizeMaps(doc);
                 break;
               case 1:
                 if (applying.has(careers.get(doc.careerId))) {
@@ -50,6 +60,7 @@ function GroupedBar() {
                 } else {
                   applying.set(careers.get(doc.careerId), 1);
                 }
+                standardizeMaps(doc);
                 break;
               default:
                 if (onIntern.has(careers.get(doc.careerId))) {
@@ -58,6 +69,7 @@ function GroupedBar() {
                 } else {
                   onIntern.set(careers.get(doc.careerId), 1);
                 }
+                standardizeMaps(doc);
                 break;
             }
           } else {
@@ -67,8 +79,20 @@ function GroupedBar() {
             } else {
               noAction.set(careers.get(doc.careerId), 1);
             }
+            standardizeMaps(doc);
           }
         });
+
+        let list = [
+          Array.from(noAction.keys()),
+          [
+            Object.fromEntries(noAction),
+            Object.fromEntries(applying),
+            Object.fromEntries(onIntern)
+          ]
+        ];
+
+        props.setExportable(list);
 
         let config = {
           labels: Array.from(noAction.keys()),
@@ -85,7 +109,7 @@ function GroupedBar() {
             },
             {
               label: 'En Práctica',
-              data: Array.from(applying.values()),
+              data: Array.from(onIntern.values()),
               backgroundColor: 'rgb(75, 192, 192)'
             }
           ]

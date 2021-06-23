@@ -52,36 +52,40 @@ function App() {
       {user ? (
         <>
           <TopBar setSidebarOpen={setSidebarOpen} />
-          {(user.student || user.admin) && userData ? (
-            user.student ? (
-              <DashboardEstudiante onGoingIntern={false} />
-            ) : (
-              <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
-            )
+          {user.admin || user.supervisor ? (
+            <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
+          ) : user.student && userData ? (
+            <DashboardEstudiante onGoingIntern={false} />
           ) : (
-            <Grid
-              container
-              justify='center'
-              alignItems='center'
-              direction='column'
-              style={{ marginTop: '4rem' }}>
-              <Skeleton
-                variant='rect'
-                animation='wave'
-                height='5rem'
-                width='75%'
-                style={{ marginBottom: '2rem' }}
-              />
-              <Skeleton animation='wave' width='75%' height='2rem' />
-              <Skeleton animation='wave' width='75%' height='2rem' />
-              <Skeleton animation='wave' width='75%' height='2rem' />
-            </Grid>
+            <LoadingSkeleton />
           )}
         </>
       ) : (
         <Landing />
       )}
     </ThemeProvider>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <Grid
+      container
+      justify='center'
+      alignItems='center'
+      direction='column'
+      style={{ marginTop: '4rem' }}>
+      <Skeleton
+        variant='rect'
+        animation='wave'
+        height='5rem'
+        width='75%'
+        style={{ marginBottom: '2rem' }}
+      />
+      <Skeleton animation='wave' width='75%' height='2rem' />
+      <Skeleton animation='wave' width='75%' height='2rem' />
+      <Skeleton animation='wave' width='75%' height='2rem' />
+    </Grid>
   );
 }
 

@@ -16,12 +16,14 @@ import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
+import useAuth from '../../providers/Auth';
 
 function PracticeReport() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
   const [filterInterships, setFilterInternships] = useState([]);
+  const { user } = useAuth();
 
   function applyFilter(list) {
     let filtered = [...list];
@@ -34,6 +36,9 @@ function PracticeReport() {
   }
 
   useEffect(() => {
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
     let unsubscribe;
     db.collection('users')
       .get()
@@ -48,28 +53,26 @@ function PracticeReport() {
           });
         });
 
-        unsubscribe = db
-          .collection('internships')
-          .onSnapshot((querySnapshot) => {
-            const list = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              if (data.status === sentReport) {
-                users.forEach((usr) => {
-                  if (usr.id === data.studentId)
-                    list.push({
-                      id: doc.id,
-                      name: usr.name,
-                      careerId: usr.careerId,
-                      ...data
-                    });
-                });
-              }
-            });
-
-            setInternships(list);
-            if (list) setFilterInternships(applyFilter(list));
+        unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+          const list = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.status === sentReport) {
+              users.forEach((usr) => {
+                if (usr.id === data.studentId)
+                  list.push({
+                    id: doc.id,
+                    name: usr.name,
+                    careerId: usr.careerId,
+                    ...data
+                  });
+              });
+            }
           });
+
+          setInternships(list);
+          if (list) setFilterInternships(applyFilter(list));
+        });
       });
     return unsubscribe;
   }, []);
@@ -88,7 +91,7 @@ function PracticeReport() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Evaluar informes de prácticas</Typography>
+        <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container justify='flex-end' alignItems='center' spacing={4}>
@@ -99,9 +102,11 @@ function PracticeReport() {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          <Grid item>
-            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
-          </Grid>
+          {!user.careerId && (
+            <Grid item>
+              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+            </Grid>
+          )}
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>

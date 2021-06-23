@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Grid,
   Paper,
@@ -25,6 +25,7 @@ import {
 import { db, functions } from '../../firebase';
 import { grey } from '@material-ui/core/colors';
 import { DeleteForever, Edit, Replay } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles(() => ({
   tableCell: {
@@ -263,13 +264,16 @@ const DeleteSupervisorModal = ({ closeModal, supervisor, update }) => {
 function SupervisorTable() {
   const classes = useStyles();
   const [showModal, setShowModal] = useState(false);
-  const [supervisors, setSupervisors] = useState([]);
+  const [supervisors, setSupervisors] = useState();
+  const [loaded, isLoaded] = useState(false);
+  const didMount = useRef(false);
 
   const closeModal = () => {
     setShowModal(false);
   };
 
   const updateSupervisorList = () => {
+    isLoaded(false);
     const listSupervisors = functions.httpsCallable('listSupervisors');
     listSupervisors().then((res) => {
       setSupervisors(res.data);
@@ -279,6 +283,10 @@ function SupervisorTable() {
   useEffect(() => {
     updateSupervisorList();
   }, []);
+
+  useEffect(() => {
+    didMount.current ? isLoaded(true) : (didMount.current = true);
+  }, [supervisors]);
 
   return (
     <>
@@ -303,66 +311,74 @@ function SupervisorTable() {
             <Replay />
           </IconButton>
         </Grid>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ paddingLeft: '2rem' }}>Nombre</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>ID Carrera</TableCell>
-              <TableCell>Fecha de creación</TableCell>
-              <TableCell>Último Ingreso</TableCell>
-              <TableCell style={{ paddingRight: '2rem' }}></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {supervisors.map((supervisor) => (
-              <TableRow
-                className={classes.tableCell}
-                hover
-                key={supervisor.uid}>
-                <TableCell style={{ paddingLeft: '2rem' }}>
-                  {supervisor.displayName}
-                </TableCell>
-                <TableCell>{supervisor.email}</TableCell>
-                <TableCell>{supervisor.customClaims.careerId}</TableCell>
-                <TableCell>{supervisor.metadata.creationTime}</TableCell>
-                <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
-                <TableCell
-                  className='appear-item'
-                  style={{ paddingRight: '2rem' }}>
-                  <IconButton
-                    size='small'
-                    className={classes.buttonMargin}
-                    onClick={() =>
-                      setShowModal(
-                        <EditSupervisorModal
-                          closeModal={closeModal}
-                          supervisor={supervisor}
-                          update={updateSupervisorList}
-                        />
-                      )
-                    }>
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    size='small'
-                    className={classes.buttonMargin}
-                    onClick={() =>
-                      setShowModal(
-                        <DeleteSupervisorModal
-                          closeModal={closeModal}
-                          supervisor={supervisor}
-                          update={updateSupervisorList}
-                        />
-                      )
-                    }>
-                    <DeleteForever />
-                  </IconButton>
-                </TableCell>
+        {loaded ? (
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell style={{ paddingLeft: '2rem' }}>Nombre</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>ID Carrera</TableCell>
+                <TableCell>Fecha de creación</TableCell>
+                <TableCell>Último Ingreso</TableCell>
+                <TableCell style={{ paddingRight: '2rem' }}></TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {supervisors?.map((supervisor) => (
+                <TableRow
+                  className={classes.tableCell}
+                  hover
+                  key={supervisor.uid}>
+                  <TableCell style={{ paddingLeft: '2rem' }}>
+                    {supervisor.displayName}
+                  </TableCell>
+                  <TableCell>{supervisor.email}</TableCell>
+                  <TableCell>{supervisor.customClaims.careerId}</TableCell>
+                  <TableCell>{supervisor.metadata.creationTime}</TableCell>
+                  <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
+                  <TableCell
+                    className='appear-item'
+                    style={{ paddingRight: '2rem' }}>
+                    <IconButton
+                      size='small'
+                      className={classes.buttonMargin}
+                      onClick={() =>
+                        setShowModal(
+                          <EditSupervisorModal
+                            closeModal={closeModal}
+                            supervisor={supervisor}
+                            update={updateSupervisorList}
+                          />
+                        )
+                      }>
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      size='small'
+                      className={classes.buttonMargin}
+                      onClick={() =>
+                        setShowModal(
+                          <DeleteSupervisorModal
+                            closeModal={closeModal}
+                            supervisor={supervisor}
+                            update={updateSupervisorList}
+                          />
+                        )
+                      }>
+                      <DeleteForever />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Grid direction='column' style={{ padding: '2rem' }}>
+            <Skeleton animation='wave' width='100%' height='3rem' />
+            <Skeleton animation='wave' width='100%' height='3rem' />
+            <Skeleton animation='wave' width='100%' height='3rem' />
+          </Grid>
+        )}
       </TableContainer>
       {showModal}
     </>

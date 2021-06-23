@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
+import useAuth from '../../providers/Auth';
 
 function ApplicationsList() {
   const [careerId, setCareerId] = useState('general');
@@ -35,18 +36,18 @@ function ApplicationsList() {
   const { reviewing, approved, rejected } = statuses;
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
+  const { user } = useAuth();
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('applications')
-      .onSnapshot((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) =>
-          list.push({ id: doc.id, ...doc.data() })
-        );
-        setApplications(list);
-        if (list) setFilteredApplications(applyFilter(list));
-      });
+    const dbRef = user.careerId
+      ? db.collection('applications').where('careerId', '==', user.careerId)
+      : db.collection('applications');
+    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      setApplications(list);
+      if (list) setFilteredApplications(applyFilter(list));
+    });
     return unsubscribe;
   }, []);
 
@@ -133,9 +134,11 @@ function ApplicationsList() {
               </FormGroup>
             </FormControl>
           </Grid>
-          <Grid item>
-            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
-          </Grid>
+          {!user.careerId && (
+            <Grid item>
+              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+            </Grid>
+          )}
         </Grid>
         <List>
           {filteredApplications &&

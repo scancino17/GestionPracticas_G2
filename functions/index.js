@@ -48,7 +48,8 @@ exports.importStudents = functions.https.onCall((data, context) => {
                     applicationNumber: i + 1,
                     careerId: dataWithoutPassword.careerId,
                     status: 'Práctica disponible',
-                    studentId: userRecord.uid
+                    studentId: userRecord.uid,
+                    studentName: data.name
                   });
               userCreationRequestRef.update({ status: 'Treated' });
               functions.logger.info(

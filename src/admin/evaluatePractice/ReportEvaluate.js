@@ -5,16 +5,11 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   TextField,
   Typography,
   Slider,
   Container,
-  Input,
-  Divider
+  Input
 } from '@material-ui/core';
 import { useEffect } from 'react';
 import { useState } from 'react';
@@ -24,7 +19,6 @@ import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import { finishedInternship, reportNeedsChanges } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
-import CareerSelector from '../../utils/CareerSelector';
 
 function ReportEvaluate() {
   const [value, setValue] = useState(40);
@@ -36,7 +30,8 @@ function ReportEvaluate() {
   const [changes, SetChanges] = useState('');
   const history = useHistory();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { user, userData } = useAuth();
+  const { userData } = useAuth();
+
   useEffect(() => {
     db.collection('users')
       .doc(studentId)
@@ -110,6 +105,7 @@ function ReportEvaluate() {
     });
     db.collection('users').doc(studentId).update({ step: 3 });
   }
+
   return (
     <>
       <Grid container direction='column'>
@@ -333,4 +329,5 @@ function ReportEvaluate() {
     </>
   );
 }
+
 export default ReportEvaluate;

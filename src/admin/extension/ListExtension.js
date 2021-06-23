@@ -24,7 +24,6 @@ import {
   deniedExtension,
   sentExtension
 } from '../../InternshipStates';
-
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
 
@@ -51,8 +50,8 @@ function ListExtension() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
-
   const [filterInterships, setFilterInternships] = useState([]);
+  const { user } = useAuth();
 
   function applyFilter(list) {
     let filtered = [...list];
@@ -65,6 +64,9 @@ function ListExtension() {
   }
 
   useEffect(() => {
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
     let unsubscribe;
     db.collection('users')
       .get()
@@ -79,28 +81,26 @@ function ListExtension() {
           });
         });
 
-        unsubscribe = db
-          .collection('internships')
-          .onSnapshot((querySnapshot) => {
-            let list = [];
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              if (data.extensionStatus === sentExtension) {
-                users.forEach((usr) => {
-                  if (usr.id === data.studentId)
-                    list.push({
-                      id: doc.id,
-                      name: usr.name,
-                      careerId: usr.careerId,
-                      ...data
-                    });
-                });
-              }
-            });
-
-            setInternships(list);
-            if (list) setFilterInternships(applyFilter(list));
+        unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+          let list = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.extensionStatus === sentExtension) {
+              users.forEach((usr) => {
+                if (usr.id === data.studentId)
+                  list.push({
+                    id: doc.id,
+                    name: usr.name,
+                    careerId: usr.careerId,
+                    ...data
+                  });
+              });
+            }
           });
+
+          setInternships(list);
+          if (list) setFilterInternships(applyFilter(list));
+        });
       });
 
     return unsubscribe;
@@ -131,9 +131,11 @@ function ListExtension() {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          <Grid item>
-            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
-          </Grid>
+          {!user.careerId && (
+            <Grid item>
+              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+            </Grid>
+          )}
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
@@ -159,11 +161,13 @@ function IntershipItem({ intership }) {
   const [idApplication, setIdApplication] = useState();
   const [reason, setReason] = useState('');
   const { userData } = useAuth();
+
   function TransformDate(date) {
     return (
       date.getDate() + '/' + months[date.getMonth()] + '/' + date.getFullYear()
     );
   }
+
   function handleExtensionDeined() {
     db.collection('internships')
       .doc(internshipsExtension.id)
@@ -186,6 +190,7 @@ function IntershipItem({ intership }) {
       }
     });
   }
+
   function handleExtensionApproved() {
     application['Fecha de término'] = internshipsExtension.dateExtension;
     application['form'].forEach((step) => {

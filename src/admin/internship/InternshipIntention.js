@@ -382,6 +382,7 @@ const ApprovalModal = ({
 
 function InternshipIntention() {
   const [applications, setApplications] = useState([]);
+  const { user } = useAuth();
 
   const addApplication = useCallback(
     (newItem) => {
@@ -398,26 +399,29 @@ function InternshipIntention() {
   const updateApplications = useCallback(() => {
     setApplications([]);
 
-    db.collection('internships')
-      .where('status', '==', pendingIntention)
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const internship = doc.data();
-          const internshipId = doc.id;
+    const dbRef = user.careerId
+      ? db
+          .collection('internships')
+          .where('careerId', '==', user.careerId)
+          .where('status', '==', pendingIntention)
+      : db.collection('internships').where('status', '==', pendingIntention);
+    dbRef.get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const internship = doc.data();
+        const internshipId = doc.id;
 
-          db.collection('users')
-            .doc(internship.studentId)
-            .get()
-            .then((student) => {
-              addApplication({
-                internshipId: internshipId,
-                ...internship,
-                ...student.data()
-              });
+        db.collection('users')
+          .doc(internship.studentId)
+          .get()
+          .then((student) => {
+            addApplication({
+              internshipId: internshipId,
+              ...internship,
+              ...student.data()
             });
-        });
+          });
       });
+    });
   }, [setApplications, addApplication]);
 
   useEffect(() => {

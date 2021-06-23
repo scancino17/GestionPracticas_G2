@@ -136,11 +136,7 @@ function NotificationMenu() {
   const { user, userData } = useAuth();
 
   useEffect(() => {
-    if (userData.notifications) {
-      setNotifications(userData.notifications);
-    } else {
-      console.log("Not to worry, we're still flying half a ship.");
-    }
+    if (userData.notifications) setNotifications(userData.notifications);
   }, [userData]);
 
   const discardNotification = (id) => {

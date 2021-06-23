@@ -15,21 +15,16 @@ import { NavigateNext } from '@material-ui/icons';
 import { useHistory } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
-
 import CareerSelector from '../../utils/CareerSelector';
-import { set } from 'date-fns';
 
-function PracticeReport({ edit }) {
+function PracticeReport() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
   const [filterInterships, setFilterInternships] = useState([]);
 
   function applyFilter(list) {
-    console.log('original', list);
-
     let filtered = [...list];
-    console.log('before holi', filtered);
 
     if (careerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === careerId);
@@ -71,7 +66,6 @@ function PracticeReport({ edit }) {
           const data = doc.data();
           if (data.status === sentReport) {
             info = getInfoStudent(users, data.studentId);
-            console.log('info', info);
             list.push({
               id: doc.id,
               name: info.name,
@@ -82,7 +76,6 @@ function PracticeReport({ edit }) {
         });
 
         setInternships(list);
-        console.log('despues del la db', list);
         if (list) setFilterInternships(applyFilter(list));
       });
     return unsubscribe;

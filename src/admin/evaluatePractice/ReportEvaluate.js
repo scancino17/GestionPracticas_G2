@@ -274,7 +274,7 @@ function ReportEvaluate() {
                   ? '😐'
                   : value < 60
                   ? '🙂'
-                  : value < 70
+                  : value < 65
                   ? '😃'
                   : value >= 65
                   ? '🤩'

@@ -194,14 +194,17 @@ const IntentionItem = ({
   const ApprovedState = () => {
     return (
       <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start'>
-          <Typography>
-            <Box style={{ paddingRight: '.3rem' }}>
-              ¡Felicitaciones! Tu intención de práctica ha sido
-            </Box>
+        <Grid item container direction='row' justify='flex-start' spacing={2}>
+          <Typography
+            style={{
+              paddingLeft: '.3rem',
+              paddingRight: '.5rem'
+            }}
+            variant='h4'>
+            ¡Felicitaciones! Tu intención de práctica ha sido
           </Typography>
-          <Typography>
-            <Box className={classes.approvedText}>aprobada.</Box>
+          <Typography className={classes.approvedText} variant='h4' color=''>
+            {' aprobada.'}
           </Typography>
         </Grid>
         {internship.reason && (

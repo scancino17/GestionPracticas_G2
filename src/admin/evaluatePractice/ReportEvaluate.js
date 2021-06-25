@@ -142,6 +142,7 @@ function ReportEvaluate() {
                   </Typography>
                   <Grid item style={{ marginTop: '2rem' }}>
                     <TextField
+                      fullWidth
                       id='outlined-basic'
                       label='Nombre'
                       variant='outlined'
@@ -150,6 +151,7 @@ function ReportEvaluate() {
                   </Grid>
                   <Grid item style={{ marginTop: '2rem' }}>
                     <TextField
+                      fullWidth
                       id='outlined-basic'
                       label='Matricula'
                       variant='outlined'
@@ -158,6 +160,7 @@ function ReportEvaluate() {
                   </Grid>
                   <Grid item style={{ marginTop: '2rem' }}>
                     <TextField
+                      fullWidth
                       id='outlined-basic'
                       label='Email'
                       variant='outlined'
@@ -263,15 +266,17 @@ function ReportEvaluate() {
                   ? '😰'
                   : value < 30
                   ? '😢'
+                  : value < 35
+                  ? '🙁'
                   : value < 40
-                  ? '😟'
+                  ? '😬'
                   : value < 50
                   ? '😐'
                   : value < 60
                   ? '🙂'
                   : value < 70
                   ? '😃'
-                  : value >= 70
+                  : value >= 65
                   ? '🤩'
                   : null}
               </Typography>

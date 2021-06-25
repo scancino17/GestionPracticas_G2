@@ -324,40 +324,36 @@ function FormCheck() {
         </>
       )}
       <Grid container direction='column'>
-      <Grid
-        style={{
-          backgroundImage: "url('../AdminBanner-Form.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          padding: '2rem'
-        }}>
-        <Typography variant='h4'>Revisión Postulación</Typography>
-      </Grid>
-      <Container>
-        
-        {application.form &&
-          application.form.map((step) => (
-          
-          
-            <Grid item>
-              <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
-                {step.step}
-              </Typography>
-              <FormView
-                readOnly={!edit}
-                studentId={application.studentId}
-                internshipId={application.internshipId}
-                applicationId={applicationId}
-                form={step.form}
-                flag={flag}
-                setFlag={setFlag}
-                admin
-              />
-            </Grid>
-            
-          ))}
-      </Container>
+        <Grid
+          style={{
+            backgroundImage: "url('../AdminBanner-Form.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            padding: '2rem'
+          }}>
+          <Typography variant='h4'>Revisión Postulación</Typography>
+        </Grid>
+        <Container>
+          {application.form &&
+            application.form.map((step) => (
+              <Grid item>
+                <Typography variant='h4' style={{ margin: '3rem 0 2rem 0' }}>
+                  {step.step}
+                </Typography>
+                <FormView
+                  readOnly={!edit}
+                  studentId={application.studentId}
+                  internshipId={application.internshipId}
+                  applicationId={applicationId}
+                  form={step.form}
+                  flag={flag}
+                  setFlag={setFlag}
+                  admin
+                />
+              </Grid>
+            ))}
+        </Container>
       </Grid>
       {show && (
         <Dialog open={show} onClose={() => setShow(false)} fullWidth>
@@ -394,7 +390,7 @@ function FormCheck() {
           open={showApproved}
           onClose={() => setShowApproved(false)}
           fullWidth>
-          <DialogTitle>Aprovar postulación de práctica</DialogTitle>
+          <DialogTitle>Aprobar postulación de práctica</DialogTitle>
           <DialogContent>
             <DialogContentText>
               {`¿Está seguro de aceptar la postulación de Práctica ?`}

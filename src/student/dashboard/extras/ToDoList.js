@@ -204,7 +204,7 @@ function ToDoList({ done, reason }) {
   return (
     <>
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Accordion>
+        <Accordion defaultExpanded>
           <AccordionSummary
             expandIcon={<FaChevronDown />}
             aria-controls='panel1a-content'

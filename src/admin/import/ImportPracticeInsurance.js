@@ -12,6 +12,7 @@ import {
   withStyles,
   DialogContent
 } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../../firebase';
@@ -100,7 +101,7 @@ function AprobadosItem({ application, careerId }) {
 function ExportApprovedStudent() {
   const [careerId, setCareerId] = useState();
   const [usersExport, setusersExport] = useState([]);
-  const [userDate, setuserDate] = useState([]);
+  const [userData, setuserData] = useState([]);
   const [seguroUsuario, setseguroUsuario] = useState([]);
 
   useEffect(() => {
@@ -131,14 +132,20 @@ function ExportApprovedStudent() {
         setseguroUsuario([...seguro]);
       });
   }, []);
-
+  function YearMonthDay(date) {
+    return date.toLocaleTimeString(navigator.language, {
+      year: 'numeric',
+      month: 'long',
+      day: '2-digit'
+    });
+  }
   useEffect(() => {
     db.collection('users').onSnapshot((querySnapshot) => {
       const user = [];
       querySnapshot.forEach((doc) => {
         user.push(doc.data());
       });
-      setuserDate([...user]);
+      setuserData([...user]);
     });
   }, []);
 
@@ -146,7 +153,10 @@ function ExportApprovedStudent() {
     var approvedStudents = '';
 
     usersExport.forEach((doc) => {
-      let datos = userDate.find((usuario) => usuario.email === doc.email);
+      let datos = userData.find((usuario) => usuario.email === doc.email);
+      let datosFormulario = usersExport.find(
+        (usuario) => usuario.email === doc.email
+      );
       approvedStudents +=
         datos.name +
         ', ' +
@@ -157,6 +167,14 @@ function ExportApprovedStudent() {
         datos.rut +
         ', ' +
         datos.email +
+        ', ' +
+        datos.currentInternship.number +
+        ', ' +
+        datosFormulario.Empresa +
+        ', ' +
+        YearMonthDay(datosFormulario['Fecha de inicio'].toDate()) +
+        ', ' +
+        YearMonthDay(datosFormulario['Fecha de término'].toDate()) +
         '\n';
     });
     const element = document.createElement('a');
@@ -190,8 +208,12 @@ function ExportApprovedStudent() {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Button onClick={downloadTxtFile}>
-          Descargar lista de estudiantes con postulación aprobada
+        <Button
+          color='primary'
+          variant='contained'
+          startIcon={<GetAppIcon />}
+          onClick={downloadTxtFile}>
+          Lista de estudiantes con postulación aprobada
         </Button>
       </Container>
 

@@ -14,11 +14,11 @@ import {
 const useStyles = makeStyles({
   root: {
     height: '100vh',
-    backgroundImage: 'url(Fondo.png)',
+    backgroundImage: 'url(landing7.jpg)',
     backgroundSize: 'cover'
   },
   loginBackground: {
-    backgroundColor: '#F2F2F2D0',
+    backgroundColor: '#F2F2F2E0',
     borderRadius: '1rem',
     paddingTop: '3rem',
     paddingBottom: '3rem',

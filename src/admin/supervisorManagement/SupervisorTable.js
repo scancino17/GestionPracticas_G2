@@ -20,7 +20,9 @@ import {
   Checkbox,
   IconButton,
   makeStyles,
-  withStyles
+  withStyles,
+  Typography,
+  Box
 } from '@material-ui/core';
 import { db, functions } from '../../firebase';
 import { grey } from '@material-ui/core/colors';
@@ -30,7 +32,7 @@ import { Skeleton } from '@material-ui/lab';
 const useStyles = makeStyles(() => ({
   tableCell: {
     '& .appear-item': {
-      opacity: '0'
+      opacity: '0.75'
     },
     '&:hover .appear-item': {
       opacity: '1'
@@ -179,7 +181,12 @@ const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
   }, [supervisor]);
 
   const handleSubmit = () => {
-    console.log('TODO');
+    const editSupervisor = functions.httpsCallable('editSupervisor');
+    editSupervisor({
+      uid: supervisor.uid,
+      displayName: supervisorName,
+      careerId: careerId
+    });
     closeModal();
     update();
   };
@@ -222,7 +229,8 @@ const DeleteSupervisorModal = ({ closeModal, supervisor, update }) => {
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   const handleSubmit = () => {
-    console.log('TODO');
+    const deleteSupervisor = functions.httpsCallable('deleteSupervisor');
+    deleteSupervisor({ uid: supervisor.uid });
     closeModal();
     update();
   };
@@ -380,6 +388,12 @@ function SupervisorTable() {
           </Grid>
         )}
       </TableContainer>
+      <Typography style={{ marginTop: '1rem' }}>
+        <Box fontStyle='italic' fontWeight='light'>
+          Los cambios pueden tardar hasta un minuto en verse reflejados.
+          Refresque la tabla si no ve reflejada la acción.
+        </Box>
+      </Typography>
       {showModal}
     </>
   );

@@ -12,6 +12,7 @@ import {
   withStyles,
   DialogContent
 } from '@material-ui/core';
+import ReactExport from 'react-export-excel';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect } from 'react';
@@ -101,9 +102,12 @@ function AprobadosItem({ application, careerId }) {
 function ExportApprovedStudent() {
   const [careerId, setCareerId] = useState();
   const [usersExport, setusersExport] = useState([]);
-  const [userData, setuserData] = useState([]);
+
   const [seguroUsuario, setseguroUsuario] = useState([]);
 
+  const ExcelFile = ReactExport.ExcelFile;
+  const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+  const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   useEffect(() => {
     db.collection('applications')
       .where('status', '==', 'Aprobado')
@@ -115,7 +119,16 @@ function ExportApprovedStudent() {
             doc.data().alreadyDownloaded === false ||
             doc.data().alreadyDownloaded === undefined
           ) {
-            exportar.push(doc.data());
+            const termino = YearMonthDay(
+              doc.data()['Fecha de término'].toDate()
+            );
+            const inicio = YearMonthDay(doc.data()['Fecha de inicio'].toDate());
+
+            exportar.push({
+              ...doc.data(),
+              stringInicio: inicio,
+              stringTermino: termino
+            });
           }
           if (
             doc.data().seguroDisponible === false ||
@@ -139,60 +152,40 @@ function ExportApprovedStudent() {
       day: '2-digit'
     });
   }
-  useEffect(() => {
-    db.collection('users').onSnapshot((querySnapshot) => {
-      const user = [];
-      querySnapshot.forEach((doc) => {
-        user.push(doc.data());
-      });
-      setuserData([...user]);
-    });
-  }, []);
 
-  var downloadTxtFile = () => {
-    var approvedStudents = '';
-
-    usersExport.forEach((doc) => {
-      let datos = userData.find((usuario) => usuario.email === doc.email);
-      let datosFormulario = usersExport.find(
-        (usuario) => usuario.email === doc.email
-      );
-      approvedStudents +=
-        datos.name +
-        ', ' +
-        doc.careerId +
-        ', ' +
-        datos.enrollmentNumber +
-        ', ' +
-        datos.rut +
-        ', ' +
-        datos.email +
-        ', ' +
-        datos.currentInternship.number +
-        ', ' +
-        datosFormulario.Empresa +
-        ', ' +
-        YearMonthDay(datosFormulario['Fecha de inicio'].toDate()) +
-        ', ' +
-        YearMonthDay(datosFormulario['Fecha de término'].toDate()) +
-        '\n';
-    });
-    const element = document.createElement('a');
-    const file = new Blob([approvedStudents], {
-      type: 'text/plain'
-    });
-    element.href = URL.createObjectURL(file);
-    element.download = 'Postulaciones aprobadas.txt';
-    document.body.appendChild(element);
-    element.click();
-    approvedStudents = '';
-
-    usersExport.forEach((doc) => {
-      db.collection('applications')
-        .doc(doc.aplicationId)
-        .set({ alreadyDownloaded: true }, { merge: true });
-    });
-  };
+  function ExportarExcel() {
+    console.log(usersExport);
+    return (
+      <ExcelFile
+        element={
+          <Button
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}
+            onClick={(e) =>
+              usersExport.forEach((doc) => {
+                db.collection('applications')
+                  .doc(doc.aplicationId)
+                  .set({ alreadyDownloaded: true }, { merge: true });
+              })
+            }>
+            Lista de estudiantes con postulación aprobada
+          </Button>
+        }
+        filename='Estudiantes para seguro'>
+        <ExcelSheet data={usersExport} name='Estudiantes para seguro'>
+          <ExcelColumn label='Nombre' value='Nombre del estudiante' />
+          <ExcelColumn label='Matrícula' value='Número de matrícula' />
+          <ExcelColumn label='Rut' value='Rut del estudiante' />
+          <ExcelColumn label='Correo' value='Correo del estudiante' />
+          <ExcelColumn label='Nro práctica' value='internshipNumber' />
+          <ExcelColumn label='Empresa' value='Empresa' />
+          <ExcelColumn label='Fecha de inicio' value='stringInicio' />
+          <ExcelColumn label='Fecha de término' value='stringTermino' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
   return (
     <Grid container direction='column'>
       <div
@@ -208,13 +201,7 @@ function ExportApprovedStudent() {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Button
-          color='primary'
-          variant='contained'
-          startIcon={<GetAppIcon />}
-          onClick={downloadTxtFile}>
-          Lista de estudiantes con postulación aprobada
-        </Button>
+        <ExportarExcel />
       </Container>
 
       <Container style={{ marginTop: '2rem' }}>

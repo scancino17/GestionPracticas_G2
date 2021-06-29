@@ -1,7 +1,7 @@
 import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { GetApp } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
-import { storage } from '../../../firebase';
+import { storage } from '../../firebase';
 
 const UrlLink = ({ file }) => {
   const [url, setUrl] = useState();

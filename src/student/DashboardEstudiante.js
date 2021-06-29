@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import useAuth from '../../providers/Auth';
-import { db } from '../../firebase';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import useAuth from '../providers/Auth';
+import { db } from '../firebase';
+import { Route, Switch } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
 import { Grid, Hidden, Typography, Card, Container } from '@material-ui/core';
 import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import InternshipIntention from './InternshipIntention';
-import { finishedIntentionProcess } from '../../InternshipStates';
-import SendForm from './../../dynamicForm/SendForm';
+import { finishedIntentionProcess } from '../InternshipStates';
+import SendForm from './../dynamicForm/SendForm';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
@@ -17,7 +17,6 @@ function DashboardEstudiante() {
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
   const [step, setStep] = useState(0);
-  const history = useHistory();
   const [reason, setReason] = useState('');
 
   useEffect(() => {

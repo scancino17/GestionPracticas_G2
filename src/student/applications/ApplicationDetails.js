@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Documentos from '../extras/Documentos';
-import { db, storage } from '../../../firebase';
+import { db, storage } from '../../firebase';
 import {
   CircularProgress,
   Grid,

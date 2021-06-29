@@ -80,7 +80,7 @@ function StudentItem({ application }) {
   );
 }
 
-function ExportApprovedStudent() {
+function Insurance() {
   const [careerId, setCareerId] = useState();
   const [usersExport, setusersExport] = useState([]);
 
@@ -203,4 +203,4 @@ function ExportApprovedStudent() {
   );
 }
 
-export default ExportApprovedStudent;
+export default Insurance;

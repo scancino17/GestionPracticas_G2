@@ -20,9 +20,9 @@ import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { RiSurveyLine } from 'react-icons/ri';
 import { makeStyles } from '@material-ui/core/styles';
-import useAuth from '../../../providers/Auth';
+import useAuth from '../../providers/Auth';
 import { useHistory } from 'react-router-dom';
-import { db, storage } from '../../../firebase';
+import { db, storage } from '../../firebase';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import InternshipIntentionFileList, {
   SeguroPracticaFileList
@@ -38,7 +38,7 @@ import {
   deniedExtension,
   approvedExtension,
   finishedInternship
-} from '../../../InternshipStates';
+} from '../../InternshipStates';
 import { AlarmAdd } from '@material-ui/icons';
 import Swal from 'sweetalert2';
 import { DropzoneArea } from 'material-ui-dropzone';

@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import { db } from '../../../firebase';
+import { db } from '../../firebase';
 
 const useStyles = makeStyles((theme) => ({
   chipSuccess: {

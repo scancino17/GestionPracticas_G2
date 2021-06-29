@@ -1,7 +1,7 @@
 import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
-import { db } from '../../../firebase';
-import { pendingIntention } from '../../../InternshipStates';
+import { db } from '../../firebase';
+import { pendingIntention } from '../../InternshipStates';
 
 const approvalState = pendingIntention;
 
@@ -34,6 +34,7 @@ function StudentIntention({ practica, altText, forceDisable }) {
     </Button>
   );
 }
+
 export const availableInternshipa = 'Práctica disponible 📑';
 export const pendingIntentiona = 'Intención enviada 📨';
 export const approvedIntentiona = 'Intención aprobada ✔️';

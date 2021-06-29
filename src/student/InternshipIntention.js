@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
-import { db } from '../../firebase';
+import { db } from '../firebase';
 import {
   approvedIntention,
   availableInternship,
@@ -20,7 +20,7 @@ import {
   finishedInternship,
   pendingApplication,
   pendingIntention
-} from '../../InternshipStates';
+} from '../InternshipStates';
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
 import EmptyHome from './EmptyHome';

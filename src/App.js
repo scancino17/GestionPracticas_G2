@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
 import useAuth from './providers/Auth';
-import DashboardEstudiante from './student/dashboard/DashboardEstudiante';
+import DashboardEstudiante from './student/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 import {
   createMuiTheme,

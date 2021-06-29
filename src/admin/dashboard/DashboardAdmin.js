@@ -21,7 +21,7 @@ import { Route, Switch, useHistory } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
-import InternshipIntention from '../internship/InternshipIntention';
+import InternshipIntention from '../intention/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -36,7 +36,7 @@ import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
-import ImportPracticeInsurance from '../import/ImportPracticeInsurance';
+import Insurance from '../insurance/Insurance';
 import CareerSelector from '../../utils/CareerSelector';
 import ReportsList from '../assessReports/ReportsList';
 import AssessReport from '../assessReports/AssessReport';
@@ -341,7 +341,7 @@ function DashboardAdmin({ sidebarProps }) {
           <InternshipIntention />
         </Route>
         <Route path='/insurance-list'>
-          <ImportPracticeInsurance />
+          <Insurance />
         </Route>
         <Route exact path='/internship-assessment'>
           <ReportsList />

@@ -6,40 +6,25 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  DialogActions,
   Dialog,
-  DialogContentText,
-  withStyles,
-  DialogContent
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  List
 } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
-import { grey } from '@material-ui/core/colors';
-const ApproveButton = withStyles((theme) => ({
-  root: {
-    color: theme.palette.primary.main
-  }
-}))(Button);
 
-const SecondaryButton = withStyles((theme) => ({
-  root: {
-    color: grey[700]
-  }
-}))(Button);
+function UploadModal({ application, close, show }) {
+  const [file, setFile] = useState([]);
 
-function ApprovalModal({ application, closeModal, showApprovalModal }) {
-  const [letterFile, setLetterFile] = useState([]);
-
-  function handleLetterFile(files) {
-    setLetterFile(files);
-  }
-  function handleApprove() {
+  function handleSubmit() {
     const { studentId, internshipId } = application;
 
-    letterFile.forEach((file) => {
+    file.forEach((file) => {
       storage
         .ref()
         .child(
@@ -47,52 +32,48 @@ function ApprovalModal({ application, closeModal, showApprovalModal }) {
         )
         .put(file);
     });
+
     db.collection('applications')
       .doc(application.aplicationId)
-      .set(
-        { seguroDisponible: true, alreadyDownloaded: true },
-        { merge: true }
-      );
-    closeModal();
+      .update({ seguroDisponible: true, alreadyDownloaded: true });
+
+    close();
   }
+
   return (
-    <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
+    <Dialog fullWidth open={show} onClose={close}>
+      <DialogTitle>
+        Adjunte el seguro de práctica de {application.studentName}
+      </DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Adjunte el seguro de práctica de {application.studentName}
-        </DialogContentText>
-        <DropzoneArea showFileNames onChange={handleLetterFile} />
-        <DialogContentText />
+        <DropzoneArea showFileNames onChange={(files) => setFile(files)} />
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
-        <ApproveButton onClick={handleApprove}>Enviar seguro</ApproveButton>
+        <Button onClick={close}>Cancelar</Button>
+        <Button variant='contained' color='primary' onClick={handleSubmit}>
+          Enviar seguro
+        </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-function AprobadosItem({ application, careerId }) {
-  const [showApprovalModal, setShowApprovalModal] = useState();
-  const closeModal = () => {
-    setShowApprovalModal(false);
-  };
+function StudentItem({ application }) {
+  const [showModal, setShowModal] = useState();
 
   return (
     <>
-      <Container>
-        <ListItem button onClick={(e) => setShowApprovalModal(true)}>
-          <ListItemText
-            primary={application.studentName}
-            secondary={`Práctica ${application.internshipNumber} - ${application.Empresa} - ${application.email}`}
-          />
-        </ListItem>
-        <Divider />
-      </Container>
-      <ApprovalModal
+      <ListItem button onClick={(e) => setShowModal(true)}>
+        <ListItemText
+          primary={application.studentName}
+          secondary={`Práctica ${application.internshipNumber} - ${application.Empresa} - ${application.email}`}
+        />
+      </ListItem>
+      <Divider />
+      <UploadModal
         application={application}
-        closeModal={closeModal}
-        showApprovalModal={showApprovalModal}
+        close={() => setShowModal(false)}
+        show={showModal}
       />
     </>
   );
@@ -125,13 +106,14 @@ function ExportApprovedStudent() {
           }
           db.collection('applications')
             .doc(doc.id)
-            .set({ aplicationId: doc.id }, { merge: true });
+            .update({ aplicationId: doc.id });
         });
 
         setusersExport([...exportar]);
         setseguroUsuario([...seguro]);
       });
   }, []);
+
   function YearMonthDay(date) {
     return date.toLocaleTimeString(navigator.language, {
       year: 'numeric',
@@ -139,6 +121,7 @@ function ExportApprovedStudent() {
       day: '2-digit'
     });
   }
+
   useEffect(() => {
     db.collection('users').onSnapshot((querySnapshot) => {
       const user = [];
@@ -149,7 +132,7 @@ function ExportApprovedStudent() {
     });
   }, []);
 
-  var downloadTxtFile = () => {
+  function downloadTxtFile() {
     var approvedStudents = '';
 
     usersExport.forEach((doc) => {
@@ -190,9 +173,10 @@ function ExportApprovedStudent() {
     usersExport.forEach((doc) => {
       db.collection('applications')
         .doc(doc.aplicationId)
-        .set({ alreadyDownloaded: true }, { merge: true });
+        .update({ alreadyDownloaded: true });
     });
-  };
+  }
+
   return (
     <Grid container direction='column'>
       <div
@@ -208,29 +192,32 @@ function ExportApprovedStudent() {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Button
-          color='primary'
-          variant='contained'
-          startIcon={<GetAppIcon />}
-          onClick={downloadTxtFile}>
-          Lista de estudiantes con postulación aprobada
-        </Button>
-      </Container>
+        <Grid container direction='column' spacing={2}>
+          <Grid item container justify='space-between'>
+            <Button
+              color='primary'
+              variant='contained'
+              startIcon={<GetAppIcon />}
+              onClick={downloadTxtFile}>
+              Lista de estudiantes con postulación aprobada
+            </Button>
+            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+          </Grid>
 
-      <Container style={{ marginTop: '2rem' }}>
-        <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+          <List>
+            {seguroUsuario.map((doc) => (
+              <>
+                {careerId === doc.careerId && (
+                  <StudentItem application={doc} careerId={careerId} />
+                )}
+                {careerId === 'general' && (
+                  <StudentItem application={doc} careerId={careerId} />
+                )}
+              </>
+            ))}
+          </List>
+        </Grid>
       </Container>
-      <Container></Container>
-      {seguroUsuario.map((doc) => (
-        <>
-          {careerId === doc.careerId && (
-            <AprobadosItem application={doc} careerId={careerId} />
-          )}
-          {careerId === 'general' && (
-            <AprobadosItem application={doc} careerId={careerId} />
-          )}
-        </>
-      ))}
     </Grid>
   );
 }

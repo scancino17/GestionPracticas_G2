@@ -54,7 +54,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     {
       label: 'Evaluar Prácticas',
       icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
-      path: '/internship-evaluation'
+      path: '/internship-assessment'
     },
     {
       label: 'Extensión de Prácticas',

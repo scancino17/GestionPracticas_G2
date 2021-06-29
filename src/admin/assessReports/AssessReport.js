@@ -27,7 +27,7 @@ import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
-function ReportEvaluate() {
+function AssessReport() {
   const [value, setValue] = useState(40);
   const { studentId } = useParams();
   const { internshipId } = useParams();
@@ -278,7 +278,7 @@ function ReportEvaluate() {
               onClick={() => (
                 handleChanges(),
                 SetShowChanges(false),
-                history.push('/internship-evaluation')
+                history.push('/internship-assessment')
               )}>
               Notificar cambios
             </Button>
@@ -363,7 +363,7 @@ function ReportEvaluate() {
             onClick={() => (
               handleEvaluate(),
               SetShowEvaluate(false),
-              history.push('/internship-evaluation')
+              history.push('/internship-assessment')
             )}>
             Confirmar Evaluación
           </Button>
@@ -373,4 +373,4 @@ function ReportEvaluate() {
   );
 }
 
-export default ReportEvaluate;
+export default AssessReport;

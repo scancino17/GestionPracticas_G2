@@ -46,7 +46,7 @@ const months = [
   'Diciembre'
 ];
 
-function ListExtension() {
+function ExtensionList() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
@@ -392,4 +392,4 @@ function IntershipItem({ intership }) {
   );
 }
 
-export default ListExtension;
+export default ExtensionList;

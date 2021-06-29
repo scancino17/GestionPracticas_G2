@@ -18,7 +18,7 @@ import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
 
-function PracticeReport() {
+function ReportsList() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
@@ -113,7 +113,7 @@ function PracticeReport() {
         <List>
           {filterInterships.map((intership) => (
             <>
-              <IntershipItem intership={intership} />
+              <ReportItem intership={intership} />
               <Divider />
             </>
           ))}
@@ -123,21 +123,23 @@ function PracticeReport() {
   );
 }
 
-function IntershipItem({ intership }) {
+function ReportItem({ intership }) {
   const history = useHistory();
 
   return (
     <ListItem
       button
       onClick={() =>
-        history.push(`/report-evaluated/${intership.studentId}/${intership.id}`)
+        history.push(
+          `/internship-assessment/${intership.studentId}/${intership.id}`
+        )
       }>
       <ListItemText primary={intership.name} />
       <ListItemSecondaryAction>
         <IconButton
           onClick={() =>
             history.push(
-              `/report-evaluated/${intership.studentId}/${intership.id}`
+              `/internship-assessment/${intership.studentId}/${intership.id}`
             )
           }>
           <NavigateNext />
@@ -146,4 +148,5 @@ function IntershipItem({ intership }) {
     </ListItem>
   );
 }
-export default PracticeReport;
+
+export default ReportsList;

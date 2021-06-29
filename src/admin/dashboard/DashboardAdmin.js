@@ -38,9 +38,9 @@ import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
 import ImportPracticeInsurance from '../import/ImportPracticeInsurance';
 import CareerSelector from '../../utils/CareerSelector';
-import PracticeReport from '../evaluatePractice/PracticeReport';
-import ReportEvaluate from '../evaluatePractice/ReportEvaluate';
-import ListExtension from '../extension/ListExtension';
+import ReportsList from '../assessReports/ReportsList';
+import AssessReport from '../assessReports/AssessReport';
+import ExtensionList from '../extension/ExtensionList';
 import CareersSettings from '../careersSettings/CareersSettings';
 import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
@@ -343,14 +343,14 @@ function DashboardAdmin({ sidebarProps }) {
         <Route path='/insurance-list'>
           <ImportPracticeInsurance />
         </Route>
-        <Route path='/internship-evaluation'>
-          <PracticeReport />
+        <Route exact path='/internship-assessment'>
+          <ReportsList />
         </Route>
-        <Route path='/report-evaluated/:studentId/:internshipId'>
-          <ReportEvaluate />
+        <Route path='/internship-assessment/:studentId/:internshipId'>
+          <AssessReport />
         </Route>
         <Route path='/extension-list/'>
-          <ListExtension />
+          <ExtensionList />
         </Route>
         <Route path='/careers-settings'>
           <CareersSettings />

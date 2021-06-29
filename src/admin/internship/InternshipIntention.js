@@ -284,7 +284,7 @@ const ApprovalModal = ({
   const { userData } = useAuth();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
-  const [reason, setReason] = useState();
+  const [reason, setReason] = useState('');
 
   function handleLetterFile(files) {
     setLetterFile(files);

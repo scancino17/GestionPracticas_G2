@@ -104,3 +104,31 @@ exports.listSupervisors = functions.https.onCall((data, context) => {
       return supervisors;
     });
 });
+
+exports.editSupervisor = functions.https.onCall((data, context) => {
+  admin
+    .auth()
+    .updateUser(data.uid, {
+      displayName: data.displayName
+    })
+    .then(() =>
+      admin.auth().setCustomUserClaims(data.uid, {
+        supervisor: true,
+        careerId: data.careerId
+      })
+    )
+    .then(() => console.log(`Updated supervisor ${data.uid}`))
+    .catch((error) =>
+      console.log('An error occured while editing supervisor: ', error)
+    );
+});
+
+exports.deleteSupervisor = functions.https.onCall((data, context) => {
+  admin
+    .auth()
+    .deleteUser(data.uid)
+    .then(() => console.log(`Deleted supervisor ${data.uid}`))
+    .catch((error) =>
+      console.log('An error occured while deleting supervisor: ', error)
+    );
+});

@@ -38,6 +38,9 @@ function PieChart(props) {
     let tempApproved = new Map();
     let tempRejected = new Map();
 
+    tempApproved.set('Todas las carreras', 0);
+    tempRejected.set('Todas las carreras', 0);
+
     const unsubscribe = db
       .collection('applications')
       .onSnapshot((querySnapshot) => {
@@ -60,6 +63,11 @@ function PieChart(props) {
               if (!tempRejected.has(careers.get(doc.careerId)))
                 tempRejected.set(careers.get(doc.careerId), 0);
 
+              tempApproved.set(
+                'Todas las carreras',
+                tempApproved.get('Todas las carreras') + 1
+              );
+
               break;
             case 'Rechazado':
               if (tempRejected.has(careers.get(doc.careerId))) {
@@ -71,6 +79,11 @@ function PieChart(props) {
 
               if (!tempApproved.has(careers.get(doc.careerId)))
                 tempApproved.set(careers.get(doc.careerId), 0);
+
+              tempRejected.set(
+                'Todas las carreras',
+                tempRejected.get('Todas las carreras') + 1
+              );
 
               break;
             default:
@@ -120,7 +133,14 @@ function PieChart(props) {
             rejected.get(careers.get(props.careerId))
           )
         );
-      else setData(noData());
+      else if (props.careerId === 'general') {
+        setData(
+          genData(
+            approved.get('Todas las carreras'),
+            rejected.get('Todas las carreras')
+          )
+        );
+      } else setData(noData());
     }
   }, [props.careerId]);
 

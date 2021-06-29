@@ -242,7 +242,6 @@ function DashboardAdmin({ sidebarProps }) {
                     <CareerSelector
                       careerId={careerId}
                       setCareerId={setCareerId}
-                      excludeGeneral
                     />
                   </CardHeader>
                   <CardBody>

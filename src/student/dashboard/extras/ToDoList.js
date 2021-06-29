@@ -156,9 +156,7 @@ function ToDoList({ done, reason }) {
   const [openSecure, setOpenSecure] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reasonExtension, setReasonExtension] = useState('');
-
   const [statusExtension, setStatusExtension] = useState('');
-  const [dateExtension, setDateExtension] = useState(new Date());
   const [survey, setSurvey] = useState([]);
   const [openSendReport, setOpenSendReport] = useState(false);
 
@@ -170,19 +168,22 @@ function ToDoList({ done, reason }) {
       step: 0
     });
   }
+
   useEffect(() => {
     if (userData.currentInternship) {
       const unsubscribe = db
         .collection('internships')
         .doc(userData.currentInternship.id)
         .onSnapshot((doc) => {
-          setInternship(doc.data());
-          setReasonExtension(doc.data().reasonExtension);
-          setStatusExtension(doc.data().extensionStatus);
+          const data = doc.data();
+          setInternship(data);
+          setReasonExtension(data.reasonExtension);
+          setStatusExtension(data.extensionStatus);
         });
       return unsubscribe;
     }
   }, []);
+
   useEffect(() => {
     if (userData.currentInternship) {
       db.collection('applications')
@@ -202,203 +203,194 @@ function ToDoList({ done, reason }) {
   }, []);
 
   return (
-    <>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <Accordion defaultExpanded>
-          <AccordionSummary
-            expandIcon={<FaChevronDown />}
-            aria-controls='panel1a-content'
-            id='panel1a-header'>
-            <Typography variant='h5'>Lista de Pendientes</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            {done ? (
-              <Grid container direction='column' alignItems='center'>
-                <img src='AllDone.png' alt='Vacio' />
-                <Typography variant='h6'>
-                  No tienes tareas pendientes de momento.
-                </Typography>
-                <Typography color='textSecondary' variant='body2'>
-                  Ve, descansa. Si surje algo, te avisamos ;)
-                </Typography>
-              </Grid>
-            ) : (
-              <Grid direction='column' style={{ width: '100%' }}>
-                <ToDoItem
-                  icon={<FiDownload className={classes.icon} />}
-                  title='Descargar Documentos'
-                  body='Descarga los documentos que tu carrera solicita adjuntar.'
-                  buttonText='Descargar'
-                  buttonOnClick={() => setOpenDocs(true)}
-                />
-                <Divider />
-                {userData.step === 1 &&
-                  !(
-                    internship && internship.status === changeDetailsApplication
-                  ) && (
-                    <>
-                      <ToDoItem
-                        icon={<FaWpforms className={classes.icon} />}
-                        title='Completar Formulario de Inscripción de Práctica'
-                        body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
-                        buttonText={
-                          internship && internship.status === sentApplication
-                            ? 'En revisión'
-                            : 'Completar'
-                        }
-                        reason={reason}
-                        internship={internship}
-                        buttonOnClick={() => history.push('/send-form')}
-                        disabled={
-                          internship && internship.status === sentApplication
-                        }
-                      />
-
-                      <Divider />
-                    </>
-                  )}
-                {internship && internship.status === changeDetailsApplication && (
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Accordion defaultExpanded>
+        <AccordionSummary
+          expandIcon={<FaChevronDown />}
+          aria-controls='panel1a-content'
+          id='panel1a-header'>
+          <Typography variant='h5'>Lista de Pendientes</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          {done ? (
+            <Grid container direction='column' alignItems='center'>
+              <img src='AllDone.png' alt='Vacio' />
+              <Typography variant='h6'>
+                No tienes tareas pendientes de momento.
+              </Typography>
+              <Typography color='textSecondary' variant='body2'>
+                Ve, descansa. Si surje algo, te avisamos ;)
+              </Typography>
+            </Grid>
+          ) : (
+            <Grid direction='column' style={{ width: '100%' }}>
+              <ToDoItem
+                icon={<FiDownload className={classes.icon} />}
+                title='Descargar Documentos'
+                body='Descarga los documentos que tu carrera solicita adjuntar.'
+                buttonText='Descargar'
+                buttonOnClick={() => setOpenDocs(true)}
+              />
+              <Divider />
+              {userData.step === 1 &&
+                !(
+                  internship && internship.status === changeDetailsApplication
+                ) && (
                   <>
                     <ToDoItem
                       icon={<FaWpforms className={classes.icon} />}
-                      title='Corregir Formulario'
-                      buttonText='Corregir'
-                      minorChanges={reason}
-                      buttonOnClick={() =>
-                        history.push(
-                          `/edit-form/${userData.currentInternship.lastApplication}`
-                        )
-                      }
-                    />
-                    <Divider />
-                  </>
-                )}
-                {userData.step === 2 && (
-                  <>
-                    <ToDoItem
-                      icon={<FiDownload className={classes.icon} />}
-                      title='Seguro de práctica'
-                      body='Para comenzar tu práctica necesitas descargar el seguro.'
+                      title='Completar Formulario de Inscripción de Práctica'
+                      body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
                       buttonText={
-                        practicalinsurance.seguroDisponible === false ||
-                        practicalinsurance.seguroDisponible === undefined
-                          ? 'En proceso'
-                          : 'Descargar'
+                        internship && internship.status === sentApplication
+                          ? 'En revisión'
+                          : 'Completar'
                       }
-                      buttonOnClick={() => setOpenSecure(true)}
+                      reason={reason}
+                      internship={internship}
+                      buttonOnClick={() => history.push('/send-form')}
                       disabled={
-                        practicalinsurance.seguroDisponible === false ||
-                        practicalinsurance.seguroDisponible === undefined
+                        internship && internship.status === sentApplication
                       }
                     />
                     <Divider />
                   </>
                 )}
-                {userData.step === 2 &&
-                  internship &&
-                  internship.status !== reportNeedsChanges && (
-                    <>
-                      <ToDoItem
-                        icon={
-                          <IoDocumentAttachOutline className={classes.icon} />
-                        }
-                        title='Enviar Informe'
-                        body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
-                        buttonText='Enviar'
-                        buttonOnClick={
-                          () => setOpenSendReport(true)
-                          //history.push('/evaluation-report/')
-                        }
-                        disabled={
-                          internship && internship.status === sentReport
-                        }
-                      />
-                      <Divider />
-                    </>
-                  )}
-                {internship && internship.status === reportNeedsChanges && (
+              {internship && internship.status === changeDetailsApplication && (
+                <>
+                  <ToDoItem
+                    icon={<FaWpforms className={classes.icon} />}
+                    title='Corregir Formulario'
+                    buttonText='Corregir'
+                    minorChanges={reason}
+                    buttonOnClick={() =>
+                      history.push(
+                        `/edit-form/${userData.currentInternship.lastApplication}`
+                      )
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
+              {userData.step === 2 && (
+                <>
+                  <ToDoItem
+                    icon={<FiDownload className={classes.icon} />}
+                    title='Seguro de práctica'
+                    body='Para comenzar tu práctica necesitas descargar el seguro.'
+                    buttonText={
+                      practicalinsurance.seguroDisponible === false ||
+                      practicalinsurance.seguroDisponible === undefined
+                        ? 'En proceso'
+                        : 'Descargar'
+                    }
+                    buttonOnClick={() => setOpenSecure(true)}
+                    disabled={
+                      practicalinsurance.seguroDisponible === false ||
+                      practicalinsurance.seguroDisponible === undefined
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
+              {userData.step === 2 &&
+                internship &&
+                internship.status !== reportNeedsChanges && (
                   <>
                     <ToDoItem
                       icon={
                         <IoDocumentAttachOutline className={classes.icon} />
                       }
-                      title='Corregir Informe'
-                      body='El informe que has enviado requiere correcciones.'
-                      buttonText='Corregir'
-                      minorChanges={internship.reason}
-                      buttonOnClick={() => setOpenSendReport(true)}
-                      rejectREport
-                    />
-
-                    <Divider />
-                  </>
-                )}
-                {userData.step === 2 && (
-                  <>
-                    <ToDoItem
-                      icon={<AlarmAdd className={classes.icon} />}
-                      title='Solicitar extensión'
-                      body='Se enviará una solicitud para extender la fecha de término de su práctica'
-                      buttonText='Solicitar'
-                      reasonExtension={reasonExtension}
-                      statusExtension={statusExtension}
-                      disabled={
-                        internship &&
-                        internship.extensionStatus === sentExtension
+                      title='Enviar Informe'
+                      body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
+                      buttonText='Enviar'
+                      buttonOnClick={
+                        () => setOpenSendReport(true)
+                        //history.push('/evaluation-report/')
                       }
-                      buttonOnClick={() => setShowExtension(true)}
+                      disabled={internship && internship.status === sentReport}
                     />
                     <Divider />
                   </>
                 )}
-                {userData.step === 3 && (
+              {internship && internship.status === reportNeedsChanges && (
+                <>
                   <ToDoItem
-                    icon={<RiSurveyLine className={classes.icon} />}
-                    title='Responder Encuesta'
-                    body='Cuéntanos tu experiencia durante las semanas de práctica.'
-                    buttonText='Responder'
-                    buttonOnClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = survey.satisfactionSurvey;
-                    }}
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Corregir Informe'
+                    body='El informe que has enviado requiere correcciones.'
+                    buttonText='Corregir'
+                    minorChanges={internship.reason}
+                    buttonOnClick={() => setOpenSendReport(true)}
+                    rejectREport
                   />
-                )}
-                {userData.step === 4 && (
+                  <Divider />
+                </>
+              )}
+              {userData.step === 2 && (
+                <>
                   <ToDoItem
-                    icon={<RiSurveyLine className={classes.icon} />}
-                    title='Terminar proceso'
-                    body='Termina el proceso para ver tu nota'
-                    buttonText='Terminar'
-                    buttonOnClick={() => {
-                      Swal.fire({
-                        title: '¿Desea terminar su proceso de práctica?',
-                        showDenyButton: true,
-                        confirmButtonText: `Terminar`,
-                        denyButtonText: `Salir`
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          Swal.fire('¡Proceso terminado!', '', 'success').then(
-                            (result) => {
-                              if (result.isConfirmed) handleFinish();
-                            }
-                          );
-                        } else if (result.isDenied) {
-                          Swal.fire('¿No quieres ver tu nota?', '', 'info');
-                        }
-                      });
-                    }}
+                    icon={<AlarmAdd className={classes.icon} />}
+                    title='Solicitar extensión'
+                    body='Se enviará una solicitud para extender la fecha de término de su práctica'
+                    buttonText='Solicitar'
+                    reasonExtension={reasonExtension}
+                    statusExtension={statusExtension}
+                    disabled={
+                      internship && internship.extensionStatus === sentExtension
+                    }
+                    buttonOnClick={() => setShowExtension(true)}
                   />
-                )}
-              </Grid>
-            )}
-          </AccordionDetails>
-        </Accordion>
-        <SendReportDialog open={openSendReport} setOpen={setOpenSendReport} />
-        <DocsDialog open={openDocs} setOpen={setOpenDocs} />
-        <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
-        <DialogExtension open={showExtension} setOpen={setShowExtension} />
-      </MuiPickersUtilsProvider>
-    </>
+                  <Divider />
+                </>
+              )}
+              {userData.step === 3 && (
+                <ToDoItem
+                  icon={<RiSurveyLine className={classes.icon} />}
+                  title='Responder Encuesta'
+                  body='Cuéntanos tu experiencia durante las semanas de práctica.'
+                  buttonText='Responder'
+                  buttonOnClick={(e) => {
+                    e.preventDefault();
+                    window.location.href = survey.satisfactionSurvey;
+                  }}
+                />
+              )}
+              {userData.step === 4 && (
+                <ToDoItem
+                  icon={<RiSurveyLine className={classes.icon} />}
+                  title='Terminar proceso'
+                  body='Termina el proceso para ver tu nota'
+                  buttonText='Terminar'
+                  buttonOnClick={() => {
+                    Swal.fire({
+                      title: '¿Desea terminar su proceso de práctica?',
+                      showDenyButton: true,
+                      confirmButtonText: `Terminar`,
+                      denyButtonText: `Salir`
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        Swal.fire('¡Proceso terminado!', '', 'success').then(
+                          (result) => {
+                            if (result.isConfirmed) handleFinish();
+                          }
+                        );
+                      } else if (result.isDenied) {
+                        Swal.fire('¿No quieres ver tu nota?', '', 'info');
+                      }
+                    });
+                  }}
+                />
+              )}
+            </Grid>
+          )}
+        </AccordionDetails>
+      </Accordion>
+      <SendReportDialog open={openSendReport} setOpen={setOpenSendReport} />
+      <DocsDialog open={openDocs} setOpen={setOpenDocs} />
+      <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
+      <DialogExtension open={showExtension} setOpen={setShowExtension} />
+    </MuiPickersUtilsProvider>
   );
 }
 function DialogExtension({ open, setOpen }) {

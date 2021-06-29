@@ -19,10 +19,13 @@ import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
 import {
   evaluatedInternship,
-  finishedInternship,
   reportNeedsChanges
 } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
+import { convertToRaw, EditorState } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
+import { Editor } from 'react-draft-wysiwyg';
+import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 function ReportEvaluate() {
   const [value, setValue] = useState(40);
@@ -31,7 +34,9 @@ function ReportEvaluate() {
   const [infoStudent, setInfoStudent] = useState();
   const [showChanges, SetShowChanges] = useState(false);
   const [showEvaluate, SetShowEvaluate] = useState(false);
-  const [changes, SetChanges] = useState('');
+  const [changesEditorState, setChangesEditorState] = useState(
+    EditorState.createEmpty()
+  );
   const history = useHistory();
   const [evaluateComment, setEvaluateComment] = useState('');
   const { userData } = useAuth();
@@ -42,7 +47,8 @@ function ReportEvaluate() {
       .get()
       .then((user) => setInfoStudent(user.data()));
   }, []);
-  function InternshipIntentionFileList({}) {
+
+  function DownloadButton() {
     const [url, setUrl] = useState();
 
     useEffect(() => {
@@ -57,24 +63,24 @@ function ReportEvaluate() {
     }, []);
 
     return (
-      <>
-        <Button
-          startIcon={<GetApp />}
-          variant='contained'
-          target='_blank'
-          href={url}
-          rel='noopener'>
-          Informe
-        </Button>
-      </>
+      <Button
+        startIcon={<GetApp />}
+        variant='contained'
+        target='_blank'
+        href={url}
+        rel='noopener'>
+        Ver informe
+      </Button>
     );
   }
 
   function handleChanges() {
-    db.collection('internships').doc(internshipId).update({
-      status: reportNeedsChanges,
-      reason: changes
-    });
+    db.collection('internships')
+      .doc(internshipId)
+      .update({
+        status: reportNeedsChanges,
+        reason: convertToRaw(changesEditorState.getCurrentContent())
+      });
 
     db.collection('mails').add({
       to: infoStudent.email,
@@ -82,7 +88,9 @@ function ReportEvaluate() {
         name: 'ReportFailed',
         data: {
           from_name: infoStudent.name,
-          reason: changes,
+          reason: draftToHtml(
+            convertToRaw(changesEditorState.getCurrentContent())
+          ),
           rechazado_por: userData.name
         }
       }
@@ -174,7 +182,7 @@ function ReportEvaluate() {
                       </Grid>
                       <Grid item>
                         <Container>
-                          <InternshipIntentionFileList />
+                          <DownloadButton />
                         </Container>
                       </Grid>
                     </Grid>
@@ -225,15 +233,39 @@ function ReportEvaluate() {
         <Dialog
           open={showChanges}
           onClose={() => SetShowChanges(false)}
+          maxWidth='md'
           fullWidth>
-          <DialogTitle>Solicitud de cambios</DialogTitle>
+          <DialogTitle>Solicitar cambios</DialogTitle>
           <DialogContent>
-            <TextField
-              fullWidth
-              label={'Cambios necesarios'}
-              multiline
-              rowsMax={4}
-              onChange={(e) => SetChanges(e.target.value)}
+            <Editor
+              editorState={changesEditorState}
+              onEditorStateChange={setChangesEditorState}
+              toolbar={{
+                options: [
+                  'inline',
+                  'blockType',
+                  'list',
+                  'textAlign',
+                  'link',
+                  'emoji'
+                ]
+              }}
+              editorStyle={{
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                minHeight: '16rem',
+                padding: '1rem'
+              }}
+              toolbarStyle={{
+                border: '1px solid #ccc',
+                borderRadius: '5px'
+              }}
+              wrapperStyle={{
+                padding: '1rem',
+                border: '1px solid #ccc',
+                borderRadius: '5px',
+                height: 'auto'
+              }}
             />
           </DialogContent>
           <DialogActions>
@@ -242,12 +274,13 @@ function ReportEvaluate() {
             </Button>
             <Button
               color='primary'
+              variant='contained'
               onClick={() => (
                 handleChanges(),
                 SetShowChanges(false),
                 history.push('/internship-evaluation')
               )}>
-              Confirmar solicitud
+              Notificar cambios
             </Button>
           </DialogActions>
         </Dialog>

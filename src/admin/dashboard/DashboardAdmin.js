@@ -201,7 +201,7 @@ function DashboardAdmin({ sidebarProps }) {
                 </CardBody>
                 <CardFooter stats>
                   <ExcelExporter
-                    filename={'Estado de los Alumnos por Carrera'}
+                    filename='Estado de los Alumnos por Carrera'
                     data={internStatus}
                   />
                 </CardFooter>
@@ -224,7 +224,7 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardBody>
                   <CardFooter stats>
                     <ExcelExporter
-                      filename={'Empresas mas Elegidas por los Practicantes'}
+                      filename='Empresas mas Elegidas por los Practicantes'
                       data={topCompaniesRegistered}
                     />
                   </CardFooter>
@@ -252,7 +252,7 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardBody>
                   <CardFooter stats>
                     <ExcelExporter
-                      filename={'Aprobados y Rechazados por Carrera'}
+                      filename='Aprobados y Rechazados por Carrera'
                       data={applicationsStatus}
                     />
                   </CardFooter>
@@ -275,7 +275,7 @@ function DashboardAdmin({ sidebarProps }) {
                 </CardBody>
                 <CardFooter stats>
                   <ExcelExporter
-                    filename={'Practicas registradas en el extranjero'}
+                    filename='Practicas registradas en el extranjero'
                     data={internCountries}
                   />
                 </CardFooter>

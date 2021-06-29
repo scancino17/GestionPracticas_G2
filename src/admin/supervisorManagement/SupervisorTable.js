@@ -251,7 +251,7 @@ const DeleteSupervisorModal = ({ closeModal, supervisor, update }) => {
               color='primary'
             />
           }
-          label={`Si, deseo eliminar la cuenta de ${supervisor.displayName}`}
+          label={`Sí, deseo eliminar la cuenta de ${supervisor.displayName}`}
         />
       </DialogContent>
       <DialogActions>

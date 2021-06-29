@@ -204,7 +204,7 @@ const IntentionItem = ({
             ¡Felicitaciones! Tu intención de práctica ha sido
           </Typography>
           <Typography className={classes.approvedText} variant='h4' color=''>
-            {' aprobada.'}
+            aprobada.
           </Typography>
         </Grid>
         {internship.reason && (

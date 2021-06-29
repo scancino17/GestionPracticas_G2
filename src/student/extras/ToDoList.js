@@ -422,7 +422,7 @@ function DialogExtension({ open, setOpen }) {
               rowsMax={4}
               fullWidth
               variant='outlined'
-              label={'Razon de la solicitud'}
+              label='Razon de la solicitud'
               value={reasonRequestExtension}
               onChange={(e) => setReasonRequestExtension(e.target.value)}
             />
@@ -439,7 +439,7 @@ function DialogExtension({ open, setOpen }) {
                   disableToolbar
                   variant='inline'
                   format='dd/MM/yyyy'
-                  label={'Nueva fecha de termino'}
+                  label='Nueva fecha de termino'
                   value={
                     dateExtension === ''
                       ? new Date()

@@ -285,7 +285,7 @@ function IntershipItem({ intership }) {
                   rowsMax={4}
                   fullWidth
                   variant='outlined'
-                  label={'Razon de la solicitud'}
+                  label='Razon de la solicitud'
                   value={internshipsExtension.reasonExtension}
                 />
               </Grid>
@@ -295,7 +295,7 @@ function IntershipItem({ intership }) {
                   rowsMax={4}
                   fullWidth
                   variant='outlined'
-                  label={'Fecha propuesta'}
+                  label='Fecha propuesta'
                   value={
                     internshipsExtension.dateExtension
                       ? TransformDate(
@@ -311,7 +311,7 @@ function IntershipItem({ intership }) {
                   rowsMax={4}
                   fullWidth
                   variant='outlined'
-                  label={'Fecha actual'}
+                  label='Fecha actual'
                   value={
                     application['Fecha de término']
                       ? TransformDate(application['Fecha de término'].toDate())
@@ -358,7 +358,7 @@ function IntershipItem({ intership }) {
             rowsMax={4}
             fullWidth
             variant='outlined'
-            label={'Observaciones'}
+            label='Observaciones'
             onChange={(e) => setReason(e.target.value)}
           />
         </DialogContent>

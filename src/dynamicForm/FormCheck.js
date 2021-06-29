@@ -18,14 +18,7 @@ import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
-import {
-  Assignment,
-  AssignmentLate,
-  Check,
-  Clear,
-  Edit,
-  Save
-} from '@material-ui/icons';
+import { AssignmentLate, Check, Clear, Edit, Save } from '@material-ui/icons';
 import FormView from './FormView';
 import {
   approvedApplication,
@@ -90,16 +83,19 @@ const useStyles = makeStyles((theme) => ({
     right: theme.spacing(2)
   }
 }));
+
 const DenyButton = withStyles((theme) => ({
   root: {
     color: theme.palette.error.main
   }
 }))(Button);
+
 const SecondaryButton = withStyles((theme) => ({
   root: {
     color: grey[700]
   }
 }))(Button);
+
 function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
@@ -113,7 +109,7 @@ function FormCheck() {
 
   const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [approvedReason, setApproverdReason] = useState('');
+  const [approveReason, setApproveReason] = useState('');
   const classes = useStyles();
 
   useEffect(() => {
@@ -364,7 +360,7 @@ function FormCheck() {
             </DialogContentText>
             <TextField
               fullWidth
-              label={'Razón de rechazo'}
+              label='Razón de rechazo'
               multiline
               rowsMax={4}
               onChange={(e) => setRejectReason(e.target.value)}
@@ -393,14 +389,14 @@ function FormCheck() {
           <DialogTitle>Aprobar postulación de práctica</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {`¿Está seguro de aceptar la postulación de Práctica ?`}
+              ¿Está seguro de aceptar la postulación de Práctica ?
             </DialogContentText>
             <TextField
               fullWidth
-              label={'Razón de aprovación'}
+              label='Razón de aprobación'
               multiline
               rowsMax={4}
-              onChange={(e) => setApproverdReason(e.target.value)}
+              onChange={(e) => setApproveReason(e.target.value)}
             />
           </DialogContent>
           <DialogActions>
@@ -430,7 +426,7 @@ function FormCheck() {
           <DialogContent>
             <TextField
               fullWidth
-              label={'Cambios necesarios'}
+              label='Cambios necesarios'
               multiline
               rowsMax={4}
               onChange={(e) => setMinorChanges(e.target.value)}

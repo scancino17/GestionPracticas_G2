@@ -19,7 +19,7 @@ import { storage } from '../firebase';
 import { customTypes, formTypes } from './formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-
+import useAuth from '../providers/Auth';
 function InternshipIntentionFileList({
   student,
   internship,
@@ -65,7 +65,7 @@ function FormView({
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
-
+  const { user } = useAuth();
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);
@@ -105,7 +105,7 @@ function FormView({
                   value={element.value}
                   onChange={(e) =>
                     !readOnly &&
-                    !element.readOnly &&
+                    (!element.readOnly || user.admin) &&
                     updateItem(index, 'value', e.target.value)
                   }
                 />

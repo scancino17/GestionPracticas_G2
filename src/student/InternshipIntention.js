@@ -441,7 +441,7 @@ const IntentionItem = ({
       onChange={changeExpanded(internship.id)}>
       <AccordionSummary expandIcon={<ExpandMore />}>
         <Typography className={classes.heading}>
-          Estado de práctica {internship.applicationNumber}
+          Estado de práctica {internship.internshipNumber}
         </Typography>
         {StateIcon()}
       </AccordionSummary>

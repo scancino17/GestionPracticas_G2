@@ -68,7 +68,7 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`Práctica ${internship.applicationNumber} - ${internship.applicationDataEmpresa}`}
+          secondary={`Práctica ${internship.internshipNumber} - ${internship.applicationData.Empresa}`}
         />
       </ListItem>
       <Divider />
@@ -110,7 +110,7 @@ function Insurance() {
             );
 
             exportar.push({
-              ...data,
+              ...data.applicationData,
               stringInicio: inicio,
               stringTermino: termino
             });
@@ -153,12 +153,13 @@ function Insurance() {
             color='primary'
             variant='contained'
             startIcon={<GetAppIcon />}
-            onClick={(e) =>
-              usersExport.forEach((doc) => {
-                db.collection('internships')
+            onClick={() =>
+              usersExport.forEach((doc) =>
+                db
+                  .collection('internships')
                   .doc(doc.id)
-                  .update({ alreadyDownloaded: true });
-              })
+                  .update({ alreadyDownloaded: true })
+              )
             }>
             Lista de estudiantes con postulación aprobada
           </Button>

@@ -227,7 +227,7 @@ function ApplicationDetails() {
               id='application-number'
               name='application-number'
               label='Número de práctica'
-              value={`Práctica ${application.applicationNumber}`}
+              value={`Práctica ${application.internshipNumber}`}
               disabled
               InputLabelProps={{ htmlFor: 'application-number' }}
             />

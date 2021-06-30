@@ -63,7 +63,7 @@ function ApplicationItem({ application }) {
       <Grid item xs={12}>
         <Card onClick={() => history.push(`/applications/${application.id}`)}>
           <CardContent>
-            <Typography variant='h4'>{`Solicitud de práctica ${application.applicationNumber}`}</Typography>
+            <Typography variant='h4'>{`Solicitud de práctica ${application.internshipNumber}`}</Typography>
             <Typography variant='h5'>{application.companyName}</Typography>
             <Chip
               className={practicaColorStatus(application.status)}

@@ -39,9 +39,7 @@ function ReportsList() {
     const dbRef = user.careerId
       ? db.collection('internships').where('careerId', '==', user.careerId)
       : db.collection('internships');
-    let unsubscribe;
-
-    unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
       const list = [];
       querySnapshot.forEach((doc) => {
         const data = doc.data();

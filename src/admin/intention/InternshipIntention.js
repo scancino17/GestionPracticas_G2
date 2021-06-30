@@ -115,7 +115,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
     setShowRejectModal(false);
   };
 
-  const { internshipId, name, applicationNumber } = application;
+  const { internshipId, name, internshipNumber } = application;
   return (
     <>
       <Accordion
@@ -126,7 +126,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
           <Typography
             className={
               classes.secondaryHeading
-            }>{`Intención de práctica ${applicationNumber}`}</Typography>
+            }>{`Intención de práctica ${internshipNumber}`}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Grid container>
@@ -166,7 +166,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               <Typography>{application.email}</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
-              <Typography>Práctica {application.applicationNumber}</Typography>
+              <Typography>Práctica {application.internshipNumber}</Typography>
             </Grid>
           </Grid>
         </AccordionDetails>
@@ -244,7 +244,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
       <DialogTitle>Rechazar intención de práctica</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {`¿Está seguro de rechazar Práctica ${application.applicationNumber} de ${application.name}?`}
+          {`¿Está seguro de rechazar Práctica ${application.internshipNumber} de ${application.name}?`}
         </DialogContentText>
         <TextField
           multiline
@@ -320,7 +320,7 @@ const ApprovalModal = ({
       .update({
         currentInternship: {
           id: internshipId,
-          number: application.applicationNumber
+          number: application.internshipNumber
         },
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
@@ -341,7 +341,7 @@ const ApprovalModal = ({
     <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
       <DialogContent>
-        <DialogContentText>{`Aprobar intención de Práctica ${application.applicationNumber} de ${application.name}.`}</DialogContentText>
+        <DialogContentText>{`Aprobar intención de Práctica ${application.internshipNumber} de ${application.name}.`}</DialogContentText>
         <DialogContentText>
           Adjunte los archivos correspondientes.
         </DialogContentText>

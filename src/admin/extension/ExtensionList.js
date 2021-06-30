@@ -59,7 +59,7 @@ function ExtensionList() {
     if (careerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === careerId);
     if (name !== '')
-      filtered = filtered.filter((item) => item.name.includes(name));
+      filtered = filtered.filter((item) => item.studentName.includes(name));
     return filtered;
   }
 
@@ -67,24 +67,17 @@ function ExtensionList() {
     const dbRef = user.careerId
       ? db.collection('internships').where('careerId', '==', user.careerId)
       : db.collection('internships');
-    let unsubscribe;
-    unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-      let list = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.extensionStatus === sentExtension) {
-          list.push({
-            id: doc.id,
-            name: data.studentName,
-            careerId: data.careerId,
-            ...data
-          });
-        }
-      });
+    const unsubscribe = dbRef
+      .where('extensionStatus', '==', sentExtension)
+      .onSnapshot((querySnapshot) => {
+        let list = [];
+        querySnapshot.forEach((doc) =>
+          list.push({ id: doc.id, ...doc.data() })
+        );
 
-      setInternships(list);
-      if (list) setFilterInternships(applyFilter(list));
-    });
+        setInternships(list);
+        if (list) setFilterInternships(applyFilter(list));
+      });
 
     return unsubscribe;
   }, []);
@@ -125,7 +118,7 @@ function ExtensionList() {
         <List>
           {filterInterships.map((internship) => (
             <>
-              <IntershipItem key={internship.id} intership={internship} />
+              <IntershipItem key={internship.id} internship={internship} />
               <Divider />
             </>
           ))}
@@ -135,13 +128,10 @@ function ExtensionList() {
   );
 }
 
-function IntershipItem({ intership: internship }) {
+function IntershipItem({ internship }) {
   const [showApproved, setShowApproved] = useState(false);
-  const [showDeined, setShowDenied] = useState(false);
+  const [showDenied, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
-  const [application, setApplication] = useState();
-  const [internshipsExtension, setInternshipsExtension] = useState();
-  const [idApplication, setIdApplication] = useState();
   const [reason, setReason] = useState('');
   const { user } = useAuth();
 
@@ -153,7 +143,7 @@ function IntershipItem({ intership: internship }) {
 
   function handleExtensionDenied() {
     db.collection('internships')
-      .doc(internshipsExtension.id)
+      .doc(internship.id)
       .update({
         extensionStatus: deniedExtension,
         dateExtension: '',
@@ -162,11 +152,11 @@ function IntershipItem({ intership: internship }) {
         //cambiar statusExeption
       });
     db.collection('mails').add({
-      to: application.email,
+      to: internship.studentEmail,
       template: {
         name: 'ExtensionFailed',
         data: {
-          from_name: application['Nombre del estudiante'],
+          from_name: internship.studentName,
           result: reason,
           rechazado_por: user.displayName
         }
@@ -175,39 +165,43 @@ function IntershipItem({ intership: internship }) {
   }
 
   function handleExtensionApproved() {
-    application['Fecha de término'] = internshipsExtension.dateExtension;
-    application['form'].forEach((step) => {
-      step['form'].forEach((camp) => {
-        if (
-          camp['type'] === 'Campos predefinidos' &&
-          camp['name'] === 'Fecha de término'
-        ) {
-          //cambiar el valor en el formulario
-          camp['value'] = internshipsExtension.dateExtension;
-        }
-      });
-    });
-    //actualizar en la base de datos
     db.collection('applications')
-      .doc(idApplication)
-      .update({
-        ...application
-      });
+      .doc(internship.applicationId)
+      .get()
+      .then((doc) => {
+        const application = doc.data();
+        application['Fecha de término'] = internship.dateExtension;
+        application['form'].forEach((step) => {
+          step['form'].forEach((camp) => {
+            if (
+              camp['type'] === 'Campos predefinidos' &&
+              camp['name'] === 'Fecha de término'
+            ) {
+              //cambiar el valor en el formulario
+              camp['value'] = internship.dateExtension;
+            }
+          });
+        });
+        //actualizar en la base de datos
+        db.collection('applications')
+          .doc(internship.applicationId)
+          .update({ ...application });
 
-    db.collection('internships').doc(internshipsExtension.id).update({
-      extensionStatus: approvedExtension,
-      dateExtension: internshipsExtension.dateExtension,
-      reasonExtension: reason,
-      'applicationData.Fecha de término': internshipsExtension.dateExtension
-      //cambiar statusExeption
-    });
+        db.collection('internships').doc(internship.id).update({
+          extensionStatus: approvedExtension,
+          dateExtension: internship.dateExtension,
+          reasonExtension: reason,
+          'applicationData.Fecha de término': internship.dateExtension
+          //cambiar statusExeption
+        });
+      });
 
     db.collection('mails').add({
-      to: application.email,
+      to: internship.studentEmail,
       template: {
         name: 'ExtensionApproved ',
         data: {
-          from_name: application['Nombre del estudiante'],
+          from_name: internship.studentName,
           aprobado_por: user.displayName,
           razon_aprobacion: reason ? reason : 'Sin observaciones'
         }
@@ -215,30 +209,11 @@ function IntershipItem({ intership: internship }) {
     });
   }
 
-  useEffect(() => {
-    db.collection('users')
-      .doc(internship.studentId)
-      .get()
-      .then((user) => {
-        setIdApplication(user.data().currentInternship.lastApplication);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (idApplication) {
-      db.collection('applications')
-        .doc(idApplication)
-        .get()
-        .then((appl) => setApplication(appl.data()));
-    }
-  }, [idApplication]);
-
   return (
     <>
       <ListItem
         button
         onClick={() => {
-          setInternshipsExtension(internship);
           setShowExtension(true);
         }}>
         <ListItemText
@@ -248,20 +223,18 @@ function IntershipItem({ intership: internship }) {
         <ListItemSecondaryAction>
           <IconButton
             onClick={() => {
-              setInternshipsExtension(internship);
               setShowExtension(true);
             }}>
             <NavigateNext />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-      {internshipsExtension && (
+      {internship && (
         <Dialog
           open={showExtension}
           onClose={() => setShowExtension(false)}
           TransitionComponent={Transition}
-          maxWidth='sm'
-          fullWidth={true}>
+          fullWidth>
           <DialogTitle>Solicitud de extensión</DialogTitle>
 
           <DialogContent>
@@ -273,20 +246,20 @@ function IntershipItem({ intership: internship }) {
                   fullWidth
                   variant='outlined'
                   label='Razón de la solicitud'
-                  value={internshipsExtension.reasonExtension}
+                  value={internship.reasonExtension}
                 />
               </Grid>
               <Grid item>
                 <TextField
-                  multiline
-                  rows={4}
                   fullWidth
                   variant='outlined'
-                  label='Fecha propuesta'
+                  label='Fecha actual'
                   value={
-                    internshipsExtension.dateExtension
+                    internship.applicationData['Fecha de término']
                       ? TransformDate(
-                          internshipsExtension.dateExtension.toDate()
+                          internship.applicationData[
+                            'Fecha de término'
+                          ].toDate()
                         )
                       : null
                   }
@@ -294,14 +267,12 @@ function IntershipItem({ intership: internship }) {
               </Grid>
               <Grid item>
                 <TextField
-                  multiline
-                  rowsMax={4}
                   fullWidth
                   variant='outlined'
-                  label='Fecha actual'
+                  label='Fecha propuesta'
                   value={
-                    application['Fecha de término']
-                      ? TransformDate(application['Fecha de término'].toDate())
+                    internship.dateExtension
+                      ? TransformDate(internship.dateExtension.toDate())
                       : null
                   }
                 />
@@ -327,14 +298,13 @@ function IntershipItem({ intership: internship }) {
         </Dialog>
       )}
       <Dialog
-        open={showApproved || showDeined}
+        open={showApproved || showDenied}
         onClose={() => {
           setShowApproved(false);
           setShowDenied(false);
         }}
         TransitionComponent={Transition}
-        maxWidth='sm'
-        fullWidth={true}>
+        fullWidth>
         <DialogTitle>
           {showApproved ? 'Aprobar' : 'Rechazar'} solicitud de extensión
         </DialogTitle>
@@ -361,11 +331,8 @@ function IntershipItem({ intership: internship }) {
             variant='contained'
             color={showApproved ? 'primary' : 'secondary'}
             onClick={() => {
-              if (showApproved) {
-                handleExtensionApproved();
-              } else {
-                handleExtensionDenied();
-              }
+              if (showApproved) handleExtensionApproved();
+              else handleExtensionDenied();
               setShowApproved(false);
               setShowDenied(false);
               setShowExtension(false);

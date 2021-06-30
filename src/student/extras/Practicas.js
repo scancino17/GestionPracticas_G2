@@ -28,7 +28,7 @@ function Practica({ practica }) {
           </Hidden>
         </Grid>
         <Grid item>
-          <Typography variant='h6'>{`Práctica ${practica.applicationNumber}`}</Typography>
+          <Typography variant='h6'>{`Práctica ${practica.internshipNumber}`}</Typography>
         </Grid>
       </Grid>
       <Grid item>

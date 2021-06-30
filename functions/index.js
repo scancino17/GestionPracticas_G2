@@ -40,10 +40,11 @@ exports.importStudents = functions.https.onCall((data, context) => {
                   .firestore()
                   .collection('internships')
                   .add({
-                    applicationNumber: i + 1,
+                    internshipNumber: i + 1,
                     careerId: data.careerId,
                     careerName: data.careerName,
                     status: 'Práctica disponible',
+                    studentEmail: data.email,
                     studentId: userRecord.uid,
                     studentName: data.name
                   });

@@ -212,9 +212,11 @@ function SendForm({ edit }) {
                     onClick={() => {
                       Swal.fire({
                         title: '¿Desea enviar su solicitud?',
-                        showDenyButton: true,
+                        text: 'Revisa bien el formulario antes de enviarlo',
+                        icon: 'warning',
+                        showCancelButton: true,
                         confirmButtonText: `Enviar`,
-                        denyButtonText: `Salir`
+                        cancelButtonText: `Cancelar`
                       }).then((result) => {
                         if (result.isConfirmed) {
                           handleSave();
@@ -222,12 +224,6 @@ function SendForm({ edit }) {
                             (result) => {
                               if (result.isConfirmed) history.push('/');
                             }
-                          );
-                        } else if (result.isDenied) {
-                          Swal.fire(
-                            'Revisa bien tu formulario antes de enviarlo',
-                            '',
-                            'info'
                           );
                         }
                       });

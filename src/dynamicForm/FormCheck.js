@@ -146,12 +146,13 @@ function FormCheck() {
 
     db.collection('applications')
       .doc(applicationId)
-      .update({ status: 'Aprobado' });
+      .update({ status: 'Aprobado', reason: approveReason });
 
     db.collection('internships').doc(application.internshipId).update({
       status: approvedApplication,
       applicationData: applicationData,
-      applicationId: applicationId
+      applicationId: applicationId,
+      reason: approveReason
     });
 
     db.collection('users')

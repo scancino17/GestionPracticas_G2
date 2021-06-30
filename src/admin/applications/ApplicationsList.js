@@ -31,9 +31,10 @@ function ApplicationsList() {
   const [statuses, setStatuses] = useState({
     reviewing: true,
     approved: false,
-    rejected: false
+    rejected: false,
+    needChanges: false
   });
-  const { reviewing, approved, rejected } = statuses;
+  const { reviewing, approved, rejected, needChanges } = statuses;
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
   const { user } = useAuth();
@@ -67,6 +68,10 @@ function ApplicationsList() {
       filtered = filtered.filter((item) => item.status !== 'Aprobado');
     if (!rejected)
       filtered = filtered.filter((item) => item.status !== 'Rechazado');
+    if (!needChanges)
+      filtered = filtered.filter(
+        (item) => item.status !== 'Necesita cambios menores'
+      );
     return filtered;
   }
 
@@ -130,6 +135,16 @@ function ApplicationsList() {
                     />
                   }
                   label='Rechazadas'
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={needChanges}
+                      onChange={handleCheckboxes}
+                      name='needChanges'
+                    />
+                  }
+                  label='Necesita cambios'
                 />
               </FormGroup>
             </FormControl>

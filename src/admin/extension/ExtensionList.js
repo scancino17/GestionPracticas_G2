@@ -26,7 +26,7 @@ import {
 } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
-import { firebase } from '../../firebase';
+import firebase from '../../firebase';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;

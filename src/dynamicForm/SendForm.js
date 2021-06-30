@@ -94,7 +94,6 @@ function SendForm({ edit }) {
     });
   }
   function handleSave() {
-    console.log(formFull);
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta
     extractFiles();

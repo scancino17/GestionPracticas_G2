@@ -136,7 +136,6 @@ function StateBanner() {
 
   useEffect(() => {
     const internshipId = userData.currentInternship.id;
-    console.log(internshipId);
     db.collection('internships')
       .doc(internshipId)
       .get()

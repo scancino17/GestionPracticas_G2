@@ -20,6 +20,7 @@ import { useHistory } from 'react-router-dom';
 
 function ImportStudents() {
   const history = useHistory();
+  const [careers, setCareers] = useState({});
   const [list, setList] = useState([]);
   const [currentUsersEmails, setCurrentUsersEmails] = useState([]);
 
@@ -30,6 +31,15 @@ function ImportStudents() {
         const emails = [];
         querySnapshot.forEach((user) => emails.push(user.data().email));
         setCurrentUsersEmails(emails);
+      });
+    db.collection('careers')
+      .get()
+      .then((querySnapshot) => {
+        const careersNames = {};
+        querySnapshot.forEach(
+          (career) => (careersNames[career.id] = career.data().name)
+        );
+        setCareers(careersNames);
       });
   }, []);
 
@@ -70,6 +80,7 @@ function ImportStudents() {
         able: true,
         birthDate: Date.parse(row[8]),
         careerId: row[1].toString(),
+        careerName: careers[row[1]],
         careerPlan: row[9],
         communeOrigin: row[16],
         email: row[5],

@@ -42,6 +42,7 @@ exports.importStudents = functions.https.onCall((data, context) => {
                   .add({
                     applicationNumber: i + 1,
                     careerId: data.careerId,
+                    careerName: data.careerName,
                     status: 'Práctica disponible',
                     studentId: userRecord.uid,
                     studentName: data.name

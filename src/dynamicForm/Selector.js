@@ -45,7 +45,6 @@ function Selector({
   }
 
   function handleOnChange(event, newValue) {
-    console.log(event, newValue);
     if (newValue) onParentChange(newValue);
     if (typeof newValue === 'string') {
       setValue(createOption(newValue));

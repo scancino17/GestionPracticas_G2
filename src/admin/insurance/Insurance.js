@@ -108,8 +108,8 @@ function Insurance() {
             const inicio = YearMonthDay(
               data.applicationData['Fecha de inicio'].toDate()
             );
-
             exportar.push({
+              id: data.id,
               ...data.applicationData,
               stringInicio: inicio,
               stringTermino: termino

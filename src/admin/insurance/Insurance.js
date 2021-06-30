@@ -48,11 +48,20 @@ function UploadModal({ internship, close, show }) {
         Adjunte el seguro de práctica de {internship.studentName}
       </DialogTitle>
       <DialogContent>
-        <DropzoneArea showFileNames onChange={(files) => setFile(files)} />
+        <DropzoneArea
+          showFileNames
+          filesLimit={1}
+          acceptedFiles={['application/pdf']}
+          onChange={(files) => setFile(files)}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={close}>Cancelar</Button>
-        <Button variant='contained' color='primary' onClick={handleSubmit}>
+        <Button
+          variant='contained'
+          color='primary'
+          disabled={file.length === 0 ? true : false}
+          onClick={handleSubmit}>
           Enviar seguro
         </Button>
       </DialogActions>

@@ -125,8 +125,8 @@ function ImportStudents() {
               </Grid>
               <Grid item>
                 <DropzoneArea
-                  filesLimit={1}
                   showFileNames
+                  filesLimit={1}
                   acceptedFiles={[
                     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                   ]}

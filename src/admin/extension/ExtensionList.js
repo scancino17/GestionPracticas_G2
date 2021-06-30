@@ -55,7 +55,6 @@ function ExtensionList() {
 
   function applyFilter(list) {
     let filtered = [...list];
-
     if (careerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === careerId);
     if (name !== '')
@@ -70,15 +69,13 @@ function ExtensionList() {
     const unsubscribe = dbRef
       .where('extensionStatus', '==', sentExtension)
       .onSnapshot((querySnapshot) => {
-        let list = [];
+        const list = [];
         querySnapshot.forEach((doc) =>
           list.push({ id: doc.id, ...doc.data() })
         );
-
         setInternships(list);
         if (list) setFilterInternships(applyFilter(list));
       });
-
     return unsubscribe;
   }, []);
 

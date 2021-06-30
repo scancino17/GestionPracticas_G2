@@ -151,7 +151,6 @@ function ToDoList({ done, reason }) {
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const history = useHistory();
-  const [practicalinsurance, setPracticalinsurance] = useState([]);
   const [openSecure, setOpenSecure] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reasonExtension, setReasonExtension] = useState('');
@@ -181,18 +180,6 @@ function ToDoList({ done, reason }) {
           setStatusExtension(data.extensionStatus);
         });
       return unsubscribe;
-    }
-  }, []);
-
-  useEffect(() => {
-    if (userData.currentInternship) {
-      db.collection('applications')
-        .where('internshipId', '==', userData.currentInternship.id)
-        .onSnapshot((doc) =>
-          doc.forEach((app) => {
-            setPracticalinsurance(app.data());
-          })
-        );
     }
   }, []);
 
@@ -279,16 +266,12 @@ function ToDoList({ done, reason }) {
                     title='Seguro de práctica'
                     body='Para comenzar tu práctica necesitas descargar el seguro.'
                     buttonText={
-                      practicalinsurance.seguroDisponible === false ||
-                      practicalinsurance.seguroDisponible === undefined
+                      internship && !internship.seguroDisponible
                         ? 'En proceso'
                         : 'Descargar'
                     }
                     buttonOnClick={() => setOpenSecure(true)}
-                    disabled={
-                      practicalinsurance.seguroDisponible === false ||
-                      practicalinsurance.seguroDisponible === undefined
-                    }
+                    disabled={internship && !internship.seguroDisponible}
                   />
                   <Divider />
                 </>
@@ -514,8 +497,9 @@ function SendReportDialog({ open, setOpen }) {
       <DialogContent>
         <Grid item xs={12}>
           <DropzoneArea
+            showFileNames
             filesLimit={1}
-            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            acceptedFiles={['application/pdf']}
             onChange={(file) => setFiles(file)}
           />
         </Grid>

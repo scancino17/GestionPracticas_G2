@@ -345,7 +345,11 @@ const ApprovalModal = ({
         <DialogContentText>
           Adjunte los archivos correspondientes.
         </DialogContentText>
-        <DropzoneArea showFileNames onChange={handleLetterFile} />
+        <DropzoneArea
+          showFileNames
+          acceptedFiles={['application/pdf']}
+          onChange={handleLetterFile}
+        />
         <DialogContentText />
         <DialogContentText>
           Puede añadir observaciones pertinentes en el siguiente campo:

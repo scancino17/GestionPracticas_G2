@@ -123,6 +123,7 @@ function FormView({
                       !admin ? (
                         <DropzoneArea
                           initialFiles={element.value}
+                          showFileNames
                           filesLimit={1}
                           accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                           onChange={(files) =>

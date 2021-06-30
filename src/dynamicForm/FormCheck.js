@@ -150,7 +150,8 @@ function FormCheck() {
 
     db.collection('internships').doc(application.internshipId).update({
       status: approvedApplication,
-      applicationData: applicationData
+      applicationData: applicationData,
+      applicationId: applicationId
     });
 
     db.collection('users')

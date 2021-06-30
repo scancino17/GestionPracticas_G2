@@ -219,7 +219,14 @@ function FormCheck() {
 
     db.collection('users')
       .doc(application.studentId)
-      .update({ 'currentInternship.lastApplication': applicationId });
+      .update({
+        'currentInternship.lastApplication': applicationId,
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: StudentNotificationTypes.changeDetailsApplication,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
 
     db.collection('mails').add({
       to: applicationUser.email,

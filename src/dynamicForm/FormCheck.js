@@ -57,7 +57,6 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(2),
     right: theme.spacing(18)
   },
-
   fabMinorChanges: {
     position: 'fixed',
     zIndex: 1,
@@ -106,7 +105,6 @@ function FormCheck() {
   const [show, setShow] = useState(false);
   const [showMinorChanges, setShowMinorChanges] = useState(false);
   const [showApproved, setShowApproved] = useState(false);
-
   const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [approveReason, setApproveReason] = useState('');
@@ -143,17 +141,24 @@ function FormCheck() {
   }, [flag]);
 
   function handleApprove() {
+    const applicationData = application;
+    delete applicationData.form;
+
     db.collection('applications')
       .doc(applicationId)
       .update({ status: 'Aprobado' });
-    db.collection('internships')
-      .doc(application.internshipId)
-      .update({ status: approvedApplication });
+
+    db.collection('internships').doc(application.internshipId).update({
+      status: approvedApplication,
+      applicationData: applicationData
+    });
+
     db.collection('users')
       .doc(application.studentId)
       .update({
-        reason: rejectReason,
+        reason: approveReason,
         'currentInternship.lastApplication': applicationId,
+        'currentInternship.Empresa': applicationData.Empresa,
         step: 2,
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
@@ -166,9 +171,7 @@ function FormCheck() {
       to: applicationUser.email,
       template: {
         name: 'Approved',
-        data: {
-          from_name: applicationUser.name
-        }
+        data: { from_name: applicationUser.name }
       }
     });
   }
@@ -204,6 +207,7 @@ function FormCheck() {
       }
     });
   }
+
   function handleMinorChanges() {
     db.collection('internships')
       .doc(application.internshipId)
@@ -212,6 +216,7 @@ function FormCheck() {
     db.collection('applications')
       .doc(applicationId)
       .update({ status: 'Necesita cambios menores', reason: minorChanges });
+
     db.collection('users')
       .doc(application.studentId)
       .update({ 'currentInternship.lastApplication': applicationId });
@@ -261,7 +266,6 @@ function FormCheck() {
             <Clear />
             Rechazar
           </Fab>
-
           <Fab
             variant='extended'
             color='secondary'
@@ -356,7 +360,7 @@ function FormCheck() {
           <DialogTitle>Rechazar postulación de práctica</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              {`¿Está seguro de rechazar postulación de Práctica ?`}
+              ¿Está seguro de rechazar postulación de Práctica ?
             </DialogContentText>
             <TextField
               fullWidth

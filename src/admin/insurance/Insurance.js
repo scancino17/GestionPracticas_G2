@@ -136,7 +136,6 @@ function Insurance() {
   }
 
   function ExportarExcel() {
-    console.log(usersExport);
     return (
       <ExcelFile
         element={

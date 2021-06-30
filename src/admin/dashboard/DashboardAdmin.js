@@ -5,8 +5,6 @@ import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
 
 import {
-  MdFileDownload,
-  MdTimeline,
   MdMultilineChart,
   MdEqualizer,
   MdPieChart,
@@ -32,8 +30,6 @@ import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
 import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
-import LineChart from './extras/charts/LineChart';
-import MultiTypeChart from './extras/charts/MultiTypeChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';

@@ -14,7 +14,7 @@ import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
 import { useHistory, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { formTypes } from './formTypes';
+import { formTypes, customTypes } from './formTypes';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -100,6 +100,13 @@ function SendForm({ edit }) {
     const values = {};
     formFull.forEach((step) =>
       step.form.forEach((camp) => {
+        if (
+          camp.type === formTypes.formCustom &&
+          (camp.type2 === customTypes.formStartDate ||
+            camp.type2 === customTypes.formEndDate) &&
+          camp.value === ''
+        )
+          camp.value = new Date();
         values[camp.name] = camp.value;
       })
     );

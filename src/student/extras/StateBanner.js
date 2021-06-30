@@ -132,7 +132,7 @@ function StateBanner() {
   const [reasonExtension, setReasonExtension] = useState('');
   const [grade, setGrade] = useState('');
   const { userData } = useAuth();
-  const mounted = useRef(false);
+  const mounted = useRef(true);
 
   useEffect(() => {
     const internshipId = userData.currentInternship.id;
@@ -154,9 +154,9 @@ function StateBanner() {
     return () => (mounted.current = false);
   }, [userData]);
 
-  useEffect(() => {
-    mounted.current ? (mounted.current = true) : setShow(true);
-  }, [internshipState]);
+  // useEffect(() => {
+  //   mounted.current ? (mounted.current = true) : setShow(true);
+  // }, [internshipState]);
 
   return (
     show &&

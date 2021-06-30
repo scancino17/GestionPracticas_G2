@@ -6,7 +6,6 @@ function CustomStepper({ step }) {
     'Declarar intención de práctica',
     'Postular una práctica',
     'Práctica en curso',
-    'Evaluación de práctica',
     'Práctica Terminada'
   ];
 

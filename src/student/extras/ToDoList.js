@@ -344,7 +344,7 @@ function ToDoList({ done, reason }) {
                   <Divider />
                 </>
               )}
-              {userData.step === 3 && (
+              {/*userData.step === 3 && (
                 <ToDoItem
                   icon={<RiSurveyLine className={classes.icon} />}
                   title='Responder Encuesta'
@@ -355,8 +355,8 @@ function ToDoList({ done, reason }) {
                     window.location.href = survey.satisfactionSurvey;
                   }}
                 />
-              )}
-              {userData.step === 4 && (
+                )*/}
+              {/*userData.step === 4 && (
                 <ToDoItem
                   icon={<RiSurveyLine className={classes.icon} />}
                   title='Terminar proceso'
@@ -381,7 +381,7 @@ function ToDoList({ done, reason }) {
                     });
                   }}
                 />
-              )}
+                )*/}
             </Grid>
           )}
         </AccordionDetails>

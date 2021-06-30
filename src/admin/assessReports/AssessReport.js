@@ -17,10 +17,7 @@ import { db, storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import {
-  evaluatedInternship,
-  reportNeedsChanges
-} from '../../InternshipStates';
+import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
@@ -99,7 +96,7 @@ function AssessReport() {
 
   function handleEvaluate() {
     db.collection('internships').doc(internshipId).update({
-      status: evaluatedInternship,
+      status: finishedInternship,
       reason: evaluateComment,
       grade: value
     });
@@ -116,7 +113,7 @@ function AssessReport() {
         }
       }
     });
-    db.collection('users').doc(studentId).update({ step: 3 });
+    db.collection('users').doc(studentId).update({ step: 0 });
   }
 
   return (

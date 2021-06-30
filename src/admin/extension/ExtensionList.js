@@ -68,40 +68,23 @@ function ExtensionList() {
       ? db.collection('internships').where('careerId', '==', user.careerId)
       : db.collection('internships');
     let unsubscribe;
-    db.collection('users')
-      .get()
-      .then((students) => {
-        const users = [];
-        students.forEach((element) => {
-          const studentData = element.data();
-          users.push({
-            id: element.id,
-            name: studentData.name,
-            careerId: studentData.careerId
+    unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+      let list = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.extensionStatus === sentExtension) {
+          list.push({
+            id: doc.id,
+            name: data.studentName,
+            careerId: data.careerId,
+            ...data
           });
-        });
-
-        unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-          let list = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.extensionStatus === sentExtension) {
-              users.forEach((usr) => {
-                if (usr.id === data.studentId)
-                  list.push({
-                    id: doc.id,
-                    name: usr.name,
-                    careerId: usr.careerId,
-                    ...data
-                  });
-              });
-            }
-          });
-
-          setInternships(list);
-          if (list) setFilterInternships(applyFilter(list));
-        });
+        }
       });
+
+      setInternships(list);
+      if (list) setFilterInternships(applyFilter(list));
+    });
 
     return unsubscribe;
   }, []);
@@ -152,9 +135,9 @@ function ExtensionList() {
   );
 }
 
-function IntershipItem({ intership }) {
+function IntershipItem({ intership: internship }) {
   const [showApproved, setShowApproved] = useState(false);
-  const [showDeined, setShowDeined] = useState(false);
+  const [showDeined, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [application, setApplication] = useState();
   const [internshipsExtension, setInternshipsExtension] = useState();
@@ -168,7 +151,7 @@ function IntershipItem({ intership }) {
     );
   }
 
-  function handleExtensionDeined() {
+  function handleExtensionDenied() {
     db.collection('internships')
       .doc(internshipsExtension.id)
       .update({
@@ -213,11 +196,12 @@ function IntershipItem({ intership }) {
 
     db.collection('internships').doc(internshipsExtension.id).update({
       extensionStatus: approvedExtension,
-      dateExtension: '',
-      reasonExtension: reason
-
+      dateExtension: internshipsExtension.dateExtension,
+      reasonExtension: reason,
+      'applicationData.Fecha de término': internshipsExtension.dateExtension
       //cambiar statusExeption
     });
+
     db.collection('mails').add({
       to: application.email,
       template: {
@@ -233,7 +217,7 @@ function IntershipItem({ intership }) {
 
   useEffect(() => {
     db.collection('users')
-      .doc(intership.studentId)
+      .doc(internship.studentId)
       .get()
       .then((user) => {
         setIdApplication(user.data().currentInternship.lastApplication);
@@ -254,14 +238,17 @@ function IntershipItem({ intership }) {
       <ListItem
         button
         onClick={() => {
-          setInternshipsExtension(intership);
+          setInternshipsExtension(internship);
           setShowExtension(true);
         }}>
-        <ListItemText primary={intership.name} />
+        <ListItemText
+          primary={internship.studentName}
+          secondary={internship.applicationData.Empresa}
+        />
         <ListItemSecondaryAction>
           <IconButton
             onClick={() => {
-              setInternshipsExtension(intership);
+              setInternshipsExtension(internship);
               setShowExtension(true);
             }}>
             <NavigateNext />
@@ -282,17 +269,17 @@ function IntershipItem({ intership }) {
               <Grid item>
                 <TextField
                   multiline
-                  rowsMax={4}
+                  rows={4}
                   fullWidth
                   variant='outlined'
-                  label='Razon de la solicitud'
+                  label='Razón de la solicitud'
                   value={internshipsExtension.reasonExtension}
                 />
               </Grid>
               <Grid item>
                 <TextField
                   multiline
-                  rowsMax={4}
+                  rows={4}
                   fullWidth
                   variant='outlined'
                   label='Fecha propuesta'
@@ -325,7 +312,7 @@ function IntershipItem({ intership }) {
             <Button
               variant='outlined'
               color='secondary'
-              onClick={() => setShowDeined(true)}>
+              onClick={() => setShowDenied(true)}>
               Rechazar
             </Button>
             <Button
@@ -343,19 +330,18 @@ function IntershipItem({ intership }) {
         open={showApproved || showDeined}
         onClose={() => {
           setShowApproved(false);
-          setShowDeined(false);
+          setShowDenied(false);
         }}
         TransitionComponent={Transition}
         maxWidth='sm'
         fullWidth={true}>
         <DialogTitle>
-          {showApproved ? 'Aprobar' : 'Rechazar'} solicitud de Extencion
-          extensión
+          {showApproved ? 'Aprobar' : 'Rechazar'} solicitud de extensión
         </DialogTitle>
         <DialogContent>
           <TextField
             multiline
-            rowsMax={4}
+            rows={4}
             fullWidth
             variant='outlined'
             label='Observaciones'
@@ -367,7 +353,7 @@ function IntershipItem({ intership }) {
             variant='outlined'
             onClick={() => {
               setShowApproved(false);
-              setShowApproved(false);
+              setShowDenied(false);
             }}>
             Cancelar
           </Button>
@@ -378,10 +364,10 @@ function IntershipItem({ intership }) {
               if (showApproved) {
                 handleExtensionApproved();
               } else {
-                handleExtensionDeined();
+                handleExtensionDenied();
               }
               setShowApproved(false);
-              setShowDeined(false);
+              setShowDenied(false);
               setShowExtension(false);
             }}>
             {showApproved ? 'Aprobar' : 'Rechazar'}

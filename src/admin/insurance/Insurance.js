@@ -20,24 +20,23 @@ import React, { useState, useEffect } from 'react';
 import { db, storage } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
+import { approvedApplication } from '../../InternshipStates';
 
-function UploadModal({ application, close, show }) {
+function UploadModal({ internship, close, show }) {
   const [file, setFile] = useState([]);
 
   function handleSubmit() {
-    const { studentId, internshipId } = application;
-
     file.forEach((file) => {
       storage
         .ref()
         .child(
-          `students-docs/${studentId}/${internshipId}/seguro-practica/${file.name}`
+          `students-docs/${internship.studentId}/${internship.id}/seguro-practica/${file.name}`
         )
         .put(file);
     });
 
-    db.collection('applications')
-      .doc(application.id)
+    db.collection('internships')
+      .doc(internship.id)
       .update({ seguroDisponible: true, alreadyDownloaded: true });
 
     close();
@@ -46,7 +45,7 @@ function UploadModal({ application, close, show }) {
   return (
     <Dialog fullWidth open={show} onClose={close}>
       <DialogTitle>
-        Adjunte el seguro de práctica de {application.studentName}
+        Adjunte el seguro de práctica de {internship.studentName}
       </DialogTitle>
       <DialogContent>
         <DropzoneArea showFileNames onChange={(files) => setFile(files)} />
@@ -61,20 +60,20 @@ function UploadModal({ application, close, show }) {
   );
 }
 
-function StudentItem({ application }) {
+function StudentItem({ internship }) {
   const [showModal, setShowModal] = useState();
 
   return (
     <>
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
-          primary={application.studentName}
-          secondary={`Práctica ${application.internshipNumber} - ${application.Empresa} - ${application.email}`}
+          primary={internship.studentName}
+          secondary={`Práctica ${internship.applicationNumber} - ${internship.applicationDataEmpresa}`}
         />
       </ListItem>
       <Divider />
       <UploadModal
-        application={application}
+        internship={internship}
         close={() => setShowModal(false)}
         show={showModal}
       />
@@ -95,17 +94,20 @@ function Insurance() {
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
   useEffect(() => {
-    db.collection('applications')
-      .where('status', '==', 'Aprobado')
+    db.collection('internships')
+      .where('status', '==', approvedApplication)
       .onSnapshot((querySnapshot) => {
         const exportar = [];
         const seguro = [];
         querySnapshot.forEach((doc) => {
           const data = { id: doc.id, ...doc.data() };
-          console.log(data);
           if (!data.alreadyDownloaded) {
-            const termino = YearMonthDay(data['Fecha de término'].toDate());
-            const inicio = YearMonthDay(data['Fecha de inicio'].toDate());
+            const termino = YearMonthDay(
+              data.applicationData['Fecha de término'].toDate()
+            );
+            const inicio = YearMonthDay(
+              data.applicationData['Fecha de inicio'].toDate()
+            );
 
             exportar.push({
               ...data,
@@ -153,9 +155,9 @@ function Insurance() {
             startIcon={<GetAppIcon />}
             onClick={(e) =>
               usersExport.forEach((doc) => {
-                db.collection('applications')
+                db.collection('internships')
                   .doc(doc.id)
-                  .set({ alreadyDownloaded: true }, { merge: true });
+                  .update({ alreadyDownloaded: true });
               })
             }>
             Lista de estudiantes con postulación aprobada
@@ -211,7 +213,7 @@ function Insurance() {
             .map(
               (doc) =>
                 (careerId === 'general' || careerId === doc.careerId) && (
-                  <StudentItem application={doc} careerId={careerId} />
+                  <StudentItem internship={doc} careerId={careerId} />
                 )
             )}
         </List>

@@ -69,7 +69,7 @@ function ImportStudents() {
       importStudents({
         able: true,
         birthDate: Date.parse(row[8]),
-        careerId: row[1],
+        careerId: row[1].toString(),
         careerPlan: row[9],
         communeOrigin: row[16],
         email: row[5],

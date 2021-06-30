@@ -151,7 +151,7 @@ const IntentionItem = ({
 
     useEffect(() => {
       db.collection('careers')
-        .doc(userData.careerId.toString())
+        .doc(userData.careerId)
         .onSnapshot((doc) => setSurvey(doc.data()));
     }, []);
 

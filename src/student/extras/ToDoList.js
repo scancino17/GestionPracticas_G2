@@ -198,7 +198,7 @@ function ToDoList({ done, reason }) {
 
   useEffect(() => {
     db.collection('careers')
-      .doc(userData.careerId.toString())
+      .doc(userData.careerId)
       .onSnapshot((doc) => setSurvey(doc.data()));
   }, []);
 
@@ -413,16 +413,15 @@ function DialogExtension({ open, setOpen }) {
       maxWidth='sm'
       fullWidth={true}>
       <DialogTitle>Solicitud de extensión</DialogTitle>
-
       <DialogContent>
         <Grid container direction='column' spacing={2}>
           <Grid item>
             <TextField
               multiline
-              rowsMax={4}
+              rows={4}
               fullWidth
               variant='outlined'
-              label='Razon de la solicitud'
+              label='Razón de la solicitud'
               value={reasonRequestExtension}
               onChange={(e) => setReasonRequestExtension(e.target.value)}
             />
@@ -439,7 +438,7 @@ function DialogExtension({ open, setOpen }) {
                   disableToolbar
                   variant='inline'
                   format='dd/MM/yyyy'
-                  label='Nueva fecha de termino'
+                  label='Nueva fecha de término'
                   value={
                     dateExtension === ''
                       ? new Date()

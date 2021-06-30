@@ -40,40 +40,24 @@ function ReportsList() {
       ? db.collection('internships').where('careerId', '==', user.careerId)
       : db.collection('internships');
     let unsubscribe;
-    db.collection('users')
-      .get()
-      .then((students) => {
-        const users = [];
-        students.forEach((element) => {
-          const studentData = element.data();
-          users.push({
-            id: element.id,
-            name: studentData.name,
-            careerId: studentData.careerId
-          });
-        });
 
-        unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-          const list = [];
-          querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            if (data.status === sentReport) {
-              users.forEach((usr) => {
-                if (usr.id === data.studentId)
-                  list.push({
-                    id: doc.id,
-                    name: usr.name,
-                    careerId: usr.careerId,
-                    ...data
-                  });
-              });
-            }
+    unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+      const list = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.status === sentReport) {
+          list.push({
+            id: doc.id,
+            name: data.studentName,
+            careerId: data.careerId,
+            ...data
           });
-
-          setInternships(list);
-          if (list) setFilterInternships(applyFilter(list));
-        });
+        }
       });
+
+      setInternships(list);
+      if (list) setFilterInternships(applyFilter(list));
+    });
     return unsubscribe;
   }, []);
 

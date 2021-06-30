@@ -31,7 +31,7 @@ function SendForm({ edit }) {
       setInternshipId(userData.currentInternship.id);
       if (!edit) {
         db.collection('form')
-          .doc(userData.careerId.toString())
+          .doc(userData.careerId)
           .get()
           .then((doc) => {
             const data = doc.data();

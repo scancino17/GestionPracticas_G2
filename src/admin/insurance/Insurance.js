@@ -18,6 +18,7 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
+import { Pagination } from '@material-ui/lab';
 
 function UploadModal({ application, close, show }) {
   const [file, setFile] = useState([]);
@@ -85,6 +86,9 @@ function Insurance() {
   const [usersExport, setusersExport] = useState([]);
 
   const [seguroUsuario, setseguroUsuario] = useState([]);
+
+  const itemsPerPage = 8;
+  const [page, setPage] = useState(1);
 
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -189,13 +193,25 @@ function Insurance() {
             <CareerSelector careerId={careerId} setCareerId={setCareerId} />
           </Grid>
           <List>
-            {seguroUsuario.map(
-              (doc) =>
-                (careerId === 'general' || careerId === doc.careerId) && (
-                  <StudentItem application={doc} careerId={careerId} />
-                )
-            )}
+            {seguroUsuario
+              .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+              .map(
+                (doc) =>
+                  (careerId === 'general' || careerId === doc.careerId) && (
+                    <StudentItem application={doc} careerId={careerId} />
+                  )
+              )}
           </List>
+          <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+            {careerId && (
+              <Pagination
+                count={Math.ceil(seguroUsuario.length / itemsPerPage)}
+                page={page}
+                color='primary'
+                onChange={(_, val) => setPage(val)}
+              />
+            )}
+          </Grid>
         </Grid>
       </Container>
     </Grid>

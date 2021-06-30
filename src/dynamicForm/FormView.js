@@ -164,17 +164,15 @@ function FormView({
                       />
                     </>
                   ) : (
-                    <>
-                      <Typography variant='h5'>Ciudad</Typography>
-                      <Selector
-                        readOnly={readOnly}
-                        valueinner={element.value}
-                        camp={element.type2}
-                        onParentChange={(newValue) => {
-                          updateItem(index, 'value', newValue.label);
-                        }}
-                      />
-                    </>
+                    <Selector
+                      readOnly={readOnly}
+                      valueinner={element.value}
+                      camp={element.type2}
+                      selectorLabel='Ciudad'
+                      onParentChange={(newValue) => {
+                        updateItem(index, 'value', newValue.label);
+                      }}
+                    />
                   )}
                 </Grid>
               ) : element.type2 === customTypes.formEmpresa ? (
@@ -189,17 +187,15 @@ function FormView({
                       />
                     </>
                   ) : (
-                    <>
-                      <Typography variant='h5'>Empresa</Typography>
-                      <Selector
-                        readOnly={readOnly}
-                        valueinner={element.value}
-                        camp={element.type2}
-                        onParentChange={(newValue) => {
-                          updateItem(index, 'value', newValue.label);
-                        }}
-                      />
-                    </>
+                    <Selector
+                      readOnly={readOnly}
+                      valueinner={element.value}
+                      camp={element.type2}
+                      selectorLabel='Empresa'
+                      onParentChange={(newValue) => {
+                        updateItem(index, 'value', newValue.label);
+                      }}
+                    />
                   )}
                 </Grid>
               ) : element.type2 === customTypes.formStartDate ? (
@@ -250,17 +246,15 @@ function FormView({
                       />
                     </>
                   ) : (
-                    <>
-                      <Typography variant='h5'>País</Typography>
-                      <Selector
-                        readOnly={readOnly}
-                        valueinner={element.value}
-                        camp={element.type2}
-                        onParentChange={(newValue) => {
-                          updateItem(index, 'value', newValue.label);
-                        }}
-                      />
-                    </>
+                    <Selector
+                      readOnly={readOnly}
+                      valueinner={element.value}
+                      camp={element.type2}
+                      selectorLabel='País'
+                      onParentChange={(newValue) => {
+                        updateItem(index, 'value', newValue.label);
+                      }}
+                    />
                   )}
                 </Grid>
               ) : null

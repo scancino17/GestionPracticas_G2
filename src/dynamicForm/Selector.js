@@ -1,5 +1,6 @@
+import { Autocomplete, createFilterOptions } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import CreatableSelect from 'react-select/creatable';
 import { db } from '../firebase';
 
 const createOption = (label) => ({
@@ -7,7 +8,17 @@ const createOption = (label) => ({
   value: label.toLowerCase().replaceAll(/\W/g, '')
 });
 
-function Selector({ valueinner, camp, onParentChange, edit }) {
+const filter = createFilterOptions({
+  stringify: (option) => option.value
+});
+
+function Selector({
+  valueinner,
+  camp,
+  onParentChange,
+  readOnly,
+  selectorLabel
+}) {
   const [isLoading, setLoading] = useState(true);
   const [options, setOptions] = useState();
   const [value, setValue] = useState(valueinner);
@@ -33,12 +44,67 @@ function Selector({ valueinner, camp, onParentChange, edit }) {
       });
   }
 
-  function handleOnChange(newValue) {
+  function handleOnChange(event, newValue) {
     if (newValue) onParentChange(newValue);
-    setValue(newValue);
+    if (typeof newValue === 'string') {
+      setValue(createOption(newValue));
+    } else if (newValue && newValue.inputValue) {
+      handleCreate(newValue.inputValue);
+      setValue(createOption(newValue.inputValue));
+    } else {
+      setValue(newValue);
+    }
+  }
+
+  function handleFilteroptions(options, params) {
+    const filtered = filter(options, params);
+
+    if (params.inputValue !== '' && !(filtered.length > 0)) {
+      filtered.push({
+        inputValue: params.inputValue,
+        label: `Agregar "${params.inputValue}"`
+      });
+    }
+
+    return filtered;
+  }
+
+  function handleOptionLabel(option) {
+    if (typeof option === 'string') {
+      return option;
+    }
+
+    if (option.inputValue) {
+      return option.inputValue;
+    }
+
+    return option.label;
   }
 
   return (
+    <Autocomplete
+      selectOnFocus
+      clearOnBlur
+      handleHomeEndKeys
+      options={options}
+      getOptionLabel={handleOptionLabel}
+      value={value}
+      onChange={handleOnChange}
+      filterOptions={handleFilteroptions}
+      renderOption={(option) => option.label}
+      freeSolo
+      disabled={isLoading || readOnly}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={selectorLabel ? selectorLabel : 'Seleccionar'}
+          variant='outlined'
+        />
+      )}
+    />
+  );
+
+  /*return (
     <CreatableSelect
       isClearable
       isDisabled={isLoading}
@@ -49,7 +115,7 @@ function Selector({ valueinner, camp, onParentChange, edit }) {
       // inputValue={value}
       value={value}
     />
-  );
+  );*/
 }
 
 export default Selector;

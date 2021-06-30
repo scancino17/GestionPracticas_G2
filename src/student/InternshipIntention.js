@@ -24,6 +24,8 @@ import {
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
 import EmptyHome from './EmptyHome';
+import { RiSurveyLine } from 'react-icons/ri';
+import useAuth from '../providers/Auth';
 
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
@@ -72,6 +74,13 @@ const useStyles = makeStyles((theme) => ({
   evaluatingSupervisorText: {
     color: theme.palette.text.secondary,
     fontWeight: 'medium'
+  },
+  icon: {
+    fontSize: '3rem',
+    marginRight: '1rem',
+    '@media (max-width: 480px)': {
+      fontSize: '2rem'
+    }
   }
 }));
 
@@ -137,6 +146,15 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
+    const { userData, user } = useAuth();
+    const [survey, setSurvey] = useState([]);
+
+    useEffect(() => {
+      db.collection('careers')
+        .doc(userData.careerId)
+        .onSnapshot((doc) => setSurvey(doc.data()));
+    }, []);
+
     return (
       <Grid container direction='column'>
         <Grid item container direction='row' justify='flex-start'>
@@ -157,6 +175,25 @@ const IntentionItem = ({
             </Typography>
           </Grid>
         )}
+
+        <Grid
+          container
+          style={{
+            cursor: 'pointer',
+            paddingTop: '2rem',
+            paddingBottom: '1rem'
+          }}
+          onClick={() => (window.location.href = survey.satisfactionSurvey)}>
+          <Grid item>
+            <RiSurveyLine className={classes.icon} />
+          </Grid>
+          <Grid item direction='column'>
+            <Typography variant='h6'>Responder Encuesta</Typography>
+            <Typography variant='body2'>
+              Cuéntanos tu experiencia durante las semanas de práctica.
+            </Typography>
+          </Grid>
+        </Grid>
 
         <Grid
           item

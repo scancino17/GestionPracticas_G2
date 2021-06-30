@@ -17,12 +17,17 @@ import { db, storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
+import {
+  reportNeedsChanges,
+  finishedInternship,
+  evaluatedInternship
+} from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { firebase } from './../../firebase';
 
 function AssessReport() {
   const [value, setValue] = useState(40);
@@ -92,6 +97,16 @@ function AssessReport() {
         }
       }
     });
+
+    db.collection('users')
+      .doc(studentId)
+      .update({
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: reportNeedsChanges,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
   }
 
   function handleEvaluate() {
@@ -113,7 +128,17 @@ function AssessReport() {
         }
       }
     });
-    db.collection('users').doc(studentId).update({ step: 0 });
+
+    db.collection('users')
+      .doc(studentId)
+      .update({
+        step: 0,
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: evaluatedInternship,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
   }
 
   return (

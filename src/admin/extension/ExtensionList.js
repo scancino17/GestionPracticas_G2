@@ -26,6 +26,7 @@ import {
 } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
+import { firebase } from '../../firebase';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -159,6 +160,16 @@ function IntershipItem({ internship }) {
         }
       }
     });
+
+    db.collection('users')
+      .doc(internship.studentId)
+      .update({
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: deniedExtension,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
   }
 
   function handleExtensionApproved() {
@@ -204,6 +215,16 @@ function IntershipItem({ internship }) {
         }
       }
     });
+
+    db.collection('users')
+      .doc(internship.studentId)
+      .update({
+        [`notifications.${Date.now().toString()}`]: {
+          id: Date.now().toString(),
+          type: approvedExtension,
+          time: firebase.firestore.FieldValue.serverTimestamp()
+        }
+      });
   }
 
   return (

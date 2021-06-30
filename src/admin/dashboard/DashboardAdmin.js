@@ -10,7 +10,8 @@ import {
   MdMultilineChart,
   MdEqualizer,
   MdPieChart,
-  MdPublic
+  MdPublic,
+  MdUpdate
 } from 'react-icons/md';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -101,14 +102,14 @@ function DashboardAdmin({ sidebarProps }) {
                       <ArchiveIcon />
                     </CardIcon>
                     <p className={classes.cardCategory}>Nuevas Intenciones</p>
-                    <h3 className={classes.cardTitle}>
+                    <h2 className={classes.cardTitle}>
                       <CountUp end={intentionsCount} duration={3} />
-                    </h3>
+                    </h2>
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
+                      <MdUpdate />
+                      Actualizado recientemente
                     </div>
                   </CardFooter>
                 </Card>
@@ -122,33 +123,35 @@ function DashboardAdmin({ sidebarProps }) {
                       <ListAltIcon />
                     </CardIcon>
                     <p className={classes.cardCategory}>Nuevos Formularios</p>
-                    <h3 className={classes.cardTitle}>
+                    <h2 className={classes.cardTitle}>
                       <CountUp end={formsCount} duration={3} />
-                    </h3>
+                    </h2>
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
+                      <MdUpdate />
+                      Actualizado recientemente
                     </div>
                   </CardFooter>
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={3}>
-                <Card>
+                <Card
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => history.push('/internship-assessment')}>
                   <CardHeader color='danger' stats icon>
                     <CardIcon color='danger'>
                       <AssignmentIcon />
                     </CardIcon>
                     <p className={classes.cardCategory}>Informes pendientes</p>
-                    <h3 className={classes.cardTitle}>
+                    <h2 className={classes.cardTitle}>
                       <CountUp end={10} duration={3} />
-                    </h3>
+                    </h2>
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
+                      <MdUpdate />
+                      Actualizado recientemente
                     </div>
                   </CardFooter>
                 </Card>
@@ -160,14 +163,14 @@ function DashboardAdmin({ sidebarProps }) {
                       <BusinessIcon />
                     </CardIcon>
                     <p className={classes.cardCategory}>Prácticas en Curso</p>
-                    <h3 className={classes.cardTitle}>
+                    <h2 className={classes.cardTitle}>
                       <CountUp end={1000} duration={3} />
-                    </h3>
+                    </h2>
                   </CardHeader>
                   <CardFooter stats>
                     <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
+                      <MdUpdate />
+                      Actualizado recientemente
                     </div>
                   </CardFooter>
                 </Card>
@@ -282,7 +285,7 @@ function DashboardAdmin({ sidebarProps }) {
               </Card>
             </Grid>
 
-            <Grid container spacing={3}>
+            {/*<Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={6}>
                 <Card>
                   <CardHeader color='info' icon>
@@ -321,7 +324,7 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardFooter>
                 </Card>
               </Grid>
-            </Grid>
+            </Grid>*/}
           </Container>
         </Route>
         <Route exact path='/applications'>

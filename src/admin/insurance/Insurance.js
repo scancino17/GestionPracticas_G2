@@ -10,7 +10,8 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  List
+  List,
+  TextField
 } from '@material-ui/core';
 import ReactExport from 'react-export-excel';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -36,7 +37,7 @@ function UploadModal({ application, close, show }) {
     });
 
     db.collection('applications')
-      .doc(application.aplicationId)
+      .doc(application.id)
       .update({ seguroDisponible: true, alreadyDownloaded: true });
 
     close();
@@ -82,17 +83,17 @@ function StudentItem({ application }) {
 }
 
 function Insurance() {
-  const [careerId, setCareerId] = useState();
-  const [usersExport, setusersExport] = useState([]);
-
-  const [seguroUsuario, setseguroUsuario] = useState([]);
-
+  const [careerId, setCareerId] = useState('general');
+  const [name, setName] = useState('');
+  const [usersExport, setUsersExport] = useState([]);
+  const [usersInsurance, setUsersInsurance] = useState([]);
+  const [filteredUsersInsurance, setFilteredUsersInsurance] = useState([]);
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
-
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
   useEffect(() => {
     db.collection('applications')
       .where('status', '==', 'Aprobado')
@@ -100,36 +101,39 @@ function Insurance() {
         const exportar = [];
         const seguro = [];
         querySnapshot.forEach((doc) => {
-          if (
-            doc.data().alreadyDownloaded === false ||
-            doc.data().alreadyDownloaded === undefined
-          ) {
-            const termino = YearMonthDay(
-              doc.data()['Fecha de término'].toDate()
-            );
-            const inicio = YearMonthDay(doc.data()['Fecha de inicio'].toDate());
+          const data = { id: doc.id, ...doc.data() };
+          console.log(data);
+          if (!data.alreadyDownloaded) {
+            const termino = YearMonthDay(data['Fecha de término'].toDate());
+            const inicio = YearMonthDay(data['Fecha de inicio'].toDate());
 
             exportar.push({
-              ...doc.data(),
+              ...data,
               stringInicio: inicio,
               stringTermino: termino
             });
           }
-          if (
-            doc.data().seguroDisponible === false ||
-            doc.data().seguroDisponible === undefined
-          ) {
-            seguro.push(doc.data());
-          }
-          db.collection('applications')
-            .doc(doc.id)
-            .update({ aplicationId: doc.id });
+          if (!data.seguroDisponible) seguro.push(data);
         });
 
-        setusersExport([...exportar]);
-        setseguroUsuario([...seguro]);
+        setUsersExport([...exportar]);
+        setUsersInsurance([...seguro]);
+        if (seguro) setFilteredUsersInsurance(applyFilter(seguro));
       });
   }, []);
+
+  useEffect(() => {
+    if (usersInsurance) setFilteredUsersInsurance(applyFilter(usersInsurance));
+  }, [careerId, name]);
+
+  function applyFilter(list) {
+    let filtered = list.slice();
+    if (careerId !== 'general')
+      filtered = filtered.filter((item) => item.careerId === careerId);
+    if (name !== '')
+      filtered = filtered.filter((item) => item.studentName.includes(name));
+    return filtered;
+  }
 
   function YearMonthDay(date) {
     return date.toLocaleTimeString(navigator.language, {
@@ -150,7 +154,7 @@ function Insurance() {
             onClick={(e) =>
               usersExport.forEach((doc) => {
                 db.collection('applications')
-                  .doc(doc.aplicationId)
+                  .doc(doc.id)
                   .set({ alreadyDownloaded: true }, { merge: true });
               })
             }>
@@ -182,36 +186,44 @@ function Insurance() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>
-          Lista de estudiantes para solicitar seguro
-        </Typography>
+        <Typography variant='h4'>Seguros de práctica de estudiantes</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container direction='column' spacing={2}>
-          <Grid item container justify='space-between'>
+        <Grid container justify='flex-end' spacing={2}>
+          <Grid item>
             <ExportarExcel />
+          </Grid>
+          <Grid item style={{ flexGrow: 1 }} />
+          <Grid item>
+            <TextField
+              label='Buscar estudiante'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </Grid>
+          <Grid item>
             <CareerSelector careerId={careerId} setCareerId={setCareerId} />
           </Grid>
-          <List>
-            {seguroUsuario
-              .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-              .map(
-                (doc) =>
-                  (careerId === 'general' || careerId === doc.careerId) && (
-                    <StudentItem application={doc} careerId={careerId} />
-                  )
-              )}
-          </List>
-          <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
-            {careerId && (
-              <Pagination
-                count={Math.ceil(seguroUsuario.length / itemsPerPage)}
-                page={page}
-                color='primary'
-                onChange={(_, val) => setPage(val)}
-              />
+        </Grid>
+        <List>
+          {filteredUsersInsurance
+            .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+            .map(
+              (doc) =>
+                (careerId === 'general' || careerId === doc.careerId) && (
+                  <StudentItem application={doc} careerId={careerId} />
+                )
             )}
-          </Grid>
+        </List>
+        <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+          {careerId && (
+            <Pagination
+              count={Math.ceil(filteredUsersInsurance.length / itemsPerPage)}
+              page={page}
+              color='primary'
+              onChange={(_, val) => setPage(val)}
+            />
+          )}
         </Grid>
       </Container>
     </Grid>

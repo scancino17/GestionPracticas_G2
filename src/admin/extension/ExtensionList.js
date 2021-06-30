@@ -199,7 +199,7 @@ function IntershipItem({ internship }) {
     db.collection('mails').add({
       to: internship.studentEmail,
       template: {
-        name: 'ExtensionApproved ',
+        name: 'ExtensionApproved',
         data: {
           from_name: internship.studentName,
           aprobado_por: user.displayName,

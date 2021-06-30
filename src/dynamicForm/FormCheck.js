@@ -307,10 +307,10 @@ function FormCheck() {
             className={classes.fabSave}
             onClick={() => {
               Swal.fire({
-                title: '¿Desea Aplicar los cambios?',
-                showDenyButton: true,
+                title: '¿Desea aplicar los cambios?',
+                showCancelButton: true,
                 confirmButtonText: `Aceptar`,
-                denyButtonText: `Cancelar`
+                cancelButtonText: `Cancelar`
               }).then((result) => {
                 if (result.isConfirmed) {
                   handleSave();

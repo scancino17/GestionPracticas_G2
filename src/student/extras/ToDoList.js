@@ -382,7 +382,11 @@ function ToDoList({ done, reason }) {
       <SendReportDialog open={openSendReport} setOpen={setOpenSendReport} />
       <DocsDialog open={openDocs} setOpen={setOpenDocs} />
       <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
-      <DialogExtension open={showExtension} setOpen={setShowExtension} />
+      <DialogExtension
+        internship={internship}
+        open={showExtension}
+        setOpen={setShowExtension}
+      />
       <ReportAnnotationsDialog
         open={openReportAnnotations}
         setOpen={setOpenReportAnnotations}
@@ -391,7 +395,8 @@ function ToDoList({ done, reason }) {
     </MuiPickersUtilsProvider>
   );
 }
-function DialogExtension({ open, setOpen }) {
+
+function DialogExtension({ internship, open, setOpen }) {
   const [dateExtension, setDateExtension] = useState(new Date());
   const [reasonRequestExtension, setReasonRequestExtension] = useState('');
   const { userData } = useAuth();
@@ -403,6 +408,28 @@ function DialogExtension({ open, setOpen }) {
       reasonExtension: reasonRequestExtension
     });
   }
+
+  function transformDate(date) {
+    const months = [
+      'Enero',
+      'Febrero',
+      'Marzo',
+      'Abril',
+      'Mayo',
+      'Junio',
+      'Julio',
+      'Agosto',
+      'Septiembre',
+      'Octubre',
+      'Noviembre',
+      'Diciembre'
+    ];
+
+    return (
+      date.getDate() + '/' + months[date.getMonth()] + '/' + date.getFullYear()
+    );
+  }
+
   return (
     <Dialog
       open={open}
@@ -425,29 +452,39 @@ function DialogExtension({ open, setOpen }) {
             />
           </Grid>
           <Grid item>
-            <Grid
-              container
-              direction='column'
-              justify='center'
-              alignItems='flex-start'>
-              <Grid item>
-                <DatePicker
-                  fullWidth
-                  disableToolbar
-                  variant='inline'
-                  format='dd/MM/yyyy'
-                  label='Nueva fecha de término'
-                  value={
-                    dateExtension === ''
-                      ? new Date()
-                      : dateExtension instanceof Date
-                      ? dateExtension
-                      : dateExtension.toDate()
-                  }
-                  onChange={(date) => setDateExtension(date)}
-                />
-              </Grid>
-            </Grid>
+            <DatePicker
+              fullWidth
+              disabled
+              disableToolbar
+              variant='inline'
+              format='dd/MM/yyyy'
+              label='Fecha de término actual'
+              value={
+                internship && internship.applicationData['Fecha de término']
+                  ? transformDate(
+                      internship.applicationData['Fecha de término'].toDate()
+                    )
+                  : null
+              }
+              onChange={(date) => setDateExtension(date)}
+            />
+          </Grid>
+          <Grid item>
+            <DatePicker
+              fullWidth
+              disableToolbar
+              variant='inline'
+              format='dd/MM/yyyy'
+              label='Nueva fecha de término'
+              value={
+                dateExtension === ''
+                  ? new Date()
+                  : dateExtension instanceof Date
+                  ? dateExtension
+                  : dateExtension.toDate()
+              }
+              onChange={(date) => setDateExtension(date)}
+            />
           </Grid>
         </Grid>
       </DialogContent>

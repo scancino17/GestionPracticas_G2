@@ -22,7 +22,7 @@ function ReportsList() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
-  const [filterInterships, setFilterInternships] = useState([]);
+  const [filterInternships, setFilterInternships] = useState([]);
   const { user } = useAuth();
 
   function applyFilter(list) {
@@ -39,23 +39,22 @@ function ReportsList() {
     const dbRef = user.careerId
       ? db.collection('internships').where('careerId', '==', user.careerId)
       : db.collection('internships');
-    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-      const list = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.status === sentReport) {
+    const unsubscribe = dbRef
+      .where('status', '==', sentReport)
+      .onSnapshot((querySnapshot) => {
+        const list = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
           list.push({
             id: doc.id,
             name: data.studentName,
             careerId: data.careerId,
             ...data
           });
-        }
+        });
+        setInternships(list);
+        if (list) setFilterInternships(applyFilter(list));
       });
-
-      setInternships(list);
-      if (list) setFilterInternships(applyFilter(list));
-    });
     return unsubscribe;
   }, []);
 
@@ -93,9 +92,9 @@ function ReportsList() {
       </Container>
       <Container style={{ marginTop: '2rem' }}>
         <List>
-          {filterInterships.map((intership) => (
+          {filterInternships.map((internship) => (
             <>
-              <ReportItem intership={intership} />
+              <ReportItem internship={internship} />
               <Divider />
             </>
           ))}
@@ -105,7 +104,7 @@ function ReportsList() {
   );
 }
 
-function ReportItem({ intership }) {
+function ReportItem({ internship }) {
   const history = useHistory();
 
   return (
@@ -113,15 +112,18 @@ function ReportItem({ intership }) {
       button
       onClick={() =>
         history.push(
-          `/internship-assessment/${intership.studentId}/${intership.id}`
+          `/internship-assessment/${internship.studentId}/${internship.id}`
         )
       }>
-      <ListItemText primary={intership.name} />
+      <ListItemText
+        primary={internship.name}
+        secondary={internship.applicationData.Empresa}
+      />
       <ListItemSecondaryAction>
         <IconButton
           onClick={() =>
             history.push(
-              `/internship-assessment/${intership.studentId}/${intership.id}`
+              `/internship-assessment/${internship.studentId}/${internship.id}`
             )
           }>
           <NavigateNext />

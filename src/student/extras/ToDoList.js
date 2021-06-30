@@ -300,10 +300,9 @@ function ToDoList({ done, reason }) {
                 <>
                   <ToDoItem
                     icon={<ErrorOutline className={classes.icon} />}
-                    title='Corregir Informe'
+                    title='Observaciones'
                     body='Se te han indicado unas correcciones que puedes hacer a tu informe.'
                     buttonText='Ver observaciones'
-                    minorChanges={internship.reason}
                     buttonOnClick={() => setOpenReportAnnotations(true)}
                   />
                   <Divider />
@@ -547,7 +546,7 @@ function ReportAnnotationsDialog({ open, setOpen, internship }) {
           variant='contained'
           color='primary'
           onClick={() => setOpen(false)}>
-          OK
+          Aceptar
         </Button>
       </DialogActions>
     </Dialog>

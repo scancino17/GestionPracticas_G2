@@ -144,7 +144,7 @@ function IntershipItem({ internship }) {
       .update({
         extensionStatus: deniedExtension,
         dateExtension: '',
-        reasonExtension: reason ? reason : ''
+        reasonExtension: reason ? reason : 'Sin observaciones'
 
         //cambiar statusExeption
       });

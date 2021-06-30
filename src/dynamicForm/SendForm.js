@@ -31,7 +31,7 @@ function SendForm({ edit }) {
       setInternshipId(userData.currentInternship.id);
       if (!edit) {
         db.collection('form')
-          .doc(userData.careerId)
+          .doc(userData.careerId.toString())
           .get()
           .then((doc) => {
             const data = doc.data();
@@ -94,17 +94,18 @@ function SendForm({ edit }) {
     });
   }
   function handleSave() {
-    if (!edit) {
-      //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
-      //firestore no lo soporta
-      extractFiles();
-      const values = {};
-      formFull.forEach((step) =>
-        step.form.forEach((camp) => {
-          values[camp.name] = camp.value;
-        })
-      );
+    console.log(formFull);
+    //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
+    //firestore no lo soporta
+    extractFiles();
+    const values = {};
+    formFull.forEach((step) =>
+      step.form.forEach((camp) => {
+        values[camp.name] = camp.value;
+      })
+    );
 
+    if (!edit) {
       db.collection('applications')
         .add({
           form: formFull,
@@ -125,13 +126,6 @@ function SendForm({ edit }) {
           console.error('Error adding document: ', error);
         });
     } else {
-      const values = {};
-      formFull.forEach((step) =>
-        step.form.forEach((camp) => {
-          values[camp.name] = camp.value;
-        })
-      );
-
       db.collection('applications')
         .doc(applicationId)
         .update({ form: formFull, status: 'En revisión', ...values });
@@ -149,15 +143,13 @@ function SendForm({ edit }) {
           backgroundColor: '#e0f3f7',
           backgroundSize: '100%',
           backgroundPosition: 'center',
-          backgroundRepeat:'no-repeat',
+          backgroundRepeat: 'no-repeat',
           position: 'relative',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>
-          Formulario
-        </Typography>
+        <Typography variant='h4'>Formulario</Typography>
       </Grid>
-              
+
       <Container>
         <Stepper
           activeStep={activeStep}

@@ -36,7 +36,7 @@ function AssessReport() {
   );
   const history = useHistory();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { userData } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     db.collection('users')
@@ -88,7 +88,7 @@ function AssessReport() {
           reason: draftToHtml(
             convertToRaw(changesEditorState.getCurrentContent())
           ),
-          rechazado_por: userData.name
+          rechazado_por: user.displayName
         }
       }
     });
@@ -109,7 +109,7 @@ function AssessReport() {
           from_name: infoStudent.name,
           grade: value,
           reason: evaluateComment ? evaluateComment : 'Sin observaciones',
-          aprovado_por: userData.name
+          aprovado_por: user.displayName
         }
       }
     });

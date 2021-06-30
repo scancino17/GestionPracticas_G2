@@ -197,7 +197,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
 
 const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
   const [reason, setReason] = useState('');
-  const { userData } = useAuth();
+  const { user } = useAuth();
 
   function handleReject() {
     db.collection('internships')
@@ -205,7 +205,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
       .update({
         status: deniedIntention,
         reason: reason,
-        evaluatingSupervisor: { name: userData.name, email: userData.email }
+        evaluatingSupervisor: { name: user.displayName, email: user.email }
       });
 
     db.collection('users')
@@ -225,8 +225,8 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         data: {
           from_name: application.name,
           result: reason,
-          rechazado_por: userData.name,
-          rechazado_por_email: userData.email
+          rechazado_por: user.displayName,
+          rechazado_por_email: user.email
         }
       }
     });
@@ -269,7 +269,7 @@ const ApprovalModal = ({
   update,
   showApprovalModal
 }) => {
-  const { userData } = useAuth();
+  const { user } = useAuth();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
   const [reason, setReason] = useState('');
@@ -291,7 +291,7 @@ const ApprovalModal = ({
       .update({
         status: approvedIntention,
         reason: reason,
-        evaluatingSupervisor: { name: userData.name, email: userData.email }
+        evaluatingSupervisor: { name: user.displayName, email: user.email }
       });
 
     letterFile.forEach((file) => {
@@ -309,7 +309,7 @@ const ApprovalModal = ({
         name: 'approvedIntention',
         data: {
           from_name: application.name,
-          aprobado_por: userData.name,
+          aprobado_por: user.displayName,
           razon_aprobacion: reason ? reason : 'Sin observaciones'
         }
       }

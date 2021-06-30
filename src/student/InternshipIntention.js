@@ -146,12 +146,12 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { userData, user } = useAuth();
+    const { userData } = useAuth();
     const [survey, setSurvey] = useState([]);
 
     useEffect(() => {
       db.collection('careers')
-        .doc(userData.careerId)
+        .doc(userData.careerId.toString())
         .onSnapshot((doc) => setSurvey(doc.data()));
     }, []);
 
@@ -159,9 +159,7 @@ const IntentionItem = ({
       <Grid container direction='column'>
         <Grid item container direction='row' justify='flex-start'>
           <Typography>
-            <Box style={{ paddingRight: '.3rem' }}>
-              ¡Felicitaciones! Terminaste tu proceso de practica
-            </Box>
+            ¡Felicitaciones! Terminaste tu proceso de practica
           </Typography>
         </Grid>
         <Typography variant='h5'>Tu nota es: {internship.grade}</Typography>
@@ -230,18 +228,11 @@ const IntentionItem = ({
 
   const ApprovedState = () => {
     return (
-      <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start' spacing={2}>
-          <Typography
-            style={{
-              paddingLeft: '.3rem',
-              paddingRight: '.5rem'
-            }}
-            variant='h4'>
-            ¡Felicitaciones! Tu intención de práctica ha sido
-          </Typography>
-          <Typography className={classes.approvedText} variant='h4' color=''>
-            aprobada.
+      <Grid container direction='column' spacing={2}>
+        <Grid item container justify='flex-start' spacing={2}>
+          <Typography variant='h4'>
+            ¡Felicitaciones! Tu intención de práctica ha sido&nbsp;
+            <span className={classes.approvedText}>Aprobada</span>
           </Typography>
         </Grid>
         {internship.reason && (
@@ -317,7 +308,7 @@ const IntentionItem = ({
           </Typography>
         </Grid>
         <Grid item style={{ paddingTop: '1rem' }}>
-          <Typography>Aquí el por qué del rechazo:</Typography>
+          <Typography>Observaciones:</Typography>
           <Typography className={classes.reasonText}>
             {internship.reason}
           </Typography>

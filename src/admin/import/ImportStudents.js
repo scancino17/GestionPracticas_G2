@@ -78,7 +78,6 @@ function ImportStudents() {
         entryYear: row[10],
         level: row[18],
         name: row[4],
-        password: 'testtest',
         region: row[17],
         rut: row[3],
         sex: row[7],

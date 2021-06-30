@@ -108,8 +108,7 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
     createSupervisor({
       email: supervisorEmail,
       name: supervisorName,
-      careerId: careerId,
-      password: 'testtest'
+      careerId: careerId
     });
     closeModal();
     update();

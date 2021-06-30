@@ -360,7 +360,7 @@ function FormCheck() {
           <DialogTitle>Rechazar postulación de práctica</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              ¿Está seguro de rechazar postulación de Práctica ?
+              ¿Está seguro de rechazar postulación de Práctica?
             </DialogContentText>
             <TextField
               fullWidth

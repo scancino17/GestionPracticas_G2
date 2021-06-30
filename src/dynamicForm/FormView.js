@@ -78,10 +78,13 @@ function FormView({
           form.map((element, index) =>
             element.type === formTypes.formSelect ? (
               <Grid item>
-                <FormControl fullWidth>
-                  <InputLabel>{element.name}</InputLabel>
+                <FormControl fullWidth variant='outlined'>
+                  <InputLabel id={element.name}>{element.name}</InputLabel>
                   <Select
+                    labelId={element.name}
+                    label={element.name}
                     fullWidth
+                    variant='outlined'
                     value={element.value}
                     open={element.open}
                     onClose={() => updateItem(index, 'open', false)}
@@ -170,7 +173,13 @@ function FormView({
                       camp={element.type2}
                       selectorLabel='Ciudad'
                       onParentChange={(newValue) => {
-                        updateItem(index, 'value', newValue.label);
+                        updateItem(
+                          index,
+                          'value',
+                          newValue.inputValue
+                            ? newValue.inputValue
+                            : newValue.label
+                        );
                       }}
                     />
                   )}
@@ -193,7 +202,13 @@ function FormView({
                       camp={element.type2}
                       selectorLabel='Empresa'
                       onParentChange={(newValue) => {
-                        updateItem(index, 'value', newValue.label);
+                        updateItem(
+                          index,
+                          'value',
+                          newValue.inputValue
+                            ? newValue.inputValue
+                            : newValue.label
+                        );
                       }}
                     />
                   )}
@@ -252,7 +267,13 @@ function FormView({
                       camp={element.type2}
                       selectorLabel='País'
                       onParentChange={(newValue) => {
-                        updateItem(index, 'value', newValue.label);
+                        updateItem(
+                          index,
+                          'value',
+                          newValue.inputValue
+                            ? newValue.inputValue
+                            : newValue.label
+                        );
                       }}
                     />
                   )}

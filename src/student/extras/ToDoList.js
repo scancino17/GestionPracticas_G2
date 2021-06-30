@@ -198,7 +198,7 @@ function ToDoList({ done, reason }) {
 
   useEffect(() => {
     db.collection('careers')
-      .doc(userData.careerId)
+      .doc(userData.careerId.toString())
       .onSnapshot((doc) => setSurvey(doc.data()));
   }, []);
 

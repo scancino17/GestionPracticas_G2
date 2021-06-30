@@ -31,6 +31,9 @@ function DashboardEstudiante() {
           querySnapshot.forEach((doc) =>
             temp.push({ id: doc.id, ...doc.data() })
           );
+          temp.sort((a, b) =>
+            a.applicationNumber > b.applicationNumber ? 1 : -1
+          );
           setPracticas(temp);
           setLoaded(true);
         });

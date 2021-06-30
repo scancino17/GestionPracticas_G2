@@ -3,6 +3,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 exports.importStudents = functions.https.onCall((data, context) => {
+  const randomPassword = Math.random().toString(36).slice(-8);
   admin
     .firestore()
     .collection('userCreationRequests')
@@ -18,25 +19,19 @@ exports.importStudents = functions.https.onCall((data, context) => {
         .auth()
         .createUser({
           email: data.email,
-          password: data.password,
+          password: randomPassword,
           displayName: data.name
         })
         .then((userRecord) => {
-          const dataWithoutPassword = Object.assign({}, data);
-          delete dataWithoutPassword.password;
           admin.auth().setCustomUserClaims(userRecord.uid, {
             student: true,
             careerId: data.careerId
           });
-          admin
-            .firestore()
-            .collection('users')
-            .doc(userRecord.uid)
-            .set(dataWithoutPassword);
+          admin.firestore().collection('users').doc(userRecord.uid).set(data);
           admin
             .firestore()
             .collection('careers')
-            .doc(dataWithoutPassword.careerId.toString())
+            .doc(data.careerId.toString())
             .get()
             .then((careerDoc) => {
               const internships = careerDoc.data().internships;
@@ -46,11 +41,24 @@ exports.importStudents = functions.https.onCall((data, context) => {
                   .collection('internships')
                   .add({
                     applicationNumber: i + 1,
-                    careerId: dataWithoutPassword.careerId,
+                    careerId: data.careerId,
                     status: 'Práctica disponible',
                     studentId: userRecord.uid,
                     studentName: data.name
                   });
+              admin
+                .firestore()
+                .collection('mails')
+                .add({
+                  to: data.email,
+                  template: {
+                    name: 'Welcome',
+                    data: {
+                      from_name: data.name,
+                      password: randomPassword
+                    }
+                  }
+                });
               userCreationRequestRef.update({ status: 'Treated' });
               functions.logger.info(
                 `Student ${userRecord.uid} created successfully.`
@@ -61,6 +69,7 @@ exports.importStudents = functions.https.onCall((data, context) => {
 });
 
 exports.createSupervisor = functions.https.onCall((data, context) => {
+  const randomPassword = Math.random().toString(36).slice(-8);
   admin
     .firestore()
     .collection('userCreationRequests')
@@ -76,7 +85,7 @@ exports.createSupervisor = functions.https.onCall((data, context) => {
         .auth()
         .createUser({
           email: data.email,
-          password: data.password,
+          password: randomPassword,
           displayName: data.name
         })
         .then((userRecord) => {
@@ -88,6 +97,19 @@ exports.createSupervisor = functions.https.onCall((data, context) => {
           functions.logger.info(
             `Supervisor ${userRecord.uid} created successfully.`
           );
+          admin
+            .firestore()
+            .collection('mails')
+            .add({
+              to: data.email,
+              template: {
+                name: 'Welcome',
+                data: {
+                  from_name: data.name,
+                  password: randomPassword
+                }
+              }
+            });
         });
     });
 });

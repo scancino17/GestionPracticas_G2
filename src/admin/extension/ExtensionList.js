@@ -160,7 +160,7 @@ function IntershipItem({ intership }) {
   const [internshipsExtension, setInternshipsExtension] = useState();
   const [idApplication, setIdApplication] = useState();
   const [reason, setReason] = useState('');
-  const { userData } = useAuth();
+  const { user } = useAuth();
 
   function TransformDate(date) {
     return (
@@ -185,7 +185,7 @@ function IntershipItem({ intership }) {
         data: {
           from_name: application['Nombre del estudiante'],
           result: reason,
-          rechazado_por: userData.name
+          rechazado_por: user.displayName
         }
       }
     });
@@ -224,7 +224,7 @@ function IntershipItem({ intership }) {
         name: 'ExtensionApproved ',
         data: {
           from_name: application['Nombre del estudiante'],
-          aprobado_por: userData.name,
+          aprobado_por: user.displayName,
           razon_aprobacion: reason ? reason : 'Sin observaciones'
         }
       }

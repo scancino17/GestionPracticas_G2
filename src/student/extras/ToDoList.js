@@ -544,7 +544,7 @@ function ReportAnnotationsDialog({ open, setOpen, internship }) {
     <Dialog fullWidth open={open} onClose={() => setOpen(false)}>
       <DialogTitle>Observaciones de tu informe</DialogTitle>
       <DialogContent>
-        {internship && (
+        {internship && internship.reportAnnotations && (
           <div
             dangerouslySetInnerHTML={{
               __html: draftToHtml(

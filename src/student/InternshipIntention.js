@@ -159,10 +159,31 @@ const IntentionItem = ({
       <Grid container direction='column'>
         <Grid item container direction='row' justify='flex-start'>
           <Typography>
-            ¡Felicitaciones! Terminaste tu proceso de practica
+            ¡Felicitaciones! Terminaste tu proceso de práctica
           </Typography>
         </Grid>
-        <Typography variant='h5'>Tu nota es: {internship.grade}</Typography>
+        <Typography variant='h5'>
+          Tu nota es:&nbsp;
+          {internship.grade.toString()[0]},{internship.grade.toString()[1]}
+          &nbsp;
+          {internship.grade < 20
+            ? '😰'
+            : internship.grade < 30
+            ? '😢'
+            : internship.grade < 35
+            ? '🙁'
+            : internship.grade < 40
+            ? '😬'
+            : internship.grade < 50
+            ? '😐'
+            : internship.grade < 60
+            ? '🙂'
+            : internship.grade < 65
+            ? '😃'
+            : internship.grade >= 65
+            ? '🤩'
+            : null}
+        </Typography>
         {internship.reason && (
           <Grid item style={{ paddingTop: '1rem' }}>
             <Typography>
@@ -181,7 +202,7 @@ const IntentionItem = ({
             paddingTop: '2rem',
             paddingBottom: '1rem'
           }}
-          onClick={() => (window.location.href = survey.satisfactionSurvey)}>
+          onClick={() => window.open(survey.satisfactionSurvey, '_blank')}>
           <Grid item>
             <RiSurveyLine className={classes.icon} />
           </Grid>

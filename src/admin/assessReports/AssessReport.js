@@ -76,7 +76,7 @@ function AssessReport() {
       .doc(internshipId)
       .update({
         status: reportNeedsChanges,
-        reason: convertToRaw(changesEditorState.getCurrentContent())
+        reportAnnotations: convertToRaw(changesEditorState.getCurrentContent())
       });
 
     db.collection('mails').add({

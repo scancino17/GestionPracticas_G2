@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
-import { RiSurveyLine } from 'react-icons/ri';
 import { makeStyles } from '@material-ui/core/styles';
 import useAuth from '../../providers/Auth';
 import { useHistory } from 'react-router-dom';
@@ -39,9 +38,10 @@ import {
   approvedExtension,
   finishedInternship
 } from '../../InternshipStates';
-import { AlarmAdd } from '@material-ui/icons';
-import Swal from 'sweetalert2';
+import { AlarmAdd, ErrorOutline } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
+import draftToHtml from 'draftjs-to-html';
+import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
@@ -70,8 +70,7 @@ function ToDoItem({
   reasonExtension,
   internship,
   statusExtension,
-  minorChanges,
-  rejectREport
+  minorChanges
 }) {
   const classes = useStyles();
 
@@ -159,6 +158,7 @@ function ToDoList({ done, reason }) {
   const [statusExtension, setStatusExtension] = useState('');
   const [survey, setSurvey] = useState([]);
   const [openSendReport, setOpenSendReport] = useState(false);
+  const [openReportAnnotations, setOpenReportAnnotations] = useState(false);
 
   function handleFinish() {
     db.collection('internships').doc(userData.currentInternship.id).update({
@@ -316,13 +316,24 @@ function ToDoList({ done, reason }) {
               {internship && internship.status === reportNeedsChanges && (
                 <>
                   <ToDoItem
-                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    icon={<ErrorOutline className={classes.icon} />}
                     title='Corregir Informe'
-                    body='El informe que has enviado requiere correcciones.'
-                    buttonText='Corregir'
+                    body='Se te han indicado unas correcciones que puedes hacer a tu informe.'
+                    buttonText='Ver observaciones'
                     minorChanges={internship.reason}
+                    buttonOnClick={() => setOpenReportAnnotations(true)}
+                  />
+                  <Divider />
+                </>
+              )}
+              {internship && internship.status === reportNeedsChanges && (
+                <>
+                  <ToDoItem
+                    icon={<IoDocumentAttachOutline className={classes.icon} />}
+                    title='Resubir Informe'
+                    body='El informe que has enviado requiere correcciones, vuelve a subirlo cuando lo hayas modificado.'
+                    buttonText='Corregir'
                     buttonOnClick={() => setOpenSendReport(true)}
-                    rejectREport
                   />
                   <Divider />
                 </>
@@ -390,6 +401,11 @@ function ToDoList({ done, reason }) {
       <DocsDialog open={openDocs} setOpen={setOpenDocs} />
       <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
       <DialogExtension open={showExtension} setOpen={setShowExtension} />
+      <ReportAnnotationsDialog
+        open={openReportAnnotations}
+        setOpen={setOpenReportAnnotations}
+        internship={internship}
+      />
     </MuiPickersUtilsProvider>
   );
 }
@@ -473,6 +489,7 @@ function DialogExtension({ open, setOpen }) {
     </Dialog>
   );
 }
+
 function SendReportDialog({ open, setOpen }) {
   const [files, setFiles] = useState([]);
   const { user, userData } = useAuth();
@@ -521,6 +538,38 @@ function SendReportDialog({ open, setOpen }) {
     </Dialog>
   );
 }
+
+function ReportAnnotationsDialog({ open, setOpen, internship }) {
+  return (
+    <Dialog fullWidth open={open} onClose={() => setOpen(false)}>
+      <DialogTitle>Observaciones de tu informe</DialogTitle>
+      <DialogContent>
+        {internship && (
+          <div
+            dangerouslySetInnerHTML={{
+              __html: draftToHtml(
+                convertToRaw(
+                  EditorState.createWithContent(
+                    convertFromRaw(internship.reportAnnotations)
+                  ).getCurrentContent()
+                )
+              )
+            }}
+          />
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={() => setOpen(false)}>
+          OK
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function DocsDialogSeguro({ open, setOpen }) {
   const { user, userData } = useAuth();
 

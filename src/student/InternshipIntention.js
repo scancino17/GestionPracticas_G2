@@ -332,7 +332,10 @@ const IntentionItem = ({
     };
 
     return (
-      <Button color='primary' onClick={handleStartInternship}>
+      <Button
+        color='primary'
+        variant='contained'
+        onClick={handleStartInternship}>
         Comenzar proceso de práctica
       </Button>
     );

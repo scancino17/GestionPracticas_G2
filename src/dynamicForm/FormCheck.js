@@ -298,7 +298,7 @@ function FormCheck() {
               setEdit(!edit);
             }}>
             <Edit />
-            Salir de la Edición
+            Cancelar
           </Fab>
           <Fab
             variant='extended'
@@ -366,7 +366,8 @@ function FormCheck() {
               fullWidth
               label='Razón de rechazo'
               multiline
-              rowsMax={4}
+              variant='outlined'
+              rows={4}
               onChange={(e) => setRejectReason(e.target.value)}
             />
           </DialogContent>
@@ -397,9 +398,10 @@ function FormCheck() {
             </DialogContentText>
             <TextField
               fullWidth
-              label='Razón de aprobación'
+              label='Comentarios'
               multiline
-              rowsMax={4}
+              variant='outlined'
+              rows={4}
               onChange={(e) => setApproveReason(e.target.value)}
             />
           </DialogContent>
@@ -411,12 +413,13 @@ function FormCheck() {
             </SecondaryButton>
             <Button
               color='primary'
+              variant='contained'
               onClick={() => {
                 handleApprove();
                 setShowApproved(false);
                 history.push('/applications');
               }}>
-              Confirmar aprovación
+              Confirmar aprobación
             </Button>
           </DialogActions>
         </Dialog>
@@ -432,7 +435,8 @@ function FormCheck() {
               fullWidth
               label='Cambios necesarios'
               multiline
-              rowsMax={4}
+              variant='outlined'
+              rows={4}
               onChange={(e) => setMinorChanges(e.target.value)}
             />
           </DialogContent>

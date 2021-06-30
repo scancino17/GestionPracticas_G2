@@ -50,12 +50,6 @@ const DenyButton = withStyles((theme) => ({
   }
 }))(Button);
 
-const ApproveButton = withStyles((theme) => ({
-  root: {
-    color: theme.palette.primary.main
-  }
-}))(Button);
-
 const SecondaryButton = withStyles((theme) => ({
   root: {
     color: grey[700]
@@ -180,11 +174,9 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
           <DenyButton color='primary' onClick={() => setShowRejectModal(true)}>
             Rechazar
           </DenyButton>
-          <ApproveButton
-            color='primary'
-            onClick={() => setShowApprovalModal(true)}>
+          <Button color='primary' onClick={() => setShowApprovalModal(true)}>
             Aprobar
-          </ApproveButton>
+          </Button>
         </AccordionActions>
       </Accordion>
       <ApprovalModal
@@ -256,20 +248,16 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         </DialogContentText>
         <TextField
           multiline
-          rowsMax={4}
+          rows={4}
           label='Razón de Rechazo'
+          variant='outlined'
           onChange={handleReasonChange}
           fullWidth
         />
       </DialogContent>
       <DialogActions>
-        <SecondaryButton color='primary' onClick={closeModal}>
-          Cancelar
-        </SecondaryButton>
-
-        <DenyButton color='primary' onClick={handleReject}>
-          Confirmar rechazo
-        </DenyButton>
+        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
+        <DenyButton onClick={handleReject}>Confirmar rechazo</DenyButton>
       </DialogActions>
     </Dialog>
   );
@@ -364,17 +352,22 @@ const ApprovalModal = ({
         </DialogContentText>
         <TextField
           multiline
-          rowsMax={4}
+          rows={4}
           label='Observaciones'
           onChange={handleReasonChange}
+          variant='outlined'
           fullWidth
         />
       </DialogContent>
       <DialogActions>
         <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
-        <ApproveButton disabled={isConfirmDisabled} onClick={handleApprove}>
+        <Button
+          color='primary'
+          variant='contained'
+          disabled={isConfirmDisabled}
+          onClick={handleApprove}>
           Confirmar Aprobación
-        </ApproveButton>
+        </Button>
       </DialogActions>
     </Dialog>
   );

@@ -132,7 +132,7 @@ function AssessReport() {
             padding: '2rem'
           }}>
           <Typography variant='h4'>
-            Evaluación de informe de practica
+            Evaluación de informe de práctica
           </Typography>
         </Grid>
 
@@ -290,7 +290,7 @@ function AssessReport() {
         open={showEvaluate}
         onClose={() => SetShowEvaluate(false)}
         fullWidth>
-        <DialogTitle>Evaluar Practica</DialogTitle>
+        <DialogTitle>Evaluar Práctica</DialogTitle>
         <DialogContent>
           <Grid container justify='center' alignContent='center'>
             <Grid item>
@@ -350,7 +350,8 @@ function AssessReport() {
             fullWidth
             label='Comentarios'
             multiline
-            rowsMax={4}
+            variant='outlined'
+            rows={4}
             onChange={(e) => setEvaluateComment(e.target.value)}
           />
         </DialogContent>
@@ -360,6 +361,7 @@ function AssessReport() {
           </Button>
           <Button
             color='primary'
+            variant='contained'
             onClick={() => (
               handleEvaluate(),
               SetShowEvaluate(false),

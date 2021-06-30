@@ -70,15 +70,10 @@ function DashboardEstudiante() {
                 </Typography>
                 {userData.step > 0 && (
                   <Typography variant='h5'>
-                    Práctica {userData.currentInternship.number}
+                    Práctica {userData.currentInternship.number}{' '}
+                    {userData.step > 1 &&
+                      `· ${userData.currentInternship.Empresa}`}
                   </Typography>
-                )}
-                {userData.step > 1 && (
-                  <Hidden smDown>
-                    <Typography color='textSecondary' variant='body2'>
-                      Supervisor: Sundar Pichai · Modalidad: Remoto
-                    </Typography>
-                  </Hidden>
                 )}
               </Grid>
             </Hidden>

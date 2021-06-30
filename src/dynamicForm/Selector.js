@@ -1,6 +1,6 @@
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 
 const createOption = (label) => ({
@@ -12,7 +12,13 @@ const filter = createFilterOptions({
   stringify: (option) => option.value
 });
 
-function Selector({ valueinner, camp, onParentChange, edit, label }) {
+function Selector({
+  valueinner,
+  camp,
+  onParentChange,
+  readOnly,
+  selectorLabel
+}) {
   const [isLoading, setLoading] = useState(true);
   const [options, setOptions] = useState();
   const [value, setValue] = useState(valueinner);
@@ -87,11 +93,11 @@ function Selector({ valueinner, camp, onParentChange, edit, label }) {
       filterOptions={handleFilteroptions}
       renderOption={(option) => option.label}
       freeSolo
-      disabled={isLoading}
+      disabled={isLoading || readOnly}
       renderInput={(params) => (
         <TextField
           {...params}
-          label={label ? label : 'Seleccionar'}
+          label={selectorLabel ? selectorLabel : 'Seleccionar'}
           variant='outlined'
         />
       )}

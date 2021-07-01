@@ -32,7 +32,11 @@ import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import ImportStudents from '../import/ImportStudents';
 import { db } from '../../firebase';
-import { pendingIntention } from '../../InternshipStates';
+import {
+  pendingIntention,
+  sentReport,
+  onGoingIntenship
+} from '../../InternshipStates';
 import Insurance from '../insurance/Insurance';
 import CareerSelector from '../../utils/CareerSelector';
 import ReportsList from '../assessReports/ReportsList';
@@ -48,6 +52,8 @@ function DashboardAdmin({ sidebarProps }) {
   const history = useHistory();
   const [intentionsCount, setIntentionsCount] = useState(0);
   const [formsCount, setFormsCount] = useState(0);
+  const [reportsCount, setReportsCount] = useState(0);
+  const [internshipCount, setInternshipCount] = useState(0);
   const [careerId, setCareerId] = useState('3407');
   const [topCompaniesRegistered, setTopCompaniesRegistered] = useState([]);
   const [internStatus, setInternStatus] = useState([]);
@@ -67,6 +73,22 @@ function DashboardAdmin({ sidebarProps }) {
       .collection('applications')
       .where('status', '==', 'En revisión')
       .onSnapshot((querySnapshot) => setFormsCount(querySnapshot.size));
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('internships')
+      .where('status', '==', sentReport)
+      .onSnapshot((querySnapshot) => setReportsCount(querySnapshot.size));
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection('internships')
+      .where('status', '==', onGoingIntenship)
+      .onSnapshot((querySnapshot) => setInternshipCount(querySnapshot.size));
     return unsubscribe;
   }, []);
 
@@ -141,7 +163,7 @@ function DashboardAdmin({ sidebarProps }) {
                     </CardIcon>
                     <p className={classes.cardCategory}>Informes pendientes</p>
                     <h2 className={classes.cardTitle}>
-                      <CountUp end={10} duration={3} />
+                      <CountUp end={reportsCount} duration={3} />
                     </h2>
                   </CardHeader>
                   <CardFooter stats>
@@ -160,7 +182,7 @@ function DashboardAdmin({ sidebarProps }) {
                     </CardIcon>
                     <p className={classes.cardCategory}>Prácticas en Curso</p>
                     <h2 className={classes.cardTitle}>
-                      <CountUp end={1000} duration={3} />
+                      <CountUp end={internshipCount} duration={3} />
                     </h2>
                   </CardHeader>
                   <CardFooter stats>

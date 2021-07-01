@@ -8,6 +8,7 @@ function VerticalBar(props) {
   useEffect(() => {
     const unsubscribe = db
       .collection('applications')
+      .where('status', '==', 'Aprobado')
       .onSnapshot((querySnapshot) => {
         let companyCounter = new Map();
 

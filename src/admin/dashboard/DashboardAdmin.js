@@ -3,7 +3,6 @@ import CardHeader from './extras/Card/CardHeader.js';
 import CardBody from './extras/Card/CardBody.js';
 import CardIcon from './extras/Card/CardIcon.js';
 import CardFooter from './extras/Card/CardFooter.js';
-
 import {
   MdMultilineChart,
   MdEqualizer,
@@ -45,8 +44,10 @@ import ExtensionList from '../extension/ExtensionList';
 import CareersSettings from '../careersSettings/CareersSettings';
 import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
+import useAuth from '../../providers/Auth';
 
 function DashboardAdmin({ sidebarProps }) {
+  const { user } = useAuth();
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const history = useHistory();
@@ -61,32 +62,40 @@ function DashboardAdmin({ sidebarProps }) {
   const [applicationsStatus, setApplicationsStatus] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('internships')
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
+    const unsubscribe = dbRef
       .where('status', '==', pendingIntention)
       .onSnapshot((querySnapshot) => setIntentionsCount(querySnapshot.size));
     return unsubscribe;
   }, []);
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('applications')
+    const dbRef = user.careerId
+      ? db.collection('applications').where('careerId', '==', user.careerId)
+      : db.collection('applications');
+    const unsubscribe = dbRef
       .where('status', '==', 'En revisión')
       .onSnapshot((querySnapshot) => setFormsCount(querySnapshot.size));
     return unsubscribe;
   }, []);
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('internships')
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
+    const unsubscribe = dbRef
       .where('status', '==', sentReport)
       .onSnapshot((querySnapshot) => setReportsCount(querySnapshot.size));
     return unsubscribe;
   }, []);
 
   useEffect(() => {
-    const unsubscribe = db
-      .collection('internships')
+    const dbRef = user.careerId
+      ? db.collection('internships').where('careerId', '==', user.careerId)
+      : db.collection('internships');
+    const unsubscribe = dbRef
       .where('status', '==', onGoingIntenship)
       .onSnapshot((querySnapshot) => setInternshipCount(querySnapshot.size));
     return unsubscribe;
@@ -260,10 +269,12 @@ function DashboardAdmin({ sidebarProps }) {
                     <p className={classes.cardCategory}>
                       Aprobados y Rechazados por Carrera
                     </p>
-                    <CareerSelector
-                      careerId={careerId}
-                      setCareerId={setCareerId}
-                    />
+                    {!user.careerId && (
+                      <CareerSelector
+                        careerId={careerId}
+                        setCareerId={setCareerId}
+                      />
+                    )}
                   </CardHeader>
                   <CardBody>
                     <PieChart

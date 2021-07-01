@@ -1,5 +1,12 @@
 import { Button } from '@material-ui/core';
-import { Container, Grid, TextField, Typography } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  TextField,
+  Typography
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { db } from '../../firebase';
@@ -59,7 +66,12 @@ function CareersSettings() {
       <Container style={{ marginTop: '2rem' }}>
         <Grid container direction='column' spacing={2}>
           {!user.careerId && (
-            <Grid item container justify='flex-end' spacing={4}>
+            <Grid
+              item
+              container
+              justify='flex-end'
+              spacing={4}
+              style={{ marginBottom: '1rem' }}>
               <Grid item>
                 <CareerSelector
                   careerId={careerId}
@@ -70,35 +82,42 @@ function CareersSettings() {
             </Grid>
           )}
           {career ? (
-            <>
-              <Grid item container alignItems='center' spacing={2}>
-                <Grid item>
-                  <Typography variant='h5'>Prácticas de la carrera:</Typography>
-                </Grid>
-                <Grid item>
-                  <TextField
-                    label='Número de prácticas'
-                    type='number'
-                    value={internships}
-                    onChange={(e) => {
-                      if (e.target.value > 0) setInternships(e.target.value);
-                    }}
-                  />
-                </Grid>
+            <Grid container direction='column' spacing={4}>
+              <Grid item>
+                <Card>
+                  <CardContent>
+                    <Typography variant='h5'>
+                      Prácticas de la carrera
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      label='Número de prácticas'
+                      type='number'
+                      value={internships}
+                      onChange={(e) => {
+                        if (e.target.value > 0) setInternships(e.target.value);
+                      }}
+                      style={{ marginTop: '1rem' }}
+                    />
+                  </CardContent>
+                </Card>
               </Grid>
-              <Grid item container alignItems='center' spacing={2}>
-                <Grid item>
-                  <Typography variant='h5'>Encuesta de satisfacción</Typography>
-                </Grid>
-                <Grid item>
-                  <TextField
-                    label='Url de la encuesta'
-                    value={survey}
-                    onChange={(e) => {
-                      setSurvey(e.target.value);
-                    }}
-                  />
-                </Grid>
+              <Grid item>
+                <Card>
+                  <CardContent>
+                    <Typography variant='h5'>
+                      Encuesta de satisfacción
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      label='URL de la encuesta'
+                      value={survey}
+                      onChange={(e) => {
+                        setSurvey(e.target.value);
+                      }}
+                    />
+                  </CardContent>
+                </Card>
               </Grid>
               <Grid item container justify='flex-end'>
                 <Grid item>
@@ -110,7 +129,7 @@ function CareersSettings() {
                   </Button>
                 </Grid>
               </Grid>
-            </>
+            </Grid>
           ) : (
             <Grid
               container

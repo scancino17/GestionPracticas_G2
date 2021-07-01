@@ -217,7 +217,7 @@ function Insurance() {
             <CareerSelector careerId={careerId} setCareerId={setCareerId} />
           </Grid>
         </Grid>
-        {filteredUsersInsurance && filteredUsersInsurance > 1 ? (
+        {filteredUsersInsurance && filteredUsersInsurance > 0 ? (
           <List>
             {filteredUsersInsurance
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)

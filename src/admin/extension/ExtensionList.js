@@ -113,7 +113,7 @@ function ExtensionList() {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {filterInterships && filterInterships.lenght > 1 ? (
+        {filterInterships && filterInterships.length > 0 ? (
           <List>
             {filterInterships.map((internship) => (
               <>

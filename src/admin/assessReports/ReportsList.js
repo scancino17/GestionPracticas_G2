@@ -91,7 +91,7 @@ function ReportsList() {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {filterInternships && filterInternships.lenght > 1 ? (
+        {filterInternships && filterInternships.length > 0 ? (
           <List>
             {filterInternships.map((internship) => (
               <>

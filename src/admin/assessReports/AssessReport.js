@@ -28,6 +28,7 @@ import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import firebase from 'firebase';
+import { StudentNotificationTypes } from '../../layout/NotificationMenu';
 
 function AssessReport() {
   const [value, setValue] = useState(40);
@@ -103,7 +104,7 @@ function AssessReport() {
       .update({
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
-          type: reportNeedsChanges,
+          type: StudentNotificationTypes.reportNeedsChanges,
           time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });
@@ -135,7 +136,7 @@ function AssessReport() {
         step: 0,
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
-          type: evaluatedInternship,
+          type: StudentNotificationTypes.finishedInternship,
           time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });

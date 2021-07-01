@@ -45,6 +45,7 @@ const states = {
     message: 'Se ha aprobado tu inscripción de práctica.',
     hide: false,
     showReason: true,
+    applicationReason: true,
     reasonLabel: 'Observaciones'
   },
   [`${internshipStates.changeDetailsApplication}`]: {
@@ -52,6 +53,7 @@ const states = {
     message: 'Se han solicitado cambios en la práctica inscrita.',
     hide: false,
     showReason: true,
+    applicationReason: true,
     reasonLabel: 'Cambios solicitados'
   },
   [`${internshipStates.deniedApplication}`]: {
@@ -59,6 +61,7 @@ const states = {
     message: 'Se ha rechazado tu inscripción de práctica.',
     hide: false,
     showReason: true,
+    applicationReason: true,
     reasonLabel: 'Razón de rechazo'
   },
   [`${internshipStates.authorizedInternship}`]: {
@@ -126,41 +129,49 @@ const states = {
 
 function StateBanner() {
   const classes = useStyles();
-  const [show, setShow] = useState(false);
   const [internshipState, setInternshipState] = useState('');
   const [reason, setReason] = useState('');
   const [reasonExtension, setReasonExtension] = useState('');
+  const [appReason, setAppReason] = useState('');
   const [grade, setGrade] = useState('');
   const { userData } = useAuth();
-  const mounted = useRef(true);
 
   useEffect(() => {
+    let isMounted = true;
     const internshipId = userData.currentInternship.id;
     db.collection('internships')
       .doc(internshipId)
       .get()
       .then((query) => {
-        if (mounted.current) {
-          let data = query.data();
+        let data = query.data();
+
+        if (isMounted) {
           setInternshipState(data.status);
           !!data.reason &&
             typeof data.reason === 'string' &&
             setReason(data.reason);
           !!data.reasonExtension && setReasonExtension(data.reasonExtension);
           !!data.grade && setGrade(data.grade);
+
+          if (
+            userData.currentInternship &&
+            states[data.status]?.applicationReason
+          ) {
+            db.collection('applications')
+              .doc(userData.currentInternship.lastApplication)
+              .get()
+              .then((appQuery) => {
+                let appData = appQuery.data();
+                setAppReason(appData.reason);
+              });
+          }
         }
       });
 
-    return () => (mounted.current = false);
+    return () => (isMounted = false);
   }, [userData]);
 
-  // useEffect(() => {
-  //   mounted.current ? (mounted.current = true) : setShow(true);
-  // }, [internshipState]);
-
   return (
-    show &&
-    mounted &&
     !!states[internshipState] &&
     !states[internshipState].hide && (
       <Grid item>
@@ -177,7 +188,11 @@ function StateBanner() {
                   <Box fontSize='h6.fontSize'>
                     {`${states[internshipState].reasonLabel}: `}
                     <Box fontStyle='italic'>
-                      {!!reasonExtension ? reasonExtension : reason}
+                      {!!reasonExtension
+                        ? reasonExtension
+                        : !!appReason
+                        ? appReason
+                        : reason}
                     </Box>
                   </Box>
                 </Typography>

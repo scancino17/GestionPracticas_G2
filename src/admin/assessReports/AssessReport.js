@@ -100,7 +100,7 @@ function AssessReport() {
       .update({
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
-          type: StudentNotificationTypes.reportNeedsChanges,
+          type: StudentNotificationTypes.reportNeedChanges,
           time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });

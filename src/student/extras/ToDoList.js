@@ -460,7 +460,9 @@ function DialogExtension({ internship, open, setOpen }) {
               format='dd/MM/yyyy'
               label='Fecha de término actual'
               value={
-                internship && internship.applicationData['Fecha de término']
+                internship &&
+                internship.applicationData &&
+                internship.applicationData['Fecha de término']
                   ? transformDate(
                       internship.applicationData['Fecha de término'].toDate()
                     )

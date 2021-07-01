@@ -91,14 +91,30 @@ function ReportsList() {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        <List>
-          {filterInternships.map((internship) => (
-            <>
-              <ReportItem internship={internship} />
-              <Divider />
-            </>
-          ))}
-        </List>
+        {filterInternships && filterInternships.lenght > 1 ? (
+          <List>
+            {filterInternships.map((internship) => (
+              <>
+                <ReportItem internship={internship} />
+                <Divider />
+              </>
+            ))}
+          </List>
+        ) : (
+          <Grid
+            container
+            direction='column'
+            align='center'
+            justify='center'
+            style={{ marginTop: '6rem' }}>
+            <Grid item>
+              <img src='evaluate.png' width='300' />
+            </Grid>
+            <Typography variant='h5' color='textSecondary'>
+              No hay informes de práctica disponibles
+            </Typography>
+          </Grid>
+        )}
       </Container>
     </Grid>
   );

@@ -217,16 +217,33 @@ function Insurance() {
             <CareerSelector careerId={careerId} setCareerId={setCareerId} />
           </Grid>
         </Grid>
-        <List>
-          {filteredUsersInsurance
-            .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-            .map(
-              (doc) =>
-                (careerId === 'general' || careerId === doc.careerId) && (
-                  <StudentItem internship={doc} careerId={careerId} />
-                )
-            )}
-        </List>
+        {filteredUsersInsurance && filteredUsersInsurance > 1 ? (
+          <List>
+            {filteredUsersInsurance
+              .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+              .map(
+                (doc) =>
+                  (careerId === 'general' || careerId === doc.careerId) && (
+                    <StudentItem internship={doc} careerId={careerId} />
+                  )
+              )}
+          </List>
+        ) : (
+          <Grid
+            container
+            direction='column'
+            align='center'
+            justify='center'
+            style={{ marginTop: '6rem' }}>
+            <Grid item>
+              <img src='health.png' width='300' />
+            </Grid>
+            <Typography variant='h5' color='textSecondary'>
+              No hay seguros de práctica disponibles
+            </Typography>
+          </Grid>
+        )}
+
         <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
           {careerId && (
             <Pagination

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { Grid } from '@material-ui/core';
 import { db } from '../../../../firebase';
-
+import useAuth from '../../../../providers/Auth';
 const columns = [
   { field: 'country', headerName: 'País', flex: 1 },
   { field: 'interns', headerName: 'Total Practicantes', flex: 1 }
@@ -10,10 +10,12 @@ const columns = [
 
 function TableChart(props) {
   const [data, setData] = useState([]);
-
+  const { user } = useAuth();
   useEffect(() => {
-    const unsubscribe = db
-      .collection('applications')
+    const dbRef = user.careerId
+      ? db.collection('applications').where('careerId', '==', user.careerId)
+      : db.collection('applications');
+    const unsubscribe = dbRef
       .where('status', '==', 'Aprobado')
       .onSnapshot((querySnapshot) => {
         let countryCounter = new Map();

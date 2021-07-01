@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
-
+import useAuth from '../../../../providers/Auth';
 function VerticalBar(props) {
   const [data, setData] = useState();
-
+  const { user } = useAuth();
   useEffect(() => {
-    const unsubscribe = db
-      .collection('applications')
+    const dbRef = user.careerId
+      ? db.collection('applications').where('careerId', '==', user.careerId)
+      : db.collection('applications');
+    const unsubscribe = dbRef
       .where('status', '==', 'Aprobado')
       .onSnapshot((querySnapshot) => {
         let companyCounter = new Map();

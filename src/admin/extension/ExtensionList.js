@@ -113,14 +113,30 @@ function ExtensionList() {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        <List>
-          {filterInterships.map((internship) => (
-            <>
-              <IntershipItem key={internship.id} internship={internship} />
-              <Divider />
-            </>
-          ))}
-        </List>
+        {filterInterships && filterInterships.lenght > 1 ? (
+          <List>
+            {filterInterships.map((internship) => (
+              <>
+                <IntershipItem key={internship.id} internship={internship} />
+                <Divider />
+              </>
+            ))}
+          </List>
+        ) : (
+          <Grid
+            container
+            direction='column'
+            align='center'
+            justify='center'
+            style={{ marginTop: '6rem' }}>
+            <Grid item>
+              <img src='health.png' width='300' />
+            </Grid>
+            <Typography variant='h5' color='textSecondary'>
+              No hay extensiones de práctica disponibles
+            </Typography>
+          </Grid>
+        )}
       </Container>
     </Grid>
   );

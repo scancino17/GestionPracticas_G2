@@ -91,13 +91,27 @@ function IntentionList({ applications, update }) {
             />
           ))}
         <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
-          {applications && (
+          {applications.length > 0 ? (
             <Pagination
               count={Math.ceil(applications.length / itemsPerPage)}
               page={page}
               color='primary'
               onChange={(_, val) => setPage(val)}
             />
+          ) : (
+            <Grid
+              container
+              direction='column'
+              align='center'
+              justify='center'
+              style={{ marginTop: '6rem' }}>
+              <Grid item>
+                <img src='inten.png' width='300' />
+              </Grid>
+              <Typography variant='h5' color='textSecondary'>
+                No hay intenciones de práctica disponibles
+              </Typography>
+            </Grid>
           )}
         </Grid>
       </Container>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
+import useAuth from '../../../../providers/Auth';
 
 function GroupedBar(props) {
+  const { user } = useAuth();
   const [data, setData] = useState();
   let careers = new Map();
   let noAction = new Map();
@@ -31,92 +33,90 @@ function GroupedBar(props) {
   }
 
   function getStudentsStatus() {
-    const unsubscribe = db
-      .collection('users')
-      .orderBy('careerId')
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
+    const dbRef = user.careerId
+      ? db.collection('users').where('careerId', '==', user.careerId)
+      : db.collection('users');
+    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
+      const temp = [];
 
-        querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
-        );
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
 
-        temp.forEach((doc) => {
-          if (doc.step) {
-            switch (doc.step) {
-              case 0:
-                if (noAction.has(careers.get(doc.careerId))) {
-                  let counter = noAction.get(careers.get(doc.careerId));
-                  noAction.set(careers.get(doc.careerId), counter + 1);
-                } else {
-                  noAction.set(careers.get(doc.careerId), 1);
-                }
-                standardizeMaps(doc);
-                break;
-              case 1:
-                if (applying.has(careers.get(doc.careerId))) {
-                  let counter = applying.get(careers.get(doc.careerId));
-                  applying.set(careers.get(doc.careerId), counter + 1);
-                } else {
-                  applying.set(careers.get(doc.careerId), 1);
-                }
-                standardizeMaps(doc);
-                break;
-              default:
-                if (onIntern.has(careers.get(doc.careerId))) {
-                  let counter = onIntern.get(careers.get(doc.careerId));
-                  onIntern.set(careers.get(doc.careerId), counter + 1);
-                } else {
-                  onIntern.set(careers.get(doc.careerId), 1);
-                }
-                standardizeMaps(doc);
-                break;
-            }
-          } else {
-            if (noAction.has(careers.get(doc.careerId))) {
-              let counter = noAction.get(careers.get(doc.careerId));
-              noAction.set(careers.get(doc.careerId), counter + 1);
-            } else {
-              noAction.set(careers.get(doc.careerId), 1);
-            }
-            standardizeMaps(doc);
+      temp.forEach((doc) => {
+        if (doc.step) {
+          switch (doc.step) {
+            case 0:
+              if (noAction.has(careers.get(doc.careerId))) {
+                let counter = noAction.get(careers.get(doc.careerId));
+                noAction.set(careers.get(doc.careerId), counter + 1);
+              } else {
+                noAction.set(careers.get(doc.careerId), 1);
+              }
+              standardizeMaps(doc);
+              break;
+            case 1:
+              if (applying.has(careers.get(doc.careerId))) {
+                let counter = applying.get(careers.get(doc.careerId));
+                applying.set(careers.get(doc.careerId), counter + 1);
+              } else {
+                applying.set(careers.get(doc.careerId), 1);
+              }
+              standardizeMaps(doc);
+              break;
+            default:
+              if (onIntern.has(careers.get(doc.careerId))) {
+                let counter = onIntern.get(careers.get(doc.careerId));
+                onIntern.set(careers.get(doc.careerId), counter + 1);
+              } else {
+                onIntern.set(careers.get(doc.careerId), 1);
+              }
+              standardizeMaps(doc);
+              break;
           }
-        });
-
-        let list = [
-          Array.from(noAction.keys()),
-          [
-            Object.fromEntries(noAction),
-            Object.fromEntries(applying),
-            Object.fromEntries(onIntern)
-          ]
-        ];
-
-        props.setExportable(list);
-
-        let config = {
-          labels: Array.from(noAction.keys()),
-          datasets: [
-            {
-              label: 'Sin Práctica',
-              data: Array.from(noAction.values()),
-              backgroundColor: 'rgb(255, 99, 132)'
-            },
-            {
-              label: 'En Proceso de Inscripción',
-              data: Array.from(applying.values()),
-              backgroundColor: 'rgb(54, 162, 235)'
-            },
-            {
-              label: 'En Práctica',
-              data: Array.from(onIntern.values()),
-              backgroundColor: 'rgb(75, 192, 192)'
-            }
-          ]
-        };
-
-        setData(config);
+        } else {
+          if (noAction.has(careers.get(doc.careerId))) {
+            let counter = noAction.get(careers.get(doc.careerId));
+            noAction.set(careers.get(doc.careerId), counter + 1);
+          } else {
+            noAction.set(careers.get(doc.careerId), 1);
+          }
+          standardizeMaps(doc);
+        }
       });
+
+      let list = [
+        Array.from(noAction.keys()),
+        [
+          Object.fromEntries(noAction),
+          Object.fromEntries(applying),
+          Object.fromEntries(onIntern)
+        ]
+      ];
+
+      props.setExportable(list);
+
+      let config = {
+        labels: Array.from(noAction.keys()),
+        datasets: [
+          {
+            label: 'Sin Práctica',
+            data: Array.from(noAction.values()),
+            backgroundColor: 'rgb(255, 99, 132)'
+          },
+          {
+            label: 'En Proceso de Inscripción',
+            data: Array.from(applying.values()),
+            backgroundColor: 'rgb(54, 162, 235)'
+          },
+          {
+            label: 'En Práctica',
+            data: Array.from(onIntern.values()),
+            backgroundColor: 'rgb(75, 192, 192)'
+          }
+        ]
+      };
+
+      setData(config);
+    });
     return unsubscribe;
   }
 

@@ -69,7 +69,7 @@ function SendForm({ edit }) {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
         if (camp.type === formTypes.formFileInput) {
-          if (camp.value) {
+          if (camp.value && !(typeof camp.value === 'string')) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
             //tambien ese name sirve para poder buscar el archivo
@@ -93,6 +93,7 @@ function SendForm({ edit }) {
         .put(file.file);
     });
   }
+
   function handleSave() {
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta
@@ -134,7 +135,11 @@ function SendForm({ edit }) {
     } else {
       db.collection('applications')
         .doc(applicationId)
-        .update({ form: formFull, status: 'En revisión', ...values });
+        .update({ form: formFull, status: 'En revisión', ...values })
+        .then(() =>
+          //se guarda los archivos en la application correspondiente
+          saveFiles(applicationId)
+        );
     }
     db.collection('internships')
       .doc(userData.currentInternship.id)

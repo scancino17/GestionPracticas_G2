@@ -167,13 +167,27 @@ function ApplicationsList() {
               ))}
         </List>
         <Grid container justify='flex-end'>
-          {filteredApplications && (
+          {filteredApplications && filteredApplications.length > 0 ? (
             <Pagination
               count={Math.ceil(filteredApplications.length / itemsPerPage)}
               page={page}
               color='primary'
               onChange={(_, val) => setPage(val)}
             />
+          ) : (
+            <Grid
+              container
+              direction='column'
+              align='center'
+              justify='center'
+              style={{ marginTop: '6rem' }}>
+              <Grid item>
+                <img src='post.png' width='300' />
+              </Grid>
+              <Typography variant='h5' color='textSecondary'>
+                No hay postulaciones de práctica disponibles
+              </Typography>
+            </Grid>
           )}
         </Grid>
       </Container>

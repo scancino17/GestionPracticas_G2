@@ -20,6 +20,7 @@ import { customTypes, formTypes } from './formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import useAuth from '../providers/Auth';
+
 function InternshipIntentionFileList({
   student,
   internship,
@@ -65,7 +66,7 @@ function FormView({
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
-  const { user } = useAuth();
+  const { user, userData } = useAuth();
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);
@@ -121,15 +122,24 @@ function FormView({
                     //si el formulario es solo para ver se mostrarn los botones para descargar los archivos
                     !readOnly ? (
                       !admin ? (
-                        <DropzoneArea
-                          initialFiles={element.value}
-                          showFileNames
-                          filesLimit={1}
-                          accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                          onChange={(files) =>
-                            updateItem(index, 'value', files)
-                          }
-                        />
+                        <>
+                          <DropzoneArea
+                            initialFiles={element.value}
+                            showFileNames
+                            filesLimit={1}
+                            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            onChange={(files) =>
+                              updateItem(index, 'value', files)
+                            }
+                          />
+                          {element.value !== '' &&
+                            typeof element.value === 'string' && (
+                              <Typography color='textSecondary'>
+                                {`Si no se sube un nuevo archivo se utilizará el
+                                anterior (${element.value})`}
+                              </Typography>
+                            )}
+                        </>
                       ) : (
                         <Typography>
                           Los archivos no pueden ser modificados

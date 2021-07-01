@@ -20,7 +20,7 @@ import { db } from '../firebase';
  * La idea es utilizarlos en todo el código, para estandarizar la definición
  * de tipos de Notificaciones en la aplicación
  */
-export const StudentNotificationTypes = Object.freeze({
+export const StudentNotificationTypes = {
   approvedIntention: 'approvedIntention',
   deniedIntention: 'deniedIntention',
   approvedApplication: 'approvedApplication',
@@ -31,7 +31,7 @@ export const StudentNotificationTypes = Object.freeze({
   finishedInternship: 'finishedInternship',
   approvedExtension: 'approvedExtension',
   deniedExtension: 'deniedExtension'
-});
+};
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -104,7 +104,7 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
     const twoDigits = (number) => (number < 10 ? '0' + number : '' + number);
     return `${twoDigits(date.getHours())}:${twoDigits(
       date.getMinutes()
-    )} ${twoDigits(date.getDate() + 1)}-${twoDigits(date.getMonth() + 1)}`;
+    )} ${twoDigits(date.getDate())}-${twoDigits(date.getMonth() + 1)}`;
   };
 
   return (

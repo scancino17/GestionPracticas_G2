@@ -302,9 +302,7 @@ const IntentionItem = ({
         <Typography>
           Tu intención de práctica todavía está siendo evaluada.
         </Typography>
-        <Typography>
-          Tranquilo, nosotros te avisamos cuando terminen ;)
-        </Typography>
+        <Typography>Nosotros te avisamos cuando terminen ;)</Typography>
       </Grid>
     );
   };

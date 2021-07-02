@@ -167,13 +167,18 @@ function NotificationMenu() {
           </Box>
         </Typography>
       )}
-      {Object.keys(notifications).map((key, i) => (
-        <NotificationItem
-          type={notifications[key].type}
-          time={notifications[key].time}
-          handleDiscard={() => discardNotification(notifications[key].id)}
-        />
-      ))}
+      {Object.keys(notifications)
+        .sort(
+          (f, s) =>
+            notifications[f].time.toDate() - notifications[s].time.toDate()
+        )
+        .map((key, i) => (
+          <NotificationItem
+            type={notifications[key].type}
+            time={notifications[key].time}
+            handleDiscard={() => discardNotification(notifications[key].id)}
+          />
+        ))}
     </>
   );
 }

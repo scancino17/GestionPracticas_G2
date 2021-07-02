@@ -119,7 +119,7 @@ const states = {
     reasonLabel: 'Observaciones'
   },
   [`${internshipStates.deniedExtension}`]: {
-    color: infoColor,
+    color: failureColor,
     message: 'Se ha rechazado tu solicitud de extensión de práctica.',
     hide: false,
     showReason: true,
@@ -131,8 +131,6 @@ function StateBanner() {
   const classes = useStyles();
   const [internshipState, setInternshipState] = useState('');
   const [reason, setReason] = useState('');
-  const [reasonExtension, setReasonExtension] = useState('');
-  const [appReason, setAppReason] = useState('');
   const [grade, setGrade] = useState('');
   const { userData } = useAuth();
 
@@ -146,25 +144,24 @@ function StateBanner() {
         let data = query.data();
 
         if (isMounted) {
-          setInternshipState(data.status);
-          !!data.reason &&
-            typeof data.reason === 'string' &&
-            setReason(data.reason);
-          !!data.reasonExtension && setReasonExtension(data.reasonExtension);
-          !!data.grade && setGrade(data.grade);
+          let state = data.extensionStatus ? data.extensionStatus : data.status;
+          setInternshipState(state);
 
-          if (
-            userData.currentInternship &&
-            states[data.status]?.applicationReason
-          ) {
+          if (states[state]?.applicationReason) {
             db.collection('applications')
               .doc(userData.currentInternship.lastApplication)
               .get()
               .then((appQuery) => {
                 let appData = appQuery.data();
-                setAppReason(appData.reason);
+                setReason(appData.reason);
               });
+          } else {
+            setReason(
+              data.extensionStatus ? data.reasonExtension : data.reason
+            );
           }
+
+          !!data.grade && setGrade(data.grade);
         }
       });
 
@@ -182,18 +179,12 @@ function StateBanner() {
                 {states[internshipState].message}
               </Typography>
             </Grid>
-            {states[internshipState].showReason && (
+            {states[internshipState].showReason && reason && (
               <Grid item>
                 <Typography>
                   <Box fontSize='h6.fontSize'>
                     {`${states[internshipState].reasonLabel}: `}
-                    <Box fontStyle='italic'>
-                      {!!reasonExtension
-                        ? reasonExtension
-                        : !!appReason
-                        ? appReason
-                        : reason}
-                    </Box>
+                    <Box fontStyle='italic'>{reason}</Box>
                   </Box>
                 </Typography>
               </Grid>

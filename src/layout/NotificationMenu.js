@@ -160,6 +160,7 @@ function NotificationMenu() {
         <Box fontWeight='bold'>Notificaciones</Box>
       </Typography>
       <Divider />
+
       {userData.notifications &&
         Object.entries(userData.notifications).length === 0 && (
           <Typography>
@@ -169,13 +170,18 @@ function NotificationMenu() {
           </Typography>
         )}
       {notifications &&
-        Object.keys(notifications).map((key, i) => (
-          <NotificationItem
-            type={notifications[key].type}
-            time={notifications[key].time}
-            handleDiscard={() => discardNotification(notifications[key].id)}
-          />
-        ))}
+        Object.keys(notifications)
+          .sort(
+            (f, s) =>
+              notifications[f].time.toDate() - notifications[s].time.toDate()
+          )
+          .map((key, i) => (
+            <NotificationItem
+              type={notifications[key].type}
+              time={notifications[key].time}
+              handleDiscard={() => discardNotification(notifications[key].id)}
+            />
+          ))}
     </>
   );
 }

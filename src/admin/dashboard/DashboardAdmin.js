@@ -93,10 +93,10 @@ function DashboardAdmin({ sidebarProps }) {
 
   useEffect(() => {
     const dbRef = user.careerId
-      ? db.collection('internships').where('careerId', '==', user.careerId)
-      : db.collection('internships');
+      ? db.collection('users').where('careerId', '==', user.careerId)
+      : db.collection('users');
     const unsubscribe = dbRef
-      .where('status', '==', onGoingIntenship)
+      .where('step', '>=', 2)
       .onSnapshot((querySnapshot) => setInternshipCount(querySnapshot.size));
     return unsubscribe;
   }, []);

@@ -62,7 +62,7 @@ function GroupedBar(props) {
               }
               standardizeMaps(doc);
               break;
-            default:
+            case 2:
               if (onIntern.has(careers.get(doc.careerId))) {
                 let counter = onIntern.get(careers.get(doc.careerId));
                 onIntern.set(careers.get(doc.careerId), counter + 1);
@@ -70,6 +70,8 @@ function GroupedBar(props) {
                 onIntern.set(careers.get(doc.careerId), 1);
               }
               standardizeMaps(doc);
+              break;
+            default:
               break;
           }
         } else {
@@ -126,7 +128,12 @@ function GroupedBar(props) {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          if (doc.id !== 'general') careers.set(doc.id, doc.data().name);
+          const data = doc.data();
+          if (doc.id !== 'general')
+            careers.set(
+              doc.id,
+              data.name.length > 34 ? `${data.name.slice(0, 34)}...` : data.name
+            );
         });
         unsubscribe = getStudentsStatus();
       });

@@ -127,6 +127,7 @@ function FormView({
                             initialFiles={element.value}
                             showFileNames
                             filesLimit={1}
+                            acceptedFiles={['application/pdf']}
                             accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                             onChange={(files) =>
                               updateItem(index, 'value', files)

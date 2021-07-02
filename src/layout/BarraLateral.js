@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
@@ -16,6 +16,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
 import useAuth from '../providers/Auth';
+import { useLocation } from 'react-router-dom';
+
 const useStyles = makeStyles((theme) => ({
   paper: {
     background: theme.palette.primary.main
@@ -91,8 +93,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          onOpen={() => {}}>
+          onClick={() => setSidebarOpen((prevState) => !prevState)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>
@@ -110,8 +111,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
   );
 }
 
-function SidebarItems({ items }) {
+function SidebarItems({ items, setSidebarOpen }) {
   const { user } = useAuth();
+  const location = useLocation();
 
   return (
     <List>
@@ -125,7 +127,12 @@ function SidebarItems({ items }) {
                 margin: '10px 0 0 10px'
               }}
               to={item.path}>
-              <ListItem button>
+              <ListItem
+                button
+                selected={
+                  (item.path === '/' && location.pathname === '/') ||
+                  (item.path !== '/' && location.pathname.includes(item.path))
+                }>
                 <Button
                   disableRipple
                   style={{

@@ -91,7 +91,7 @@ function IntentionList({ applications, update }) {
             />
           ))}
         <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
-          {applications.length > 0 ? (
+          {applications && applications.length > 0 ? (
             <Pagination
               count={Math.ceil(applications.length / itemsPerPage)}
               page={page}
@@ -305,7 +305,9 @@ const ApprovalModal = ({
       .update({
         status: approvedIntention,
         reason: reason,
-        evaluatingSupervisor: { name: user.displayName, email: user.email }
+        evaluatingSupervisor: { name: user.displayName, email: user.email },
+        seguroDisponible: false,
+        alreadyDownloaded: false
       });
 
     letterFile.forEach((file) => {

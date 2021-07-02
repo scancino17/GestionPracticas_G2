@@ -217,17 +217,31 @@ function Insurance() {
             <CareerSelector careerId={careerId} setCareerId={setCareerId} />
           </Grid>
         </Grid>
-        {filteredUsersInsurance && filteredUsersInsurance > 0 ? (
-          <List>
-            {filteredUsersInsurance
-              .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-              .map(
-                (doc) =>
-                  (careerId === 'general' || careerId === doc.careerId) && (
-                    <StudentItem internship={doc} careerId={careerId} />
-                  )
+        {filteredUsersInsurance && filteredUsersInsurance.length > 0 ? (
+          <>
+            <List>
+              {filteredUsersInsurance
+                .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                .map(
+                  (doc) =>
+                    (careerId === 'general' || careerId === doc.careerId) && (
+                      <StudentItem internship={doc} careerId={careerId} />
+                    )
+                )}
+            </List>
+            <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+              {careerId && (
+                <Pagination
+                  count={Math.ceil(
+                    filteredUsersInsurance.length / itemsPerPage
+                  )}
+                  page={page}
+                  color='primary'
+                  onChange={(_, val) => setPage(val)}
+                />
               )}
-          </List>
+            </Grid>
+          </>
         ) : (
           <Grid
             container
@@ -243,17 +257,6 @@ function Insurance() {
             </Typography>
           </Grid>
         )}
-
-        <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
-          {careerId && (
-            <Pagination
-              count={Math.ceil(filteredUsersInsurance.length / itemsPerPage)}
-              page={page}
-              color='primary'
-              onChange={(_, val) => setPage(val)}
-            />
-          )}
-        </Grid>
       </Container>
     </Grid>
   );

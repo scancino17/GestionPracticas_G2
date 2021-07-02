@@ -160,20 +160,22 @@ function NotificationMenu() {
         <Box fontWeight='bold'>Notificaciones</Box>
       </Typography>
       <Divider />
-      {Object.entries(userData.notifications).length === 0 && (
-        <Typography>
-          <Box style={{ padding: '1rem' }}>
-            Nada que ver por aquí. ¡Vuelve más tarde!
-          </Box>
-        </Typography>
-      )}
-      {Object.keys(notifications).map((key, i) => (
-        <NotificationItem
-          type={notifications[key].type}
-          time={notifications[key].time}
-          handleDiscard={() => discardNotification(notifications[key].id)}
-        />
-      ))}
+      {userData.notifications &&
+        Object.entries(userData.notifications).length === 0 && (
+          <Typography>
+            <Box style={{ padding: '1rem' }}>
+              Nada que ver por aquí. ¡Vuelve más tarde!
+            </Box>
+          </Typography>
+        )}
+      {notifications &&
+        Object.keys(notifications).map((key, i) => (
+          <NotificationItem
+            type={notifications[key].type}
+            time={notifications[key].time}
+            handleDiscard={() => discardNotification(notifications[key].id)}
+          />
+        ))}
     </>
   );
 }

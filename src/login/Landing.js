@@ -5,6 +5,7 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  Hidden,
   Link,
   makeStyles,
   TextField,
@@ -14,7 +15,7 @@ import {
 const useStyles = makeStyles({
   root: {
     height: '100vh',
-    backgroundImage: 'url(landing7.jpg)',
+    backgroundImage: 'url(landing-original2.jpg)',
     backgroundSize: 'cover'
   },
   loginBackground: {
@@ -74,20 +75,22 @@ function Landing() {
           direction='column'
           justify='center'
           alignItems='center'
-          spacing={1}
+          spacing={2}
           xs={12}
           sm={6}>
           <Grid item container justify='center'>
             <img className={classes.logo} src='logo1.png' alt='Logo' />
           </Grid>
           <Grid item>
-            <Typography variant='h4' color='primary'>
+            <Typography variant='h4' color='primary' align='center'>
               Gestión de Prácticas
             </Typography>
           </Grid>
         </Grid>
 
-        <Divider orientation='vertical' flexItem />
+        <Hidden mdDown>
+          <Divider orientation='vertical' flexItem />
+        </Hidden>
 
         <Grid item container xs={12} sm={6} justify='center'>
           {loading ? (

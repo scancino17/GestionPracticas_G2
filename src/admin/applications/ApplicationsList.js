@@ -43,12 +43,16 @@ function ApplicationsList() {
     const dbRef = user.careerId
       ? db.collection('applications').where('careerId', '==', user.careerId)
       : db.collection('applications');
-    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-      const list = [];
-      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      setApplications(list);
-      if (list) setFilteredApplications(applyFilter(list));
-    });
+    const unsubscribe = dbRef
+      .orderBy('creationDate', 'desc')
+      .onSnapshot((querySnapshot) => {
+        const list = [];
+        querySnapshot.forEach((doc) =>
+          list.push({ id: doc.id, ...doc.data() })
+        );
+        setApplications(list);
+        if (list) setFilteredApplications(applyFilter(list));
+      });
     return unsubscribe;
   }, []);
 

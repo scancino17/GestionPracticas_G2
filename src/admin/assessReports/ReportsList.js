@@ -41,6 +41,7 @@ function ReportsList() {
       : db.collection('internships');
     const unsubscribe = dbRef
       .where('status', '==', sentReport)
+      .orderBy('creationDate', 'desc')
       .onSnapshot((querySnapshot) => {
         const list = [];
         querySnapshot.forEach((doc) => {

@@ -39,6 +39,14 @@ const theme = createMuiTheme({
       main: '#4caf50',
       dark: darken('#4caf50', 0.15)
     }
+  },
+  typography: {
+    h4: {
+      color: '#424242'
+    },
+    h5: {
+      color: '#424242'
+    }
   }
 });
 

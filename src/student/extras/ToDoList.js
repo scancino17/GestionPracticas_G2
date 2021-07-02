@@ -42,6 +42,8 @@ import { AlarmAdd, ErrorOutline } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
 import draftToHtml from 'draftjs-to-html';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import firebase from 'firebase';
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
@@ -233,7 +235,6 @@ function ToDoList({ done, reason }) {
                           ? 'En revisión'
                           : 'Completar'
                       }
-                      reason={reason}
                       internship={internship}
                       buttonOnClick={() => history.push('/send-form')}
                       disabled={
@@ -524,9 +525,10 @@ function SendReportDialog({ open, setOpen }) {
         )
         .put(file);
     });
-    db.collection('internships')
-      .doc(userData.currentInternship.id)
-      .update({ status: sentReport });
+    db.collection('internships').doc(userData.currentInternship.id).update({
+      status: sentReport,
+      creationDate: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
 
   return (

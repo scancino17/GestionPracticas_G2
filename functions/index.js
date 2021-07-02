@@ -123,7 +123,8 @@ exports.listSupervisors = functions.https.onCall((data, context) => {
     .then((listUsersResult) => {
       const supervisors = [];
       listUsersResult.users.forEach((userRecord) => {
-        if (userRecord.customClaims.supervisor) supervisors.push(userRecord);
+        if (userRecord.customClaims && userRecord.customClaims.supervisor)
+          supervisors.push(userRecord);
       });
       return supervisors;
     });

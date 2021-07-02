@@ -27,6 +27,7 @@ import {
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
 import firebase from 'firebase';
+import StudentNotificationTypes from '../../layout/NotificationMenu';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -182,7 +183,7 @@ function IntershipItem({ internship }) {
       .update({
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
-          type: deniedExtension,
+          type: StudentNotificationTypes.deniedExtension,
           time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });
@@ -237,7 +238,7 @@ function IntershipItem({ internship }) {
       .update({
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
-          type: approvedExtension,
+          type: StudentNotificationTypes.approvedExtension,
           time: firebase.firestore.FieldValue.serverTimestamp()
         }
       });

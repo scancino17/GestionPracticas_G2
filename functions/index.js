@@ -157,3 +157,15 @@ exports.deleteSupervisor = functions.https.onCall((data, context) => {
       console.log('An error occured while deleting supervisor: ', error)
     );
 });
+
+exports.makeAdmin = functions.https.onCall((data, context) => {
+  admin
+    .auth()
+    .updateUser(data.uid, { displayName: data.name })
+    .then(() => {
+      admin
+        .auth()
+        .setCustomUserClaims(data.uid, { admin: true })
+        .then(() => functions.logger.info(`User ${data.uid} is now admin`));
+    });
+});

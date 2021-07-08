@@ -44,7 +44,11 @@ function MakeAdmin() {
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <Button variant='contained' color='primary' onClick={onSubmit}>
+        <Button
+          variant='contained'
+          color='primary'
+          disabled={name === ''}
+          onClick={onSubmit}>
           Hacer administrador
         </Button>
       </Grid>

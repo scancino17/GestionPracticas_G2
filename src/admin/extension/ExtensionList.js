@@ -26,7 +26,7 @@ import {
 } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import useAuth from '../../providers/Auth';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 import StudentNotificationTypes from '../../layout/NotificationMenu';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -184,7 +184,7 @@ function IntershipItem({ internship }) {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.deniedExtension,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
   }
@@ -239,7 +239,7 @@ function IntershipItem({ internship }) {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.approvedExtension,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
   }

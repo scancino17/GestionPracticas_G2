@@ -29,7 +29,7 @@ import {
 } from '../../InternshipStates';
 import { useAuth } from '../../providers/Auth';
 import { StudentNotificationTypes } from '../../layout/NotificationMenu';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
@@ -228,7 +228,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.deniedIntention,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
 
@@ -341,7 +341,7 @@ const ApprovalModal = ({
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.approvedIntention,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
 

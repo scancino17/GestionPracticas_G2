@@ -13,7 +13,7 @@ import {
   List,
   TextField
 } from '@material-ui/core';
-import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel-xlsx-fix';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect } from 'react';

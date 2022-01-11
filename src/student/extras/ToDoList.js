@@ -42,7 +42,7 @@ import { AlarmAdd, ErrorOutline } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
 import draftToHtml from 'draftjs-to-html';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -527,7 +527,7 @@ function SendReportDialog({ open, setOpen }) {
     });
     db.collection('internships').doc(userData.currentInternship.id).update({
       status: sentReport,
-      creationDate: firebase.firestore.FieldValue.serverTimestamp()
+      creationDate: serverTimestamp()
     });
   }
 

@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 import { useHistory, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
 import { formTypes, customTypes } from './formTypes';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -124,7 +124,7 @@ function SendForm({ edit }) {
           internshipId: internshipId,
           internshipNumber: userData.currentInternship.number,
           status: 'En revisión',
-          creationDate: firebase.firestore.FieldValue.serverTimestamp(),
+          creationDate: serverTimestamp(),
           ...values
         })
         .then(function (docRef) {

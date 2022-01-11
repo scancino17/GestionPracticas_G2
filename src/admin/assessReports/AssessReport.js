@@ -23,7 +23,7 @@ import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 import { StudentNotificationTypes } from '../../layout/NotificationMenu';
 
 function AssessReport() {
@@ -101,7 +101,7 @@ function AssessReport() {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.reportNeedChanges,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
   }
@@ -133,7 +133,7 @@ function AssessReport() {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.finishedInternship,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
   }

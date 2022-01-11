@@ -26,7 +26,7 @@ import {
   deniedApplication
 } from '../InternshipStates';
 import { useHistory } from 'react-router-dom';
-import firebase from 'firebase';
+import { serverTimestamp } from 'firebase/firestore';
 import { StudentNotificationTypes } from '../layout/NotificationMenu';
 
 const useStyles = makeStyles((theme) => ({
@@ -165,7 +165,7 @@ function FormCheck() {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.approvedApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
 
@@ -194,7 +194,7 @@ function FormCheck() {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.deniedApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
 
@@ -226,7 +226,7 @@ function FormCheck() {
         [`notifications.${Date.now().toString()}`]: {
           id: Date.now().toString(),
           type: StudentNotificationTypes.changeDetailsApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
+          time: serverTimestamp()
         }
       });
 

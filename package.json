@@ -18,7 +18,7 @@
     "date-fns": "^2.22.1",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
-    "firebase": "^8.4.1",
+    "firebase": "^9.6.2",
     "immutable": "^4.0.0-rc.12",
     "material-ui-dropzone": "^3.5.0",
     "react": "^17.0.2",
@@ -30,12 +30,12 @@
     "react-form-stepper": "^1.4.1",
     "react-icons": "^4.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "5.0.0",
     "react-select": "^4.3.1",
     "styled-components": "^5.2.3",
     "sweetalert2": "^11.0.16",
     "web-vitals": "^1.1.1",
-    "xlsx": "^0.16.9"
+    "xlsx": "0.17.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -62,7 +62,7 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.24.0",
+    "eslint": "8.6.0",
     "prettier": "^2.2.1"
   }
 }

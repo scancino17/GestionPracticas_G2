@@ -5,7 +5,7 @@ import useAuth from './providers/Auth';
 import DashboardEstudiante from './student/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 import {
-  createMuiTheme,
+  createTheme,
   CssBaseline,
   darken,
   Grid,
@@ -15,7 +15,7 @@ import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
 import MakeAdmin from './utils/MakeAdmin';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       light: '#6782bc',
@@ -69,7 +69,7 @@ function App() {
             <LoadingSkeleton />
           )}
           {/* Eliminar o comentar línea siguiente una vez se haya creado un usuario administrador*/}
-          <MakeAdmin /> {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
+          {/*<MakeAdmin />*/} {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
           {/* Eliminar o comentar línea anterior una vez se haya creado un usuario administrador*/}
         </>
       ) : (

@@ -19,7 +19,10 @@ export function AuthProvider({ children }) {
   }
 
   function logout() {
-    return auth.signOut().then(() => setUserData(null));
+    return auth.signOut().then(() => {
+      setUser(null);
+      setUserData(null);
+    });
   }
 
   function resetPassword(email) {
@@ -28,26 +31,33 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
       if (user) {
+        setUser(user);
         user.getIdTokenResult().then((token) => {
           setUser((prevState) => ({
             ...prevState,
-            admin: token.claims.admin,
-            supervisor: token.claims.supervisor,
-            student: token.claims.student,
+            uid: user.uid,
+            admin: !!token.claims.admin,
+            supervisor: !!token.claims.supervisor,
+            student: !!token.claims.student,
             careerId: token.claims.careerId
           }));
         });
 
         db.collection('users')
           .doc(user.uid)
-          .onSnapshot((doc) => setUserData(doc.data()));
+          .onSnapshot((doc) => {
+            setUserData(doc.data());
+          });
       }
     });
     setLoaded(true);
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    user ? console.log(user.uid, user) : console.log('descargado');
+  }, [user]);
 
   return (
     <AuthContext.Provider value={value}>

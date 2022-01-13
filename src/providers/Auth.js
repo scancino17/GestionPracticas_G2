@@ -37,6 +37,8 @@ export function AuthProvider({ children }) {
           setUser((prevState) => ({
             ...prevState,
             uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
             admin: !!token.claims.admin,
             supervisor: !!token.claims.supervisor,
             student: !!token.claims.student,
@@ -56,7 +58,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    user ? console.log(user.uid, user) : console.log('descargado');
+    user
+      ? console.log(user.uid, user.displayName, user)
+      : console.log('descargado');
   }, [user]);
 
   return (

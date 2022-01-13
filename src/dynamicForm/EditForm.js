@@ -11,7 +11,7 @@ import {
   ArrowForward,
   Save
 } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import {
   Divider,
@@ -81,7 +81,7 @@ function EditForm() {
   const [careerId, setCareerId] = useState(
     user.careerId ? user.careerId : null
   );
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (careerId)
@@ -246,7 +246,7 @@ function EditForm() {
                                   '',
                                   'success'
                                 ).then((result) => {
-                                  if (result.isConfirmed) history.push('/');
+                                  if (result.isConfirmed) navigate('/');
                                 });
                               }
                             });

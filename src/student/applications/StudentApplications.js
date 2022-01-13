@@ -9,7 +9,7 @@ import {
   Typography
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase';
 
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +42,7 @@ function ApplicationsList({ applications }) {
 }
 
 function ApplicationItem({ application }) {
-  let history = useHistory();
+  let navigate = useNavigate();
   const classes = useStyles();
 
   let practicaColorStatus = (status) => {
@@ -61,7 +61,7 @@ function ApplicationItem({ application }) {
   return (
     <ListItem>
       <Grid item xs={12}>
-        <Card onClick={() => history.push(`/applications/${application.id}`)}>
+        <Card onClick={() => navigate(`/applications/${application.id}`)}>
           <CardContent>
             <Typography variant='h4'>{`Solicitud de práctica ${application.internshipNumber}`}</Typography>
             <Typography variant='h5'>{application.companyName}</Typography>
@@ -78,13 +78,13 @@ function ApplicationItem({ application }) {
 }
 
 function AddApplication() {
-  let history = useHistory();
+  let navigate = useNavigate();
   const { studentId, internshipId } = useParams();
   return (
     <ListItem>
       <Grid item xs={12}>
         <Card
-          onClick={() => history.push(`/form/${studentId}/${internshipId}`)}>
+          onClick={() => navigate(`/form/${studentId}/${internshipId}`)}>
           <CardContent>
             <Typography variant='h4' color='primary'>
               Agregar nueva solicitud de práctica

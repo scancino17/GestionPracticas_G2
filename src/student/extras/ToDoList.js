@@ -20,7 +20,7 @@ import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { makeStyles } from '@material-ui/core/styles';
 import useAuth from '../../providers/Auth';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { db, storage } from '../../firebase';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import InternshipIntentionFileList, {
@@ -152,7 +152,7 @@ function ToDoList({ done, reason }) {
   const { userData, user } = useAuth();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [openSecure, setOpenSecure] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reasonExtension, setReasonExtension] = useState('');
@@ -236,7 +236,7 @@ function ToDoList({ done, reason }) {
                           : 'Completar'
                       }
                       internship={internship}
-                      buttonOnClick={() => history.push('/send-form')}
+                      buttonOnClick={() => navigate('/send-form')}
                       disabled={
                         internship && internship.status === sentApplication
                       }
@@ -252,7 +252,7 @@ function ToDoList({ done, reason }) {
                     buttonText='Corregir'
                     minorChanges={reason}
                     buttonOnClick={() =>
-                      history.push(
+                      navigate(
                         `/edit-form/${userData.currentInternship.lastApplication}`
                       )
                     }
@@ -290,7 +290,7 @@ function ToDoList({ done, reason }) {
                       buttonText='Enviar'
                       buttonOnClick={
                         () => setOpenSendReport(true)
-                        //history.push('/evaluation-report/')
+                        //navigate('/evaluation-report/')
                       }
                       disabled={internship && internship.status === sentReport}
                     />

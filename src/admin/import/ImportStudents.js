@@ -16,10 +16,10 @@ import {
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Swal from 'sweetalert2';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function ImportStudents() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const [careers, setCareers] = useState({});
   const [list, setList] = useState([]);
   const [currentUsersEmails, setCurrentUsersEmails] = useState([]);
@@ -99,7 +99,7 @@ function ImportStudents() {
       'Datos enviados',
       'Los datos de los estudiantes han sido enviados para su creación',
       'success'
-    ).then(() => history.push('/'));
+    ).then(() => navigate('/'));
   }
 
   return (

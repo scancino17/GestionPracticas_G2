@@ -17,7 +17,7 @@ import {
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
@@ -200,19 +200,19 @@ function ApplicationsList() {
 }
 
 function ApplicationItem({ application }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <ListItem
       button
-      onClick={() => history.push(`/applications/${application.id}`)}>
+      onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
         secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}
       />
       <ListItemSecondaryAction>
         <IconButton
-          onClick={() => history.push(`/applications/${application.id}`)}>
+          onClick={() => navigate(`/applications/${application.id}`)}>
           <NavigateNext />
         </IconButton>
       </ListItemSecondaryAction>

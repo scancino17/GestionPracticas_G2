@@ -15,7 +15,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import BusinessIcon from '@material-ui/icons/Business';
 import React, { useEffect, useState } from 'react';
-import { Route, Switch, useHistory } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
@@ -54,7 +54,7 @@ function DashboardAdmin({ sidebarProps }) {
   const { user } = useAuth();
   const useStyles = makeStyles(styles);
   const classes = useStyles();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [intentionsCount, setIntentionsCount] = useState(0);
   const [formsCount, setFormsCount] = useState(0);
   const [reportsCount, setReportsCount] = useState(0);
@@ -115,9 +115,9 @@ function DashboardAdmin({ sidebarProps }) {
   return (
     <div style={{ display: 'flex' }}>
       <BarraLateral {...sidebarProps} />
-      <Switch>
-        <Route exact path='/'>
-          <Container>
+      <Routes>
+        <Route exact path='/'
+        element={<Container>
             <Grid
               style={{
                 backgroundImage: "url('HomeBanner-Admin.png')",
@@ -134,7 +134,7 @@ function DashboardAdmin({ sidebarProps }) {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   style={{ cursor: 'pointer' }}
-                  onClick={() => history.push('/internship-intention')}>
+                  onClick={() => navigate('/internship-intention')}>
                   <CardHeader color='warning' stats icon>
                     <CardIcon color='warning'>
                       <ArchiveIcon />
@@ -155,7 +155,7 @@ function DashboardAdmin({ sidebarProps }) {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   style={{ cursor: 'pointer' }}
-                  onClick={() => history.push('/applications')}>
+                  onClick={() => navigate('/applications')}>
                   <CardHeader color='success' stats icon>
                     <CardIcon color='success'>
                       <ListAltIcon />
@@ -176,7 +176,7 @@ function DashboardAdmin({ sidebarProps }) {
               <Grid item xs={12} sm={6} md={3}>
                 <Card
                   style={{ cursor: 'pointer' }}
-                  onClick={() => history.push('/internship-assessment')}>
+                  onClick={() => navigate('/internship-assessment')}>
                   <CardHeader color='danger' stats icon>
                     <CardIcon color='danger'>
                       <AssignmentIcon />
@@ -325,51 +325,51 @@ function DashboardAdmin({ sidebarProps }) {
                 </CardFooter>
               </Card>
             </Grid>
-          </Container>
-        </Route>
-        <Route exact path='/applications'>
-          <ApplicationsList />
-        </Route>
-        <Route path='/edit-form'>
-          <EditForm />
-        </Route>
-        <Route path='/applications/:applicationId'>
-          <FormCheck />
-        </Route>
-        <Route path='/import'>
-          <ImportStudents />
-        </Route>
-        <Route path='/internship-intention'>
-          <InternshipIntention />
-        </Route>
-        <Route path='/insurance-list'>
-          <Insurance />
-        </Route>
-        <Route exact path='/internship-assessment'>
-          <ReportsList />
-        </Route>
-        <Route path='/internship-assessment/:studentId/:internshipId'>
-          <AssessReport />
-        </Route>
-        <Route path='/extension-list/'>
-          <ExtensionList />
-        </Route>
-        <Route path='/careers-settings'>
-          <CareersSettings />
-        </Route>
-        <Route path='/supervisor-management'>
-          <SupervisorManagement />
-        </Route>
-        <Route exact path='/wip'>
-          <Grid container direction='column' alignItems='center' mar>
+          </Container>}
+        />
+        <Route exact path='/applications'
+          element={<ApplicationsList />}
+        />
+        <Route path='/edit-form'
+          element={<EditForm />}
+        />
+        <Route path='/applications/:applicationId'
+          element={<FormCheck />}
+        />
+        <Route path='/import'
+          element={<ImportStudents />}
+        />
+        <Route path='/internship-intention'
+          element={<InternshipIntention />}
+        />
+        <Route path='/insurance-list'
+          element={<Insurance />}
+        />
+        <Route exact path='/internship-assessment'
+          element={<ReportsList />}
+        />
+        <Route path='/internship-assessment/:studentId/:internshipId'
+          element={<AssessReport />}
+        />
+        <Route path='/extension-list/'
+          element={<ExtensionList />}
+        />
+        <Route path='/careers-settings'
+          element={<CareersSettings />}
+        />
+        <Route path='/supervisor-management'
+          element={<SupervisorManagement />}
+        />
+        <Route exact path='/wip'
+          element={<Grid container direction='column' alignItems='center' mar>
             <WarningIcon fontSize='large' />
             <Typography variant='h3'>Página en construcción</Typography>
             <Typography color='textSecondary'>
               Estamos trabajando para usted
             </Typography>
-          </Grid>
-        </Route>
-      </Switch>
+          </Grid>}
+        />
+      </Routes>
     </div>
   );
 }

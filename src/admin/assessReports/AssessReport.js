@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { db, storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
 import useAuth from '../../providers/Auth';
 import { convertToRaw, EditorState } from 'draft-js';
@@ -36,7 +36,7 @@ function AssessReport() {
   const [changesEditorState, setChangesEditorState] = useState(
     EditorState.createEmpty()
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   const [evaluateComment, setEvaluateComment] = useState('');
   const { user } = useAuth();
 
@@ -297,7 +297,7 @@ function AssessReport() {
               onClick={() => (
                 handleChanges(),
                 SetShowChanges(false),
-                history.push('/internship-assessment')
+                navigate('/internship-assessment')
               )}>
               Notificar cambios
             </Button>
@@ -384,7 +384,7 @@ function AssessReport() {
             onClick={() => (
               handleEvaluate(),
               SetShowEvaluate(false),
-              history.push('/internship-assessment')
+              navigate('/internship-assessment')
             )}>
             Confirmar Evaluación
           </Button>

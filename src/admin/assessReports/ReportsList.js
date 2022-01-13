@@ -12,7 +12,7 @@ import {
   List
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
@@ -122,13 +122,13 @@ function ReportsList() {
 }
 
 function ReportItem({ internship }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <ListItem
       button
       onClick={() =>
-        history.push(
+        navigate(
           `/internship-assessment/${internship.studentId}/${internship.id}`
         )
       }>
@@ -139,7 +139,7 @@ function ReportItem({ internship }) {
       <ListItemSecondaryAction>
         <IconButton
           onClick={() =>
-            history.push(
+            navigate(
               `/internship-assessment/${internship.studentId}/${internship.id}`
             )
           }>

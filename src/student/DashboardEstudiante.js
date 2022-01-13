@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '../providers/Auth';
 import { db } from '../firebase';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
 import { Grid, Hidden, Typography, Card, Container } from '@material-ui/core';
 import CustomStepper from './extras/CustomStepper';
@@ -53,9 +53,9 @@ function DashboardEstudiante() {
   }, [user, userData]);
 
   return (
-    <Switch>
-      <Route exact path='/'>
-        {loaded ? (
+    <Routes>
+      <Route exact path='/'
+        element={loaded ? (
           <>
             <Hidden smDown>
               <Grid
@@ -111,23 +111,23 @@ function DashboardEstudiante() {
             <Skeleton animation='wave' width='75%' height='2rem' />
           </Grid>
         )}
-      </Route>
+      />
       {/**este es el que va al formulario dinamico */}
-      <Route path='/send-form'>
-        <SendForm />
-      </Route>
+      <Route path='/send-form'
+        element={<SendForm />}
+      />
       {/**este es el que va al formulario dinamico para edicion */}
-      <Route path='/edit-form/:applicationId'>
-        <SendForm edit />
-      </Route>
+      <Route path='/edit-form/:applicationId'
+       element={ <SendForm edit />}
+      />
 
-      <Route path='/internship/:studentId/:internshipId'>
-        <StudentApplications />
-      </Route>
-      <Route path='/applications/:applicationId'>
-        <ApplicationDetails />
-      </Route>
-    </Switch>
+      <Route path='/internship/:studentId/:internshipId'
+        element={<StudentApplications />}
+      />
+      <Route path='/applications/:applicationId'
+        element={<ApplicationDetails />}
+      />
+    </Routes>
   );
 }
 

@@ -25,7 +25,7 @@ import {
   changeDetailsApplication,
   deniedApplication
 } from '../InternshipStates';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { serverTimestamp } from 'firebase/firestore';
 import { StudentNotificationTypes } from '../layout/NotificationMenu';
 
@@ -100,7 +100,7 @@ function FormCheck() {
   const [application, setApplication] = useState([]);
   const [minorChanges, setMinorChanges] = useState('');
   const [applicationUser, setApplicationUser] = useState([]);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
   const [showMinorChanges, setShowMinorChanges] = useState(false);
@@ -388,7 +388,7 @@ function FormCheck() {
               color='primary'
               onClick={() => {
                 handleReject();
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar rechazo
             </DenyButton>
@@ -426,7 +426,7 @@ function FormCheck() {
               onClick={() => {
                 handleApprove();
                 setShowApproved(false);
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar aprobación
             </Button>
@@ -460,7 +460,7 @@ function FormCheck() {
               onClick={() => {
                 handleMinorChanges();
                 setShowMinorChanges(false);
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar solicitud
             </DenyButton>

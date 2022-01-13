@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
 import { formTypes, customTypes } from './formTypes';
 import { serverTimestamp } from 'firebase/firestore';
@@ -24,7 +24,7 @@ function SendForm({ edit }) {
   const { user, userData } = useAuth();
   const [files, setFiles] = useState([]);
   const { applicationId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
 
   useEffect(() => {
@@ -236,7 +236,7 @@ function SendForm({ edit }) {
                           handleSave();
                           Swal.fire('¡Formulario enviado!', '', 'success').then(
                             (result) => {
-                              if (result.isConfirmed) history.push('/');
+                              if (result.isConfirmed) navigate('/');
                             }
                           );
                         }

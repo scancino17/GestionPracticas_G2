@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core';
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import useAuth from '../providers/Auth';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -46,7 +46,7 @@ function TopBar({ setSidebarOpen }) {
   const { user, logout, resetPassword, userData } = useAuth();
   const [anchorEl, setAnchorEl] = useState();
   const [selectedMenu, setSelectedMenu] = useState();
-  const history = useHistory();
+  const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const [resetPasswordSnack, setResetPasswordSnack] = useState();
 
@@ -74,7 +74,7 @@ function TopBar({ setSidebarOpen }) {
 
   function handleLogout() {
     logout();
-    history.push('/');
+    navigate('/');
     handleMenuClose();
   }
 
@@ -140,7 +140,7 @@ function TopBar({ setSidebarOpen }) {
           </Hidden>
           <IconButton
             disableRipple
-            onClick={() => history.push('/')}
+            onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
             <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>
@@ -173,7 +173,7 @@ function TopBar({ setSidebarOpen }) {
         <Toolbar>
           <IconButton
             disableRipple
-            onClick={() => history.push('/')}
+            onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
             <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>

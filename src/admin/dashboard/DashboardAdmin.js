@@ -92,6 +92,11 @@ function DashboardAdmin({ sidebarProps }) {
   }, []);
 
   useEffect(() => {
+    console.log('Dashboard  Montado');
+    return () => console.log('Dashboard desmontado');
+  }, []);
+
+  useEffect(() => {
     const dbRef = user.careerId
       ? db.collection('users').where('careerId', '==', user.careerId)
       : db.collection('users');
@@ -101,7 +106,7 @@ function DashboardAdmin({ sidebarProps }) {
     return unsubscribe;
   }, []);
 
-  useEffect(() => console.log(`careerID: ${careerId}`), [careerId]);
+  useEffect(() => console.log(user.careerId, careerId), [careerId]);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -218,7 +223,7 @@ function DashboardAdmin({ sidebarProps }) {
               <Typography variant='h4'>Estadísticas</Typography>
             </Grid>
             {/*Charts*/}
-            {/*<Grid>
+            <Grid>
               <Card>
                 <CardHeader color='rose' icon>
                   <CardIcon color='rose'>
@@ -262,6 +267,7 @@ function DashboardAdmin({ sidebarProps }) {
                   </CardFooter>
                 </Card>
               </Grid>
+
               <Grid item xs={12} sm={4} md={4}>
                 <Card>
                   <CardHeader color='info' icon>
@@ -314,48 +320,7 @@ function DashboardAdmin({ sidebarProps }) {
                   />
                 </CardFooter>
               </Card>
-            </Grid>*/}
-
-            {/*<Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={6}>
-                <Card>
-                  <CardHeader color='info' icon>
-                    <CardIcon color='info'>
-                      <MdEqualizer />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>MultiType Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <MultiTypeChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-              <Grid item xs={12} sm={6} md={6}>
-                <Card>
-                  <CardHeader color='danger' icon>
-                    <CardIcon color='danger'>
-                      <MdTimeline />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>Line Chart</p>
-                  </CardHeader>
-                  <CardBody>
-                    <LineChart />
-                  </CardBody>
-                  <CardFooter stats>
-                    <div className={classes.stats}>
-                      <MdFileDownload />
-                      Exportar datos
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Grid>
-            </Grid>*/}
+            </Grid>
           </Container>
         </Route>
         <Route exact path='/applications'>

@@ -1,10 +1,14 @@
+import { CircularProgress } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 import useAuth from '../../../../providers/Auth';
+
 function VerticalBar(props) {
   const [data, setData] = useState();
   const { user } = useAuth();
+  const [loaded, setLoaded] = useState(false);
+
   useEffect(() => {
     const dbRef = user.careerId
       ? db.collection('applications').where('careerId', '==', user.careerId)
@@ -89,7 +93,9 @@ function VerticalBar(props) {
     }
   };
 
-  return <Bar data={data} options={options} />;
+  useEffect(() => setLoaded(!!data), [data]);
+
+  return loaded ? <Bar data={data} options={options} /> : <CircularProgress />;
 }
 
 export default VerticalBar;

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CircularProgress } from '@material-ui/core';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 import useAuth from '../../../../providers/Auth';
@@ -6,6 +7,7 @@ import useAuth from '../../../../providers/Auth';
 function GroupedBar(props) {
   const { user } = useAuth();
   const [data, setData] = useState();
+  const [loaded, setLoaded] = useState(false);
   let careers = new Map();
   let noAction = new Map();
   let applying = new Map();
@@ -140,7 +142,9 @@ function GroupedBar(props) {
     return unsubscribe;
   }, []);
 
-  return <Bar data={data} options={options} />;
+  useEffect(() => setLoaded(!!data), [data]);
+
+  return loaded ? <Bar data={data} options={options} /> : <CircularProgress />;
 }
 
 export default GroupedBar;

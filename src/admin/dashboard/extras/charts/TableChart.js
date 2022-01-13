@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
-import { Grid } from '@material-ui/core';
+import { CircularProgress, Grid } from '@material-ui/core';
 import { db } from '../../../../firebase';
 import useAuth from '../../../../providers/Auth';
 const columns = [
@@ -10,6 +10,8 @@ const columns = [
 
 function TableChart(props) {
   const [data, setData] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
   const { user } = useAuth();
   useEffect(() => {
     const dbRef = user.careerId
@@ -56,16 +58,22 @@ function TableChart(props) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => setLoaded(!!data), [data]);
+
   return (
     <Grid container>
       <Grid item xs={12} sm={6} md={6}>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          pageSize={5}
-          autoHeight={true}
-          columnBuffer={2}
-        />
+        {loaded ? (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            pageSize={5}
+            autoHeight={true}
+            columnBuffer={2}
+          />
+        ) : (
+          <CircularProgress />
+        )}
       </Grid>
       <Grid item xs={12} sm={6} md={6}>
         <img src='AdminTable.jpg' alt='Faceless Animation' width='100%' />

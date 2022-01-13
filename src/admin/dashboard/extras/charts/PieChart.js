@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CircularProgress } from '@material-ui/core';
 import { Pie } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
 
@@ -33,6 +34,7 @@ function PieChart(props) {
   const [careers, setCareers] = useState();
   const [approved, setApproved] = useState();
   const [rejected, setRejected] = useState();
+  const [loaded, setLoaded] = useState(false);
 
   function getApplicationsStatus(careers) {
     let tempApproved = new Map();
@@ -144,7 +146,9 @@ function PieChart(props) {
     }
   }, [props.careerId]);
 
-  return <Pie data={data} />;
+  useEffect(() => setLoaded(!!data), [data]);
+
+  return loaded ? <Pie data={data} /> : <CircularProgress />;
 }
 
 export default PieChart;

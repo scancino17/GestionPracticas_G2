@@ -46,6 +46,10 @@ import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
 import useAuth from '../../providers/Auth';
 
+// La siguiente línea registra todos los elementos de chart.js
+// No es inútil: eliminarla rompera TODOS los gráficos al recargar los gráficos.
+import Chart from 'chart.js/auto';
+
 function DashboardAdmin({ sidebarProps }) {
   const { user } = useAuth();
   const useStyles = makeStyles(styles);

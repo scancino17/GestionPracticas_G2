@@ -101,6 +101,8 @@ function DashboardAdmin({ sidebarProps }) {
     return unsubscribe;
   }, []);
 
+  useEffect(() => console.log(`careerID: ${careerId}`), [careerId]);
+
   return (
     <div style={{ display: 'flex' }}>
       <BarraLateral {...sidebarProps} />
@@ -216,7 +218,7 @@ function DashboardAdmin({ sidebarProps }) {
               <Typography variant='h4'>Estadísticas</Typography>
             </Grid>
             {/*Charts*/}
-            <Grid>
+            {/*<Grid>
               <Card>
                 <CardHeader color='rose' icon>
                   <CardIcon color='rose'>
@@ -312,7 +314,7 @@ function DashboardAdmin({ sidebarProps }) {
                   />
                 </CardFooter>
               </Card>
-            </Grid>
+            </Grid>*/}
 
             {/*<Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={6}>

@@ -90,7 +90,7 @@ function IntentionList({ applications, update }) {
               changeExpanded={changeExpanded}
             />
           ))}
-        <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+        <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
           {applications && applications.length > 0 ? (
             <Pagination
               count={Math.ceil(applications.length / itemsPerPage)}
@@ -103,7 +103,7 @@ function IntentionList({ applications, update }) {
               container
               direction='column'
               align='center'
-              justify='center'
+              justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
                 <img src='inten.png' width='300' />

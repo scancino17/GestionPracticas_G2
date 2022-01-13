@@ -200,7 +200,7 @@ function SendForm({ edit }) {
                   )
               )}
             </Grid>
-            <Grid item container justify='flex-end' spacing={2}>
+            <Grid item container justifyContent='flex-end' spacing={2}>
               <Grid item>
                 <Button
                   variant='contained'

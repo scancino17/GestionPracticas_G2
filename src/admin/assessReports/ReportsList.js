@@ -76,7 +76,7 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -106,7 +106,7 @@ function ReportsList() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
               <img src='evaluate.png' width='300' />

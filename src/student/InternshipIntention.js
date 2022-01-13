@@ -157,7 +157,7 @@ const IntentionItem = ({
 
     return (
       <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start'>
+        <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
             ¡Felicitaciones! Terminaste tu proceso de práctica
           </Typography>
@@ -218,7 +218,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>
@@ -250,7 +250,7 @@ const IntentionItem = ({
   const ApprovedState = () => {
     return (
       <Grid container direction='column' spacing={2}>
-        <Grid item container justify='flex-start' spacing={2}>
+        <Grid item container justifyContent='flex-start' spacing={2}>
           <Typography variant='h4'>
             ¡Felicitaciones! Tu intención de práctica ha sido&nbsp;
             <span className={classes.approvedText}>Aprobada</span>
@@ -282,7 +282,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>
@@ -310,7 +310,7 @@ const IntentionItem = ({
   const DeniedState = () => {
     return (
       <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start'>
+        <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
             <Box style={{ paddingRight: '.3rem' }}>
               ¡Rayos! Tu intención de práctica ha sido
@@ -336,7 +336,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>

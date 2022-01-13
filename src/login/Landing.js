@@ -57,13 +57,13 @@ function Landing() {
     <Grid
       container
       direction='column'
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       className={classes.root}>
       <Grid
         item
         container
-        justify='space-evenly'
+        justifyContent='space-evenly'
         alignItems='center'
         xs={10}
         md={8}
@@ -73,12 +73,12 @@ function Landing() {
           item
           container
           direction='column'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           spacing={2}
           xs={12}
           sm={6}>
-          <Grid item container justify='center'>
+          <Grid item container justifyContent='center'>
             <img className={classes.logo} src='logo1.png' alt='Logo' />
           </Grid>
           <Grid item>
@@ -92,7 +92,7 @@ function Landing() {
           <Divider orientation='vertical' flexItem />
         </Hidden>
 
-        <Grid item container xs={12} sm={6} justify='center'>
+        <Grid item container xs={12} sm={6} justifyContent='center'>
           {loading ? (
             <CircularProgress />
           ) : (

@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ApplicationsList({ applications }) {
   return (
-    <Grid container justify='center' alignItems='center' direction='column'>
+    <Grid container justifyContent='center' alignItems='center' direction='column'>
       <Typography variant='h3'>Solicitudes de práctica</Typography>
       <List>
         <AddApplication />

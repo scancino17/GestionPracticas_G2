@@ -72,9 +72,9 @@ function FormBuilder({
       border={1}
       container
       direction='column'
-      justify='flex-start'
+      justifyContent='flex-start'
       alignItems='flex-end'>
-      <Grid container direction='column' justify='center' alignItems='center'>
+      <Grid container direction='column' justifyContent='center' alignItems='center'>
         <Box pl={6} pb={2}>
           <Table>
             <TableHead>
@@ -139,7 +139,7 @@ function FormBuilder({
         </Box>
       </Grid>
 
-      <Grid container direction='column' justify='center' alignItems='center'>
+      <Grid container direction='column' justifyContent='center' alignItems='center'>
         <Button
           variant='contained'
           color='primary'

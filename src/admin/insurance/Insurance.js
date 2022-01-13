@@ -201,7 +201,7 @@ function Insurance() {
         <Typography variant='h4'>Seguros de práctica de estudiantes</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' spacing={2}>
+        <Grid container justifyContent='flex-end' spacing={2}>
           <Grid item>
             <ExportarExcel />
           </Grid>
@@ -229,7 +229,7 @@ function Insurance() {
                     )
                 )}
             </List>
-            <Grid container justify='flex-end' style={{ marginTop: '2rem' }}>
+            <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
               {careerId && (
                 <Pagination
                   count={Math.ceil(
@@ -247,7 +247,7 @@ function Insurance() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
               <img src='health.png' width='300' />

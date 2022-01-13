@@ -98,7 +98,7 @@ function ApplicationsList() {
         <Typography variant='h4'>Postulaciones de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -170,7 +170,7 @@ function ApplicationsList() {
                 </>
               ))}
         </List>
-        <Grid container justify='flex-end'>
+        <Grid container justifyContent='flex-end'>
           {filteredApplications && filteredApplications.length > 0 ? (
             <Pagination
               count={Math.ceil(filteredApplications.length / itemsPerPage)}
@@ -183,7 +183,7 @@ function ApplicationsList() {
               container
               direction='column'
               align='center'
-              justify='center'
+              justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
                 <img src='post.png' width='300' />

@@ -15,7 +15,7 @@ function DynamicForm({
 }) {
   const [flag, setFlag] = useState(false);
   return (
-    <Grid container justify='center' spacing={8}>
+    <Grid container justifyContent='center' spacing={8}>
       {admin && (
         <>
           <Grid item xs={12} md={5} >
@@ -44,7 +44,7 @@ function DynamicForm({
         </>
       )}
       {student && (
-        <Grid item xs={12} md={12} justify='center'>
+        <Grid item xs={12} md={12} justifyContent='center'>
           <FormView
             setFlag={setFlag}
             flag={flag}

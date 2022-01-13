@@ -83,7 +83,7 @@ function LoadingSkeleton() {
   return (
     <Grid
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       direction='column'
       style={{ marginTop: '4rem' }}>

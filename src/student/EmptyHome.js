@@ -12,7 +12,7 @@ function EmptyHome({ practicas }) {
         container
         direction='column'
         spacing={2}
-        justify='center'
+        justifyContent='center'
         alignItems='center'>
         <Grid item>
           <Hidden xsDown>

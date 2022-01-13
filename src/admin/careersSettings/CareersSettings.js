@@ -69,7 +69,7 @@ function CareersSettings() {
             <Grid
               item
               container
-              justify='flex-end'
+              justifyContent='flex-end'
               spacing={4}
               style={{ marginBottom: '1rem' }}>
               <Grid item>
@@ -119,7 +119,7 @@ function CareersSettings() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item container justify='flex-end'>
+              <Grid item container justifyContent='flex-end'>
                 <Grid item>
                   <Button
                     variant='contained'
@@ -135,7 +135,7 @@ function CareersSettings() {
               container
               direction='column'
               align='center'
-              justify='center'
+              justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
                 <img src='EmptyState-3x.png' width='300' />

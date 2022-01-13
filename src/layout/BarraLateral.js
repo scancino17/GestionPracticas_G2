@@ -93,7 +93,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClick={() => setSidebarOpen((prevState) => !prevState)}>
+          onClose={() => setSidebarOpen((prevState) => !prevState)}
+          onOpen={() => setSidebarOpen((prevState) => !prevState)}
+          >
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>
@@ -118,9 +120,10 @@ function SidebarItems({ items, setSidebarOpen }) {
   return (
     <List>
       {items.map(
-        (item) =>
+        (item, index) =>
           (user.admin || !item.adminOnly) && (
             <Link
+              key={index}
               style={{
                 color: 'inherit',
                 textDecoration: 'none',
@@ -128,12 +131,14 @@ function SidebarItems({ items, setSidebarOpen }) {
               }}
               to={item.path}>
               <ListItem
+                key={index}
                 button
                 selected={
                   (item.path === '/' && location.pathname === '/') ||
                   (item.path !== '/' && location.pathname.includes(item.path))
                 }>
                 <Button
+                  key={index}
                   disableRipple
                   style={{
                     backgroundColor: 'transparent',

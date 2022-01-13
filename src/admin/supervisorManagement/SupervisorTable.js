@@ -298,7 +298,7 @@ function SupervisorTable() {
   return (
     <>
       <TableContainer component={Paper}>
-        <Grid container justify='flex-end' style={{ padding: '1rem' }}>
+        <Grid container justifyContent='flex-end' style={{ padding: '1rem' }}>
           <Button
             color='primary'
             variant='contained'

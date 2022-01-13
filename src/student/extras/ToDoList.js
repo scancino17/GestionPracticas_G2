@@ -80,7 +80,7 @@ function ToDoItem({
     <Grid
       container
       style={{ padding: '1rem' }}
-      justify='space-between'
+      justifyContent='space-between'
       wrap='nowrap'>
       <Grid container>
         <Hidden smDown>

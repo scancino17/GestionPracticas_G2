@@ -157,13 +157,13 @@ function AssessReport() {
 
         {infoStudent && (
           <Container style={{ marginTop: '2rem' }}>
-            <Grid container direction='row' justify='space-around'>
+            <Grid container direction='row' justifyContent='space-around'>
               <Grid item>
                 <Grid
                   container
                   direction='column'
                   spacing={3}
-                  justify='space-evenly'>
+                  justifyContent='space-evenly'>
                   <Typography variant='h5'>
                     Información del estudiante
                   </Typography>
@@ -209,7 +209,7 @@ function AssessReport() {
                 </Grid>
               </Grid>
               <Grid item>
-                <Grid container align='center' justify='center'>
+                <Grid container align='center' justifyContent='center'>
                   <Grid item>
                     <img
                       height='500'
@@ -224,7 +224,7 @@ function AssessReport() {
               style={{ marginTop: '1rem' }}
               container
               direction='row'
-              justify='flex-end'
+              justifyContent='flex-end'
               spacing={3}>
               <Grid item>
                 <Button
@@ -311,7 +311,7 @@ function AssessReport() {
         fullWidth>
         <DialogTitle>Evaluar Práctica</DialogTitle>
         <DialogContent>
-          <Grid container justify='center' alignContent='center'>
+          <Grid container justifyContent='center' alignContent='center'>
             <Grid item>
               <Typography variant='h2'>
                 {value < 20

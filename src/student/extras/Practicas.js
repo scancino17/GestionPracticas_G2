@@ -18,7 +18,7 @@ function Practica({ practica }) {
     <Grid
       container
       alignItems='center'
-      justify='space-between'
+      justifyContent='space-between'
       wrap='nowrap'
       spacing={1}>
       <Grid item container spacing={1}>

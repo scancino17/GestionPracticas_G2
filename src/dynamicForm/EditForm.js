@@ -154,7 +154,7 @@ function EditForm() {
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {!user.careerId && (
-          <Grid container justify='flex-end' alignItems='center' spacing={4}>
+          <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
             <Grid item>
               <CareerSelector
                 careerId={careerId}
@@ -166,10 +166,10 @@ function EditForm() {
         )}
         {careerId ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
-            <Grid container justify='center' spacing={8}>
+            <Grid container justifyContent='center' spacing={8}>
               <Grid item direction='column' xs={12} md={5}>
                 <Typography variant='h5'>Etapas</Typography>
-                <Grid item container justify='center'>
+                <Grid item container justifyContent='center'>
                   <Button
                     variant='contained'
                     color='primary'
@@ -213,7 +213,7 @@ function EditForm() {
               <Grid
                 container
                 item
-                justify='flex-end'
+                justifyContent='flex-end'
                 alignItems='center'
                 spacing={4}>
                 <Grid item>
@@ -273,7 +273,7 @@ function EditForm() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
               <img src='EmptyState-3x.png' width='300' />

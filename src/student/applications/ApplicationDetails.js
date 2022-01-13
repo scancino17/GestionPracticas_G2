@@ -62,7 +62,7 @@ function ApplicationDetails() {
       item
       xs={12}
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'>
       <Typography {...typographyProps}>{text}</Typography>
     </Grid>
@@ -73,7 +73,7 @@ function ApplicationDetails() {
       item
       xs={12}
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       direction='column'>
       {application && docs ? (
@@ -81,7 +81,7 @@ function ApplicationDetails() {
           item
           xs={9}
           container
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'>
           <form className={classes.root}>
@@ -270,7 +270,7 @@ function ApplicationDetails() {
                 item
                 xs={12}
                 container
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 direction='row'>
                 <Grid item xs={6}>
@@ -290,7 +290,7 @@ function ApplicationDetails() {
                 item
                 xs={12}
                 container
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 direction='row'>
                 <CenteredTypography
@@ -308,7 +308,7 @@ function ApplicationDetails() {
             item
             xs={12}
             container
-            justify='center'
+            justifyContent='center'
             alignItems='center'
             direction='column'>
             <CenteredTypography

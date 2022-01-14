@@ -70,7 +70,7 @@ function UploadModal({ internship, close, show }) {
 }
 
 function StudentItem({ internship }) {
-  const [showModal, setShowModal] = useState();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <>
@@ -225,7 +225,7 @@ function Insurance() {
                 .map(
                   (doc) =>
                     (careerId === 'general' || careerId === doc.careerId) && (
-                      <StudentItem internship={doc} careerId={careerId} />
+                      <StudentItem key={doc.id} internship={doc} careerId={careerId} />
                     )
                 )}
             </List>

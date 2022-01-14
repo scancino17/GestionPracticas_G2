@@ -75,7 +75,7 @@ function EditForm() {
     }
   ]);
   const { user } = useAuth();
-  const [show, setShow] = useState('');
+  const [show, setShow] = useState(false);
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [careerId, setCareerId] = useState(

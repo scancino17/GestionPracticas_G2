@@ -16,14 +16,14 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 
 function ReportsList() {
   const [name, setName] = useState('');
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
   const [filterInternships, setFilterInternships] = useState([]);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   function applyFilter(list) {
     let filtered = [...list];
@@ -76,7 +76,11 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'

@@ -35,7 +35,7 @@ import {
 } from '@material-ui/core';
 import { formTypes } from './formTypes';
 import CareerSelector from '../utils/CareerSelector';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([
@@ -74,7 +74,7 @@ function EditForm() {
       ]
     }
   ]);
-  const { user } = useAuth();
+  const { user } = useUser();
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
@@ -154,7 +154,11 @@ function EditForm() {
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {!user.careerId && (
-          <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
+          <Grid
+            container
+            justifyContent='flex-end'
+            alignItems='center'
+            spacing={4}>
             <Grid item>
               <CareerSelector
                 careerId={careerId}

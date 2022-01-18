@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import { db } from '../firebase';
 import { Route, Routes } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
@@ -13,7 +13,7 @@ import SendForm from './../dynamicForm/SendForm';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
   const [loaded, setLoaded] = useState(false);
   const [practicas, setPracticas] = useState([]);
   const [step, setStep] = useState(0);
@@ -54,77 +54,80 @@ function DashboardEstudiante() {
 
   return (
     <Routes>
-      <Route exact path='/'
-        element={loaded ? (
-          <>
-            <Hidden smDown>
-              <Grid
-                style={{
-                  backgroundImage: "url('HomeBanner-3x.png')",
-                  backgroundColor: '#e0f3f7',
-                  backgroundSize: '100%',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                  position: 'relative',
-                  padding: '2rem'
-                }}>
-                <Typography variant='h4'>
-                  ¡Bienvenido/a, {userData && userData.name}!
-                </Typography>
-                {userData.step > 0 && (
-                  <Typography variant='h5'>
-                    Práctica {userData.currentInternship.number}{' '}
-                    {userData.step > 1 &&
-                      `· ${userData.currentInternship.Empresa}`}
+      <Route
+        exact
+        path='/'
+        element={
+          loaded ? (
+            <>
+              <Hidden smDown>
+                <Grid
+                  style={{
+                    backgroundImage: "url('HomeBanner-3x.png')",
+                    backgroundColor: '#e0f3f7',
+                    backgroundSize: '100%',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                    position: 'relative',
+                    padding: '2rem'
+                  }}>
+                  <Typography variant='h4'>
+                    ¡Bienvenido/a, {userData && userData.name}!
                   </Typography>
-                )}
-              </Grid>
-            </Hidden>
-            <Container style={{ padding: '2rem' }}>
-              <Card>
-                <CustomStepper step={step} />
-              </Card>
-            </Container>
-            {practicas.filter((item) => !finishedIntentionProcess(item.status))
-              .length > 0 ? (
-              <DetailedHome done={false} reason={reason} />
-            ) : (
-              <InternshipIntention internships={practicas} />
-            )}
-          </>
-        ) : (
-          <Grid
-            container
-            justifyContent='center'
-            alignItems='center'
-            direction='column'
-            style={{ marginTop: '4rem' }}>
-            <Skeleton
-              variant='rect'
-              animation='wave'
-              height='5rem'
-              width='75%'
-              style={{ marginBottom: '2rem' }}
-            />
-            <Skeleton animation='wave' width='75%' height='2rem' />
-            <Skeleton animation='wave' width='75%' height='2rem' />
-            <Skeleton animation='wave' width='75%' height='2rem' />
-          </Grid>
-        )}
+                  {userData.step > 0 && (
+                    <Typography variant='h5'>
+                      Práctica {userData.currentInternship.number}{' '}
+                      {userData.step > 1 &&
+                        `· ${userData.currentInternship.Empresa}`}
+                    </Typography>
+                  )}
+                </Grid>
+              </Hidden>
+              <Container style={{ padding: '2rem' }}>
+                <Card>
+                  <CustomStepper step={step} />
+                </Card>
+              </Container>
+              {practicas.filter(
+                (item) => !finishedIntentionProcess(item.status)
+              ).length > 0 ? (
+                <DetailedHome done={false} reason={reason} />
+              ) : (
+                <InternshipIntention internships={practicas} />
+              )}
+            </>
+          ) : (
+            <Grid
+              container
+              justifyContent='center'
+              alignItems='center'
+              direction='column'
+              style={{ marginTop: '4rem' }}>
+              <Skeleton
+                variant='rect'
+                animation='wave'
+                height='5rem'
+                width='75%'
+                style={{ marginBottom: '2rem' }}
+              />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+              <Skeleton animation='wave' width='75%' height='2rem' />
+            </Grid>
+          )
+        }
       />
       {/**este es el que va al formulario dinamico */}
-      <Route path='/send-form'
-        element={<SendForm />}
-      />
+      <Route path='/send-form' element={<SendForm />} />
       {/**este es el que va al formulario dinamico para edicion */}
-      <Route path='/edit-form/:applicationId'
-       element={ <SendForm edit />}
-      />
+      <Route path='/edit-form/:applicationId' element={<SendForm edit />} />
 
-      <Route path='/internship/:studentId/:internshipId'
+      <Route
+        path='/internship/:studentId/:internshipId'
         element={<StudentApplications />}
       />
-      <Route path='/applications/:applicationId'
+      <Route
+        path='/applications/:applicationId'
         element={<ApplicationDetails />}
       />
     </Routes>

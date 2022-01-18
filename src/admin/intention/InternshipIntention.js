@@ -27,7 +27,7 @@ import {
   deniedIntention,
   pendingIntention
 } from '../../InternshipStates';
-import { useAuth } from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import { StudentNotificationTypes } from '../../layout/NotificationMenu';
 import { serverTimestamp } from 'firebase/firestore';
 import { Pagination } from '@material-ui/lab';
@@ -211,7 +211,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
 
 const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
   const [reason, setReason] = useState('');
-  const { user } = useAuth();
+  const { user } = useUser();
 
   function handleReject() {
     db.collection('internships')
@@ -283,7 +283,7 @@ const ApprovalModal = ({
   update,
   showApprovalModal
 }) => {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
   const [reason, setReason] = useState('');
@@ -395,7 +395,7 @@ const ApprovalModal = ({
 
 function InternshipIntention() {
   const [applications, setApplications] = useState([]);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   const addApplication = useCallback(
     (newItem) => {

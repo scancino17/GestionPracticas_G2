@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { CircularProgress, Grid } from '@material-ui/core';
 import { db } from '../../../../firebase';
-import useAuth from '../../../../providers/Auth';
+import { useUser } from '../../../../providers/User';
 const columns = [
   { field: 'country', headerName: 'País', flex: 1 },
   { field: 'interns', headerName: 'Total Practicantes', flex: 1 }
@@ -12,7 +12,7 @@ function TableChart(props) {
   const [data, setData] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
-  const { user } = useAuth();
+  const { user } = useUser();
   useEffect(() => {
     const dbRef = user.careerId
       ? db.collection('applications').where('careerId', '==', user.careerId)

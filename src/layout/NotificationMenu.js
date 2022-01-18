@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import {
   Accordion,
   AccordionActions,
@@ -133,7 +133,7 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
 
 function NotificationMenu() {
   const [notifications, setNotifications] = useState([]);
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
 
   useEffect(() => {
     if (userData.notifications) setNotifications(userData.notifications);

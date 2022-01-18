@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import useAuth from './providers/Auth';
+import {
+  ADMIN_ROLE,
+  STUDENT_ROLE,
+  SUPERVISOR_ROLE,
+  useUser
+} from './providers/User';
 import DashboardEstudiante from './student/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 import {
@@ -52,7 +57,7 @@ const theme = createTheme({
 });
 
 function App() {
-  const { user, userData } = useAuth();
+  const { user, userData, userRole } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -61,9 +66,9 @@ function App() {
       {user ? (
         <>
           <TopBar setSidebarOpen={setSidebarOpen} />
-          {user.admin || user.supervisor ? (
+          {userRole === ADMIN_ROLE || userRole === SUPERVISOR_ROLE ? (
             <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
-          ) : user.student && userData ? (
+          ) : userRole === STUDENT_ROLE && userData ? (
             <DashboardEstudiante onGoingIntern={false} />
           ) : (
             <LoadingSkeleton />

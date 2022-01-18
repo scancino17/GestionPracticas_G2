@@ -19,7 +19,7 @@ import { storage } from '../firebase';
 import { customTypes, formTypes } from './formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 
 function InternshipIntentionFileList({
   student,
@@ -66,7 +66,7 @@ function FormView({
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);

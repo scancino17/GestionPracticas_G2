@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { makeStyles, Typography, Grid, Paper, Box } from '@material-ui/core';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import { db } from './../../firebase';
 import * as internshipStates from '../../InternshipStates';
 
@@ -132,7 +132,7 @@ function StateBanner() {
   const [internshipState, setInternshipState] = useState('');
   const [reason, setReason] = useState('');
   const [grade, setGrade] = useState('');
-  const { userData } = useAuth();
+  const { userData } = useUser();
 
   useEffect(() => {
     let isMounted = true;

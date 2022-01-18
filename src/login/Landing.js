@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import {
   Button,
   CircularProgress,
@@ -39,7 +39,7 @@ function Landing() {
   const [error, setError] = useState(false);
   const [showRecoverPassword, setShowRecoverPassword] = useState(false);
   const [showEmailSent, setShowEmailSent] = useState(false);
-  const { login, resetPassword } = useAuth();
+  const { login, resetPassword } = useUser();
 
   function handleOnSubmit(e) {
     e.preventDefault();

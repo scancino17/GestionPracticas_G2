@@ -18,7 +18,7 @@ import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import { convertToRaw, EditorState } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
@@ -38,7 +38,7 @@ function AssessReport() {
   );
   const navigate = useNavigate();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { user } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     db.collection('users')

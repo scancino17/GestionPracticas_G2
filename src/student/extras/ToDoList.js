@@ -19,7 +19,7 @@ import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { makeStyles } from '@material-ui/core/styles';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import { useNavigate } from 'react-router-dom';
 import { db, storage } from '../../firebase';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -149,7 +149,7 @@ function ToDoItem({
 
 function ToDoList({ done, reason }) {
   const [internship, setInternship] = useState();
-  const { userData, user } = useAuth();
+  const { userData, user } = useUser();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const navigate = useNavigate();
@@ -400,7 +400,7 @@ function ToDoList({ done, reason }) {
 function DialogExtension({ internship, open, setOpen }) {
   const [dateExtension, setDateExtension] = useState(new Date());
   const [reasonRequestExtension, setReasonRequestExtension] = useState('');
-  const { userData } = useAuth();
+  const { userData } = useUser();
 
   function handleSendExtension() {
     db.collection('internships').doc(userData.currentInternship.id).update({
@@ -514,7 +514,7 @@ function DialogExtension({ internship, open, setOpen }) {
 
 function SendReportDialog({ open, setOpen }) {
   const [files, setFiles] = useState([]);
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
 
   function handleSend() {
     files.forEach((file) => {
@@ -595,7 +595,7 @@ function ReportAnnotationsDialog({ open, setOpen, internship }) {
 }
 
 function DocsDialogSeguro({ open, setOpen }) {
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
 
   function handleCloseDocsDialog() {
     setOpen(false);
@@ -622,7 +622,7 @@ function DocsDialogSeguro({ open, setOpen }) {
 }
 
 function DocsDialog({ open, setOpen }) {
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
 
   function handleCloseDocsDialog() {
     setOpen(false);

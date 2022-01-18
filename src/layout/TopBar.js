@@ -12,7 +12,7 @@ import {
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
@@ -43,7 +43,7 @@ const ProfileMenu = ({ func }) => {
 
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { user, logout, resetPassword, userData } = useAuth();
+  const { user, logout, resetPassword, userData } = useUser();
   const [anchorEl, setAnchorEl] = useState();
   const [selectedMenu, setSelectedMenu] = useState();
   const navigate = useNavigate();

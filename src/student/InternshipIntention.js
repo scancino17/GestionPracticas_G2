@@ -25,7 +25,7 @@ import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
 import EmptyHome from './EmptyHome';
 import { RiSurveyLine } from 'react-icons/ri';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
@@ -146,7 +146,7 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { userData } = useAuth();
+    const { userData } = useUser();
     const [survey, setSurvey] = useState([]);
 
     useEffect(() => {

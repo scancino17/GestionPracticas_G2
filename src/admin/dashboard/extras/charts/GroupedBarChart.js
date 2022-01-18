@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
-import useAuth from '../../../../providers/Auth';
+import { useUser } from '../../../../providers/User';
 
 function GroupedBar(props) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [data, setData] = useState();
   const [loaded, setLoaded] = useState(false);
   let careers = new Map();

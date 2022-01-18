@@ -7,10 +7,10 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { functions } from '../firebase';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 
 function MakeAdmin() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [name, setName] = useState('');
 
   function onSubmit() {

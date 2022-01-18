@@ -2,11 +2,11 @@ import { CircularProgress } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
-import useAuth from '../../../../providers/Auth';
+import { useUser } from '../../../../providers/User';
 
 function VerticalBar(props) {
   const [data, setData] = useState();
-  const { user } = useAuth();
+  const { user } = useUser();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

@@ -25,7 +25,7 @@ import {
   sentExtension
 } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import { serverTimestamp } from 'firebase/firestore';
 import StudentNotificationTypes from '../../layout/NotificationMenu';
 
@@ -53,7 +53,7 @@ function ExtensionList() {
   const [careerId, setCareerId] = useState('general');
   const [internships, setInternships] = useState([]);
   const [filterInterships, setFilterInternships] = useState([]);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   function applyFilter(list) {
     let filtered = [...list];
@@ -98,7 +98,11 @@ function ExtensionList() {
         <Typography variant='h4'>Extensiones de prácticas</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -148,7 +152,7 @@ function IntershipItem({ internship }) {
   const [showDenied, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reason, setReason] = useState('');
-  const { user } = useAuth();
+  const { user } = useUser();
 
   function TransformDate(date) {
     return (

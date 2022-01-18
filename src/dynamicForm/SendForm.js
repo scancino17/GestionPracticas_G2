@@ -10,7 +10,7 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
@@ -21,7 +21,7 @@ function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
   const { applicationId } = useParams();
   const navigate = useNavigate();

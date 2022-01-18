@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 
 function ApplicationsList() {
   const [careerId, setCareerId] = useState('general');
@@ -37,7 +37,7 @@ function ApplicationsList() {
   const { reviewing, approved, rejected, needChanges } = statuses;
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
-  const { user } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
     const dbRef = user.careerId
@@ -98,7 +98,11 @@ function ApplicationsList() {
         <Typography variant='h4'>Postulaciones de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -211,8 +215,7 @@ function ApplicationItem({ application }) {
         secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}
       />
       <ListItemSecondaryAction>
-        <IconButton
-          onClick={() => navigate(`/applications/${application.id}`)}>
+        <IconButton onClick={() => navigate(`/applications/${application.id}`)}>
           <NavigateNext />
         </IconButton>
       </ListItemSecondaryAction>

@@ -10,11 +10,11 @@ import {
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 import { db } from '../../firebase';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 
 function CareersSettings() {
-  const { user } = useAuth();
+  const { user } = useUser();
   const [careerId, setCareerId] = useState(
     user.careerId ? user.careerId : null
   );

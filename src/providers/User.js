@@ -24,7 +24,7 @@ export function useUser() {
 export function UserProvider({ children }) {
   const [user, setUser] = useState();
   const [userData, setUserData] = useState();
-  const [loaded, setLoaded] = useState(false);
+  const [userLoaded, setUserLoaded] = useState(false);
 
   const [displayName, setDisplayName] = useState();
   const [careerId, setCareerId] = useState();
@@ -87,7 +87,7 @@ export function UserProvider({ children }) {
         });
       }
     });
-    setLoaded(true);
+    setUserLoaded(true);
     return () => {
       if (unsubscribeDoc) unsubscribeDoc();
       unsubscribeAuth();
@@ -99,6 +99,7 @@ export function UserProvider({ children }) {
       value={{
         user,
         userData,
+        userLoaded,
         login,
         logout,
         resetPassword,
@@ -108,7 +109,7 @@ export function UserProvider({ children }) {
         userId,
         email
       }}>
-      {loaded && children}
+      {userLoaded && children}
     </UserContext.Provider>
   );
 }

@@ -15,7 +15,15 @@ import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
 import { formTypes, customTypes } from './formTypes';
-import { serverTimestamp } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
+import { useStudent } from '../providers/Student';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -26,33 +34,32 @@ function SendForm({ edit }) {
   const { applicationId } = useParams();
   const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
+  const { updateCurrentInternship } = useStudent();
 
   useEffect(() => {
     if (userData) {
       setInternshipId(userData.currentInternship.id);
+
       if (!edit) {
-        db.collection('form')
-          .doc(userData.careerId)
-          .get()
-          .then((doc) => {
-            const data = doc.data();
-            data.form[0].form[1].value = userData.name;
-            data.form[0].form[2].value = userData.rut;
-            data.form[0].form[3].value = userData.enrollmentNumber;
-            data.form[0].form[4].value = userData.email;
-            if (data) setFormFull(data.form);
-          });
+        const docRef = doc(db, 'form', userData.careerId);
+
+        getDoc(docRef).then((doc) => {
+          const data = doc.data();
+          data.form[0].form[1].value = userData.name;
+          data.form[0].form[2].value = userData.rut;
+          data.form[0].form[3].value = userData.enrollmentNumber;
+          data.form[0].form[4].value = userData.email;
+          if (data) setFormFull(data.form);
+        });
       } else {
-        db.collection('applications')
-          .doc(applicationId)
-          .get()
-          .then((doc) => {
-            const data = doc.data();
-            if (data) setFormFull(data.form);
-          });
+        const docRef = doc(db, 'applications', applicationId);
+        getDoc(docRef).then((doc) => {
+          const data = doc.data();
+          if (data) setFormFull(data.form);
+        });
       }
     }
-  }, [userData]);
+  }, [userData, applicationId, edit]);
 
   useEffect(() => {
     setFlag(false);
@@ -114,38 +121,37 @@ function SendForm({ edit }) {
     );
 
     if (!edit) {
-      db.collection('applications')
-        .add({
-          form: formFull,
-          studentId: user.uid,
-          studentName: userData.name,
-          email: userData.email,
-          careerId: userData.careerId,
-          internshipId: internshipId,
-          internshipNumber: userData.currentInternship.number,
-          status: 'En revisión',
-          creationDate: serverTimestamp(),
-          ...values
-        })
-        .then(function (docRef) {
+      addDoc(collection(db, 'applications'), {
+        form: formFull,
+        studentId: user.uid,
+        studentName: userData.name,
+        email: userData.email,
+        careerId: userData.careerId,
+        internshipId: internshipId,
+        internshipNumber: userData.currentInternship.number,
+        status: 'En revisión',
+        creationDate: serverTimestamp(),
+        ...values
+      })
+        .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.error('Error adding document: ', error);
         });
     } else {
-      db.collection('applications')
-        .doc(applicationId)
-        .update({ form: formFull, status: 'En revisión', ...values })
-        .then(() =>
-          //se guarda los archivos en la application correspondiente
-          saveFiles(applicationId)
-        );
+      updateDoc(doc(db, 'applications, applicationId'), {
+        form: formFull,
+        status: 'En revisión',
+        ...values
+      }).then(() =>
+        //se guarda los archivos en la application correspondiente
+        saveFiles(applicationId)
+      );
     }
-    db.collection('internships')
-      .doc(userData.currentInternship.id)
-      .update({ status: sentApplication });
+
+    updateCurrentInternship({ status: sentApplication });
   }
 
   return (

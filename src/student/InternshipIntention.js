@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
 import {
   approvedIntention,
   availableInternship,
@@ -25,7 +24,7 @@ import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
 import EmptyHome from './EmptyHome';
 import { RiSurveyLine } from 'react-icons/ri';
-import { useUser } from '../providers/User';
+import { useStudent } from '../providers/Student';
 
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
@@ -146,14 +145,7 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { userData } = useUser();
-    const [survey, setSurvey] = useState([]);
-
-    useEffect(() => {
-      db.collection('careers')
-        .doc(userData.careerId)
-        .onSnapshot((doc) => setSurvey(doc.data()));
-    }, []);
+    const { careerInfo } = useStudent();
 
     return (
       <Grid container direction='column'>
@@ -202,7 +194,7 @@ const IntentionItem = ({
             paddingTop: '2rem',
             paddingBottom: '1rem'
           }}
-          onClick={() => window.open(survey.satisfactionSurvey, '_blank')}>
+          onClick={() => window.open(careerInfo.satisfactionSurvey, '_blank')}>
           <Grid item>
             <RiSurveyLine className={classes.icon} />
           </Grid>
@@ -370,12 +362,12 @@ const IntentionItem = ({
   };
 
   const ApprovedActions = () => {
+    const { updateInternship, updateUser } = useStudent();
+
     const handleStartInternship = (e) => {
       e.preventDefault();
-      db.collection('internships')
-        .doc(internship.id)
-        .update({ status: pendingApplication });
-      db.collection('users').doc(internship.studentId).update({ step: 1 });
+      updateInternship(internship.id, { status: pendingApplication });
+      updateUser({ step: 1 });
     };
 
     return (
@@ -470,8 +462,10 @@ const IntentionItem = ({
   );
 };
 
-function InternshipIntention({ internships }) {
+function InternshipIntention() {
   const [noneDeclarated, isNoneDeclarated] = useState(true);
+  const { internships } = useStudent();
+
   useEffect(() => {
     isNoneDeclarated(
       internships.filter((item) => !(item.status === availableInternship))

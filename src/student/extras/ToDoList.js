@@ -14,14 +14,14 @@ import {
   Typography,
   Slide
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { makeStyles } from '@material-ui/core/styles';
 import { useUser } from '../../providers/User';
 import { useNavigate } from 'react-router-dom';
-import { db, storage } from '../../firebase';
+import { storage } from '../../firebase';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import InternshipIntentionFileList, {
   SeguroPracticaFileList
@@ -43,6 +43,7 @@ import { DropzoneArea } from 'material-ui-dropzone';
 import draftToHtml from 'draftjs-to-html';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 import { serverTimestamp } from 'firebase/firestore';
+import { useStudent } from '../../providers/Student';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -147,49 +148,39 @@ function ToDoItem({
   );
 }
 
-function ToDoList({ done, reason }) {
-  const [internship, setInternship] = useState();
-  const { userData, user } = useUser();
+function ToDoList() {
+  //const [internship, setInternship] = useState();
+
+  // Esto existe si por algun motivo en algíun momento la lista de tareas
+  // debe estar vacía. Actualmente, en ningún momento del proceso se llega a
+  // este estado.
+  const [done, setDone] = useState(false);
+
+  const {
+    updateUser,
+    updateCurrentInternship,
+    step,
+    currentInternship,
+    lastApplication,
+    currentInternshipData: internship
+  } = useStudent();
+
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const navigate = useNavigate();
   const [openSecure, setOpenSecure] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
-  const [reasonExtension, setReasonExtension] = useState('');
-  const [statusExtension, setStatusExtension] = useState('');
-  const [survey, setSurvey] = useState([]);
   const [openSendReport, setOpenSendReport] = useState(false);
   const [openReportAnnotations, setOpenReportAnnotations] = useState(false);
 
   function handleFinish() {
-    db.collection('internships').doc(userData.currentInternship.id).update({
+    updateCurrentInternship({
       status: finishedInternship
     });
-    db.collection('users').doc(user.uid).update({
+    updateUser({
       step: 0
     });
   }
-
-  useEffect(() => {
-    if (userData.currentInternship) {
-      const unsubscribe = db
-        .collection('internships')
-        .doc(userData.currentInternship.id)
-        .onSnapshot((doc) => {
-          const data = doc.data();
-          setInternship(data);
-          setReasonExtension(data.reasonExtension);
-          setStatusExtension(data.extensionStatus);
-        });
-      return unsubscribe;
-    }
-  }, []);
-
-  useEffect(() => {
-    db.collection('careers')
-      .doc(userData.careerId)
-      .onSnapshot((doc) => setSurvey(doc.data()));
-  }, []);
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -221,7 +212,7 @@ function ToDoList({ done, reason }) {
                 buttonOnClick={() => setOpenDocs(true)}
               />
               <Divider />
-              {userData.step === 1 &&
+              {step === 1 &&
                 !(
                   internship && internship.status === changeDetailsApplication
                 ) && (
@@ -250,17 +241,17 @@ function ToDoList({ done, reason }) {
                     icon={<FaWpforms className={classes.icon} />}
                     title='Corregir Formulario'
                     buttonText='Corregir'
-                    minorChanges={reason}
+                    minorChanges={lastApplication.reason}
                     buttonOnClick={() =>
                       navigate(
-                        `/edit-form/${userData.currentInternship.lastApplication}`
+                        `/edit-form/${currentInternship.lastApplication}`
                       )
                     }
                   />
                   <Divider />
                 </>
               )}
-              {userData.step === 2 && (
+              {step === 2 && (
                 <>
                   <ToDoItem
                     icon={<FiDownload className={classes.icon} />}
@@ -277,7 +268,7 @@ function ToDoList({ done, reason }) {
                   <Divider />
                 </>
               )}
-              {userData.step === 2 &&
+              {step === 2 &&
                 internship &&
                 internship.status !== reportNeedsChanges && (
                   <>
@@ -288,10 +279,7 @@ function ToDoList({ done, reason }) {
                       title='Enviar Informe'
                       body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
                       buttonText='Enviar'
-                      buttonOnClick={
-                        () => setOpenSendReport(true)
-                        //navigate('/evaluation-report/')
-                      }
+                      buttonOnClick={() => setOpenSendReport(true)}
                       disabled={internship && internship.status === sentReport}
                     />
                     <Divider />
@@ -321,15 +309,15 @@ function ToDoList({ done, reason }) {
                   <Divider />
                 </>
               )}
-              {userData.step === 2 && (
+              {step === 2 && (
                 <>
                   <ToDoItem
                     icon={<AlarmAdd className={classes.icon} />}
                     title='Solicitar extensión'
                     body='Se enviará una solicitud para extender la fecha de término de su práctica'
                     buttonText='Solicitar'
-                    reasonExtension={reasonExtension}
-                    statusExtension={statusExtension}
+                    reasonExtension={internship.reasonExtension}
+                    statusExtension={internship.extensionStatus}
                     disabled={
                       internship && internship.extensionStatus === sentExtension
                     }
@@ -338,44 +326,6 @@ function ToDoList({ done, reason }) {
                   <Divider />
                 </>
               )}
-              {/*userData.step === 3 && (
-                <ToDoItem
-                  icon={<RiSurveyLine className={classes.icon} />}
-                  title='Responder Encuesta'
-                  body='Cuéntanos tu experiencia durante las semanas de práctica.'
-                  buttonText='Responder'
-                  buttonOnClick={(e) => {
-                    e.preventDefault();
-                    window.location.href = survey.satisfactionSurvey;
-                  }}
-                />
-                )*/}
-              {/*userData.step === 4 && (
-                <ToDoItem
-                  icon={<RiSurveyLine className={classes.icon} />}
-                  title='Terminar proceso'
-                  body='Termina el proceso para ver tu nota'
-                  buttonText='Terminar'
-                  buttonOnClick={() => {
-                    Swal.fire({
-                      title: '¿Desea terminar su proceso de práctica?',
-                      showDenyButton: true,
-                      confirmButtonText: `Terminar`,
-                      denyButtonText: `Salir`
-                    }).then((result) => {
-                      if (result.isConfirmed) {
-                        Swal.fire('¡Proceso terminado!', '', 'success').then(
-                          (result) => {
-                            if (result.isConfirmed) handleFinish();
-                          }
-                        );
-                      } else if (result.isDenied) {
-                        Swal.fire('¿No quieres ver tu nota?', '', 'info');
-                      }
-                    });
-                  }}
-                />
-                )*/}
             </Grid>
           )}
         </AccordionDetails>
@@ -400,10 +350,10 @@ function ToDoList({ done, reason }) {
 function DialogExtension({ internship, open, setOpen }) {
   const [dateExtension, setDateExtension] = useState(new Date());
   const [reasonRequestExtension, setReasonRequestExtension] = useState('');
-  const { userData } = useUser();
+  const { updateCurrentInternship } = useStudent();
 
   function handleSendExtension() {
-    db.collection('internships').doc(userData.currentInternship.id).update({
+    updateCurrentInternship({
       extensionStatus: sentExtension,
       dateExtension: dateExtension,
       reasonExtension: reasonRequestExtension
@@ -514,18 +464,20 @@ function DialogExtension({ internship, open, setOpen }) {
 
 function SendReportDialog({ open, setOpen }) {
   const [files, setFiles] = useState([]);
-  const { user, userData } = useUser();
+  const { userId } = useUser();
+  const { updateCurrentInternship, currentInternship } = useStudent();
 
   function handleSend() {
     files.forEach((file) => {
       storage
         .ref()
         .child(
-          `/students-docs/${user.uid}/${userData.currentInternship.id}/reports/${userData.currentInternship.id}.pdf`
+          `/students-docs/${userId}/${currentInternship.id}/reports/${currentInternship.id}.pdf`
         )
         .put(file);
     });
-    db.collection('internships').doc(userData.currentInternship.id).update({
+
+    updateCurrentInternship({
       status: sentReport,
       creationDate: serverTimestamp()
     });
@@ -595,7 +547,8 @@ function ReportAnnotationsDialog({ open, setOpen, internship }) {
 }
 
 function DocsDialogSeguro({ open, setOpen }) {
-  const { user, userData } = useUser();
+  const { userId } = useUser();
+  const { currentInternship } = useStudent();
 
   function handleCloseDocsDialog() {
     setOpen(false);
@@ -605,10 +558,10 @@ function DocsDialogSeguro({ open, setOpen }) {
     <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
       <DialogTitle>Seguro para práctica</DialogTitle>
       <DialogContent>
-        {userData.currentInternship && (
+        {currentInternship && (
           <SeguroPracticaFileList
-            studentId={user.uid}
-            internshipId={userData.currentInternship.id}
+            studentId={userId}
+            internshipId={currentInternship.id}
           />
         )}
       </DialogContent>
@@ -622,7 +575,8 @@ function DocsDialogSeguro({ open, setOpen }) {
 }
 
 function DocsDialog({ open, setOpen }) {
-  const { user, userData } = useUser();
+  const { userId } = useUser();
+  const { currentInternship } = useStudent();
 
   function handleCloseDocsDialog() {
     setOpen(false);
@@ -632,10 +586,10 @@ function DocsDialog({ open, setOpen }) {
     <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
       <DialogTitle>Descargar documentos</DialogTitle>
       <DialogContent>
-        {userData.currentInternship && (
+        {currentInternship && (
           <InternshipIntentionFileList
-            studentId={user.uid}
-            internshipId={userData.currentInternship.id}
+            studentId={userId}
+            internshipId={currentInternship.id}
           />
         )}
       </DialogContent>

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useUser } from '../providers/User';
-import { db } from '../firebase';
+import React from 'react';
+import { useStudent } from '../providers/Student';
 import { Route, Routes } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
 import { Grid, Hidden, Typography, Card, Container } from '@material-ui/core';
@@ -13,44 +12,8 @@ import SendForm from './../dynamicForm/SendForm';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
-  const { user, userData } = useUser();
-  const [loaded, setLoaded] = useState(false);
-  const [practicas, setPracticas] = useState([]);
-  const [step, setStep] = useState(0);
-  const [reason, setReason] = useState('');
-
-  useEffect(() => {
-    let unsubscribe;
-    if (userData) {
-      if (userData.step) setStep(userData.step);
-      unsubscribe = db
-        .collection('internships')
-        .where('studentId', '==', user.uid)
-        .onSnapshot((querySnapshot) => {
-          const temp = [];
-          querySnapshot.forEach((doc) =>
-            temp.push({ id: doc.id, ...doc.data() })
-          );
-          temp.sort((a, b) =>
-            a.internshipNumber > b.internshipNumber ? 1 : -1
-          );
-          setPracticas(temp);
-          setLoaded(true);
-        });
-      if (
-        userData.currentInternship &&
-        userData.currentInternship.lastApplication
-      ) {
-        db.collection('applications')
-          .doc(userData.currentInternship.lastApplication)
-          .get()
-          .then((last) => {
-            setReason(last.data().reason);
-          });
-      }
-    }
-    return unsubscribe;
-  }, [user, userData]);
+  const { internships, step, studentName, currentInternship, studentLoaded } =
+    useStudent();
 
   return (
     <Routes>
@@ -58,7 +21,7 @@ function DashboardEstudiante() {
         exact
         path='/'
         element={
-          loaded ? (
+          studentLoaded ? (
             <>
               <Hidden smDown>
                 <Grid
@@ -72,13 +35,12 @@ function DashboardEstudiante() {
                     padding: '2rem'
                   }}>
                   <Typography variant='h4'>
-                    ¡Bienvenido/a, {userData && userData.name}!
+                    ¡Bienvenido/a, {studentName}!
                   </Typography>
-                  {userData.step > 0 && (
+                  {step > 0 && (
                     <Typography variant='h5'>
-                      Práctica {userData.currentInternship.number}{' '}
-                      {userData.step > 1 &&
-                        `· ${userData.currentInternship.Empresa}`}
+                      Práctica {currentInternship.number}{' '}
+                      {step > 1 && `· ${currentInternship.Empresa}`}
                     </Typography>
                   )}
                 </Grid>
@@ -88,12 +50,12 @@ function DashboardEstudiante() {
                   <CustomStepper step={step} />
                 </Card>
               </Container>
-              {practicas.filter(
+              {internships.filter(
                 (item) => !finishedIntentionProcess(item.status)
               ).length > 0 ? (
-                <DetailedHome done={false} reason={reason} />
+                <DetailedHome />
               ) : (
-                <InternshipIntention internships={practicas} />
+                <InternshipIntention />
               )}
             </>
           ) : (

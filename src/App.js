@@ -19,6 +19,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
 import MakeAdmin from './utils/MakeAdmin';
+import { StudentProvider } from './providers/Student';
 
 const theme = createTheme({
   palette: {
@@ -69,7 +70,9 @@ function App() {
           {userRole === ADMIN_ROLE || userRole === SUPERVISOR_ROLE ? (
             <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
           ) : userRole === STUDENT_ROLE && userData ? (
-            <DashboardEstudiante onGoingIntern={false} />
+            <StudentProvider>
+              <DashboardEstudiante />
+            </StudentProvider>
           ) : (
             <LoadingSkeleton />
           )}

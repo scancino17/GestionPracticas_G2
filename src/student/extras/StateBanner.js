@@ -131,20 +131,28 @@ function StateBanner() {
   const [internshipState, setInternshipState] = useState('');
   const [reason, setReason] = useState('');
   const [grade, setGrade] = useState('');
-  const { currentInternshipData: data, lastApplication } = useStudent();
+  const { currentInternshipData, lastApplication } = useStudent();
 
   useEffect(() => {
-    let state = data.extensionStatus ? data.extensionStatus : data.status;
-    setInternshipState(state);
+    if (currentInternshipData) {
+      let state = currentInternshipData.extensionStatus
+        ? currentInternshipData.extensionStatus
+        : currentInternshipData.status;
+      setInternshipState(state);
 
-    if (states[state]?.applicationReason) {
-      setReason(lastApplication.reason);
-    } else {
-      setReason(data.extensionStatus ? data.reasonExtension : data.reason);
+      if (states[state]?.applicationReason) {
+        setReason(lastApplication.reason);
+      } else {
+        setReason(
+          currentInternshipData.extensionStatus
+            ? currentInternshipData.reasonExtension
+            : currentInternshipData.reason
+        );
+      }
+
+      !!currentInternshipData.grade && setGrade(currentInternshipData.grade);
     }
-
-    !!data.grade && setGrade(data.grade);
-  }, [data, lastApplication]);
+  }, [currentInternshipData, lastApplication]);
 
   return (
     !!states[internshipState] &&

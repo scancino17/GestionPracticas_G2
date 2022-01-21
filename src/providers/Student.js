@@ -29,31 +29,33 @@ export function StudentProvider({ children }) {
   const [careerInfo, setCareerInfo] = useState();
 
   useEffect(() => {
-    const q = query(
-      collection('internships'),
-      where('studentId', '==', userId)
-    );
+    if (userId) {
+      const q = query(
+        collection(db, 'internships'),
+        where('studentId', '==', userId)
+      );
 
-    return onSnapshot(q, (querySnapshot) => {
-      const temp = [];
+      return onSnapshot(q, (querySnapshot) => {
+        const temp = [];
 
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      temp.sort((a, b) => (a.internshipNumber > b.internshipNumber ? 1 : -1));
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+        temp.sort((a, b) => (a.internshipNumber > b.internshipNumber ? 1 : -1));
 
-      setInternships(temp);
-    });
+        setInternships(temp);
+      });
+    }
   }, [userId]);
 
   useEffect(() => {
-    if (userData) {
+    if (userData && internships) {
       setStep(userData.step);
       setCurrentInternship(userData.currentInternship);
       setStudentName(userData.name);
       setStudentLoaded(true);
-    } else {
-      setStudentLoaded(false);
     }
-  }, [userData]);
+  }, [userData, internships]);
 
   useEffect(() => {
     return onSnapshot(doc(db, 'careers', careerId), (querySnapshot) => {
@@ -104,6 +106,7 @@ export function StudentProvider({ children }) {
         studentName,
         studentLoaded,
         careerInfo,
+        currentInternship,
         currentInternshipData,
         updateUser,
         updateInternship,

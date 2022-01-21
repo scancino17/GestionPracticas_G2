@@ -6,6 +6,7 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
+import { onSnapshot, doc } from 'firebase/firestore';
 
 export const STUDENT_ROLE = 'estudiante';
 export const ADMIN_ROLE = 'admin';
@@ -60,11 +61,13 @@ export function UserProvider({ children }) {
   }
 
   useEffect(() => {
-    setDisplayName(user?.displayName);
-    setCareerId(user?.careerId);
-    setUserId(user?.userId);
-    setUserRole(user?.userRole);
-    setEmail(user?.email);
+    if (user) {
+      setDisplayName(user.displayName);
+      setCareerId(user.careerId);
+      setUserId(user.uid);
+      setUserRole(user.userRole);
+      setEmail(user.email);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -80,10 +83,9 @@ export function UserProvider({ children }) {
               : DEFAULT_CAREER
           });
 
-          unsubscribeDoc = db
-            .collection('users')
-            .doc(user.uid)
-            .onSnapshot((doc) => setUserData(doc.data()));
+          unsubscribeDoc = onSnapshot(doc(db, 'users', user.uid), (doc) => {
+            setUserData(doc.data());
+          });
         });
       }
     });

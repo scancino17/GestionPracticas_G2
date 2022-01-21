@@ -162,7 +162,7 @@ function ToDoList() {
     step,
     currentInternship,
     lastApplication,
-    currentInternshipData: internship
+    currentInternshipData
   } = useStudent();
 
   const classes = useStyles();
@@ -214,7 +214,8 @@ function ToDoList() {
               <Divider />
               {step === 1 &&
                 !(
-                  internship && internship.status === changeDetailsApplication
+                  currentInternshipData &&
+                  currentInternshipData.status === changeDetailsApplication
                 ) && (
                   <>
                     <ToDoItem
@@ -222,35 +223,38 @@ function ToDoList() {
                       title='Completar Formulario de Inscripción de Práctica'
                       body='Rellena este formulario con la información de la empresa en la que quieres realizar tu práctica.'
                       buttonText={
-                        internship && internship.status === sentApplication
+                        currentInternshipData &&
+                        currentInternshipData.status === sentApplication
                           ? 'En revisión'
                           : 'Completar'
                       }
-                      internship={internship}
+                      internship={currentInternshipData}
                       buttonOnClick={() => navigate('/send-form')}
                       disabled={
-                        internship && internship.status === sentApplication
+                        currentInternshipData &&
+                        currentInternshipData.status === sentApplication
                       }
                     />
                     <Divider />
                   </>
                 )}
-              {internship && internship.status === changeDetailsApplication && (
-                <>
-                  <ToDoItem
-                    icon={<FaWpforms className={classes.icon} />}
-                    title='Corregir Formulario'
-                    buttonText='Corregir'
-                    minorChanges={lastApplication.reason}
-                    buttonOnClick={() =>
-                      navigate(
-                        `/edit-form/${currentInternship.lastApplication}`
-                      )
-                    }
-                  />
-                  <Divider />
-                </>
-              )}
+              {currentInternshipData &&
+                currentInternshipData.status === changeDetailsApplication && (
+                  <>
+                    <ToDoItem
+                      icon={<FaWpforms className={classes.icon} />}
+                      title='Corregir Formulario'
+                      buttonText='Corregir'
+                      minorChanges={lastApplication.reason}
+                      buttonOnClick={() =>
+                        navigate(
+                          `/edit-form/${currentInternship.lastApplication}`
+                        )
+                      }
+                    />
+                    <Divider />
+                  </>
+                )}
               {step === 2 && (
                 <>
                   <ToDoItem
@@ -258,19 +262,23 @@ function ToDoList() {
                     title='Seguro de práctica'
                     body='Para comenzar tu práctica necesitas descargar el seguro.'
                     buttonText={
-                      internship && !internship.seguroDisponible
+                      currentInternshipData &&
+                      !currentInternshipData.seguroDisponible
                         ? 'En proceso'
                         : 'Descargar'
                     }
                     buttonOnClick={() => setOpenSecure(true)}
-                    disabled={internship && !internship.seguroDisponible}
+                    disabled={
+                      currentInternshipData &&
+                      !currentInternshipData.seguroDisponible
+                    }
                   />
                   <Divider />
                 </>
               )}
               {step === 2 &&
-                internship &&
-                internship.status !== reportNeedsChanges && (
+                currentInternshipData &&
+                currentInternshipData.status !== reportNeedsChanges && (
                   <>
                     <ToDoItem
                       icon={
@@ -280,46 +288,54 @@ function ToDoList() {
                       body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
                       buttonText='Enviar'
                       buttonOnClick={() => setOpenSendReport(true)}
-                      disabled={internship && internship.status === sentReport}
+                      disabled={
+                        currentInternshipData &&
+                        currentInternshipData.status === sentReport
+                      }
                     />
                     <Divider />
                   </>
                 )}
-              {internship && internship.status === reportNeedsChanges && (
-                <>
-                  <ToDoItem
-                    icon={<ErrorOutline className={classes.icon} />}
-                    title='Observaciones'
-                    body='Se te han indicado unas correcciones que puedes hacer a tu informe.'
-                    buttonText='Ver observaciones'
-                    buttonOnClick={() => setOpenReportAnnotations(true)}
-                  />
-                  <Divider />
-                </>
-              )}
-              {internship && internship.status === reportNeedsChanges && (
-                <>
-                  <ToDoItem
-                    icon={<IoDocumentAttachOutline className={classes.icon} />}
-                    title='Resubir Informe'
-                    body='El informe que has enviado requiere correcciones, vuelve a subirlo cuando lo hayas modificado.'
-                    buttonText='Corregir'
-                    buttonOnClick={() => setOpenSendReport(true)}
-                  />
-                  <Divider />
-                </>
-              )}
-              {step === 2 && (
+              {currentInternshipData &&
+                currentInternshipData.status === reportNeedsChanges && (
+                  <>
+                    <ToDoItem
+                      icon={<ErrorOutline className={classes.icon} />}
+                      title='Observaciones'
+                      body='Se te han indicado unas correcciones que puedes hacer a tu informe.'
+                      buttonText='Ver observaciones'
+                      buttonOnClick={() => setOpenReportAnnotations(true)}
+                    />
+                    <Divider />
+                  </>
+                )}
+              {currentInternshipData &&
+                currentInternshipData.status === reportNeedsChanges && (
+                  <>
+                    <ToDoItem
+                      icon={
+                        <IoDocumentAttachOutline className={classes.icon} />
+                      }
+                      title='Resubir Informe'
+                      body='El informe que has enviado requiere correcciones, vuelve a subirlo cuando lo hayas modificado.'
+                      buttonText='Corregir'
+                      buttonOnClick={() => setOpenSendReport(true)}
+                    />
+                    <Divider />
+                  </>
+                )}
+              {step === 2 && currentInternshipData && (
                 <>
                   <ToDoItem
                     icon={<AlarmAdd className={classes.icon} />}
                     title='Solicitar extensión'
                     body='Se enviará una solicitud para extender la fecha de término de su práctica'
                     buttonText='Solicitar'
-                    reasonExtension={internship.reasonExtension}
-                    statusExtension={internship.extensionStatus}
+                    reasonExtension={currentInternshipData.reasonExtension}
+                    statusExtension={currentInternshipData.extensionStatus}
                     disabled={
-                      internship && internship.extensionStatus === sentExtension
+                      currentInternshipData &&
+                      currentInternshipData.extensionStatus === sentExtension
                     }
                     buttonOnClick={() => setShowExtension(true)}
                   />
@@ -334,14 +350,14 @@ function ToDoList() {
       <DocsDialog open={openDocs} setOpen={setOpenDocs} />
       <DocsDialogSeguro open={openSecure} setOpen={setOpenSecure} />
       <DialogExtension
-        internship={internship}
+        internship={currentInternshipData}
         open={showExtension}
         setOpen={setShowExtension}
       />
       <ReportAnnotationsDialog
         open={openReportAnnotations}
         setOpen={setOpenReportAnnotations}
-        internship={internship}
+        internship={currentInternshipData}
       />
     </MuiPickersUtilsProvider>
   );

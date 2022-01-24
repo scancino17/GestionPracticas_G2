@@ -44,73 +44,35 @@ import ExtensionList from '../extension/ExtensionList';
 import CareersSettings from '../careersSettings/CareersSettings';
 import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
-import { useUser } from '../../providers/User';
+import { useUser, DEFAULT_CAREER } from '../../providers/User';
 
 // La siguiente línea registra todos los elementos de chart.js
 // No es inútil: eliminarla romperá TODOS los gráficos al recargar los gráficos.
 import Chart from 'chart.js/auto';
+import { useSupervisor } from '../../providers/Supervisor';
 
 function DashboardAdmin({ sidebarProps }) {
-  const { user } = useUser();
+  const { user, careerId } = useUser();
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const navigate = useNavigate();
-  const [intentionsCount, setIntentionsCount] = useState(0);
-  const [formsCount, setFormsCount] = useState(0);
-  const [reportsCount, setReportsCount] = useState(0);
-  const [internshipCount, setInternshipCount] = useState(0);
-  const [careerId, setCareerId] = useState('3407');
   const [topCompaniesRegistered, setTopCompaniesRegistered] = useState([]);
   const [internStatus, setInternStatus] = useState([]);
   const [internCountries, setInternCountries] = useState([]);
   const [applicationsStatus, setApplicationsStatus] = useState([]);
+  const [graphsCareerId, setGraphsCareerId] = useState(careerId);
 
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('internships').where('careerId', '==', user.careerId)
-      : db.collection('internships');
-    const unsubscribe = dbRef
-      .where('status', '==', pendingIntention)
-      .onSnapshot((querySnapshot) => setIntentionsCount(querySnapshot.size));
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('applications').where('careerId', '==', user.careerId)
-      : db.collection('applications');
-    const unsubscribe = dbRef
-      .where('status', '==', 'En revisión')
-      .onSnapshot((querySnapshot) => setFormsCount(querySnapshot.size));
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('internships').where('careerId', '==', user.careerId)
-      : db.collection('internships');
-    const unsubscribe = dbRef
-      .where('status', '==', sentReport)
-      .onSnapshot((querySnapshot) => setReportsCount(querySnapshot.size));
-    return unsubscribe;
-  }, []);
+  const {
+    pendingIntentionsCount,
+    pendingFormsCount,
+    sentReportsCount,
+    ongoingInternshipsCount
+  } = useSupervisor();
 
   useEffect(() => {
     console.log('Dashboard  Montado');
     return () => console.log('Dashboard desmontado');
   }, []);
-
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('users').where('careerId', '==', user.careerId)
-      : db.collection('users');
-    const unsubscribe = dbRef
-      .where('step', '>=', 2)
-      .onSnapshot((querySnapshot) => setInternshipCount(querySnapshot.size));
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => console.log(user.careerId, careerId), [careerId]);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -144,7 +106,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Nuevas Intenciones</p>
                       <h2 className={classes.cardTitle}>
-                        <CountUp end={intentionsCount} duration={3} />
+                        <CountUp end={pendingIntentionsCount} duration={3} />
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -165,7 +127,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Nuevos Formularios</p>
                       <h2 className={classes.cardTitle}>
-                        <CountUp end={formsCount} duration={3} />
+                        <CountUp end={pendingFormsCount} duration={3} />
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -188,7 +150,7 @@ function DashboardAdmin({ sidebarProps }) {
                         Informes pendientes
                       </p>
                       <h2 className={classes.cardTitle}>
-                        <CountUp end={reportsCount} duration={3} />
+                        <CountUp end={sentReportsCount} duration={3} />
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -207,7 +169,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Prácticas en Curso</p>
                       <h2 className={classes.cardTitle}>
-                        <CountUp end={internshipCount} duration={3} />
+                        <CountUp end={ongoingInternshipsCount} duration={3} />
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -286,16 +248,16 @@ function DashboardAdmin({ sidebarProps }) {
                       <p className={classes.cardCategory}>
                         Aprobados y Rechazados por Carrera
                       </p>
-                      {!user.careerId && (
+                      {careerId === DEFAULT_CAREER && (
                         <CareerSelector
-                          careerId={careerId}
-                          setCareerId={setCareerId}
+                          careerId={graphsCareerId}
+                          setCareerId={setGraphsCareerId}
                         />
                       )}
                     </CardHeader>
                     <CardBody>
                       <PieChart
-                        careerId={careerId}
+                        graphsCareerId={graphsCareerId}
                         setExportable={setApplicationsStatus}
                       />
                     </CardBody>

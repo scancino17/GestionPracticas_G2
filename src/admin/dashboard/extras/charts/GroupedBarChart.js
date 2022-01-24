@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
 import { Bar } from 'react-chartjs-2';
-import { db } from '../../../../firebase';
-import { useUser } from '../../../../providers/User';
+import { DEFAULT_CAREER } from '../../../../providers/User';
+import { useSupervisor } from '../../../../providers/Supervisor';
 
 function GroupedBar(props) {
-  const { user } = useUser();
+  const { students, careers } = useSupervisor();
   const [data, setData] = useState();
   const [loaded, setLoaded] = useState(false);
-  let careers = new Map();
+  let careersMap = new Map();
   let noAction = new Map();
   let applying = new Map();
   let onIntern = new Map();
@@ -26,121 +26,108 @@ function GroupedBar(props) {
   };
 
   function standardizeMaps(doc) {
-    if (!noAction.has(careers.get(doc.careerId)))
-      noAction.set(careers.get(doc.careerId), 0);
-    if (!applying.has(careers.get(doc.careerId)))
-      applying.set(careers.get(doc.careerId), 0);
-    if (!onIntern.has(careers.get(doc.careerId)))
-      onIntern.set(careers.get(doc.careerId), 0);
+    if (!noAction.has(careersMap.get(doc.careerId)))
+      noAction.set(careersMap.get(doc.careerId), 0);
+    if (!applying.has(careersMap.get(doc.careerId)))
+      applying.set(careersMap.get(doc.careerId), 0);
+    if (!onIntern.has(careersMap.get(doc.careerId)))
+      onIntern.set(careersMap.get(doc.careerId), 0);
   }
 
   function getStudentsStatus() {
-    const dbRef = user.careerId
-      ? db.collection('users').where('careerId', '==', user.careerId)
-      : db.collection('users');
-    const unsubscribe = dbRef.onSnapshot((querySnapshot) => {
-      const temp = [];
-
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-
-      temp.forEach((doc) => {
-        if (doc.step) {
-          switch (doc.step) {
-            case 0:
-              if (noAction.has(careers.get(doc.careerId))) {
-                let counter = noAction.get(careers.get(doc.careerId));
-                noAction.set(careers.get(doc.careerId), counter + 1);
-              } else {
-                noAction.set(careers.get(doc.careerId), 1);
-              }
-              standardizeMaps(doc);
-              break;
-            case 1:
-              if (applying.has(careers.get(doc.careerId))) {
-                let counter = applying.get(careers.get(doc.careerId));
-                applying.set(careers.get(doc.careerId), counter + 1);
-              } else {
-                applying.set(careers.get(doc.careerId), 1);
-              }
-              standardizeMaps(doc);
-              break;
-            case 2:
-              if (onIntern.has(careers.get(doc.careerId))) {
-                let counter = onIntern.get(careers.get(doc.careerId));
-                onIntern.set(careers.get(doc.careerId), counter + 1);
-              } else {
-                onIntern.set(careers.get(doc.careerId), 1);
-              }
-              standardizeMaps(doc);
-              break;
-            default:
-              break;
-          }
-        } else {
-          if (noAction.has(careers.get(doc.careerId))) {
-            let counter = noAction.get(careers.get(doc.careerId));
-            noAction.set(careers.get(doc.careerId), counter + 1);
-          } else {
-            noAction.set(careers.get(doc.careerId), 1);
-          }
-          standardizeMaps(doc);
+    students.forEach((doc) => {
+      if (doc.step) {
+        switch (doc.step) {
+          case 0:
+            if (noAction.has(careersMap.get(doc.careerId))) {
+              let counter = noAction.get(careersMap.get(doc.careerId));
+              noAction.set(careersMap.get(doc.careerId), counter + 1);
+            } else {
+              noAction.set(careersMap.get(doc.careerId), 1);
+            }
+            standardizeMaps(doc);
+            break;
+          case 1:
+            if (applying.has(careersMap.get(doc.careerId))) {
+              let counter = applying.get(careersMap.get(doc.careerId));
+              applying.set(careersMap.get(doc.careerId), counter + 1);
+            } else {
+              applying.set(careersMap.get(doc.careerId), 1);
+            }
+            standardizeMaps(doc);
+            break;
+          case 2:
+            if (onIntern.has(careersMap.get(doc.careerId))) {
+              let counter = onIntern.get(careersMap.get(doc.careerId));
+              onIntern.set(careersMap.get(doc.careerId), counter + 1);
+            } else {
+              onIntern.set(careersMap.get(doc.careerId), 1);
+            }
+            standardizeMaps(doc);
+            break;
+          default:
+            break;
         }
-      });
-
-      let list = [
-        Array.from(noAction.keys()),
-        [
-          Object.fromEntries(noAction),
-          Object.fromEntries(applying),
-          Object.fromEntries(onIntern)
-        ]
-      ];
-
-      props.setExportable(list);
-
-      let config = {
-        labels: Array.from(noAction.keys()),
-        datasets: [
-          {
-            label: 'Sin Práctica',
-            data: Array.from(noAction.values()),
-            backgroundColor: 'rgb(255, 99, 132)'
-          },
-          {
-            label: 'En Proceso de Inscripción',
-            data: Array.from(applying.values()),
-            backgroundColor: 'rgb(54, 162, 235)'
-          },
-          {
-            label: 'En Práctica',
-            data: Array.from(onIntern.values()),
-            backgroundColor: 'rgb(75, 192, 192)'
-          }
-        ]
-      };
-
-      setData(config);
+      } else {
+        if (noAction.has(careersMap.get(doc.careerId))) {
+          let counter = noAction.get(careersMap.get(doc.careerId));
+          noAction.set(careersMap.get(doc.careerId), counter + 1);
+        } else {
+          noAction.set(careersMap.get(doc.careerId), 1);
+        }
+        standardizeMaps(doc);
+      }
     });
-    return unsubscribe;
+
+    let list = [
+      Array.from(noAction.keys()),
+      [
+        Object.fromEntries(noAction),
+        Object.fromEntries(applying),
+        Object.fromEntries(onIntern)
+      ]
+    ];
+
+    props.setExportable(list);
+
+    let config = {
+      labels: Array.from(noAction.keys()),
+      datasets: [
+        {
+          label: 'Sin Práctica',
+          data: Array.from(noAction.values()),
+          backgroundColor: 'rgb(255, 99, 132)'
+        },
+        {
+          label: 'En Proceso de Inscripción',
+          data: Array.from(applying.values()),
+          backgroundColor: 'rgb(54, 162, 235)'
+        },
+        {
+          label: 'En Práctica',
+          data: Array.from(onIntern.values()),
+          backgroundColor: 'rgb(75, 192, 192)'
+        }
+      ]
+    };
+
+    setData(config);
   }
 
   useEffect(() => {
-    let unsubscribe = null;
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (doc.id !== 'general')
-            careers.set(
-              doc.id,
-              data.name.length > 34 ? `${data.name.slice(0, 34)}...` : data.name
-            );
-        });
-        unsubscribe = getStudentsStatus();
-      });
-    return unsubscribe;
-  }, []);
+    careers.forEach((career) => {
+      if (career.id !== DEFAULT_CAREER) {
+        careersMap.set(
+          career.id,
+          career.name.length > 34
+            ? `${career.name.slice(0, 34)}...`
+            : career.name
+        );
+      }
+    });
+
+    getStudentsStatus();
+  }, [careers]);
 
   useEffect(() => setLoaded(!!data), [data]);
 

@@ -1,25 +1,10 @@
 import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import React from 'react';
+import { useSupervisor } from '../providers/Supervisor';
+import { DEFAULT_CAREER } from '../providers/User';
 
 function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
-  const [careers, setCareers] = useState([]);
-
-  useEffect(() => {
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push({ id: doc.id, ...doc.data() });
-        });
-        setCareers(
-          excludeGeneral
-            ? temp.filter((career) => career.id !== 'general')
-            : temp
-        );
-      });
-  }, []);
+  const { careers } = useSupervisor();
 
   return (
     <FormControl>
@@ -29,13 +14,15 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
         value={careerId}
         onChange={(e) => setCareerId(e.target.value)}
         style={{ minWidth: '14rem' }}>
-        {careers.map((career) => {
-          return (
-            <MenuItem key={career.id} value={career.id}>
-              {career.name}
-            </MenuItem>
-          );
-        })}
+        {careers
+          .filter((item) => !excludeGeneral || item.id !== DEFAULT_CAREER)
+          .map((career) => {
+            return (
+              <MenuItem key={career.id} value={career.id}>
+                {career.name}
+              </MenuItem>
+            );
+          })}
       </Select>
     </FormControl>
   );

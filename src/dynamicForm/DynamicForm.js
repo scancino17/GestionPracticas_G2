@@ -15,7 +15,7 @@ function DynamicForm({
 }) {
   const [flag, setFlag] = useState(false);
   return (
-    <Grid container justifyContent='center' spacing={8}>
+    <Grid container direction='row'justifyContent='center' spacing={8}>
       {admin && (
         <>
           <Grid item xs={12} md={5} >

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -17,7 +17,7 @@ import {
   DialogContent,
   DialogActions
 } from '@material-ui/core';
-import { Add, Delete, Save } from '@material-ui/icons';
+import { Add, Delete, Edit, Save } from '@material-ui/icons';
 import { customTypes, formTypes } from './formTypes';
 
 function ConstructorCamp({
@@ -26,17 +26,29 @@ function ConstructorCamp({
   indexInnerInner,
   formFullInnerInner,
   handlerSetFormInnerInner,
-  setFlagInner
+  setFlagInner,
+  edit,
+  setEdit,
+  editIndex,
+  editElement
 }) {
   const [type, setType] = useState('');
   const [type2, setType2] = useState('');
   const [name, setName] = useState('');
-  const [openSelect, setopenSelect] = useState('');
-  const [openSelect2, setopenSelect2] = useState('');
+  const [openSelect, setopenSelect] = useState(false);
+  const [openSelect2, setopenSelect2] = useState(false);
   const [options, setOptions] = useState([]);
   const [newOption, setNewOption] = useState('');
 
-  function handlerAddCamp() {
+  useEffect(() => {
+    if(edit){
+      setType(editElement.type)
+      setName(editElement.name)
+      setOptions(editElement.options)
+    }
+  }, [edit,editElement]);
+
+  function handleSave() {
     let temp;
     if (type === formTypes.formTextInput) {
       temp = {
@@ -77,13 +89,34 @@ function ConstructorCamp({
       };
     }
     const aux = formFullInnerInner;
-    aux[indexInnerInner].form.push(temp);
+    if(edit){
+      aux[indexInnerInner].form[editIndex]=temp;
+      setEdit(false);
+    }else{
+      aux[indexInnerInner].form.push(temp);
+    }
+    handleExit()
     handlerSetFormInnerInner(aux);
-    setFlagInner(true);
+    
+  }
+
+  function handleExit(){
+    
+    setName('');
+    setType('');
+    setType2('');
+    setOptions([]);
+    setEdit(false);
+    setShow(false)
+  }
+  function changeType(e){
+    setType(e.target.value);
+    setOptions([]);
+    setName('');
   }
 
   return (
-    <Dialog open={show} onClose={() => setShow(false)} fullWidth>
+    <Dialog open={show} onClose={() =>handleExit() } fullWidth>
       <DialogTitle>Creación de Campo</DialogTitle>
       <DialogContent>
         <FormControl fullWidth style={{ marginBottom: '2rem' }}>
@@ -94,15 +127,16 @@ function ConstructorCamp({
             open={openSelect}
             onClose={() => setopenSelect(false)}
             onOpen={() => setopenSelect(true)}
-            onChange={(e) => setType(e.target.value)}>
+            onChange={(e) => changeType(e)}>
             <MenuItem value=''>None</MenuItem>
             {Object.values(formTypes).map((option) => (
-              <MenuItem value={option}>{option}</MenuItem>
+              <MenuItem key={option} value={option}>{option}</MenuItem>
             ))}
           </Select>
         </FormControl>
         {type === formTypes.formTextInput ? (
           <TextField
+            value={name}
             fullWidth
             variant='outlined'
             label='Nombre'
@@ -111,6 +145,7 @@ function ConstructorCamp({
         ) : type === formTypes.formSelect ? (
           <>
             <TextField
+              value={name}
               fullWidth
               variant='outlined'
               label='Nombre'
@@ -163,6 +198,7 @@ function ConstructorCamp({
         ) : type === formTypes.formFileInput ? (
           <TextField
             fullWidth
+            value={name}
             variant='outlined'
             label='Nombre'
             onChange={(e) => setName(e.target.value)}
@@ -170,6 +206,7 @@ function ConstructorCamp({
         ) : type === formTypes.formHeader ? (
           <TextField
             fullWidth
+            value={name}
             variant='outlined'
             label='Título'
             onChange={(e) => setName(e.target.value)}
@@ -190,7 +227,7 @@ function ConstructorCamp({
                 onChange={(e) => setType2(e.target.value)}>
                 <MenuItem value=''>None</MenuItem>
                 {Object.values(customTypes).map((option) => (
-                  <MenuItem value={option}>{option}</MenuItem>
+                  <MenuItem key={option} value={option}>{option}</MenuItem>
                 ))}
               </Select>
             </FormControl>
@@ -199,12 +236,16 @@ function ConstructorCamp({
       </DialogContent>
       <DialogActions>
         <Button
-          disabled={!type}
+          disabled={!type  ||
+                    (type===formTypes.formCustom && (!type2 || type2===''))||
+                    (type===formTypes.formSelect && options.length===0)||
+                    ((type===formTypes.formFileInput || type===formTypes.formHeader || type===formTypes.formSelect || type===formTypes.formTextInput) 
+                      && (name===null ||name===''))
+                    }
           color='primary'
           startIcon={<Save />}
           onClick={() => {
-            handlerAddCamp();
-            setShow(false);
+                handleSave();
           }}>
           Guardar campo
         </Button>

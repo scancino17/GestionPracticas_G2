@@ -11,9 +11,9 @@ import {
   Button,
   IconButton
 } from '@material-ui/core';
-import { Delete, ArrowUpward, ArrowDownward, Add } from '@material-ui/icons';
+import { Delete, ArrowUpward, ArrowDownward, Add, Edit } from '@material-ui/icons';
 import ConstructorCamp from './ConstructorCamp';
-
+import Swal from 'sweetalert2';
 function FormBuilder({
   formInner,
   flag,
@@ -23,6 +23,15 @@ function FormBuilder({
   handlerSetFormInner
 }) {
   const [show, setShow] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [editIndex, setEditIndex] = useState(10);
+  const [editElement, setEditElement] = useState({
+    type: '',
+    name: '',
+    options: '',
+    value: ''
+  });
+
   const defaultInputs = [
     'Información del estudiante',
     'Nombre del estudiante',
@@ -36,10 +45,21 @@ function FormBuilder({
   }, [formInner, flag]);
 
   function hadlerDelete(element, i) {
-    const aux = formFullInner;
-    aux[indexInner].form.splice(i, 1);
-    handlerSetFormInner(aux);
-    setFlag(true);
+    Swal.fire({
+      title: '¿Desea eliminar el elemento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: `Eliminar`,
+      cancelButtonText: `Cancelar`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const aux = formFullInner;
+        aux[indexInner].form.splice(i, 1);
+        handlerSetFormInner(aux);
+        setFlag(true);
+      }
+    })
+    
   }
 
   function handlerUp(index) {
@@ -54,6 +74,12 @@ function FormBuilder({
     aux[indexInner].form = array_move(aux[indexInner].form, index, index + 1);
     handlerSetFormInner(aux);
     setFlag(true);
+  }
+  function handleEdit( rec, i){
+      setEditElement(rec);
+      setEditIndex(i);
+      setEdit(true)   
+      setShow(true);
   }
 
   function array_move(arr, old_index, new_index) {
@@ -92,19 +118,26 @@ function FormBuilder({
             </TableHead>
             <TableBody>
               {formInner.map((rec, i) => (
-                <TableRow key={rec.i}>
+                <TableRow key={i}>
                   <TableCell>
-                    <Typography noWrap style={{ width: '10rem' }}>
+                    <Typography noWrap style={{ width: '7rem' }}>
                       {rec.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography noWrap style={{ width: '10rem' }}>
+                    <Typography noWrap style={{ width: '7rem' }}>
                       {rec.type}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Grid container>
+                    <Grid container direction='row'>
+                      <Grid>
+                        <IconButton
+                          disabled={defaultInputs.includes(rec.name)}
+                          onClick={() => handleEdit(rec,i)}>
+                          <Edit />
+                        </IconButton>
+                      </Grid>
                       <Grid>
                         <IconButton
                           disabled={defaultInputs.includes(rec.name)}
@@ -155,6 +188,12 @@ function FormBuilder({
           formFullInnerInner={formFullInner}
           setFlagInner={setFlag}
           show={show}
+
+          edit={edit}
+          setEdit={setEdit}
+          editIndex={editIndex}
+          editElement={editElement}
+
         />
       </Grid>
     </Grid>

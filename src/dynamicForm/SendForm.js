@@ -51,15 +51,30 @@ function SendForm({ edit }) {
             if (data) setFormFull(data.form);
           });
       }
+
     }
+
   }, [userData]);
+
+
+
 
   useEffect(() => {
     setFlag(false);
   }, [flag]);
 
+
   function handleNext() {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if(dataVerify()){
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }else{
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops... parece que te falta algo',
+        text: 'Son requeridos todos los campos',
+      
+      })
+    }
   }
 
   function handleBack() {
@@ -94,7 +109,17 @@ function SendForm({ edit }) {
         .put(file.file);
     });
   }
+  function dataVerify(){
+    if(formFull!=null){
+      for (let i = 0; i < formFull[activeStep].form.length; i++) {
+        if(formFull[activeStep].form[i].value==='' && formFull[activeStep].form[i].type!=="Título"){
+          return false;
+        }
+      }
+      return true;
+  }
 
+  }
   function handleSave() {
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta

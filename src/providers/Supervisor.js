@@ -1,4 +1,12 @@
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import {
+  collection,
+  getDoc,
+  onSnapshot,
+  query,
+  where,
+  doc,
+  setDoc
+} from 'firebase/firestore';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from './User';
 import { db } from '../firebase';
@@ -92,6 +100,18 @@ export function SupervisorProvider({ children }) {
     return internships.filter((item) => item.step >= 2).length;
   }, [internships]);
 
+  async function getCareerForm(selectedCareerId) {
+    let response = await getDoc(doc(db, 'form', selectedCareerId));
+    return response.data().form;
+  }
+
+  // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
+  // params está por si se quiere hacer merge con los datos en vez de reemplazar.
+  // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
+  function setCareerForm(selectedCareerId, form, params = { merge: false }) {
+    setDoc(doc(db, 'form', selectedCareerId), form, params);
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
@@ -102,7 +122,9 @@ export function SupervisorProvider({ children }) {
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,
-        ongoingInternshipsCount
+        ongoingInternshipsCount,
+        getCareerForm,
+        setCareerForm
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

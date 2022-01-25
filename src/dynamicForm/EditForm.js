@@ -35,7 +35,8 @@ import {
 } from '@material-ui/core';
 import { formTypes } from './formTypes';
 import CareerSelector from '../utils/CareerSelector';
-import { useUser } from '../providers/User';
+import { DEFAULT_CAREER, useUser } from '../providers/User';
+import { useSupervisor } from '../providers/Supervisor';
 
 function EditForm() {
   const [formFull, setFormFull] = useState([
@@ -74,22 +75,21 @@ function EditForm() {
       ]
     }
   ]);
-  const { user } = useUser();
+  const { careerId } = useUser();
   const [show, setShow] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [careerId, setCareerId] = useState(
-    user.careerId ? user.careerId : null
-  );
+  const [selectedCareerId, setSelectedCareerId] = useState(careerId);
+  const { getCareerForm, setCareerForm } = useSupervisor();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (careerId)
-      db.collection('form')
-        .doc(careerId)
-        .get()
-        .then((doc) => setFormFull(doc.data().form));
-  }, [careerId]);
+    if (selectedCareerId && selectedCareerId !== DEFAULT_CAREER) {
+      getCareerForm(selectedCareerId).then((careerForm) =>
+        setFormFull(careerForm)
+      );
+    }
+  }, [selectedCareerId, getCareerForm]);
 
   useEffect(() => setFlag(false), [flag]);
 
@@ -104,7 +104,7 @@ function EditForm() {
   }
 
   function handleSave() {
-    db.collection('form').doc(careerId).set({ form: formFull });
+    setCareerForm(selectedCareerId, { form: formFull });
   }
 
   function handleDelete(element) {
@@ -153,7 +153,7 @@ function EditForm() {
         </Typography>
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {!user.careerId && (
+        {(!careerId || careerId === DEFAULT_CAREER) && (
           <Grid
             container
             justifyContent='flex-end'
@@ -161,14 +161,14 @@ function EditForm() {
             spacing={4}>
             <Grid item>
               <CareerSelector
-                careerId={careerId}
-                setCareerId={setCareerId}
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
                 excludeGeneral
               />
             </Grid>
           </Grid>
         )}
-        {careerId ? (
+        {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container justifyContent='center' spacing={8}>
               <Grid item direction='column' xs={12} md={5}>

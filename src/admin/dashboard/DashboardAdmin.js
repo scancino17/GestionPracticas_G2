@@ -52,7 +52,7 @@ import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 
 function DashboardAdmin({ sidebarProps }) {
-  const { user, careerId } = useUser();
+  const { careerId } = useUser();
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const navigate = useNavigate();

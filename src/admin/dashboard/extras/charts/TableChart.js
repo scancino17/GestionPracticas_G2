@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { CircularProgress, Grid } from '@material-ui/core';
-import { db } from '../../../../firebase';
-import { useUser } from '../../../../providers/User';
 import { useSupervisor } from '../../../../providers/Supervisor';
 const columns = [
   { field: 'country', headerName: 'País', flex: 1 },

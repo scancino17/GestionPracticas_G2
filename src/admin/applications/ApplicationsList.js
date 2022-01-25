@@ -16,17 +16,15 @@ import {
   Typography
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
 import { useUser } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
 
 function ApplicationsList() {
   const [careerId, setCareerId] = useState('general');
-  const [applications, setApplications] = useState();
-  const [filteredApplications, setFilteredApplications] = useState();
   const [name, setName] = useState('');
   const [statuses, setStatuses] = useState({
     reviewing: true,
@@ -38,46 +36,36 @@ function ApplicationsList() {
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
   const { user } = useUser();
+  const { applications } = useSupervisor();
 
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('applications').where('careerId', '==', user.careerId)
-      : db.collection('applications');
-    const unsubscribe = dbRef
-      .orderBy('creationDate', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) =>
-          list.push({ id: doc.id, ...doc.data() })
+  const filteredApplications = useMemo(() => {
+    if (applications) {
+      let filtered = applications.slice();
+      if (careerId !== 'general')
+        filtered = filtered.filter((item) => item.careerId === careerId);
+      if (name !== '')
+        filtered = filtered.filter((item) => item.studentName.includes(name));
+      if (!reviewing)
+        filtered = filtered.filter((item) => item.status !== 'En revisión');
+      if (!approved)
+        filtered = filtered.filter((item) => item.status !== 'Aprobado');
+      if (!rejected)
+        filtered = filtered.filter((item) => item.status !== 'Rechazado');
+      if (!needChanges)
+        filtered = filtered.filter(
+          (item) => item.status !== 'Necesita cambios menores'
         );
-        setApplications(list);
-        if (list) setFilteredApplications(applyFilter(list));
-      });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    if (applications) setFilteredApplications(applyFilter(applications));
-  }, [careerId, name, statuses]);
-
-  function applyFilter(list) {
-    let filtered = list.slice();
-    if (careerId !== 'general')
-      filtered = filtered.filter((item) => item.careerId === careerId);
-    if (name !== '')
-      filtered = filtered.filter((item) => item.studentName.includes(name));
-    if (!reviewing)
-      filtered = filtered.filter((item) => item.status !== 'En revisión');
-    if (!approved)
-      filtered = filtered.filter((item) => item.status !== 'Aprobado');
-    if (!rejected)
-      filtered = filtered.filter((item) => item.status !== 'Rechazado');
-    if (!needChanges)
-      filtered = filtered.filter(
-        (item) => item.status !== 'Necesita cambios menores'
-      );
-    return filtered;
-  }
+      return filtered;
+    } else return [];
+  }, [
+    applications,
+    careerId,
+    name,
+    reviewing,
+    approved,
+    rejected,
+    needChanges
+  ]);
 
   function handleCheckboxes(e) {
     setStatuses((prev) => {

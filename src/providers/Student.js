@@ -23,7 +23,9 @@ export function StudentProvider({ children }) {
   const [internships, setInternships] = useState();
   const [currentInternship, setCurrentInternship] = useState();
   const [currentInternshipData, setCurrentInternshipData] = useState();
-  const [lastApplication, setLastApplication] = useState(null);
+  const [lastApplication, setLastApplication] = useState({
+    reason: 'Cargando...'
+  });
   const [studentName, setStudentName] = useState('');
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [careerInfo, setCareerInfo] = useState();
@@ -76,7 +78,13 @@ export function StudentProvider({ children }) {
     if (currentInternship && currentInternship.lastApplication) {
       const docRef = doc(db, 'applications', currentInternship.lastApplication);
       const docSnap = await getDoc(docRef);
-      setLastApplication(docSnap.exists() ? docSnap.data() : null);
+      setLastApplication(
+        docSnap.exists()
+          ? docSnap.data()
+          : {
+              reason: 'Cargando...'
+            }
+      );
     }
   }, [currentInternship]);
 

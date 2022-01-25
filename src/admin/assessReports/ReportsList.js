@@ -76,7 +76,11 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justifyContent='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -134,7 +138,7 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.name}
-        secondary={internship.applicationData.Empresa}
+        secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
       />
       <ListItemSecondaryAction>
         <IconButton

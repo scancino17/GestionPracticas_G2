@@ -98,6 +98,7 @@ function IntentionList({ applications, update }) {
         <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
           {applications && applications.length > 0 ? (
             <Pagination
+              style={{ marginBottom: '40px' }}
               count={Math.ceil(applications.length / itemsPerPage)}
               page={page}
               color='primary'
@@ -153,36 +154,37 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               <Typography variant='h6'>Detalles de postulante</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography  className={classes.bold}>
-                Nombre:
-              </Typography>
+              <Typography className={classes.bold}>Nombre:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{application.name}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography  className={classes.bold}>
-                Rut:
-              </Typography>
+              <Typography className={classes.bold}>Rut:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{application.rut}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography  className={classes.bold}>
-               Matrícula:
-              </Typography>
+              <Typography className={classes.bold}>Matrícula:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{application.enrollmentNumber}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.bold}>
-               Correo:
+              <Typography className={classes.bold}>Correo:</Typography>
+            </Grid>
+
+            <Grid item xs={8}>
+              <Typography>{application.email}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Carrera:</Box>
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{application.email}</Typography>
+              <Typography>{application.careerName}</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
               <Typography>Práctica {application.internshipNumber}</Typography>

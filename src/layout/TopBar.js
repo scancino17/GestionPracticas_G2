@@ -20,7 +20,23 @@ import NotificationMenu from './NotificationMenu';
 const useStyles = makeStyles((theme) => ({
   logo: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
-    maxHeight: '4rem'
+    maxHeight: '4rem',
+
+    '@media (max-width: 370px)': {
+      maxHeight: '3.5rem'
+    },
+    '@media (max-width: 345px)': {
+      maxHeight: '3rem'
+    },
+    '@media (max-width: 320px)': {
+      maxHeight: '2.7rem'
+    },
+    '@media (max-width: 300px)': {
+      maxHeight: '2.4rem'
+    },
+    '@media (max-width: 280px)': {
+      maxHeight: '0rem'
+    }
   },
   icon: {
     '& svg': {

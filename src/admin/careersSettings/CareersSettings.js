@@ -71,7 +71,7 @@ function CareersSettings() {
               container
               justifyContent='flex-end'
               spacing={4}
-              style={{ marginBottom: '1rem' }}>
+              style={{ marginBottom: '1rem', width: '100%' }}>
               <Grid item>
                 <CareerSelector
                   careerId={careerId}
@@ -82,7 +82,7 @@ function CareersSettings() {
             </Grid>
           )}
           {career ? (
-            <Grid container direction='column' spacing={4}>
+            <Grid container direction='column' spacing={2}>
               <Grid item>
                 <Card>
                   <CardContent>

@@ -1,10 +1,42 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
+import {
+  FormControl,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Select
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase';
 
+const useStyles = makeStyles({
+  selector: {
+    '@media (min-width: 100px)': {
+      width: '150px'
+    },
+    '@media (min-width: 230px)': {
+      width: '200px'
+    },
+    '@media (min-width: 290px)': {
+      width: '250px'
+    },
+    '@media (min-width: 600px)': {
+      width: '300px'
+    },
+    '@media (min-width: 750px)': {
+      width: '300px'
+    },
+    '@media (min-width: 850px)': {
+      width: '300px'
+    },
+    '@media (min-width: 400px)': {
+      width: '300px'
+    }
+  }
+});
+
 function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
   const [careers, setCareers] = useState([]);
-
+  const classes = useStyles();
   useEffect(() => {
     db.collection('careers')
       .get()
@@ -28,7 +60,7 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
         labelId='select-career'
         value={careerId}
         onChange={(e) => setCareerId(e.target.value)}
-        style={{ minWidth: '14rem' }}>
+        className={classes.selector}>
         {careers.map((career) => {
           return (
             <MenuItem key={career.id} value={career.id}>

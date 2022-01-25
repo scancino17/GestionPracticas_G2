@@ -14,15 +14,7 @@ function GroupedBar(props) {
   let onIntern = new Map();
 
   const options = {
-    scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true
-          }
-        }
-      ]
-    }
+    maintainAspectRatio: false
   };
 
   function standardizeMaps(doc) {

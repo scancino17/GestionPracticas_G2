@@ -27,7 +27,28 @@ const useStyles = makeStyles({
     paddingRight: '1rem'
   },
   logo: {
-    maxWidth: '22.5rem'
+    maxWidth: '22.5rem',
+    '@media (max-width: 360px)': {
+      maxWidth: '20.5rem'
+    },
+    '@media (max-width: 325px)': {
+      maxWidth: '18.5rem'
+    },
+    '@media (max-width: 285px)': {
+      maxWidth: '15.5rem'
+    },
+    '@media (min-width: 361px)': {
+      maxWidth: '19.5rem'
+    },
+    '@media (min-width: 600px)': {
+      maxWidth: '15.5rem'
+    },
+    '@media (min-width: 700px)': {
+      maxWidth: '18.5rem'
+    },
+    '@media (min-width: 800px)': {
+      maxWidth: '22.5rem'
+    }
   }
 });
 

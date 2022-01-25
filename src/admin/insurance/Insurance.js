@@ -77,7 +77,7 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`Práctica ${internship.internshipNumber} - ${internship.applicationData.Empresa}`}
+          secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerName}`}
         />
       </ListItem>
       <Divider />
@@ -121,7 +121,8 @@ function Insurance() {
               id: data.id,
               ...data.applicationData,
               stringInicio: inicio,
-              stringTermino: termino
+              stringTermino: termino,
+              carrera: data.careerName
             });
           }
           if (!data.seguroDisponible) seguro.push(data);
@@ -175,14 +176,18 @@ function Insurance() {
         }
         filename='Estudiantes para seguro'>
         <ExcelSheet data={usersExport} name='Estudiantes para seguro'>
-          <ExcelColumn label='Nombre' value='Nombre del estudiante' />
-          <ExcelColumn label='Matrícula' value='Número de matrícula' />
-          <ExcelColumn label='Rut' value='Rut del estudiante' />
-          <ExcelColumn label='Correo' value='Correo del estudiante' />
-          <ExcelColumn label='Nro práctica' value='internshipNumber' />
-          <ExcelColumn label='Empresa' value='Empresa' />
+          <ExcelColumn
+            label='Nombre estudiante'
+            value='Nombre del estudiante'
+          />
+          <ExcelColumn label='N° de Matrícula' value='Número de matrícula' />
+          <ExcelColumn label='RUT estudiante' value='Rut del estudiante' />
+          <ExcelColumn label='Carrera' value='carrera' />
+          <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
           <ExcelColumn label='Fecha de inicio' value='stringInicio' />
           <ExcelColumn label='Fecha de término' value='stringTermino' />
+          <ExcelColumn label='Empresa' value='Empresa' />
+          <ExcelColumn label='Correo' value='Correo del estudiante' />
         </ExcelSheet>
       </ExcelFile>
     );
@@ -225,16 +230,24 @@ function Insurance() {
                 .map(
                   (doc) =>
                     (careerId === 'general' || careerId === doc.careerId) && (
-                      <StudentItem key={doc.id} internship={doc} careerId={careerId} />
+                      <StudentItem
+                        key={doc.id}
+                        internship={doc}
+                        careerId={careerId}
+                      />
                     )
                 )}
             </List>
-            <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
+            <Grid
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem' }}>
               {careerId && (
                 <Pagination
                   count={Math.ceil(
                     filteredUsersInsurance.length / itemsPerPage
                   )}
+                  style={{ marginBottom: '40px' }}
                   page={page}
                   color='primary'
                   onChange={(_, val) => setPage(val)}

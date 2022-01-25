@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main
   },
   drawer: {
-    width: 260,
+    width: 300,
     flexShrink: 0
   }
 }));
@@ -43,12 +43,12 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/internship-intention'
     },
     {
-      label: 'Postulaciones de práctica',
+      label: 'Inscripciones de práctica',
       icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/applications'
     },
     {
-      label: 'Estudiantes para seguro',
+      label: 'Seguro de estudiantes',
       icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/insurance-list',
       adminOnly: true
@@ -64,7 +64,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/extension-list'
     },
     {
-      label: 'Editar Formulario',
+      label: 'Edición Formulario de Inscripción',
       icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/edit-form'
     },
@@ -93,9 +93,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
+          onClick={() => setSidebarOpen((prevState) => !prevState)}
           onClose={() => setSidebarOpen((prevState) => !prevState)}
-          onOpen={() => setSidebarOpen((prevState) => !prevState)}
-          >
+          onOpen={() => setSidebarOpen((prevState) => !prevState)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>

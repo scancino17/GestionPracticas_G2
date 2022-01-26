@@ -338,6 +338,7 @@ export function SupervisorProvider({ children }) {
       seguroDisponible: true,
       alreadyDownloaded: true
     });
+
     files.forEach((file) => {
       uploadBytes(
         ref(
@@ -370,7 +371,8 @@ export function SupervisorProvider({ children }) {
         rejectApplication,
         amendApplication,
         rejectInternshipIntention,
-        approveInternshipIntention
+        approveInternshipIntention,
+        submitInsurance
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

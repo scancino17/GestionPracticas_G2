@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import XLSX from 'xlsx';
-import { db, functions } from '../../firebase';
+import { functions } from '../../firebase';
 import {
   Button,
   Container,
@@ -17,31 +17,24 @@ import {
 import { DropzoneArea } from 'material-ui-dropzone';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useSupervisor } from '../../providers/Supervisor';
 
 function ImportStudents() {
   const navigate = useNavigate();
-  const [careers, setCareers] = useState({});
+  const [careersNames, setCareersNames] = useState({});
   const [list, setList] = useState([]);
   const [currentUsersEmails, setCurrentUsersEmails] = useState([]);
+  const { students, careers } = useSupervisor();
 
   useEffect(() => {
-    db.collection('users')
-      .get()
-      .then((querySnapshot) => {
-        const emails = [];
-        querySnapshot.forEach((user) => emails.push(user.data().email));
-        setCurrentUsersEmails(emails);
-      });
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        const careersNames = {};
-        querySnapshot.forEach(
-          (career) => (careersNames[career.id] = career.data().name)
-        );
-        setCareers(careersNames);
-      });
-  }, []);
+    const emails = [];
+    students.forEach((user) => emails.push(user.email));
+    setCurrentUsersEmails(emails);
+
+    const careerNames = {};
+    careers.forEach((career) => (careerNames[career.id] = career.name));
+    setCareersNames(careerNames);
+  }, [students, careers]);
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -80,7 +73,7 @@ function ImportStudents() {
         able: true,
         birthDate: Date.parse(row[8]),
         careerId: row[1].toString(),
-        careerName: careers[row[1]],
+        careerName: careersNames[row[1]],
         careerPlan: row[9],
         communeOrigin: row[16],
         email: row[5],

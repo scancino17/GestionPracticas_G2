@@ -10,13 +10,16 @@ import {
   updateDoc,
   serverTimestamp
 } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from './User';
-import { db } from '../firebase';
+import { db, storage } from '../firebase';
 import {
   approvedApplication,
+  approvedIntention,
   changeDetailsApplication,
   deniedApplication,
+  deniedIntention,
   pendingIntention,
   sentReport
 } from '../InternshipStates';
@@ -29,12 +32,12 @@ export function useSupervisor() {
 }
 
 export function SupervisorProvider({ children }) {
-  const { careerId } = useUser();
+  const { careerId, email, displayName } = useUser();
   const [supervisorLoaded, setSupervisorLoaded] = useState(false);
-  const [applications, setApplications] = useState([]);
-  const [internships, setInternships] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [careers, setCareers] = useState([]);
+  const [applications, setApplications] = useState();
+  const [internships, setInternships] = useState();
+  const [students, setStudents] = useState();
+  const [careers, setCareers] = useState();
 
   /**
    * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
@@ -89,26 +92,35 @@ export function SupervisorProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (applications && internships && students) setSupervisorLoaded(true);
-  }, [applications, internships, students]);
+    if (applications && internships && students && careers)
+      setSupervisorLoaded(true);
+  }, [applications, internships, students, careers]);
 
   /** Llevar la cuenta de intenciones pendientes por revisar */
   const pendingIntentionsCount = useMemo(() => {
-    return internships.filter((item) => item.status === pendingIntention)
-      .length;
+    if (internships)
+      return internships.filter((item) => item.status === pendingIntention)
+        .length;
+    else return 0;
   }, [internships]);
 
   const pendingFormsCount = useMemo(() => {
-    return applications.filter((item) => item.status === 'En revisión').length;
+    if (applications)
+      return applications.filter((item) => item.status === 'En revisión')
+        .length;
+    else return 0;
   }, [applications]);
 
   const sentReportsCount = useMemo(() => {
-    return internships.filter((item) => item.status === sentReport).length;
+    if (internships)
+      return internships.filter((item) => item.status === sentReport).length;
+    else return 0;
   }, [internships]);
 
   const ongoingInternshipsCount = useMemo(() => {
-    return internships.filter((item) => item.step >= 2).length;
-  }, [internships]);
+    if (students) return students.filter((item) => item.step >= 2).length;
+    else return 0;
+  }, [students]);
 
   async function getCareerForm(selectedCareerId) {
     let response = await getDoc(doc(db, 'form', selectedCareerId));
@@ -262,9 +274,68 @@ export function SupervisorProvider({ children }) {
     });
   }
 
+  function rejectInternshipIntention(internship, reason) {
+    updateInternship(internship.id, {
+      status: deniedIntention,
+      reason: reason,
+      evluatingSupervisor: { name: displayName, email: email }
+    });
+
+    addNotification(
+      internship.studentId,
+      StudentNotificationTypes.deniedIntention
+    );
+
+    sendMail(internship.email, 'FailedIntention', {
+      from_name: internship.name,
+      result: reason,
+      rechazado_por: displayName,
+      rechazado_por_email: email
+    });
+  }
+
+  function approveInternshipIntention(internship, reason, files) {
+    updateInternship(internship.id, {
+      status: approvedIntention,
+      reason: reason,
+      evaluatingSupervisor: { name: displayName, email: email },
+      seguroDisponible: false,
+      alreadyDownloaded: false
+    });
+
+    files.forEach((file) => {
+      uploadBytes(
+        ref(
+          storage,
+          `students-docs/${internship.studentId}/${internship.id}/internship-intention/${file.name}`
+        ),
+        file
+      );
+    });
+
+    sendMail(internship.email, 'approvedIntention', {
+      from_name: internship.name,
+      aprobado_por: displayName,
+      razon_aprobacion: reason ? reason : 'Sin observaciones'
+    });
+
+    updateUser(internship.studentId, {
+      currentInternship: {
+        id: internship.id,
+        number: internship.internshipNumber
+      }
+    }).then(() =>
+      addNotification(
+        internship.studentId,
+        StudentNotificationTypes.approvedIntention
+      )
+    );
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
+        supervisorLoaded,
         applications,
         internships,
         students,
@@ -280,7 +351,9 @@ export function SupervisorProvider({ children }) {
         updateApplication,
         approveApplication,
         rejectApplication,
-        amendApplication
+        amendApplication,
+        rejectInternshipIntention,
+        approveInternshipIntention
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

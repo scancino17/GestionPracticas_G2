@@ -20,16 +20,9 @@ import {
 import { grey } from '@material-ui/core/colors';
 import { ExpandMore } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
-import React, { useCallback, useEffect, useState } from 'react';
-import { db, storage } from '../../firebase';
-import {
-  approvedIntention,
-  deniedIntention,
-  pendingIntention
-} from '../../InternshipStates';
-import { useUser } from '../../providers/User';
-import { StudentNotificationTypes } from '../../layout/NotificationMenu';
-import { serverTimestamp } from 'firebase/firestore';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { pendingIntention } from '../../InternshipStates';
+import { useSupervisor } from '../../providers/Supervisor';
 import { Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
@@ -56,7 +49,7 @@ const SecondaryButton = withStyles((theme) => ({
   }
 }))(Button);
 
-function IntentionList({ applications, update }) {
+function IntentionList({ pendingIntentions, update }) {
   const [expanded, setExpanded] = useState();
   const itemsPerPage = 14;
   const [page, setPage] = useState(1);
@@ -80,20 +73,20 @@ function IntentionList({ applications, update }) {
         </Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        {applications
+        {pendingIntentions
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-          .map((application) => (
+          .map((internship) => (
             <IntentionItem
-              application={application}
+              internship={internship}
               update={update}
               expanded={expanded}
               changeExpanded={changeExpanded}
             />
           ))}
         <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
-          {applications && applications.length > 0 ? (
+          {pendingIntentions && pendingIntentions.length > 0 ? (
             <Pagination
-              count={Math.ceil(applications.length / itemsPerPage)}
+              count={Math.ceil(pendingIntentions.length / itemsPerPage)}
               page={page}
               color='primary'
               onChange={(_, val) => setPage(val)}
@@ -106,7 +99,11 @@ function IntentionList({ applications, update }) {
               justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
-                <img src='inten.png' width='300' />
+                <img
+                  src='inten.png'
+                  width='300'
+                  alt='Sin intenciones de práctica'
+                />
               </Grid>
               <Typography variant='h5' color='textSecondary'>
                 No hay intenciones de práctica disponibles
@@ -119,7 +116,7 @@ function IntentionList({ applications, update }) {
   );
 }
 
-const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
+const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
   const classes = useStyles();
   const [showApprovalModal, setShowApprovalModal] = useState();
   const [showRejectModal, setShowRejectModal] = useState();
@@ -129,7 +126,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
     setShowRejectModal(false);
   };
 
-  const { internshipId, name, internshipNumber } = application;
+  const { internshipId, name, internshipNumber } = internship;
   return (
     <>
       <Accordion
@@ -153,7 +150,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{application.name}</Typography>
+              <Typography>{internship.name}</Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography>
@@ -161,7 +158,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{application.rut}</Typography>
+              <Typography>{internship.rut}</Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography>
@@ -169,7 +166,7 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{application.enrollmentNumber}</Typography>
+              <Typography>{internship.enrollmentNumber}</Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography>
@@ -177,10 +174,10 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{application.email}</Typography>
+              <Typography>{internship.email}</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
-              <Typography>Práctica {application.internshipNumber}</Typography>
+              <Typography>Práctica {internship.internshipNumber}</Typography>
             </Grid>
           </Grid>
         </AccordionDetails>
@@ -194,13 +191,13 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
         </AccordionActions>
       </Accordion>
       <ApprovalModal
-        application={application}
+        internship={internship}
         closeModal={closeModal}
         update={update}
         showApprovalModal={showApprovalModal}
       />
       <RejectModal
-        application={application}
+        internship={internship}
         closeModal={closeModal}
         update={update}
         showRejectModal={showRejectModal}
@@ -209,42 +206,12 @@ const IntentionItem = ({ application, update, expanded, changeExpanded }) => {
   );
 };
 
-const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
+const RejectModal = ({ internship, closeModal, update, showRejectModal }) => {
   const [reason, setReason] = useState('');
-  const { user } = useUser();
+  const { rejectInternshipIntention } = useSupervisor();
 
   function handleReject() {
-    db.collection('internships')
-      .doc(application.internshipId)
-      .update({
-        status: deniedIntention,
-        reason: reason,
-        evaluatingSupervisor: { name: user.displayName, email: user.email }
-      });
-
-    db.collection('users')
-      .doc(application.studentId)
-      .update({
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.deniedIntention,
-          time: serverTimestamp()
-        }
-      });
-
-    db.collection('mails').add({
-      to: application.email,
-      template: {
-        name: 'FailedIntention',
-        data: {
-          from_name: application.name,
-          result: reason,
-          rechazado_por: user.displayName,
-          rechazado_por_email: user.email
-        }
-      }
-    });
-
+    rejectInternshipIntention(internship, reason);
     closeModal();
     update();
   }
@@ -258,7 +225,7 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
       <DialogTitle>Rechazar intención de práctica</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          {`¿Está seguro de rechazar Práctica ${application.internshipNumber} de ${application.name}?`}
+          {`¿Está seguro de rechazar Práctica ${internship.internshipNumber} de ${internship.name}?`}
         </DialogContentText>
         <TextField
           multiline
@@ -278,15 +245,15 @@ const RejectModal = ({ application, closeModal, update, showRejectModal }) => {
 };
 
 const ApprovalModal = ({
-  application,
+  internship,
   closeModal,
   update,
   showApprovalModal
 }) => {
-  const { user } = useUser();
   const [letterFile, setLetterFile] = useState([]);
   const [isConfirmDisabled, setConfirmDisabled] = useState();
   const [reason, setReason] = useState('');
+  const { approveInternshipIntention } = useSupervisor();
 
   function handleLetterFile(files) {
     setLetterFile(files);
@@ -298,53 +265,7 @@ const ApprovalModal = ({
   }, [letterFile]);
 
   function handleApprove() {
-    const { studentId, internshipId } = application;
-
-    db.collection('internships')
-      .doc(internshipId)
-      .update({
-        status: approvedIntention,
-        reason: reason,
-        evaluatingSupervisor: { name: user.displayName, email: user.email },
-        seguroDisponible: false,
-        alreadyDownloaded: false
-      });
-
-    letterFile.forEach((file) => {
-      storage
-        .ref()
-        .child(
-          `students-docs/${studentId}/${internshipId}/internship-intention/${file.name}`
-        )
-        .put(file);
-    });
-
-    db.collection('mails').add({
-      to: application.email,
-      template: {
-        name: 'approvedIntention',
-        data: {
-          from_name: application.name,
-          aprobado_por: user.displayName,
-          razon_aprobacion: reason ? reason : 'Sin observaciones'
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(studentId)
-      .update({
-        currentInternship: {
-          id: internshipId,
-          number: application.internshipNumber
-        },
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.approvedIntention,
-          time: serverTimestamp()
-        }
-      });
-
+    approveInternshipIntention(internship, reason, letterFile);
     closeModal();
     update();
   }
@@ -357,7 +278,7 @@ const ApprovalModal = ({
     <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
       <DialogTitle>Aprobar intención de práctica</DialogTitle>
       <DialogContent>
-        <DialogContentText>{`Aprobar intención de Práctica ${application.internshipNumber} de ${application.name}.`}</DialogContentText>
+        <DialogContentText>{`Aprobar intención de Práctica ${internship.internshipNumber} de ${internship.name}.`}</DialogContentText>
         <DialogContentText>
           Adjunte los archivos correspondientes.
         </DialogContentText>
@@ -394,55 +315,54 @@ const ApprovalModal = ({
 };
 
 function InternshipIntention() {
-  const [applications, setApplications] = useState([]);
-  const { user } = useUser();
+  const [pendingIntentions, setPendingIntentions] = useState([]);
+  const { students, internships } = useSupervisor();
 
-  const addApplication = useCallback(
+  const addIntention = useCallback(
     (newItem) => {
-      setApplications((prevState) => {
+      setPendingIntentions((prevState) => {
         const newState = [];
         prevState.forEach((item) => newState.push(item));
         newState.push(newItem);
         return newState;
       });
     },
-    [setApplications]
+    [setPendingIntentions]
   );
 
-  const updateApplications = useCallback(() => {
-    setApplications([]);
+  const pendingIntentionList = useMemo(() => {
+    return internships.filter(
+      (internship) => internship.status === pendingIntention
+    );
+  }, [internships]);
 
-    const dbRef = user.careerId
-      ? db
-          .collection('internships')
-          .where('careerId', '==', user.careerId)
-          .where('status', '==', pendingIntention)
-      : db.collection('internships').where('status', '==', pendingIntention);
-    dbRef.get().then((snapshot) => {
-      snapshot.forEach((doc) => {
-        const internship = doc.data();
-        const internshipId = doc.id;
+  const updateIntentions = useCallback(() => {
+    setPendingIntentions([]);
 
-        db.collection('users')
-          .doc(internship.studentId)
-          .get()
-          .then((student) => {
-            addApplication({
-              internshipId: internshipId,
-              ...internship,
-              ...student.data()
-            });
-          });
+    if (pendingIntentionList && students && !!students.length) {
+      pendingIntentionList.forEach((internship) => {
+        const internshipId = internship.id;
+        const studentData = students.find(
+          (student) => student.id === internship.studentId
+        );
+        addIntention({
+          internshipId: internshipId,
+          ...internship,
+          ...studentData
+        });
       });
-    });
-  }, [setApplications, addApplication]);
+    }
+  }, [addIntention, pendingIntentionList, students]);
 
   useEffect(() => {
-    updateApplications();
-  }, [updateApplications]);
+    updateIntentions();
+  }, [updateIntentions]);
 
   return (
-    <IntentionList applications={applications} update={updateApplications} />
+    <IntentionList
+      pendingIntentions={pendingIntentions}
+      update={updateIntentions}
+    />
   );
 }
 

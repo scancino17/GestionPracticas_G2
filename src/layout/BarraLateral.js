@@ -15,7 +15,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
-import { useUser } from '../providers/User';
+import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -113,14 +113,14 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
 }
 
 function SidebarItems({ items, setSidebarOpen }) {
-  const { user } = useUser();
+  const { userRole } = useUser();
   const location = useLocation();
 
   return (
     <List>
       {items.map(
         (item, index) =>
-          (user.admin || !item.adminOnly) && (
+          (userRole === ADMIN_ROLE || !item.adminOnly) && (
             <Link
               key={index}
               style={{

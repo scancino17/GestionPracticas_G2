@@ -16,29 +16,20 @@ import {
 import ReactExport from 'react-export-excel-xlsx-fix';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
-import React, { useState, useEffect } from 'react';
-import { db, storage } from '../../firebase';
+import React, { useState, useEffect, useMemo } from 'react';
+import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
 import { approvedApplication } from '../../InternshipStates';
+import { useSupervisor } from '../../providers/Supervisor';
+import { ADMIN_ROLE } from '../../providers/User';
 
 function UploadModal({ internship, close, show }) {
   const [file, setFile] = useState([]);
+  const { submitInsurance } = useSupervisor();
 
   function handleSubmit() {
-    file.forEach((file) => {
-      storage
-        .ref()
-        .child(
-          `students-docs/${internship.studentId}/${internship.id}/seguro-practica/${file.name}`
-        )
-        .put(file);
-    });
-
-    db.collection('internships')
-      .doc(internship.id)
-      .update({ seguroDisponible: true, alreadyDownloaded: true });
-
+    submitInsurance(internship, file);
     close();
   }
 
@@ -91,60 +82,59 @@ function StudentItem({ internship }) {
 }
 
 function Insurance() {
-  const [careerId, setCareerId] = useState('general');
+  const [selectedCareerId, setSelectedCareerId] = useState(ADMIN_ROLE);
   const [name, setName] = useState('');
   const [usersExport, setUsersExport] = useState([]);
   const [usersInsurance, setUsersInsurance] = useState([]);
-  const [filteredUsersInsurance, setFilteredUsersInsurance] = useState([]);
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+  const { internships } = useSupervisor();
 
   useEffect(() => {
-    db.collection('internships')
-      .where('status', '==', approvedApplication)
-      .onSnapshot((querySnapshot) => {
-        const exportar = [];
-        const seguro = [];
-        querySnapshot.forEach((doc) => {
-          const data = { id: doc.id, ...doc.data() };
-          if (!data.alreadyDownloaded) {
-            const termino = YearMonthDay(
-              data.applicationData['Fecha de término'].toDate()
-            );
-            const inicio = YearMonthDay(
-              data.applicationData['Fecha de inicio'].toDate()
-            );
-            exportar.push({
-              id: data.id,
-              ...data.applicationData,
-              stringInicio: inicio,
-              stringTermino: termino
-            });
-          }
-          if (!data.seguroDisponible) seguro.push(data);
-        });
+    const exportar = [];
+    const seguro = [];
 
-        setUsersExport([...exportar]);
-        setUsersInsurance([...seguro]);
-        if (seguro) setFilteredUsersInsurance(applyFilter(seguro));
+    internships
+      .filter((item) => item.status === approvedApplication)
+      .forEach((internship) => {
+        if (!internship.alreadyDownloaded) {
+          const termino = YearMonthDay(
+            internship.applicationData['Fecha de término'].toDate()
+          );
+          const inicio = YearMonthDay(
+            internship.applicationData['Fecha de inicio'].toDate()
+          );
+          exportar.push({
+            id: internship.id,
+            ...internship.applicationData,
+            stringInicio: inicio,
+            stringTermino: termino
+          });
+        }
+        if (!internship.seguroDisponible) {
+          seguro.push(internship);
+        }
       });
-  }, []);
 
-  useEffect(() => {
-    if (usersInsurance) setFilteredUsersInsurance(applyFilter(usersInsurance));
-  }, [careerId, name]);
+    setUsersExport([...exportar]);
+    setUsersInsurance([...seguro]);
+  }, [internships]);
 
-  function applyFilter(list) {
-    let filtered = list.slice();
-    if (careerId !== 'general')
-      filtered = filtered.filter((item) => item.careerId === careerId);
-    if (name !== '')
-      filtered = filtered.filter((item) => item.studentName.includes(name));
-    return filtered;
-  }
+  const filteredInsuranceList = useMemo(() => {
+    if (usersInsurance) {
+      let filtered = usersInsurance.slice();
+      if (selectedCareerId !== 'general')
+        filtered = filtered.filter(
+          (item) => item.careerId === selectedCareerId
+        );
+      if (name !== '')
+        filtered = filtered.filter((item) => item.studentName.includes(name));
+      return filtered;
+    } else return [];
+  }, [usersInsurance, name, selectedCareerId]);
 
   function YearMonthDay(date) {
     return date.toLocaleTimeString(navigator.language, {
@@ -214,27 +204,35 @@ function Insurance() {
             />
           </Grid>
           <Grid item>
-            <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+            <CareerSelector
+              careerId={selectedCareerId}
+              setCareerId={setSelectedCareerId}
+            />
           </Grid>
         </Grid>
-        {filteredUsersInsurance && filteredUsersInsurance.length > 0 ? (
+        {filteredInsuranceList.length > 0 ? (
           <>
             <List>
-              {filteredUsersInsurance
+              {filteredInsuranceList
                 .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                 .map(
                   (doc) =>
-                    (careerId === 'general' || careerId === doc.careerId) && (
-                      <StudentItem internship={doc} careerId={careerId} />
+                    (selectedCareerId === 'general' ||
+                      selectedCareerId === doc.careerId) && (
+                      <StudentItem
+                        internship={doc}
+                        careerId={selectedCareerId}
+                      />
                     )
                 )}
             </List>
-            <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
-              {careerId && (
+            <Grid
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem' }}>
+              {selectedCareerId && (
                 <Pagination
-                  count={Math.ceil(
-                    filteredUsersInsurance.length / itemsPerPage
-                  )}
+                  count={Math.ceil(filteredInsuranceList.length / itemsPerPage)}
                   page={page}
                   color='primary'
                   onChange={(_, val) => setPage(val)}
@@ -250,7 +248,11 @@ function Insurance() {
             justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='health.png' width='300' />
+              <img
+                src='health.png'
+                width='300'
+                alt='Sin seguros de práctica disponibles'
+              />
             </Grid>
             <Typography variant='h5' color='textSecondary'>
               No hay seguros de práctica disponibles

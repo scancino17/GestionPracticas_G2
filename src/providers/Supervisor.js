@@ -332,6 +332,23 @@ export function SupervisorProvider({ children }) {
     );
   }
 
+  // Aquí sería interesante implementar una notificación, y un correo
+  function submitInsurance(internship, files) {
+    updateInternship(internship.ip, {
+      seguroDisponible: true,
+      alreadyDownloaded: true
+    });
+    files.forEach((file) => {
+      uploadBytes(
+        ref(
+          storage,
+          `students-docs/${internship.studentId}/${internship.id}/seguro-practica/${file.name}`
+        ),
+        file
+      );
+    });
+  }
+
   return (
     <SupervisorContext.Provider
       value={{

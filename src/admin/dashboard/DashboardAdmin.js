@@ -30,12 +30,6 @@ import PieChart from './extras/charts/PieChart';
 import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import ImportStudents from '../import/ImportStudents';
-import { db } from '../../firebase';
-import {
-  pendingIntention,
-  sentReport,
-  onGoingIntenship
-} from '../../InternshipStates';
 import Insurance from '../insurance/Insurance';
 import CareerSelector from '../../utils/CareerSelector';
 import ReportsList from '../assessReports/ReportsList';

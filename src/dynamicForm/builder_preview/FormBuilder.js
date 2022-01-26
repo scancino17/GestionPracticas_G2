@@ -12,7 +12,7 @@ import {
   IconButton
 } from '@material-ui/core';
 import { Delete, ArrowUpward, ArrowDownward, Add, Edit } from '@material-ui/icons';
-import ConstructorCamp from './ConstructorCamp';
+import ConstructorCamp from '../camps/ConstructorCamp';
 import Swal from 'sweetalert2';
 function FormBuilder({
   formInner,
@@ -32,13 +32,6 @@ function FormBuilder({
     value: ''
   });
 
-  const defaultInputs = [
-    'Información del estudiante',
-    'Nombre del estudiante',
-    'Rut del estudiante',
-    'Número de matrícula',
-    'Correo del estudiante'
-  ];
 
   useEffect(() => {
     setFlag(false);
@@ -120,12 +113,12 @@ function FormBuilder({
               {formInner.map((rec, i) => (
                 <TableRow key={i}>
                   <TableCell>
-                    <Typography noWrap style={{ width: '7rem' }}>
+                    <Typography noWrap style={{ maxWidth: '10rem' }}>
                       {rec.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography noWrap style={{ width: '7rem' }}>
+                    <Typography noWrap style={{ maxWidth: '7rem' }}>
                       {rec.type}
                     </Typography>
                   </TableCell>
@@ -133,32 +126,28 @@ function FormBuilder({
                     <Grid container direction='row'>
                       <Grid>
                         <IconButton
-                          disabled={defaultInputs.includes(rec.name)}
+                          disabled={rec.uneditable}
                           onClick={() => handleEdit(rec,i)}>
                           <Edit />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={defaultInputs.includes(rec.name)}
+                         disabled={rec.uneditable}
                           onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={defaultInputs.includes(rec.name) || i === 0}
+                          disabled={ i === 0}
                           onClick={() => handlerUp(i)}>
                           <ArrowUpward />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={
-                            (defaultInputs.includes(rec.name) &&
-                              i <= defaultInputs.length) ||
-                            i === formInner.length - 1
-                          }
+                          disabled={i === formInner.length - 1}
                           onClick={() => handlerDown(i)}>
                           <ArrowDownward />
                         </IconButton>

@@ -97,6 +97,7 @@ function ConstructorCamp({
     }
     handleExit()
     handlerSetFormInnerInner(aux);
+    setFlagInner(true);
     
   }
 

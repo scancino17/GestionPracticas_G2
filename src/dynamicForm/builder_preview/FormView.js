@@ -12,14 +12,14 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import Selector from './Selector';
+import Selector from '../camps/Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { GetApp } from '@material-ui/icons';
-import { storage } from '../firebase';
-import { customTypes, formTypes } from './formTypes';
+import { storage } from '../../firebase';
+import { customTypes, formTypes } from '../camps/formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import useAuth from '../providers/Auth';
+import useAuth from '../../providers/Auth';
 
 function InternshipIntentionFileList({
   student,
@@ -66,6 +66,8 @@ function FormView({
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
+
+  
   const { user, userData } = useAuth();
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;

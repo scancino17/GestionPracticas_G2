@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './DynamicForm';
-import { db } from '../firebase';
+import DynamicForm from '../DynamicForm';
+import { db } from '../../../firebase';
 import {
   Add,
   ArrowDownward,
@@ -34,47 +34,12 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import { formTypes } from './formTypes';
-import CareerSelector from '../utils/CareerSelector';
-import useAuth from '../providers/Auth';
+import CareerSelector from '../../../utils/CareerSelector';
+import useAuth from '../../../providers/Auth';
+import { predefinedSurvey } from '../../predefined_forms/predefined';
 
 function EditForm() {
-  const [formFull, setFormFull] = useState([
-    {
-      step: 'Información del estudiante',
-      form: [
-        {
-          type: formTypes.formHeader,
-          name: 'Información del estudiante',
-          value: 'Información del estudiante'
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Nombre del estudiante',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Rut del estudiante',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Número de matrícula',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Correo del estudiante',
-          value: '',
-          readOnly: true
-        }
-      ]
-    }
-  ]);
+  const [formFull, setFormFull] = useState(predefinedSurvey);
   const { user } = useAuth();
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -134,9 +99,8 @@ function EditForm() {
       if (result.isConfirmed) {
         setFormFull((prev) => prev.filter((el) => el !== element));
         setShow(true);
-        if(activeStep<formFull.length){
-          setActiveStep(activeStep-1);
-        }
+          setActiveStep(0);
+        
       }
       if (result.isDismissed) {
         setShow(true);
@@ -370,7 +334,7 @@ function EditForm() {
                           :null
                         }
                       <IconButton
-                        disabled={form.step === 'Información del estudiante' || edit}
+                        disabled={form.uneditable || edit}
                         onClick={() => handleDelete(form)}>
                         <Delete />
                       </IconButton>

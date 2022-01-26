@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './DynamicForm';
+import DynamicForm from './builder_preview/DynamicForm';
 import { db, storage } from '../firebase';
 import {
   Step,
@@ -14,7 +14,7 @@ import useAuth from '../providers/Auth';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './formTypes';
+import { formTypes, customTypes } from './camps/formTypes';
 import { serverTimestamp } from 'firebase/firestore';
 
 function SendForm({ edit }) {

@@ -19,7 +19,7 @@ import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebase';
 import { AssignmentLate, Check, Clear, Edit, Save } from '@material-ui/icons';
-import FormView from './FormView';
+import FormView from './builder_preview/FormView';
 import {
   approvedApplication,
   changeDetailsApplication,

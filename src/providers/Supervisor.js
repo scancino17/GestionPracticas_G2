@@ -5,12 +5,22 @@ import {
   query,
   where,
   doc,
-  setDoc
+  setDoc,
+  addDoc,
+  updateDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from './User';
 import { db } from '../firebase';
-import { pendingIntention, sentReport } from '../InternshipStates';
+import {
+  approvedApplication,
+  changeDetailsApplication,
+  deniedApplication,
+  pendingIntention,
+  sentReport
+} from '../InternshipStates';
+import { StudentNotificationTypes } from '../layout/NotificationMenu';
 
 const SupervisorContext = React.createContext();
 
@@ -108,8 +118,148 @@ export function SupervisorProvider({ children }) {
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
   // params está por si se quiere hacer merge con los datos en vez de reemplazar.
   // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
-  function setCareerForm(selectedCareerId, form, params = { merge: false }) {
-    setDoc(doc(db, 'form', selectedCareerId), form, params);
+  async function setCareerForm(
+    selectedCareerId,
+    form,
+    params = { merge: false }
+  ) {
+    await setDoc(doc(db, 'form', selectedCareerId), form, params);
+  }
+
+  // mailTo es el correo al que se le enviará el mail.
+  // templateName un string, el nombre del template a usar
+  // Es decir, el nombre de uno de los archivos en /emailTemplates, sin la extensión
+  // data es un json con los datos que pide el template, consultar que datos necesita cada uno.
+  async function sendMail(mailTo, templateName, data) {
+    await addDoc(collection(db, 'mails'), {
+      to: mailTo,
+      template: templateName,
+      data: data
+    });
+  }
+
+  // userId es el id del usuario al que se le enviará la notificación.
+  // Hasta el momento sólo los students usan notifications.
+  // notificationType es el tipo de la notificación, consultar /src/layout/NotificationMenu
+  async function addNotification(userId, notificationType) {
+    await updateDoc(doc(db, 'users', userId), {
+      [`notifications.${Date.now().toString()}`]: {
+        id: Date.now().toString(),
+        type: notificationType,
+        time: serverTimestamp()
+      }
+    });
+  }
+
+  // internshipId es el id de la internship
+  // data es un json con los campos a actualizar
+  async function updateInternship(internshipId, data) {
+    await updateDoc(doc(db, 'internships', internshipId), data);
+  }
+
+  // applicationId es el id de la application
+  // data es un json con los campos a actualizar
+  async function updateApplication(applicationId, data) {
+    await updateDoc(doc(db, 'applications', applicationId), data);
+  }
+
+  // userId es el id del user
+  // data es un json con los campos a actualizar
+  async function updateUser(userId, data) {
+    await updateDoc(doc(db, 'users', userId), data);
+  }
+
+  function getUserData(userId) {
+    return students.find((item) => item.id === userId);
+  }
+
+  function getApplication(applicationId) {
+    return applications.find((item) => item.id === applicationId);
+  }
+
+  function approveApplication(appData, approveReason) {
+    updateApplication(appData.id, {
+      status: 'Aprobado',
+      reason: approveReason
+    });
+
+    updateInternship(appData.internshipId, {
+      status: approvedApplication,
+      applicationData: appData,
+      applicationId: appData.id,
+      reason: approveReason
+    });
+
+    updateUser(appData.studentId, {
+      reason: approveReason,
+      'currentInternship.lastApplication': appData.id,
+      'currentInternship.Empresa': appData.Empresa,
+      step: 2
+    }).then(() =>
+      addNotification(
+        appData.student.id,
+        StudentNotificationTypes.approvedApplication
+      )
+    );
+
+    let userData = getUserData(appData.studentId);
+    sendMail(userData.email, 'Approved', {
+      from_name: userData.name
+    });
+  }
+
+  function rejectApplication(appData, rejectReason) {
+    updateApplication(appData.id, {
+      status: 'Rechazado',
+      reason: rejectReason
+    });
+
+    updateInternship(appData.internshipId, {
+      status: deniedApplication
+    });
+
+    updateUser(appData.studentId, {
+      'currentInternship.lastApplication': appData.id
+    }).then(() =>
+      addNotification(
+        appData.studentId,
+        StudentNotificationTypes.deniedApplication
+      )
+    );
+
+    let userData = getUserData(appData.studentId);
+    sendMail(userData.email, 'Failed', {
+      from_name: userData.name,
+      result: rejectReason
+    });
+  }
+
+  // Existe la posibilidad de que rejectReason sea innecesario aquí.
+  // En ese caso, bastaría con reemplazar rejectReason por changes.
+  function amendApplication(appData, rejectReason, changes) {
+    updateInternship(appData.internshipId, {
+      status: changeDetailsApplication
+    });
+
+    updateApplication(appData.id, {
+      status: 'Necesita cambios menores',
+      reason: changes
+    });
+
+    updateUser(appData.userId, {
+      'currentInternship.lastApplication': appData.id
+    }).then(() =>
+      addNotification(
+        appData.studentId,
+        StudentNotificationTypes.changeDetailsApplication
+      )
+    );
+
+    let userData = getUserData(appData.studentId);
+    sendMail(userData.email, 'FailedMinorChanges', {
+      from_name: userData.name,
+      result: rejectReason
+    });
   }
 
   return (
@@ -124,7 +274,13 @@ export function SupervisorProvider({ children }) {
         sentReportsCount,
         ongoingInternshipsCount,
         getCareerForm,
-        setCareerForm
+        setCareerForm,
+        getUserData,
+        getApplication,
+        updateApplication,
+        approveApplication,
+        rejectApplication,
+        amendApplication
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

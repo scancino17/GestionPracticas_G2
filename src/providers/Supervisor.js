@@ -16,9 +16,11 @@ import { DEFAULT_CAREER, useUser } from './User';
 import { db, storage } from '../firebase';
 import {
   approvedApplication,
+  approvedExtension,
   approvedIntention,
   changeDetailsApplication,
   deniedApplication,
+  deniedExtension,
   deniedIntention,
   finishedInternship,
   pendingIntention,
@@ -389,6 +391,65 @@ export function SupervisorProvider({ children }) {
     );
   }
 
+  function rejectExtension(internship, reason) {
+    // OJO: aquí habia mencion a "cambiar statusExeption"
+    updateInternship(internship.id, {
+      extensionStatus: deniedExtension,
+      dateExtension: '',
+      reasonExtension: reason ? reason : 'Sin observaciones'
+    });
+
+    sendMail(internship.studentEmail, 'ExtensionFailed', {
+      from_name: internship.studentName,
+      result: reason ? reason : 'Sin observaciones',
+      rechazado_por: displayName
+    });
+
+    addNotification(
+      internship.studentId,
+      StudentNotificationTypes.deniedExtension
+    );
+  }
+
+  function approveExtension(internship, reason) {
+    const application = { ...getApplication(internship.applicationId) };
+    application['Fecha de término'] = internship.dateExtension;
+
+    // Esto de aquí hay que simplificarlo
+    application['form'].forEach((step) => {
+      step['form'].forEach((camp) => {
+        if (
+          camp['type'] === 'Campos predefinidos' &&
+          camp['name'] === 'Fecha de término'
+        ) {
+          //cambiar el valor en el formulario
+          camp['value'] = internship.dateExtension;
+        }
+      });
+    });
+
+    updateApplication(internship.applicationId, { ...application });
+
+    updateInternship(internship.id, {
+      extensionStatus: approvedExtension,
+      dateExtension: internship.dateExtension,
+      reasonExtension: reason ? reason : 'Sin observaciones',
+      'applicationData.Fecha de término': internship.dateExtension
+      //cambiar statusExeption
+    });
+
+    sendMail(internship.studentEmail, 'ExtensionApproved', {
+      from_name: internship.studentName,
+      aprobado_por: displayName,
+      razon_aprobacion: reason ? reason : 'Sin observaciones'
+    });
+
+    addNotification(
+      internship.studentId,
+      StudentNotificationTypes.approvedExtension
+    );
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
@@ -412,7 +473,10 @@ export function SupervisorProvider({ children }) {
         rejectInternshipIntention,
         approveInternshipIntention,
         submitInsurance,
-        amendReport
+        amendReport,
+        evaluateReport,
+        rejectExtension,
+        approveExtension
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import DynamicForm from './DynamicForm';
-import { db } from '../firebase';
 import {
   Add,
   ArrowDownward,
@@ -280,7 +279,7 @@ function EditForm() {
             justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='EmptyState-3x.png' width='300' />
+              <img src='EmptyState-3x.png' width='300' alt='Banner' />
             </Grid>
             <Grid item>
               <Typography variant='h5' color='textSecondary'>

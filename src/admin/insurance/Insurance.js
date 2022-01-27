@@ -22,7 +22,7 @@ import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
 import { approvedApplication } from '../../InternshipStates';
 import { useSupervisor } from '../../providers/Supervisor';
-import { ADMIN_ROLE } from '../../providers/User';
+import { DEFAULT_CAREER } from '../../providers/User';
 
 function UploadModal({ internship, close, show }) {
   const [file, setFile] = useState([]);
@@ -82,7 +82,7 @@ function StudentItem({ internship }) {
 }
 
 function Insurance() {
-  const [selectedCareerId, setSelectedCareerId] = useState(ADMIN_ROLE);
+  const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [name, setName] = useState('');
   const [usersExport, setUsersExport] = useState([]);
   const [usersInsurance, setUsersInsurance] = useState([]);

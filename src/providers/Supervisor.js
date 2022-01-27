@@ -20,10 +20,14 @@ import {
   changeDetailsApplication,
   deniedApplication,
   deniedIntention,
+  finishedInternship,
   pendingIntention,
+  reportNeedsChanges,
   sentReport
 } from '../InternshipStates';
 import { StudentNotificationTypes } from '../layout/NotificationMenu';
+import { convertToRaw } from 'draft-js';
+import draftToHtml from 'draftjs-to-html';
 
 const SupervisorContext = React.createContext();
 
@@ -334,7 +338,7 @@ export function SupervisorProvider({ children }) {
 
   // Aquí sería interesante implementar una notificación, y un correo
   function submitInsurance(internship, files) {
-    updateInternship(internship.ip, {
+    updateInternship(internship.id, {
       seguroDisponible: true,
       alreadyDownloaded: true
     });
@@ -348,6 +352,41 @@ export function SupervisorProvider({ children }) {
         file
       );
     });
+  }
+
+  function amendReport(internshipId, student, reason) {
+    let rawReason = convertToRaw(reason);
+    updateInternship(internshipId, {
+      status: reportNeedsChanges,
+      reportAnnotations: rawReason
+    });
+
+    sendMail(student.email, 'ReportFailed', {
+      from_name: student.name,
+      reason: draftToHtml(rawReason),
+      rechazado_por: displayName
+    });
+
+    addNotification(student.id, StudentNotificationTypes.reportNeedChanges);
+  }
+
+  function evaluateReport(internshipId, student, reason, grade) {
+    updateInternship(internshipId, {
+      status: finishedInternship,
+      reason: reason ? reason : 'Sin observaciones',
+      grade: grade
+    });
+
+    sendMail(student.email, 'ReportApproved', {
+      from_name: student.name,
+      grade: grade,
+      reason: reason ? reason : 'Sin observaciones',
+      aprovado_por: displayName
+    });
+
+    updateUser(student.id, { step: 0 }).then(() =>
+      addNotification(student.id, StudentNotificationTypes.finishedInternship)
+    );
   }
 
   return (
@@ -372,7 +411,8 @@ export function SupervisorProvider({ children }) {
         amendApplication,
         rejectInternshipIntention,
         approveInternshipIntention,
-        submitInsurance
+        submitInsurance,
+        amendReport
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

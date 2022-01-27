@@ -11,26 +11,21 @@ import {
   Container,
   Input
 } from '@material-ui/core';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { db, storage } from '../../firebase';
+import { useEffect, useState, useMemo } from 'react';
+import { storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
-import { useUser } from '../../providers/User';
-import { convertToRaw, EditorState } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
+import { useSupervisor } from '../../providers/Supervisor';
+import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { serverTimestamp } from 'firebase/firestore';
-import { StudentNotificationTypes } from '../../layout/NotificationMenu';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 function AssessReport() {
   const [value, setValue] = useState(40);
   const { studentId } = useParams();
   const { internshipId } = useParams();
-  const [infoStudent, setInfoStudent] = useState();
   const [showChanges, SetShowChanges] = useState(false);
   const [showEvaluate, SetShowEvaluate] = useState(false);
   const [changesEditorState, setChangesEditorState] = useState(
@@ -38,28 +33,25 @@ function AssessReport() {
   );
   const navigate = useNavigate();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { user } = useUser();
+  const { getUserData, amendReport, evaluateReport } = useSupervisor();
 
-  useEffect(() => {
-    db.collection('users')
-      .doc(studentId)
-      .get()
-      .then((user) => setInfoStudent(user.data()));
-  }, []);
+  const infoStudent = useMemo(() => {
+    return getUserData(studentId);
+  }, [getUserData, studentId]);
 
   function DownloadButton() {
     const [url, setUrl] = useState();
 
     useEffect(() => {
-      storage
-        .ref(
+      getDownloadURL(
+        ref(
+          storage,
           `/students-docs/${studentId}/${internshipId}/reports/${internshipId}.pdf`
         )
-        .getDownloadURL()
-        .then((url) => {
-          setUrl(url);
-        });
-    }, []);
+      ).then((url) => {
+        setUrl(url);
+      });
+    });
 
     return (
       <Button
@@ -74,68 +66,15 @@ function AssessReport() {
   }
 
   function handleChanges() {
-    db.collection('internships')
-      .doc(internshipId)
-      .update({
-        status: reportNeedsChanges,
-        reportAnnotations: convertToRaw(changesEditorState.getCurrentContent())
-      });
-
-    db.collection('mails').add({
-      to: infoStudent.email,
-      template: {
-        name: 'ReportFailed',
-        data: {
-          from_name: infoStudent.name,
-          reason: draftToHtml(
-            convertToRaw(changesEditorState.getCurrentContent())
-          ),
-          rechazado_por: user.displayName
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(studentId)
-      .update({
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.reportNeedChanges,
-          time: serverTimestamp()
-        }
-      });
+    amendReport(
+      internshipId,
+      infoStudent,
+      changesEditorState.getCurrentContent()
+    );
   }
 
   function handleEvaluate() {
-    db.collection('internships').doc(internshipId).update({
-      status: finishedInternship,
-      reason: evaluateComment,
-      grade: value
-    });
-
-    db.collection('mails').add({
-      to: infoStudent.email,
-      template: {
-        name: 'ReportApproved',
-        data: {
-          from_name: infoStudent.name,
-          grade: value,
-          reason: evaluateComment ? evaluateComment : 'Sin observaciones',
-          aprovado_por: user.displayName
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(studentId)
-      .update({
-        step: 0,
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.finishedInternship,
-          time: serverTimestamp()
-        }
-      });
+    evaluateReport(internshipId, infoStudent, evaluateComment, value);
   }
 
   return (
@@ -214,6 +153,7 @@ function AssessReport() {
                     <img
                       height='500'
                       src='../../AdminBanner-Evaluate-Divider.png'
+                      alt='Banner'
                     />
                   </Grid>
                 </Grid>
@@ -294,11 +234,13 @@ function AssessReport() {
             <Button
               color='primary'
               variant='contained'
-              onClick={() => (
-                handleChanges(),
-                SetShowChanges(false),
-                navigate('/internship-assessment')
-              )}>
+              onClick={() => {
+                return (
+                  handleChanges(),
+                  SetShowChanges(false),
+                  navigate('/internship-assessment')
+                );
+              }}>
               Notificar cambios
             </Button>
           </DialogActions>
@@ -381,11 +323,13 @@ function AssessReport() {
           <Button
             color='primary'
             variant='contained'
-            onClick={() => (
-              handleEvaluate(),
-              SetShowEvaluate(false),
-              navigate('/internship-assessment')
-            )}>
+            onClick={() => {
+              return (
+                handleEvaluate(),
+                SetShowEvaluate(false),
+                navigate('/internship-assessment')
+              );
+            }}>
             Confirmar Evaluación
           </Button>
         </DialogActions>

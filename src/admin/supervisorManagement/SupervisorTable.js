@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Grid,
   Paper,
@@ -24,10 +24,13 @@ import {
   Typography,
   Box
 } from '@material-ui/core';
-import { db, functions } from '../../firebase';
+import { functions } from '../../firebase';
+import { httpsCallable } from 'firebase/functions';
+import { useSupervisor } from '../../providers/Supervisor';
 import { grey } from '@material-ui/core/colors';
 import { DeleteForever, Edit, Replay } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
+import { DEFAULT_CAREER } from '../../providers/User';
 
 const useStyles = makeStyles(() => ({
   tableCell: {
@@ -60,23 +63,15 @@ const SecondaryButton = withStyles((theme) => ({
 }))(Button);
 
 function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
-  const [careers, setCareers] = useState([]);
+  const { careers } = useSupervisor();
 
-  useEffect(() => {
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push({ id: doc.id, ...doc.data() });
-        });
-        setCareers(
-          excludeGeneral
-            ? temp.filter((career) => career.id !== 'general')
-            : temp
-        );
-      });
-  }, [excludeGeneral]);
+  const careersList = useMemo(() => {
+    if (careers)
+      return careers.filter(
+        (item) => !excludeGeneral || item.id !== DEFAULT_CAREER
+      );
+    else return [];
+  }, [careers, excludeGeneral]);
 
   return (
     <TextField
@@ -85,7 +80,7 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
       label='Carrera de encargado'
       value={careerId}
       onChange={(e) => setCareerId(e.target.value)}>
-      {careers.map((career) => {
+      {careersList.map((career) => {
         return (
           <MenuItem key={career.id} value={career.id}>
             {career.name}
@@ -104,7 +99,8 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   const handleSubmit = () => {
-    const createSupervisor = functions.httpsCallable('createSupervisor');
+    const createSupervisor = httpsCallable(functions, 'createSupervisor');
+
     createSupervisor({
       email: supervisorEmail,
       name: supervisorName,
@@ -180,7 +176,7 @@ const EditSupervisorModal = ({ closeModal, supervisor, update }) => {
   }, [supervisor]);
 
   const handleSubmit = () => {
-    const editSupervisor = functions.httpsCallable('editSupervisor');
+    const editSupervisor = httpsCallable(functions, 'editSupervisor');
     editSupervisor({
       uid: supervisor.uid,
       displayName: supervisorName,
@@ -228,7 +224,7 @@ const DeleteSupervisorModal = ({ closeModal, supervisor, update }) => {
   const [disableSubmit, setDisableSubmit] = useState(true);
 
   const handleSubmit = () => {
-    const deleteSupervisor = functions.httpsCallable('deleteSupervisor');
+    const deleteSupervisor = httpsCallable(functions, 'deleteSupervisor');
     deleteSupervisor({ uid: supervisor.uid });
     closeModal();
     update();
@@ -281,7 +277,7 @@ function SupervisorTable() {
 
   const updateSupervisorList = () => {
     isLoaded(false);
-    const listSupervisors = functions.httpsCallable('listSupervisors');
+    const listSupervisors = httpsCallable(functions, 'listSupervisors');
     listSupervisors().then((res) => {
       setSupervisors(res.data);
     });

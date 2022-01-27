@@ -187,12 +187,20 @@ export function SupervisorProvider({ children }) {
     await updateDoc(doc(db, 'users', userId), data);
   }
 
+  async function updateCareer(careerId, data) {
+    await updateDoc(doc(db, 'careers', careerId), data);
+  }
+
   function getUserData(userId) {
     return students.find((item) => item.id === userId);
   }
 
   function getApplication(applicationId) {
     return applications.find((item) => item.id === applicationId);
+  }
+
+  function getCareerData(careerId) {
+    return careers.find((item) => item.id === careerId);
   }
 
   function approveApplication(appData, approveReason) {
@@ -466,6 +474,8 @@ export function SupervisorProvider({ children }) {
         setCareerForm,
         getUserData,
         getApplication,
+        getCareerData,
+        updateCareer,
         updateApplication,
         approveApplication,
         rejectApplication,

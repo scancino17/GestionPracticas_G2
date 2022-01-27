@@ -9,46 +9,40 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { db } from '../../firebase';
-import { useUser } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
+import { ADMIN_ROLE, useUser } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 
 function CareersSettings() {
-  const { user } = useUser();
-  const [careerId, setCareerId] = useState(
-    user.careerId ? user.careerId : null
+  const { userRole, careerId } = useUser();
+  const [selectedCareerId, setSelectedCareerId] = useState(
+    careerId ? careerId : null
   );
   const [career, setCareer] = useState();
   const [internships, setInternships] = useState(1);
   const [survey, setSurvey] = useState('');
+  const { getCareerData, updateCareer } = useSupervisor();
 
   useEffect(() => {
-    if (careerId)
-      db.collection('careers')
-        .doc(careerId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          setCareer(data);
-          setInternships(data.internships);
-          setSurvey(data.satisfactionSurvey);
-        });
-  }, [careerId]);
+    if (selectedCareerId) {
+      let career = getCareerData(selectedCareerId);
+      setCareer(career);
+      setInternships(career.internships);
+      setSurvey(career.satisfactionSurvey);
+    }
+  }, [selectedCareerId, getCareerData]);
 
   function handleSave() {
-    db.collection('careers')
-      .doc(careerId)
-      .update({
-        internships: parseInt(internships),
-        satisfactionSurvey: survey
-      })
-      .then(() =>
-        Swal.fire(
-          'Cambios guardados',
-          'Los cambios han sido guardados',
-          'success'
-        )
-      );
+    updateCareer(selectedCareerId, {
+      internships: parseInt(internships),
+      satisfactionSurvey: survey
+    }).then(() =>
+      Swal.fire(
+        'Cambios guardados',
+        'Los cambios han sido guardados',
+        'success'
+      )
+    );
   }
 
   return (
@@ -65,7 +59,7 @@ function CareersSettings() {
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container direction='column' spacing={2}>
-          {!user.careerId && (
+          {userRole === ADMIN_ROLE && (
             <Grid
               item
               container
@@ -74,8 +68,8 @@ function CareersSettings() {
               style={{ marginBottom: '1rem' }}>
               <Grid item>
                 <CareerSelector
-                  careerId={careerId}
-                  setCareerId={setCareerId}
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
                   excludeGeneral
                 />
               </Grid>
@@ -138,7 +132,11 @@ function CareersSettings() {
               justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
-                <img src='EmptyState-3x.png' width='300' />
+                <img
+                  src='EmptyState-3x.png'
+                  width='300'
+                  alt='Sin carrera seleccionada'
+                />
               </Grid>
               <Grid item>
                 <Typography variant='h5' color='textSecondary'>

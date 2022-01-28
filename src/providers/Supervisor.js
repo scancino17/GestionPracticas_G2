@@ -271,7 +271,7 @@ export function SupervisorProvider({ children }) {
       reason: changes
     });
 
-    updateUser(appData.userId, {
+    updateUser(appData.studentId, {
       'currentInternship.lastApplication': appData.id
     }).then(() =>
       addNotification(

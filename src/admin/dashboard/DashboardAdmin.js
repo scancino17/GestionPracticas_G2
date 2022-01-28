@@ -42,6 +42,7 @@ import { useUser, DEFAULT_CAREER } from '../../providers/User';
 
 // La siguiente línea registra todos los elementos de chart.js
 // No es inútil: eliminarla romperá TODOS los gráficos al recargar los gráficos.
+// eslint-disable-next-line no-unused-vars
 import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 

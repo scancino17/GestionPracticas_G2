@@ -478,18 +478,20 @@ function InternshipIntention() {
       {noneDeclarated ? (
         <EmptyHome practicas={internships} />
       ) : (
-        <Container style={{ padding: '2rem' }}>
-          <Grid container direction='column' spacing={6}>
-            <Grid item>
-              <Typography variant='h4'>
-                Estado de intención de práctica
-              </Typography>
+        internships && (
+          <Container style={{ padding: '2rem' }}>
+            <Grid container direction='column' spacing={6}>
+              <Grid item>
+                <Typography variant='h4'>
+                  Estado de intención de práctica
+                </Typography>
+              </Grid>
+              <Grid item>
+                <InternshipState internships={internships} />
+              </Grid>
             </Grid>
-            <Grid item>
-              <InternshipState internships={internships} />
-            </Grid>
-          </Grid>
-        </Container>
+          </Container>
+        )
       )}
     </>
   );

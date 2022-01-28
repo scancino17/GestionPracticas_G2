@@ -347,8 +347,8 @@ function InternshipIntention() {
         );
         addIntention({
           internshipId: internshipId,
-          ...internship,
-          ...studentData
+          ...studentData,
+          ...internship
         });
       });
     }

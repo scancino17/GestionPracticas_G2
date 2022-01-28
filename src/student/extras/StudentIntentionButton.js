@@ -1,21 +1,20 @@
 import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
-import { db } from '../../firebase';
 import { pendingIntention } from '../../InternshipStates';
+import { useStudent } from '../../providers/Student';
 
 const approvalState = pendingIntention;
 
 function StudentIntention({ practica, altText, forceDisable }) {
   const [internshipState, setInternshipState] = useState(practica.status);
+  const { updateInternship } = useStudent();
 
   const handleOnClick = () => {
     if (internshipState !== approvalState) {
       setInternshipState(approvalState);
     }
 
-    db.collection('internships')
-      .doc(practica.id)
-      .update({ status: approvalState });
+    updateInternship(practica.id, { status: approvalState });
   };
 
   const isPendingApproval = () => {

@@ -151,8 +151,7 @@ export function SupervisorProvider({ children }) {
   async function sendMail(mailTo, templateName, data) {
     await addDoc(collection(db, 'mails'), {
       to: mailTo,
-      template: templateName,
-      data: data
+      template: { name: templateName, data: data }
     });
   }
 
@@ -223,7 +222,7 @@ export function SupervisorProvider({ children }) {
       step: 2
     }).then(() =>
       addNotification(
-        appData.student.id,
+        appData.studentId,
         StudentNotificationTypes.approvedApplication
       )
     );
@@ -292,7 +291,7 @@ export function SupervisorProvider({ children }) {
     updateInternship(internship.id, {
       status: deniedIntention,
       reason: reason,
-      evluatingSupervisor: { name: displayName, email: email }
+      evaluatingSupervisor: { name: displayName, email: email }
     });
 
     addNotification(

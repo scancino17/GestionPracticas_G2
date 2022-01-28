@@ -12,7 +12,7 @@ import {
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useUser } from '../providers/User';
+import { useUser, STUDENT_ROLE } from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
@@ -43,7 +43,7 @@ const ProfileMenu = ({ func }) => {
 
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { user, logout, resetPassword, userData } = useUser();
+  const { user, logout, resetPassword, userData, userRole } = useUser();
   const [anchorEl, setAnchorEl] = useState();
   const [selectedMenu, setSelectedMenu] = useState();
   const navigate = useNavigate();
@@ -145,7 +145,7 @@ function TopBar({ setSidebarOpen }) {
             <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
-          {user.student && (
+          {userRole === STUDENT_ROLE && (
             <IconButton
               color='inherit'
               onClick={handleNotificationMenuOpen}
@@ -169,7 +169,7 @@ function TopBar({ setSidebarOpen }) {
           </IconButton>
         </Toolbar>
       </AppBar>
-      {!user.student && (
+      {userRole !== STUDENT_ROLE && (
         <Toolbar>
           <IconButton
             disableRipple

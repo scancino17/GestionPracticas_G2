@@ -93,7 +93,7 @@ export function StudentProvider({ children }) {
 
   // update debe ser un objeto con los cambios a realizar
   async function updateUser(update) {
-    await updateDoc(doc(db, 'user', userId), update);
+    await updateDoc(doc(db, 'users', userId), update);
   }
 
   // update debe ser un objeto con los cambios a realizar

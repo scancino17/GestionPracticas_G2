@@ -6,7 +6,7 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth, db } from '../firebase';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { onSnapshot, doc, updateDoc } from 'firebase/firestore';
 
 export const STUDENT_ROLE = 'estudiante';
 export const ADMIN_ROLE = 'admin';
@@ -96,6 +96,11 @@ export function UserProvider({ children }) {
     };
   }, []);
 
+  // update debe ser un objeto con los cambios a realizar
+  async function updateUser(update) {
+    await updateDoc(doc(db, 'users', userId), update);
+  }
+
   return (
     <UserContext.Provider
       value={{
@@ -105,6 +110,7 @@ export function UserProvider({ children }) {
         login,
         logout,
         resetPassword,
+        updateUser,
         displayName,
         careerId,
         userRole,

@@ -141,7 +141,7 @@ function SendForm({ edit }) {
           console.error('Error adding document: ', error);
         });
     } else {
-      updateDoc(doc(db, 'applications, applicationId'), {
+      updateDoc(doc(db, 'applications', applicationId), {
         form: formFull,
         status: 'En revisión',
         ...values

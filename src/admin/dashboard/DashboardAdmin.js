@@ -38,7 +38,8 @@ import ExtensionList from '../extension/ExtensionList';
 import CareersSettings from '../careersSettings/CareersSettings';
 import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
-import { useUser, DEFAULT_CAREER } from '../../providers/User';
+import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
+import ControlPanel from '../../utils/ControlPanel';
 
 // La siguiente línea registra todos los elementos de chart.js
 // No es inútil: eliminarla romperá TODOS los gráficos al recargar los gráficos.
@@ -47,7 +48,7 @@ import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 
 function DashboardAdmin({ sidebarProps }) {
-  const { careerId } = useUser();
+  const { careerId, userRole } = useUser();
   const useStyles = makeStyles(styles);
   const classes = useStyles();
   const navigate = useNavigate();
@@ -320,6 +321,9 @@ function DashboardAdmin({ sidebarProps }) {
             </Grid>
           }
         />
+        {userRole === ADMIN_ROLE && (
+          <Route path='/control-panel/' element={<ControlPanel />} />
+        )}
       </Routes>
     </div>
   );

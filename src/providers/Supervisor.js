@@ -13,7 +13,7 @@ import {
 import { ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from './User';
-import { db, storage } from '../firebase';
+import { db, functions, storage } from '../firebase';
 import {
   approvedApplication,
   approvedExtension,
@@ -30,6 +30,7 @@ import {
 import { StudentNotificationTypes } from '../layout/NotificationMenu';
 import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+import { httpsCallable } from 'firebase/functions';
 
 const SupervisorContext = React.createContext();
 
@@ -457,6 +458,28 @@ export function SupervisorProvider({ children }) {
     );
   }
 
+  function resetStudent(studentEmail) {
+    let studentId = students.find((item) => item.email === studentEmail).id;
+
+    const internshipsIds = [];
+    internships.forEach((item) => {
+      if (item.studentId === studentId) internshipsIds.push(item.id);
+    });
+
+    const applicationsId = [];
+    applications.forEach((item) => {
+      if (item.studentId === studentId) applicationsId.push(item.id);
+    });
+
+    const restoreStudent = httpsCallable(functions, 'restoreStudent');
+    restoreStudent({
+      studentId: studentId,
+      internships: internshipsIds,
+      applications,
+      applicationsId
+    });
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
@@ -485,7 +508,8 @@ export function SupervisorProvider({ children }) {
         amendReport,
         evaluateReport,
         rejectExtension,
-        approveExtension
+        approveExtension,
+        resetStudent
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

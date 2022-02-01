@@ -35,6 +35,7 @@ function ConstructorCamp({
   const [type, setType] = useState('');
   const [type2, setType2] = useState('');
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [openSelect, setopenSelect] = useState(false);
   const [openSelect2, setopenSelect2] = useState(false);
   const [options, setOptions] = useState([]);
@@ -87,7 +88,15 @@ function ConstructorCamp({
         value: '',
         name: type2
       };
+    }else if (type === formTypes.formSatisfaction) {
+      temp = {
+        type: type,
+        value: null,
+        name: name,
+        description: description
+      };
     }
+    
     const aux = formFullInnerInner;
     if(edit){
       aux[indexInnerInner].form[editIndex]=temp;
@@ -214,8 +223,27 @@ function ConstructorCamp({
           />
         ) : type === formTypes.formSpace ? (
           <></>
-        ) : (
-          type === formTypes.formCustom && (
+        ) : type === formTypes.formSatisfaction ? (
+          <FormControl fullWidth>
+            <TextField
+              value={name}
+              fullWidth
+              variant='outlined'
+              label='Nombre'
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              style={{marginTop:'1rem'}}
+              value={description}
+              fullWidth
+              multiline
+              rows={4}
+              variant='outlined'
+              label='Descripción'
+              onChange={(e) => setDescription(e.target.value)}
+            />
+         </FormControl>
+        ) : type === formTypes.formCustom && (
             <FormControl fullWidth>
               {/* select predefinido*/}
               <InputLabel>Tipo de Campo</InputLabel>
@@ -233,7 +261,7 @@ function ConstructorCamp({
               </Select>
             </FormControl>
           )
-        )}
+        }
       </DialogContent>
       <DialogActions>
         <Button

@@ -8,6 +8,12 @@ import { formTypes } from '../camps/formTypes';
           uneditable:true,
           form: [
             {
+                type: formTypes.formSatisfaction,
+                name: 'Habilidades Comunicativas:',
+                description:'Refiere a la capacidad de comunicar discursos en forma oral y escrita, basándose en los recursos lingüísticos académicos, para desempeñarse en situaciones del ámbito profesional.',
+                value: null
+              },
+              {
               type: formTypes.formHeader,
               name: 'Estudiante: ',
               uneditable:true

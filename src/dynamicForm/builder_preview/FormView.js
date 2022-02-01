@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  Divider,
+  FormLabel,
   Grid,
   InputLabel,
   List,
@@ -73,6 +78,10 @@ function FormView({
     form[index][whichvalue] = newvalue;
     setFlag(true);
   };
+
+  function handleChangeCheck(){
+
+  }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -168,6 +177,73 @@ function FormView({
               <Grid item key={index}>
                 <Typography variant='h5' />
               </Grid>
+            ) : element.type === formTypes.formSatisfaction ? (
+              <Grid item key={index}>
+                <Divider />
+                <FormControl component="checkSatisfaction" >
+                    <Typography variant='h5' >{element.name}</Typography>
+                    <Typography variant='h10' style={{ marginTop: '1rem',marginBottom: '1rem' }}>{element.description+'\n'}</Typography>
+                    <Grid container justifyContent='flex-start'>
+                      <Grid item>
+                      <FormGroup aria-label="position" >
+                        <FormControlLabel
+                          control={
+                          <Checkbox 
+                            checked={element.value===0}
+                            onChange={()=>updateItem(index, 'value', 0)}
+                            style ={{
+                            color: "#36568C",
+                            }}                          
+                          />}
+                          label=" Destacado "
+                          labelPlacement="end"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox 
+                              checked={element.value===1}
+                              onChange={()=>updateItem(index, 'value', 1)}
+                              style ={{
+                              color: "#36568C",
+                              }}                          
+                            />
+                          }
+                          label="   Bueno   "
+                          labelPlacement="end"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox 
+                              checked={element.value===2}
+                              onChange={()=>updateItem(index, 'value', 2)}
+                              style ={{
+                              color: "#36568C",
+                              }}                          
+                            />
+                          }
+                          label=" Suficiente "
+                          labelPlacement="end"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox 
+                              checked={element.value===3}
+                              onChange={()=>updateItem(index, 'value', 3)}
+                              style ={{
+                              color: "#36568C",
+                              }}                          
+                            />
+                          }
+                          label="Insuficiente"
+                          labelPlacement="end"
+                        />
+                      </FormGroup>
+                      </Grid>
+                    </Grid>
+                </FormControl>
+                <Divider />
+              </Grid>
+              
             ) : element.type === formTypes.formCustom ? (
               element.type2 === customTypes.formCiudad ? (
                 <Grid item key={index}>

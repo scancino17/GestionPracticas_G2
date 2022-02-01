@@ -61,14 +61,14 @@ function UploadModal({ internship, close, show }) {
 }
 
 function StudentItem({ internship }) {
-  const [showModal, setShowModal] = useState();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <>
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`Práctica ${internship.internshipNumber} - ${internship.applicationData.Empresa}`}
+          secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerName}`}
         />
       </ListItem>
       <Divider />
@@ -165,14 +165,18 @@ function Insurance() {
         }
         filename='Estudiantes para seguro'>
         <ExcelSheet data={usersExport} name='Estudiantes para seguro'>
-          <ExcelColumn label='Nombre' value='Nombre del estudiante' />
-          <ExcelColumn label='Matrícula' value='Número de matrícula' />
-          <ExcelColumn label='Rut' value='Rut del estudiante' />
-          <ExcelColumn label='Correo' value='Correo del estudiante' />
-          <ExcelColumn label='Nro práctica' value='internshipNumber' />
-          <ExcelColumn label='Empresa' value='Empresa' />
+          <ExcelColumn
+            label='Nombre estudiante'
+            value='Nombre del estudiante'
+          />
+          <ExcelColumn label='N° de Matrícula' value='Número de matrícula' />
+          <ExcelColumn label='RUT estudiante' value='Rut del estudiante' />
+          <ExcelColumn label='Carrera' value='carrera' />
+          <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
           <ExcelColumn label='Fecha de inicio' value='stringInicio' />
           <ExcelColumn label='Fecha de término' value='stringTermino' />
+          <ExcelColumn label='Empresa' value='Empresa' />
+          <ExcelColumn label='Correo' value='Correo del estudiante' />
         </ExcelSheet>
       </ExcelFile>
     );
@@ -217,9 +221,10 @@ function Insurance() {
                 .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                 .map(
                   (doc) =>
-                    (selectedCareerId === 'general' ||
+                    (selectedCareerId === DEFAULT_CAREER ||
                       selectedCareerId === doc.careerId) && (
                       <StudentItem
+                        key={doc.id}
                         internship={doc}
                         careerId={selectedCareerId}
                       />
@@ -233,6 +238,7 @@ function Insurance() {
               {selectedCareerId && (
                 <Pagination
                   count={Math.ceil(filteredInsuranceList.length / itemsPerPage)}
+                  style={{ marginBottom: '40px' }}
                   page={page}
                   color='primary'
                   onChange={(_, val) => setPage(val)}

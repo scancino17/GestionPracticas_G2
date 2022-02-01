@@ -1,7 +1,7 @@
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import { db } from '../../firebase';
 import { onSnapshot, collection, addDoc } from 'firebase/firestore';
 
 const createOption = (label) => ({

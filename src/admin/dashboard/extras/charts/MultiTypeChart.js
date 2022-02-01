@@ -2,7 +2,9 @@ import React from 'react';
 import { Bar } from 'react-chartjs-2';
 
 const rand = () => Math.round(Math.random() * 20 - 10);
-
+const options = {
+  maintainAspectRatio: false
+};
 const data = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   datasets: [
@@ -31,6 +33,6 @@ const data = {
   ]
 };
 
-const MultiTypeChart = () => <Bar data={data} />;
+const MultiTypeChart = () => <Bar data={data} options={options} />;
 
 export default MultiTypeChart;

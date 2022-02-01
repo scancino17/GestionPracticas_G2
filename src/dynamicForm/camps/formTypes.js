@@ -7,6 +7,7 @@ export const formTypes = {
   formFileInput: 'Seleccionar archivos',
   formHeader: 'Título',
   formSpace: 'Espacio en blanco',
+  formSatisfaction:'Medidor satisfacción',
   formCustom: 'Campos predefinidos'
 };
 

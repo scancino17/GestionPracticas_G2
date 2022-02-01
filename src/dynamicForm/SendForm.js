@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './DynamicForm';
+import DynamicForm from './builder_preview/DynamicForm';
 import { db, storage } from '../firebase';
 import {
   Step,
@@ -14,7 +14,7 @@ import { useUser } from '../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './formTypes';
+import { formTypes, customTypes } from './camps/formTypes';
 import {
   addDoc,
   collection,
@@ -66,7 +66,15 @@ function SendForm({ edit }) {
   }, [flag]);
 
   function handleNext() {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (dataVerify()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops... parece que te falta algo',
+        text: 'Son requeridos todos los campos'
+      });
+    }
   }
 
   function handleBack() {
@@ -101,7 +109,19 @@ function SendForm({ edit }) {
         .put(file.file);
     });
   }
-
+  function dataVerify() {
+    if (formFull != null) {
+      for (let i = 0; i < formFull[activeStep].form.length; i++) {
+        if (
+          formFull[activeStep].form[i].value === '' &&
+          formFull[activeStep].form[i].type !== 'Título'
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
   function handleSave() {
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta

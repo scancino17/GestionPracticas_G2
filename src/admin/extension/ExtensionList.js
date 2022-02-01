@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Grid,
   Container,
@@ -18,16 +18,10 @@ import {
   Button
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import { db } from '../../firebase';
-import {
-  approvedExtension,
-  deniedExtension,
-  sentExtension
-} from '../../InternshipStates';
+import { sentExtension } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
-import useAuth from '../../providers/Auth';
-import firebase from 'firebase';
-import StudentNotificationTypes from '../../layout/NotificationMenu';
+import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -50,40 +44,26 @@ const months = [
 
 function ExtensionList() {
   const [name, setName] = useState('');
-  const [careerId, setCareerId] = useState('general');
-  const [internships, setInternships] = useState([]);
-  const [filterInterships, setFilterInternships] = useState([]);
-  const { user } = useAuth();
+  const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
+  const { userRole } = useUser();
+  const { internships } = useSupervisor();
 
-  function applyFilter(list) {
-    let filtered = [...list];
-    if (careerId !== 'general')
-      filtered = filtered.filter((item) => item.careerId === careerId);
+  const sentExtensionList = useMemo(() => {
+    if (internships)
+      return internships.filter(
+        (item) => item.extensionStatus === sentExtension
+      );
+    else return [];
+  }, [internships]);
+
+  const filteredInternships = useMemo(() => {
+    let filtered = sentExtensionList.slice();
+    if (selectedCareerId !== 'general')
+      filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
       filtered = filtered.filter((item) => item.studentName.includes(name));
     return filtered;
-  }
-
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('internships').where('careerId', '==', user.careerId)
-      : db.collection('internships');
-    const unsubscribe = dbRef
-      .where('extensionStatus', '==', sentExtension)
-      .onSnapshot((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) =>
-          list.push({ id: doc.id, ...doc.data() })
-        );
-        setInternships(list);
-        if (list) setFilterInternships(applyFilter(list));
-      });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    if (internships) setFilterInternships(applyFilter(internships));
-  }, [careerId, name]);
+  }, [sentExtensionList, selectedCareerId, name]);
 
   return (
     <Grid container direction='column'>
@@ -98,7 +78,11 @@ function ExtensionList() {
         <Typography variant='h4'>Extensiones de prácticas</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -106,17 +90,20 @@ function ExtensionList() {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          {!user.careerId && (
+          {userRole === ADMIN_ROLE && (
             <Grid item>
-              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+              <CareerSelector
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
+              />
             </Grid>
           )}
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {filterInterships && filterInterships.length > 0 ? (
+        {filteredInternships.length > 0 ? (
           <List>
-            {filterInterships.map((internship) => (
+            {filteredInternships.map((internship) => (
               <>
                 <IntershipItem key={internship.id} internship={internship} />
                 <Divider />
@@ -128,10 +115,14 @@ function ExtensionList() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='health.png' width='300' />
+              <img
+                src='health.png'
+                width='300'
+                alt='Sin extensiones de práctica'
+              />
             </Grid>
             <Typography variant='h5' color='textSecondary'>
               No hay extensiones de práctica disponibles
@@ -148,7 +139,7 @@ function IntershipItem({ internship }) {
   const [showDenied, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reason, setReason] = useState('');
-  const { user } = useAuth();
+  const { rejectExtension, approveExtension } = useSupervisor();
 
   function TransformDate(date) {
     return (
@@ -157,91 +148,11 @@ function IntershipItem({ internship }) {
   }
 
   function handleExtensionDenied() {
-    db.collection('internships')
-      .doc(internship.id)
-      .update({
-        extensionStatus: deniedExtension,
-        dateExtension: '',
-        reasonExtension: reason ? reason : 'Sin observaciones'
-
-        //cambiar statusExeption
-      });
-    db.collection('mails').add({
-      to: internship.studentEmail,
-      template: {
-        name: 'ExtensionFailed',
-        data: {
-          from_name: internship.studentName,
-          result: reason,
-          rechazado_por: user.displayName
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(internship.studentId)
-      .update({
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.deniedExtension,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
+    rejectExtension(internship, reason);
   }
 
   function handleExtensionApproved() {
-    db.collection('applications')
-      .doc(internship.applicationId)
-      .get()
-      .then((doc) => {
-        const application = doc.data();
-        application['Fecha de término'] = internship.dateExtension;
-        application['form'].forEach((step) => {
-          step['form'].forEach((camp) => {
-            if (
-              camp['type'] === 'Campos predefinidos' &&
-              camp['name'] === 'Fecha de término'
-            ) {
-              //cambiar el valor en el formulario
-              camp['value'] = internship.dateExtension;
-            }
-          });
-        });
-        //actualizar en la base de datos
-        db.collection('applications')
-          .doc(internship.applicationId)
-          .update({ ...application });
-
-        db.collection('internships').doc(internship.id).update({
-          extensionStatus: approvedExtension,
-          dateExtension: internship.dateExtension,
-          reasonExtension: reason,
-          'applicationData.Fecha de término': internship.dateExtension
-          //cambiar statusExeption
-        });
-      });
-
-    db.collection('mails').add({
-      to: internship.studentEmail,
-      template: {
-        name: 'ExtensionApproved',
-        data: {
-          from_name: internship.studentName,
-          aprobado_por: user.displayName,
-          razon_aprobacion: reason ? reason : 'Sin observaciones'
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(internship.studentId)
-      .update({
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.approvedExtension,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
+    approveExtension(internship, reason);
   }
 
   return (
@@ -253,7 +164,7 @@ function IntershipItem({ internship }) {
         }}>
         <ListItemText
           primary={internship.studentName}
-          secondary={internship.applicationData.Empresa}
+          secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
         />
         <ListItemSecondaryAction>
           <IconButton

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import {
   Accordion,
   AccordionActions,
@@ -12,7 +12,6 @@ import {
   makeStyles
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import { db } from '../firebase';
 
 /**
  * Tipos de notificación para estudiantes. Por favor, mantener nombres similares
@@ -133,7 +132,7 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
 
 function NotificationMenu() {
   const [notifications, setNotifications] = useState([]);
-  const { user, userData } = useAuth();
+  const { userData, updateUser } = useUser();
 
   useEffect(() => {
     if (userData.notifications) setNotifications(userData.notifications);
@@ -149,9 +148,7 @@ function NotificationMenu() {
         };
     });
 
-    db.collection('users')
-      .doc(user.uid)
-      .update({ notifications: newNotifications });
+    updateUser({ notifications: newNotifications });
   };
 
   return (

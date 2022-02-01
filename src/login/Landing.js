@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import {
   Button,
   CircularProgress,
@@ -27,7 +27,28 @@ const useStyles = makeStyles({
     paddingRight: '1rem'
   },
   logo: {
-    maxWidth: '22.5rem'
+    maxWidth: '22.5rem',
+    '@media (max-width: 360px)': {
+      maxWidth: '20.5rem'
+    },
+    '@media (max-width: 325px)': {
+      maxWidth: '18.5rem'
+    },
+    '@media (max-width: 285px)': {
+      maxWidth: '15.5rem'
+    },
+    '@media (min-width: 361px)': {
+      maxWidth: '19.5rem'
+    },
+    '@media (min-width: 600px)': {
+      maxWidth: '15.5rem'
+    },
+    '@media (min-width: 700px)': {
+      maxWidth: '18.5rem'
+    },
+    '@media (min-width: 800px)': {
+      maxWidth: '22.5rem'
+    }
   }
 });
 
@@ -39,7 +60,7 @@ function Landing() {
   const [error, setError] = useState(false);
   const [showRecoverPassword, setShowRecoverPassword] = useState(false);
   const [showEmailSent, setShowEmailSent] = useState(false);
-  const { login, resetPassword } = useAuth();
+  const { login, resetPassword } = useUser();
 
   function handleOnSubmit(e) {
     e.preventDefault();
@@ -57,13 +78,13 @@ function Landing() {
     <Grid
       container
       direction='column'
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       className={classes.root}>
       <Grid
         item
         container
-        justify='space-evenly'
+        justifyContent='space-evenly'
         alignItems='center'
         xs={10}
         md={8}
@@ -73,12 +94,12 @@ function Landing() {
           item
           container
           direction='column'
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           spacing={2}
           xs={12}
           sm={6}>
-          <Grid item container justify='center'>
+          <Grid item container justifyContent='center'>
             <img className={classes.logo} src='logo1.png' alt='Logo' />
           </Grid>
           <Grid item>
@@ -92,7 +113,7 @@ function Landing() {
           <Divider orientation='vertical' flexItem />
         </Hidden>
 
-        <Grid item container xs={12} sm={6} justify='center'>
+        <Grid item container xs={12} sm={6} justifyContent='center'>
           {loading ? (
             <CircularProgress />
           ) : (

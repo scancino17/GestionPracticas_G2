@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactExport from 'react-export-excel';
+import ReactExport from 'react-export-excel-xlsx-fix';
 import { MdFileDownload } from 'react-icons/md';
 import styles from '../admin/dashboard/extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { makeStyles } from '@material-ui/core';

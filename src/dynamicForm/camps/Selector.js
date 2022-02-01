@@ -1,7 +1,8 @@
 import { Autocomplete, createFilterOptions } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import { db } from '../../firebase';
+import { onSnapshot, collection, addDoc } from 'firebase/firestore';
 
 const createOption = (label) => ({
   label,
@@ -24,24 +25,22 @@ function Selector({
   const [value, setValue] = useState(valueinner);
 
   useEffect(() => {
-    const unsubscribe = db.collection(camp).onSnapshot((querySnapshot) => {
+    let unsub = onSnapshot(collection(db, camp), (querySnapshot) => {
       let options = [];
       querySnapshot.forEach((doc) => options.push(doc.data()));
       setOptions(options);
     });
     setLoading(false);
-    return unsubscribe;
-  }, []);
+    return unsub;
+  }, [camp]);
 
   function handleCreate(inputValue) {
     setLoading(true);
     const newOption = createOption(inputValue);
-    db.collection(camp)
-      .add(createOption(inputValue))
-      .then(() => {
-        setLoading(false);
-        setValue(newOption);
-      });
+    addDoc(collection(db, camp), newOption).then(() => {
+      setLoading(false);
+      setValue(newOption);
+    });
   }
 
   function handleOnChange(event, newValue) {

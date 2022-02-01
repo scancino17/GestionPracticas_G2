@@ -16,17 +16,15 @@ import {
   Typography
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { db } from '../../firebase';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
-import useAuth from '../../providers/Auth';
+import { useUser } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
 
 function ApplicationsList() {
   const [careerId, setCareerId] = useState('general');
-  const [applications, setApplications] = useState();
-  const [filteredApplications, setFilteredApplications] = useState();
   const [name, setName] = useState('');
   const [statuses, setStatuses] = useState({
     reviewing: true,
@@ -37,47 +35,37 @@ function ApplicationsList() {
   const { reviewing, approved, rejected, needChanges } = statuses;
   const itemsPerPage = 8;
   const [page, setPage] = useState(1);
-  const { user } = useAuth();
+  const { user } = useUser();
+  const { applications } = useSupervisor();
 
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('applications').where('careerId', '==', user.careerId)
-      : db.collection('applications');
-    const unsubscribe = dbRef
-      .orderBy('creationDate', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) =>
-          list.push({ id: doc.id, ...doc.data() })
+  const filteredApplications = useMemo(() => {
+    if (applications) {
+      let filtered = applications.slice();
+      if (careerId !== 'general')
+        filtered = filtered.filter((item) => item.careerId === careerId);
+      if (name !== '')
+        filtered = filtered.filter((item) => item.studentName.includes(name));
+      if (!reviewing)
+        filtered = filtered.filter((item) => item.status !== 'En revisión');
+      if (!approved)
+        filtered = filtered.filter((item) => item.status !== 'Aprobado');
+      if (!rejected)
+        filtered = filtered.filter((item) => item.status !== 'Rechazado');
+      if (!needChanges)
+        filtered = filtered.filter(
+          (item) => item.status !== 'Necesita cambios menores'
         );
-        setApplications(list);
-        if (list) setFilteredApplications(applyFilter(list));
-      });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    if (applications) setFilteredApplications(applyFilter(applications));
-  }, [careerId, name, statuses]);
-
-  function applyFilter(list) {
-    let filtered = list.slice();
-    if (careerId !== 'general')
-      filtered = filtered.filter((item) => item.careerId === careerId);
-    if (name !== '')
-      filtered = filtered.filter((item) => item.studentName.includes(name));
-    if (!reviewing)
-      filtered = filtered.filter((item) => item.status !== 'En revisión');
-    if (!approved)
-      filtered = filtered.filter((item) => item.status !== 'Aprobado');
-    if (!rejected)
-      filtered = filtered.filter((item) => item.status !== 'Rechazado');
-    if (!needChanges)
-      filtered = filtered.filter(
-        (item) => item.status !== 'Necesita cambios menores'
-      );
-    return filtered;
-  }
+      return filtered;
+    } else return [];
+  }, [
+    applications,
+    careerId,
+    name,
+    reviewing,
+    approved,
+    rejected,
+    needChanges
+  ]);
 
   function handleCheckboxes(e) {
     setStatuses((prev) => {
@@ -95,10 +83,14 @@ function ApplicationsList() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Postulaciones de práctica</Typography>
+        <Typography variant='h4'>Inscripciones de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -170,12 +162,13 @@ function ApplicationsList() {
                 </>
               ))}
         </List>
-        <Grid container justify='flex-end'>
+        <Grid container justifyContent='flex-end'>
           {filteredApplications && filteredApplications.length > 0 ? (
             <Pagination
               count={Math.ceil(filteredApplications.length / itemsPerPage)}
               page={page}
               color='primary'
+              style={{ marginBottom: '40px' }}
               onChange={(_, val) => setPage(val)}
             />
           ) : (
@@ -183,13 +176,13 @@ function ApplicationsList() {
               container
               direction='column'
               align='center'
-              justify='center'
+              justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
                 <img src='post.png' width='300' />
               </Grid>
               <Typography variant='h5' color='textSecondary'>
-                No hay postulaciones de práctica disponibles
+                No hay inscripciones de práctica disponibles
               </Typography>
             </Grid>
           )}
@@ -200,19 +193,18 @@ function ApplicationsList() {
 }
 
 function ApplicationItem({ application }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <ListItem
       button
-      onClick={() => history.push(`/applications/${application.id}`)}>
+      onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
-        secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}
+        secondary={`${application['Rut del estudiante']} - ${application['Número de matrícula']} - Práctica ${application.internshipNumber} - ${application.careerId}`}
       />
       <ListItemSecondaryAction>
-        <IconButton
-          onClick={() => history.push(`/applications/${application.id}`)}>
+        <IconButton onClick={() => navigate(`/applications/${application.id}`)}>
           <NavigateNext />
         </IconButton>
       </ListItemSecondaryAction>

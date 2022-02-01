@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { CircularProgress } from '@material-ui/core';
 import { Pie } from 'react-chartjs-2';
 import { db } from '../../../../firebase';
+import { useSupervisor } from '../../../../providers/Supervisor';
+import { DEFAULT_CAREER } from '../../../../providers/User';
 
 const genData = (approved, rejected) => ({
   labels: ['Aprobados', 'Rechazados'],
@@ -30,121 +33,96 @@ const noData = () => ({
 
 function PieChart(props) {
   const [data, setData] = useState(genData());
-  const [careers, setCareers] = useState();
-  const [approved, setApproved] = useState();
-  const [rejected, setRejected] = useState();
+  const [loaded, setLoaded] = useState(false);
+  const { applications, careers } = useSupervisor();
 
-  function getApplicationsStatus(careers) {
+  useEffect(() => {
+    let careersMap = new Map();
+    careers.forEach((doc) => {
+      if (doc.id !== DEFAULT_CAREER) careersMap.set(doc.id, doc.name);
+    });
+
     let tempApproved = new Map();
     let tempRejected = new Map();
 
     tempApproved.set('Todas las carreras', 0);
     tempRejected.set('Todas las carreras', 0);
 
-    const unsubscribe = db
-      .collection('applications')
-      .onSnapshot((querySnapshot) => {
-        const temp = [];
-
-        querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
-        );
-
-        temp.forEach((doc) => {
-          switch (doc.status) {
-            case 'Aprobado':
-              if (tempApproved.has(careers.get(doc.careerId))) {
-                let counter = tempApproved.get(careers.get(doc.careerId));
-                tempApproved.set(careers.get(doc.careerId), counter + 1);
-              } else {
-                tempApproved.set(careers.get(doc.careerId), 1);
-              }
-
-              if (!tempRejected.has(careers.get(doc.careerId)))
-                tempRejected.set(careers.get(doc.careerId), 0);
-
-              tempApproved.set(
-                'Todas las carreras',
-                tempApproved.get('Todas las carreras') + 1
-              );
-
-              break;
-            case 'Rechazado':
-              if (tempRejected.has(careers.get(doc.careerId))) {
-                let counter = tempRejected.get(careers.get(doc.careerId));
-                tempRejected.set(careers.get(doc.careerId), counter + 1);
-              } else {
-                tempRejected.set(careers.get(doc.careerId), 1);
-              }
-
-              if (!tempApproved.has(careers.get(doc.careerId)))
-                tempApproved.set(careers.get(doc.careerId), 0);
-
-              tempRejected.set(
-                'Todas las carreras',
-                tempRejected.get('Todas las carreras') + 1
-              );
-
-              break;
-            default:
-              break;
+    applications.forEach((doc) => {
+      switch (doc.status) {
+        case 'Aprobado':
+          if (tempApproved.has(careersMap.get(doc.careerId))) {
+            let counter = tempApproved.get(careersMap.get(doc.careerId));
+            tempApproved.set(careersMap.get(doc.careerId), counter + 1);
+          } else {
+            tempApproved.set(careersMap.get(doc.careerId), 1);
           }
-        });
 
-        setApproved(tempApproved);
-        setRejected(tempRejected);
+          if (!tempRejected.has(careersMap.get(doc.careerId)))
+            tempRejected.set(careersMap.get(doc.careerId), 0);
 
-        props.setExportable([
-          Array.from(tempApproved.keys()),
-          [Object.fromEntries(tempApproved), Object.fromEntries(tempRejected)]
-        ]);
-
-        if (tempApproved.has(careers.get(props.careerId)))
-          setData(
-            genData(
-              tempApproved.get(careers.get(props.careerId)),
-              tempRejected.get(careers.get(props.careerId))
-            )
+          tempApproved.set(
+            'Todas las carreras',
+            tempApproved.get('Todas las carreras') + 1
           );
-        else setData(noData());
-      });
-    return unsubscribe;
-  }
 
-  useEffect(() => {
-    let temp = new Map();
-    if (typeof careers === 'undefined') {
-      let unsubscribe = null;
-      db.collection('careers')
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (doc.id !== 'general') temp.set(doc.id, doc.data().name);
-          });
-          unsubscribe = getApplicationsStatus(temp);
-        });
-      setCareers(temp);
-      return unsubscribe;
-    } else {
-      if (approved.has(careers.get(props.careerId)))
-        setData(
-          genData(
-            approved.get(careers.get(props.careerId)),
-            rejected.get(careers.get(props.careerId))
-          )
-        );
-      else if (props.careerId === 'general') {
-        setData(
-          genData(
-            approved.get('Todas las carreras'),
-            rejected.get('Todas las carreras')
-          )
-        );
-      } else setData(noData());
-    }
-  }, [props.careerId]);
+          break;
+        case 'Rechazado':
+          if (tempRejected.has(careersMap.get(doc.careerId))) {
+            let counter = tempRejected.get(careersMap.get(doc.careerId));
+            tempRejected.set(careersMap.get(doc.careerId), counter + 1);
+          } else {
+            tempRejected.set(careersMap.get(doc.careerId), 1);
+          }
 
-  return <Pie data={data} />;
+          if (!tempApproved.has(careersMap.get(doc.careerId)))
+            tempApproved.set(careersMap.get(doc.careerId), 0);
+
+          tempRejected.set(
+            'Todas las carreras',
+            tempRejected.get('Todas las carreras') + 1
+          );
+
+          break;
+        default:
+          break;
+      }
+    });
+
+    props.setExportable([
+      Array.from(tempApproved.keys()),
+      [Object.fromEntries(tempApproved), Object.fromEntries(tempRejected)]
+    ]);
+
+    if (tempApproved.has(careersMap.get(props.careerId)))
+      setData(
+        genData(
+          tempApproved.get(careersMap.get(props.careerId)),
+          tempRejected.get(careersMap.get(props.careerId))
+        )
+      );
+    else setData(noData());
+
+    if (tempApproved.has(careersMap.get(props.graphsCareerId)))
+      setData(
+        genData(
+          tempApproved.get(careersMap.get(props.graphsCareerId)),
+          tempRejected.get(careersMap.get(props.graphsCareerId))
+        )
+      );
+    else if (props.graphsCareerId === DEFAULT_CAREER) {
+      setData(
+        genData(
+          tempApproved.get('Todas las carreras'),
+          tempRejected.get('Todas las carreras')
+        )
+      );
+    } else setData(noData());
+  }, [props.graphsCareerId, careers, applications]);
+
+  useEffect(() => setLoaded(!!data), [data]);
+
+  return loaded ? <Pie data={data} /> : <CircularProgress />;
 }
 
 export default PieChart;

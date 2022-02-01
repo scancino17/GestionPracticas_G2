@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './DynamicForm';
-import { db } from '../firebase';
+import DynamicForm from '../DynamicForm';
 import {
   Add,
   ArrowDownward,
@@ -9,9 +8,10 @@ import {
   Build,
   ArrowBack,
   ArrowForward,
-  Save
+  Save,
+  Edit
 } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import {
   Divider,
@@ -33,63 +33,31 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import { formTypes } from './formTypes';
-import CareerSelector from '../utils/CareerSelector';
-import useAuth from '../providers/Auth';
+import CareerSelector from '../../../utils/CareerSelector';
+import { DEFAULT_CAREER, useUser } from '../../../providers/User';
+import { useSupervisor } from '../../../providers/Supervisor';
+import { predefinedSurvey } from '../../predefined_forms/predefined';
 
 function EditForm() {
-  const [formFull, setFormFull] = useState([
-    {
-      step: 'Información del estudiante',
-      form: [
-        {
-          type: formTypes.formHeader,
-          name: 'Información del estudiante',
-          value: 'Información del estudiante'
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Nombre del estudiante',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Rut del estudiante',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Número de matrícula',
-          value: '',
-          readOnly: true
-        },
-        {
-          type: formTypes.formTextInput,
-          name: 'Correo del estudiante',
-          value: '',
-          readOnly: true
-        }
-      ]
-    }
-  ]);
-  const { user } = useAuth();
-  const [show, setShow] = useState('');
+  const { careerId } = useUser();
+  const [formFull, setFormFull] = useState(predefinedSurvey);
+  const [show, setShow] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [indexEdit, setIndexEdit] = useState(-1);
+  const [editValue, setEditValue] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [careerId, setCareerId] = useState(
-    user.careerId ? user.careerId : null
-  );
-  const history = useHistory();
+  const [selectedCareerId, setSelectedCareerId] = useState(careerId);
+  const { getCareerForm, setCareerForm } = useSupervisor();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (careerId)
-      db.collection('form')
-        .doc(careerId)
-        .get()
-        .then((doc) => setFormFull(doc.data().form));
-  }, [careerId]);
+    if (selectedCareerId && selectedCareerId !== DEFAULT_CAREER) {
+      getCareerForm(selectedCareerId).then((careerForm) =>
+        setFormFull(careerForm)
+      );
+    }
+  }, [selectedCareerId, getCareerForm]);
 
   useEffect(() => setFlag(false), [flag]);
 
@@ -103,12 +71,37 @@ function EditForm() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   }
 
-  function handleSave() {
-    db.collection('form').doc(careerId).set({ form: formFull });
+  function handleEdit(index) {
+    console.log(index);
+    setEditValue(formFull[index].step);
+    setIndexEdit(index);
+    setEdit(true);
+  }
+  function handleSaveChanges() {
+    const aux = formFull;
+    aux[indexEdit].step = editValue;
+    setFormFull(aux);
+    setEdit(false);
   }
 
   function handleDelete(element) {
-    setFormFull((prev) => prev.filter((el) => el !== element));
+    setShow(false);
+    Swal.fire({
+      title: '¿Desea eliminar el paso?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: `Eliminar`,
+      cancelButtonText: `Cancelar`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setFormFull((prev) => prev.filter((el) => el !== element));
+        setShow(true);
+        setActiveStep(0);
+      }
+      if (result.isDismissed) {
+        setShow(true);
+      }
+    });
   }
 
   function handleUp(index) {
@@ -119,6 +112,22 @@ function EditForm() {
   function handleDown(index) {
     setFormFull((prev) => array_move(prev, index, index + 1));
     setFlag(true);
+  }
+
+  function handleSave() {
+    Swal.fire({
+      title: '¿Desea guardar los cambios?',
+      showDenyButton: true,
+      confirmButtonText: `Guardar`,
+      denyButtonText: `Salir`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setCareerForm(selectedCareerId, { form: formFull });
+        Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
+          if (result.isConfirmed) navigate('/');
+        });
+      }
+    });
   }
 
   function array_move(arr, old_index, new_index) {
@@ -153,23 +162,27 @@ function EditForm() {
         </Typography>
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {!user.careerId && (
-          <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        {(!careerId || careerId === DEFAULT_CAREER) && (
+          <Grid
+            container
+            justifyContent='flex-end'
+            alignItems='center'
+            spacing={4}>
             <Grid item>
               <CareerSelector
-                careerId={careerId}
-                setCareerId={setCareerId}
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
                 excludeGeneral
               />
             </Grid>
           </Grid>
         )}
-        {careerId ? (
+        {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
-            <Grid container justify='center' spacing={8}>
-              <Grid item direction='column' xs={12} md={5}>
+            <Grid container direction='row' justifyContent='center' spacing={8}>
+              <Grid item xs={12} md={5}>
                 <Typography variant='h5'>Etapas</Typography>
-                <Grid item container justify='center'>
+                <Grid item container justifyContent='center'>
                   <Button
                     variant='contained'
                     color='primary'
@@ -213,9 +226,19 @@ function EditForm() {
               <Grid
                 container
                 item
-                justify='flex-end'
+                justifyContent='flex-end'
                 alignItems='center'
                 spacing={4}>
+                <Grid item>
+                  <Button
+                    variant='contained'
+                    color='primary'
+                    startIcon={<Save />}
+                    onClick={handleSave}>
+                    Guardar
+                  </Button>
+                </Grid>
+
                 <Grid item>
                   <Button
                     variant='contained'
@@ -230,39 +253,10 @@ function EditForm() {
                   <Button
                     variant='contained'
                     color='primary'
-                    onClick={
-                      activeStep === formFull.length - 1
-                        ? () => {
-                            Swal.fire({
-                              title: '¿Desea guardar los cambios?',
-                              showDenyButton: true,
-                              confirmButtonText: `Guardar`,
-                              denyButtonText: `Salir`
-                            }).then((result) => {
-                              if (result.isConfirmed) {
-                                handleSave();
-                                Swal.fire(
-                                  '¡Formulario Guardado!',
-                                  '',
-                                  'success'
-                                ).then((result) => {
-                                  if (result.isConfirmed) history.push('/');
-                                });
-                              }
-                            });
-                          }
-                        : handleNext
-                    }
-                    endIcon={
-                      activeStep === formFull.length - 1 ? (
-                        <Save />
-                      ) : (
-                        <ArrowForward />
-                      )
-                    }>
-                    {activeStep === formFull.length - 1
-                      ? 'Terminar'
-                      : 'Siguiente'}
+                    disabled={activeStep === formFull.length - 1}
+                    onClick={handleNext}
+                    endIcon={<ArrowForward />}>
+                    Siguiente
                   </Button>
                 </Grid>
               </Grid>
@@ -273,10 +267,10 @@ function EditForm() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='EmptyState-3x.png' width='300' />
+              <img src='EmptyState-3x.png' width='300' alt='Banner' />
             </Grid>
             <Grid item>
               <Typography variant='h5' color='textSecondary'>
@@ -299,20 +293,44 @@ function EditForm() {
               <TableBody>
                 {formFull.map((form, i) => (
                   <TableRow key={form.i}>
-                    <TableCell>{form.step}</TableCell>
+                    {!edit || indexEdit !== i ? (
+                      <TableCell>{form.step}</TableCell>
+                    ) : (
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                        />
+                      </TableCell>
+                    )}
+
                     <TableCell>
+                      {!edit || indexEdit !== i ? (
+                        <IconButton
+                          disabled={edit}
+                          onClick={() => handleEdit(i)}>
+                          <Edit />
+                        </IconButton>
+                      ) : null}
+
+                      {!(!edit || indexEdit !== i) ? (
+                        <IconButton onClick={() => handleSaveChanges(i)}>
+                          <Save />
+                        </IconButton>
+                      ) : null}
                       <IconButton
-                        disabled={form.step === 'Información del estudiante'}
+                        disabled={form.uneditable || edit}
                         onClick={() => handleDelete(form)}>
                         <Delete />
                       </IconButton>
                       <IconButton
-                        disabled={i === 0}
+                        disabled={i === 0 || edit}
                         onClick={() => handleUp(i)}>
                         <ArrowUpward />
                       </IconButton>
                       <IconButton
-                        disabled={i === formFull.length - 1}
+                        disabled={i === formFull.length - 1 || edit}
                         onClick={() => handleDown(i)}>
                         <ArrowDownward />
                       </IconButton>

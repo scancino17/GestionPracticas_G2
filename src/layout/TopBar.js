@@ -11,8 +11,8 @@ import {
 } from '@material-ui/core';
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
-import useAuth from '../providers/Auth';
+import { useNavigate } from 'react-router';
+import { useUser, STUDENT_ROLE } from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
@@ -20,7 +20,23 @@ import NotificationMenu from './NotificationMenu';
 const useStyles = makeStyles((theme) => ({
   logo: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
-    maxHeight: '4rem'
+    maxHeight: '4rem',
+
+    '@media (max-width: 370px)': {
+      maxHeight: '3.5rem'
+    },
+    '@media (max-width: 345px)': {
+      maxHeight: '3rem'
+    },
+    '@media (max-width: 320px)': {
+      maxHeight: '2.7rem'
+    },
+    '@media (max-width: 300px)': {
+      maxHeight: '2.4rem'
+    },
+    '@media (max-width: 280px)': {
+      maxHeight: '0rem'
+    }
   },
   icon: {
     '& svg': {
@@ -43,10 +59,10 @@ const ProfileMenu = ({ func }) => {
 
 function TopBar({ setSidebarOpen }) {
   const classes = useStyles();
-  const { user, logout, resetPassword, userData } = useAuth();
+  const { user, logout, resetPassword, userData, userRole } = useUser();
   const [anchorEl, setAnchorEl] = useState();
   const [selectedMenu, setSelectedMenu] = useState();
-  const history = useHistory();
+  const navigate = useNavigate();
   const isMenuOpen = Boolean(anchorEl);
   const [resetPasswordSnack, setResetPasswordSnack] = useState();
 
@@ -74,7 +90,7 @@ function TopBar({ setSidebarOpen }) {
 
   function handleLogout() {
     logout();
-    history.push('/');
+    navigate('/');
     handleMenuClose();
   }
 
@@ -140,12 +156,12 @@ function TopBar({ setSidebarOpen }) {
           </Hidden>
           <IconButton
             disableRipple
-            onClick={() => history.push('/')}
+            onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
             <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
-          {user.student && (
+          {userRole === STUDENT_ROLE && (
             <IconButton
               color='inherit'
               onClick={handleNotificationMenuOpen}
@@ -169,11 +185,11 @@ function TopBar({ setSidebarOpen }) {
           </IconButton>
         </Toolbar>
       </AppBar>
-      {!user.student && (
+      {userRole !== STUDENT_ROLE && (
         <Toolbar>
           <IconButton
             disableRipple
-            onClick={() => history.push('/')}
+            onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
             <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
           </IconButton>

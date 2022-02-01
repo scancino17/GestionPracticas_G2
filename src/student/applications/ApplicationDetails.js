@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Documentos from '../extras/Documentos';
 import { db, storage } from '../../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import {
   CircularProgress,
   Grid,
@@ -37,14 +38,15 @@ function ApplicationDetails() {
   const healthCareOptions = ['Isapre', 'Fonasa', 'No sabe'];
   const modalityOptions = ['Presencial', 'Mixta', 'Online'];
 
-  useEffect(() => {
-    db.collection('applications')
-      .doc(applicationId)
-      .get()
-      .then((doc) => {
-        setApplication(doc.data());
-      });
+  const getApplication = useCallback(async () => {
+    const docRef = doc(db, 'applications', applicationId);
+    const docSnap = await getDoc(docRef);
+    setApplication(docSnap.data());
   }, [applicationId]);
+
+  useEffect(() => {
+    getApplication();
+  }, [getApplication]);
 
   useEffect(() => {
     if (application)
@@ -62,7 +64,7 @@ function ApplicationDetails() {
       item
       xs={12}
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'>
       <Typography {...typographyProps}>{text}</Typography>
     </Grid>
@@ -73,7 +75,7 @@ function ApplicationDetails() {
       item
       xs={12}
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       direction='column'>
       {application && docs ? (
@@ -81,7 +83,7 @@ function ApplicationDetails() {
           item
           xs={9}
           container
-          justify='center'
+          justifyContent='center'
           alignItems='center'
           direction='column'>
           <form className={classes.root}>
@@ -270,7 +272,7 @@ function ApplicationDetails() {
                 item
                 xs={12}
                 container
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 direction='row'>
                 <Grid item xs={6}>
@@ -290,7 +292,7 @@ function ApplicationDetails() {
                 item
                 xs={12}
                 container
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 direction='row'>
                 <CenteredTypography
@@ -308,7 +310,7 @@ function ApplicationDetails() {
             item
             xs={12}
             container
-            justify='center'
+            justifyContent='center'
             alignItems='center'
             direction='column'>
             <CenteredTypography

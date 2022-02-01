@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Grid,
   Container,
@@ -12,56 +12,34 @@ import {
   List
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import { useHistory } from 'react-router-dom';
-import { db } from '../../firebase';
+import { useNavigate } from 'react-router-dom';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
-import useAuth from '../../providers/Auth';
+import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
 
 function ReportsList() {
   const [name, setName] = useState('');
-  const [careerId, setCareerId] = useState('general');
-  const [internships, setInternships] = useState([]);
-  const [filterInternships, setFilterInternships] = useState([]);
-  const { user } = useAuth();
+  const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
+  const { userRole } = useUser();
+  const { internships } = useSupervisor();
 
-  function applyFilter(list) {
-    let filtered = [...list];
+  const sentReportsList = useMemo(() => {
+    console.log(internships);
+    if (internships)
+      return internships.filter((item) => item.status === sentReport);
+    else return [];
+  }, [internships]);
 
-    if (careerId !== 'general')
-      filtered = filtered.filter((item) => item.careerId === careerId);
+  const filteredInternshipsList = useMemo(() => {
+    let filtered = sentReportsList.slice();
+
+    if (selectedCareerId !== 'general')
+      filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
-      filtered = filtered.filter((item) => item.name.includes(name));
+      filtered = filtered.filter((item) => item.studentName.includes(name));
     return filtered;
-  }
-
-  useEffect(() => {
-    const dbRef = user.careerId
-      ? db.collection('internships').where('careerId', '==', user.careerId)
-      : db.collection('internships');
-    const unsubscribe = dbRef
-      .where('status', '==', sentReport)
-      .orderBy('creationDate', 'desc')
-      .onSnapshot((querySnapshot) => {
-        const list = [];
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          list.push({
-            id: doc.id,
-            name: data.studentName,
-            careerId: data.careerId,
-            ...data
-          });
-        });
-        setInternships(list);
-        if (list) setFilterInternships(applyFilter(list));
-      });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    if (internships) setFilterInternships(applyFilter(internships));
-  }, [careerId, name]);
+  }, [sentReportsList, selectedCareerId, name]);
 
   return (
     <Grid container direction='column'>
@@ -76,7 +54,11 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justify='flex-end' alignItems='center' spacing={4}>
+        <Grid
+          container
+          justifyContent='flex-end'
+          alignItems='center'
+          spacing={4}>
           <Grid item>
             <TextField
               label='Buscar estudiante'
@@ -84,17 +66,20 @@ function ReportsList() {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          {!user.careerId && (
+          {userRole === ADMIN_ROLE && (
             <Grid item>
-              <CareerSelector careerId={careerId} setCareerId={setCareerId} />
+              <CareerSelector
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
+              />
             </Grid>
           )}
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {filterInternships && filterInternships.length > 0 ? (
+        {filteredInternshipsList.length > 0 ? (
           <List>
-            {filterInternships.map((internship) => (
+            {filteredInternshipsList.map((internship) => (
               <>
                 <ReportItem internship={internship} />
                 <Divider />
@@ -106,10 +91,14 @@ function ReportsList() {
             container
             direction='column'
             align='center'
-            justify='center'
+            justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='evaluate.png' width='300' />
+              <img
+                src='evaluate.png'
+                width='300'
+                alt='Sin informes de practica disponibles'
+              />
             </Grid>
             <Typography variant='h5' color='textSecondary'>
               No hay informes de práctica disponibles
@@ -122,24 +111,24 @@ function ReportsList() {
 }
 
 function ReportItem({ internship }) {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return (
     <ListItem
       button
       onClick={() =>
-        history.push(
+        navigate(
           `/internship-assessment/${internship.studentId}/${internship.id}`
         )
       }>
       <ListItemText
-        primary={internship.name}
-        secondary={internship.applicationData.Empresa}
+        primary={internship.studentName}
+        secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
       />
       <ListItemSecondaryAction>
         <IconButton
           onClick={() =>
-            history.push(
+            navigate(
               `/internship-assessment/${internship.studentId}/${internship.id}`
             )
           }>

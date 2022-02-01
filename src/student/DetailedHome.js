@@ -4,14 +4,14 @@ import Stories from './extras/Stories';
 import StateBanner from './extras/StateBanner';
 import { Container, Grid } from '@material-ui/core';
 
-function DetailedHome({ done, reason }) {
+function DetailedHome() {
   return (
     <Container style={{ padding: '2rem' }}>
       <Grid container direction='column' spacing={6}>
         {/* Statebanner tiene un grid item adentro*/}
         <StateBanner />
         <Grid item>
-          <ToDoList done={done} reason={reason} />
+          <ToDoList />
         </Grid>
         <Grid item>
           <Stories />

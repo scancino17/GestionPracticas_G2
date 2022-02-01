@@ -1,25 +1,43 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
-import { db } from '../firebase';
+import {
+  FormControl,
+  InputLabel,
+  makeStyles,
+  MenuItem,
+  Select
+} from '@material-ui/core';
+import React from 'react';
+import { useSupervisor } from '../providers/Supervisor';
+import { DEFAULT_CAREER } from '../providers/User';
+
+const useStyles = makeStyles({
+  selector: {
+    '@media (min-width: 100px)': {
+      width: '150px'
+    },
+    '@media (min-width: 230px)': {
+      width: '200px'
+    },
+    '@media (min-width: 290px)': {
+      width: '250px'
+    },
+    '@media (min-width: 600px)': {
+      width: '300px'
+    },
+    '@media (min-width: 750px)': {
+      width: '300px'
+    },
+    '@media (min-width: 850px)': {
+      width: '300px'
+    },
+    '@media (min-width: 400px)': {
+      width: '300px'
+    }
+  }
+});
 
 function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
-  const [careers, setCareers] = useState([]);
-
-  useEffect(() => {
-    db.collection('careers')
-      .get()
-      .then((querySnapshot) => {
-        const temp = [];
-        querySnapshot.forEach((doc) => {
-          temp.push({ id: doc.id, ...doc.data() });
-        });
-        setCareers(
-          excludeGeneral
-            ? temp.filter((career) => career.id !== 'general')
-            : temp
-        );
-      });
-  }, []);
+  const { careers } = useSupervisor();
+  const classes = useStyles();
 
   return (
     <FormControl>
@@ -28,14 +46,16 @@ function CareerSelector({ careerId, setCareerId, excludeGeneral = false }) {
         labelId='select-career'
         value={careerId}
         onChange={(e) => setCareerId(e.target.value)}
-        style={{ minWidth: '14rem' }}>
-        {careers.map((career) => {
-          return (
-            <MenuItem key={career.id} value={career.id}>
-              {career.name}
-            </MenuItem>
-          );
-        })}
+        className={classes.selector}>
+        {careers
+          .filter((item) => !excludeGeneral || item.id !== DEFAULT_CAREER)
+          .map((career) => {
+            return (
+              <MenuItem key={career.id} value={career.id}>
+                {career.name}
+              </MenuItem>
+            );
+          })}
       </Select>
     </FormControl>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './DynamicForm';
+import DynamicForm from './builder_preview/DynamicForm';
 import { db, storage } from '../firebase';
 import {
   Step,
@@ -10,56 +10,71 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import useAuth from '../providers/Auth';
+import { useUser } from '../providers/User';
 import Swal from 'sweetalert2';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './formTypes';
-import firebase from 'firebase';
+import { formTypes, customTypes } from './camps/formTypes';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
+import { useStudent } from '../providers/Student';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const { user, userData } = useAuth();
+  const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
   const { applicationId } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
+  const { updateCurrentInternship } = useStudent();
 
   useEffect(() => {
     if (userData) {
       setInternshipId(userData.currentInternship.id);
+
       if (!edit) {
-        db.collection('form')
-          .doc(userData.careerId)
-          .get()
-          .then((doc) => {
-            const data = doc.data();
-            data.form[0].form[1].value = userData.name;
-            data.form[0].form[2].value = userData.rut;
-            data.form[0].form[3].value = userData.enrollmentNumber;
-            data.form[0].form[4].value = userData.email;
-            if (data) setFormFull(data.form);
-          });
+        const docRef = doc(db, 'form', userData.careerId);
+
+        getDoc(docRef).then((doc) => {
+          const data = doc.data();
+          data.form[0].form[1].value = userData.name;
+          data.form[0].form[2].value = userData.rut;
+          data.form[0].form[3].value = userData.enrollmentNumber;
+          data.form[0].form[4].value = userData.email;
+          if (data) setFormFull(data.form);
+        });
       } else {
-        db.collection('applications')
-          .doc(applicationId)
-          .get()
-          .then((doc) => {
-            const data = doc.data();
-            if (data) setFormFull(data.form);
-          });
+        const docRef = doc(db, 'applications', applicationId);
+        getDoc(docRef).then((doc) => {
+          const data = doc.data();
+          if (data) setFormFull(data.form);
+        });
       }
     }
-  }, [userData]);
+  }, [userData, applicationId, edit]);
 
   useEffect(() => {
     setFlag(false);
   }, [flag]);
 
   function handleNext() {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (dataVerify()) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops... parece que te falta algo',
+        text: 'Son requeridos todos los campos'
+      });
+    }
   }
 
   function handleBack() {
@@ -94,7 +109,19 @@ function SendForm({ edit }) {
         .put(file.file);
     });
   }
-
+  function dataVerify() {
+    if (formFull != null) {
+      for (let i = 0; i < formFull[activeStep].form.length; i++) {
+        if (
+          formFull[activeStep].form[i].value === '' &&
+          formFull[activeStep].form[i].type !== 'Título'
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
   function handleSave() {
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta
@@ -114,38 +141,37 @@ function SendForm({ edit }) {
     );
 
     if (!edit) {
-      db.collection('applications')
-        .add({
-          form: formFull,
-          studentId: user.uid,
-          studentName: userData.name,
-          email: userData.email,
-          careerId: userData.careerId,
-          internshipId: internshipId,
-          internshipNumber: userData.currentInternship.number,
-          status: 'En revisión',
-          creationDate: firebase.firestore.FieldValue.serverTimestamp(),
-          ...values
-        })
-        .then(function (docRef) {
+      addDoc(collection(db, 'applications'), {
+        form: formFull,
+        studentId: user.uid,
+        studentName: userData.name,
+        email: userData.email,
+        careerId: userData.careerId,
+        internshipId: internshipId,
+        internshipNumber: userData.currentInternship.number,
+        status: 'En revisión',
+        creationDate: serverTimestamp(),
+        ...values
+      })
+        .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
         })
-        .catch(function (error) {
+        .catch((error) => {
           console.error('Error adding document: ', error);
         });
     } else {
-      db.collection('applications')
-        .doc(applicationId)
-        .update({ form: formFull, status: 'En revisión', ...values })
-        .then(() =>
-          //se guarda los archivos en la application correspondiente
-          saveFiles(applicationId)
-        );
+      updateDoc(doc(db, 'applications', applicationId), {
+        form: formFull,
+        status: 'En revisión',
+        ...values
+      }).then(() =>
+        //se guarda los archivos en la application correspondiente
+        saveFiles(applicationId)
+      );
     }
-    db.collection('internships')
-      .doc(userData.currentInternship.id)
-      .update({ status: sentApplication });
+
+    updateCurrentInternship({ status: sentApplication });
   }
 
   return (
@@ -200,7 +226,7 @@ function SendForm({ edit }) {
                   )
               )}
             </Grid>
-            <Grid item container justify='flex-end' spacing={2}>
+            <Grid item container justifyContent='flex-end' spacing={2}>
               <Grid item>
                 <Button
                   variant='contained'
@@ -236,7 +262,7 @@ function SendForm({ edit }) {
                           handleSave();
                           Swal.fire('¡Formulario enviado!', '', 'success').then(
                             (result) => {
-                              if (result.isConfirmed) history.push('/');
+                              if (result.isConfirmed) navigate('/');
                             }
                           );
                         }

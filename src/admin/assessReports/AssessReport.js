@@ -11,55 +11,47 @@ import {
   Container,
   Input
 } from '@material-ui/core';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { db, storage } from '../../firebase';
+import { useEffect, useState, useMemo } from 'react';
+import { storage } from '../../firebase';
 import { GetApp } from '@material-ui/icons';
 import { useParams } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
-import { reportNeedsChanges, finishedInternship } from '../../InternshipStates';
-import useAuth from '../../providers/Auth';
-import { convertToRaw, EditorState } from 'draft-js';
-import draftToHtml from 'draftjs-to-html';
+import { useNavigate } from 'react-router-dom';
+import { useSupervisor } from '../../providers/Supervisor';
+import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import firebase from 'firebase';
-import { StudentNotificationTypes } from '../../layout/NotificationMenu';
+import { getDownloadURL, ref } from 'firebase/storage';
 
 function AssessReport() {
   const [value, setValue] = useState(40);
   const { studentId } = useParams();
   const { internshipId } = useParams();
-  const [infoStudent, setInfoStudent] = useState();
   const [showChanges, SetShowChanges] = useState(false);
   const [showEvaluate, SetShowEvaluate] = useState(false);
   const [changesEditorState, setChangesEditorState] = useState(
     EditorState.createEmpty()
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { user } = useAuth();
+  const { getUserData, amendReport, evaluateReport } = useSupervisor();
 
-  useEffect(() => {
-    db.collection('users')
-      .doc(studentId)
-      .get()
-      .then((user) => setInfoStudent(user.data()));
-  }, []);
+  const infoStudent = useMemo(() => {
+    return getUserData(studentId);
+  }, [getUserData, studentId]);
 
   function DownloadButton() {
     const [url, setUrl] = useState();
 
     useEffect(() => {
-      storage
-        .ref(
+      getDownloadURL(
+        ref(
+          storage,
           `/students-docs/${studentId}/${internshipId}/reports/${internshipId}.pdf`
         )
-        .getDownloadURL()
-        .then((url) => {
-          setUrl(url);
-        });
-    }, []);
+      ).then((url) => {
+        setUrl(url);
+      });
+    });
 
     return (
       <Button
@@ -74,68 +66,15 @@ function AssessReport() {
   }
 
   function handleChanges() {
-    db.collection('internships')
-      .doc(internshipId)
-      .update({
-        status: reportNeedsChanges,
-        reportAnnotations: convertToRaw(changesEditorState.getCurrentContent())
-      });
-
-    db.collection('mails').add({
-      to: infoStudent.email,
-      template: {
-        name: 'ReportFailed',
-        data: {
-          from_name: infoStudent.name,
-          reason: draftToHtml(
-            convertToRaw(changesEditorState.getCurrentContent())
-          ),
-          rechazado_por: user.displayName
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(studentId)
-      .update({
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.reportNeedChanges,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
+    amendReport(
+      internshipId,
+      infoStudent,
+      changesEditorState.getCurrentContent()
+    );
   }
 
   function handleEvaluate() {
-    db.collection('internships').doc(internshipId).update({
-      status: finishedInternship,
-      reason: evaluateComment,
-      grade: value
-    });
-
-    db.collection('mails').add({
-      to: infoStudent.email,
-      template: {
-        name: 'ReportApproved',
-        data: {
-          from_name: infoStudent.name,
-          grade: value,
-          reason: evaluateComment ? evaluateComment : 'Sin observaciones',
-          aprovado_por: user.displayName
-        }
-      }
-    });
-
-    db.collection('users')
-      .doc(studentId)
-      .update({
-        step: 0,
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.finishedInternship,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
+    evaluateReport(internshipId, infoStudent, evaluateComment, value);
   }
 
   return (
@@ -157,13 +96,13 @@ function AssessReport() {
 
         {infoStudent && (
           <Container style={{ marginTop: '2rem' }}>
-            <Grid container direction='row' justify='space-around'>
+            <Grid container direction='row' justifyContent='space-around'>
               <Grid item>
                 <Grid
                   container
                   direction='column'
                   spacing={3}
-                  justify='space-evenly'>
+                  justifyContent='space-evenly'>
                   <Typography variant='h5'>
                     Información del estudiante
                   </Typography>
@@ -209,11 +148,12 @@ function AssessReport() {
                 </Grid>
               </Grid>
               <Grid item>
-                <Grid container align='center' justify='center'>
+                <Grid container align='center' justifyContent='center'>
                   <Grid item>
                     <img
                       height='500'
                       src='../../AdminBanner-Evaluate-Divider.png'
+                      alt='Banner'
                     />
                   </Grid>
                 </Grid>
@@ -224,7 +164,7 @@ function AssessReport() {
               style={{ marginTop: '1rem' }}
               container
               direction='row'
-              justify='flex-end'
+              justifyContent='flex-end'
               spacing={3}>
               <Grid item>
                 <Button
@@ -294,11 +234,13 @@ function AssessReport() {
             <Button
               color='primary'
               variant='contained'
-              onClick={() => (
-                handleChanges(),
-                SetShowChanges(false),
-                history.push('/internship-assessment')
-              )}>
+              onClick={() => {
+                return (
+                  handleChanges(),
+                  SetShowChanges(false),
+                  navigate('/internship-assessment')
+                );
+              }}>
               Notificar cambios
             </Button>
           </DialogActions>
@@ -311,7 +253,7 @@ function AssessReport() {
         fullWidth>
         <DialogTitle>Evaluar Práctica</DialogTitle>
         <DialogContent>
-          <Grid container justify='center' alignContent='center'>
+          <Grid container justifyContent='center' alignContent='center'>
             <Grid item>
               <Typography variant='h2'>
                 {value < 20
@@ -381,11 +323,13 @@ function AssessReport() {
           <Button
             color='primary'
             variant='contained'
-            onClick={() => (
-              handleEvaluate(),
-              SetShowEvaluate(false),
-              history.push('/internship-assessment')
-            )}>
+            onClick={() => {
+              return (
+                handleEvaluate(),
+                SetShowEvaluate(false),
+                navigate('/internship-assessment')
+              );
+            }}>
             Confirmar Evaluación
           </Button>
         </DialogActions>

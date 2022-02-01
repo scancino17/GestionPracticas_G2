@@ -12,7 +12,6 @@ import {
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import React, { useState, useEffect } from 'react';
-import { db } from '../firebase';
 import {
   approvedIntention,
   availableInternship,
@@ -25,7 +24,7 @@ import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
 import EmptyHome from './EmptyHome';
 import { RiSurveyLine } from 'react-icons/ri';
-import useAuth from '../providers/Auth';
+import { useStudent } from '../providers/Student';
 
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
@@ -146,18 +145,11 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { userData } = useAuth();
-    const [survey, setSurvey] = useState([]);
-
-    useEffect(() => {
-      db.collection('careers')
-        .doc(userData.careerId)
-        .onSnapshot((doc) => setSurvey(doc.data()));
-    }, []);
+    const { careerInfo } = useStudent();
 
     return (
       <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start'>
+        <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
             ¡Felicitaciones! Terminaste tu proceso de práctica
           </Typography>
@@ -202,7 +194,7 @@ const IntentionItem = ({
             paddingTop: '2rem',
             paddingBottom: '1rem'
           }}
-          onClick={() => window.open(survey.satisfactionSurvey, '_blank')}>
+          onClick={() => window.open(careerInfo.satisfactionSurvey, '_blank')}>
           <Grid item>
             <RiSurveyLine className={classes.icon} />
           </Grid>
@@ -218,7 +210,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>
@@ -250,7 +242,7 @@ const IntentionItem = ({
   const ApprovedState = () => {
     return (
       <Grid container direction='column' spacing={2}>
-        <Grid item container justify='flex-start' spacing={2}>
+        <Grid item container justifyContent='flex-start' spacing={2}>
           <Typography variant='h4'>
             ¡Felicitaciones! Tu intención de práctica ha sido&nbsp;
             <span className={classes.approvedText}>Aprobada</span>
@@ -282,7 +274,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>
@@ -310,7 +302,7 @@ const IntentionItem = ({
   const DeniedState = () => {
     return (
       <Grid container direction='column'>
-        <Grid item container direction='row' justify='flex-start'>
+        <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
             <Box style={{ paddingRight: '.3rem' }}>
               ¡Rayos! Tu intención de práctica ha sido
@@ -336,7 +328,7 @@ const IntentionItem = ({
           item
           container
           direction='row'
-          justify='space-between'
+          justifyContent='space-between'
           alignItems='center'
           style={{ paddingTop: '1rem' }}>
           <Typography className={classes.evaluatingSupervisorText}>
@@ -370,12 +362,12 @@ const IntentionItem = ({
   };
 
   const ApprovedActions = () => {
+    const { updateInternship, updateUser } = useStudent();
+
     const handleStartInternship = (e) => {
       e.preventDefault();
-      db.collection('internships')
-        .doc(internship.id)
-        .update({ status: pendingApplication });
-      db.collection('users').doc(internship.studentId).update({ step: 1 });
+      updateInternship(internship.id, { status: pendingApplication });
+      updateUser({ step: 1 });
     };
 
     return (
@@ -470,8 +462,10 @@ const IntentionItem = ({
   );
 };
 
-function InternshipIntention({ internships }) {
+function InternshipIntention() {
   const [noneDeclarated, isNoneDeclarated] = useState(true);
+  const { internships } = useStudent();
+
   useEffect(() => {
     isNoneDeclarated(
       internships.filter((item) => !(item.status === availableInternship))
@@ -484,18 +478,20 @@ function InternshipIntention({ internships }) {
       {noneDeclarated ? (
         <EmptyHome practicas={internships} />
       ) : (
-        <Container style={{ padding: '2rem' }}>
-          <Grid container direction='column' spacing={6}>
-            <Grid item>
-              <Typography variant='h4'>
-                Estado de intención de práctica
-              </Typography>
+        internships && (
+          <Container style={{ padding: '2rem' }}>
+            <Grid container direction='column' spacing={6}>
+              <Grid item>
+                <Typography variant='h4'>
+                  Estado de intención de práctica
+                </Typography>
+              </Grid>
+              <Grid item>
+                <InternshipState internships={internships} />
+              </Grid>
             </Grid>
-            <Grid item>
-              <InternshipState internships={internships} />
-            </Grid>
-          </Grid>
-        </Container>
+          </Container>
+        )
       )}
     </>
   );

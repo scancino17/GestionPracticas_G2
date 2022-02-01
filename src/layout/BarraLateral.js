@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
@@ -15,7 +15,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import SettingsIcon from '@material-ui/icons/Settings';
 import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
-import useAuth from '../providers/Auth';
+import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main
   },
   drawer: {
-    width: 260,
+    width: 300,
     flexShrink: 0
   }
 }));
@@ -43,12 +43,12 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/internship-intention'
     },
     {
-      label: 'Postulaciones de práctica',
+      label: 'Inscripciones de práctica',
       icon: <ListAltIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/applications'
     },
     {
-      label: 'Estudiantes para seguro',
+      label: 'Seguro de estudiantes',
       icon: <LocalHospitalIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/insurance-list',
       adminOnly: true
@@ -64,7 +64,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/extension-list'
     },
     {
-      label: 'Editar Formulario',
+      label: 'Edición Formulario de Inscripción',
       icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/edit-form'
     },
@@ -93,7 +93,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClick={() => setSidebarOpen((prevState) => !prevState)}>
+          onClick={() => setSidebarOpen((prevState) => !prevState)}
+          onClose={() => setSidebarOpen((prevState) => !prevState)}
+          onOpen={() => setSidebarOpen((prevState) => !prevState)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>
@@ -112,15 +114,16 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
 }
 
 function SidebarItems({ items, setSidebarOpen }) {
-  const { user } = useAuth();
+  const { userRole } = useUser();
   const location = useLocation();
 
   return (
     <List>
       {items.map(
-        (item) =>
-          (user.admin || !item.adminOnly) && (
+        (item, index) =>
+          (userRole === ADMIN_ROLE || !item.adminOnly) && (
             <Link
+              key={index}
               style={{
                 color: 'inherit',
                 textDecoration: 'none',
@@ -128,12 +131,14 @@ function SidebarItems({ items, setSidebarOpen }) {
               }}
               to={item.path}>
               <ListItem
+                key={index}
                 button
                 selected={
                   (item.path === '/' && location.pathname === '/') ||
                   (item.path !== '/' && location.pathname.includes(item.path))
                 }>
                 <Button
+                  key={index}
                   disableRipple
                   style={{
                     backgroundColor: 'transparent',

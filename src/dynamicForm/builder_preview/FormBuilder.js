@@ -11,9 +11,9 @@ import {
   Button,
   IconButton
 } from '@material-ui/core';
-import { Delete, ArrowUpward, ArrowDownward, Add } from '@material-ui/icons';
-import ConstructorCamp from './ConstructorCamp';
-
+import { Delete, ArrowUpward, ArrowDownward, Add, Edit } from '@material-ui/icons';
+import ConstructorCamp from '../camps/ConstructorCamp';
+import Swal from 'sweetalert2';
 function FormBuilder({
   formInner,
   flag,
@@ -23,23 +23,36 @@ function FormBuilder({
   handlerSetFormInner
 }) {
   const [show, setShow] = useState(false);
-  const defaultInputs = [
-    'Información del estudiante',
-    'Nombre del estudiante',
-    'Rut del estudiante',
-    'Número de matrícula',
-    'Correo del estudiante'
-  ];
+  const [edit, setEdit] = useState(false);
+  const [editIndex, setEditIndex] = useState(10);
+  const [editElement, setEditElement] = useState({
+    type: '',
+    name: '',
+    options: '',
+    value: ''
+  });
+
 
   useEffect(() => {
     setFlag(false);
   }, [formInner, flag]);
 
   function hadlerDelete(element, i) {
-    const aux = formFullInner;
-    aux[indexInner].form.splice(i, 1);
-    handlerSetFormInner(aux);
-    setFlag(true);
+    Swal.fire({
+      title: '¿Desea eliminar el elemento?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: `Eliminar`,
+      cancelButtonText: `Cancelar`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const aux = formFullInner;
+        aux[indexInner].form.splice(i, 1);
+        handlerSetFormInner(aux);
+        setFlag(true);
+      }
+    })
+    
   }
 
   function handlerUp(index) {
@@ -54,6 +67,12 @@ function FormBuilder({
     aux[indexInner].form = array_move(aux[indexInner].form, index, index + 1);
     handlerSetFormInner(aux);
     setFlag(true);
+  }
+  function handleEdit( rec, i){
+      setEditElement(rec);
+      setEditIndex(i);
+      setEdit(true)   
+      setShow(true);
   }
 
   function array_move(arr, old_index, new_index) {
@@ -72,9 +91,9 @@ function FormBuilder({
       border={1}
       container
       direction='column'
-      justify='flex-start'
+      justifyContent='flex-start'
       alignItems='flex-end'>
-      <Grid container direction='column' justify='center' alignItems='center'>
+      <Grid container direction='column' justifyContent='center' alignItems='center'>
         <Box pl={6} pb={2}>
           <Table>
             <TableHead>
@@ -92,40 +111,43 @@ function FormBuilder({
             </TableHead>
             <TableBody>
               {formInner.map((rec, i) => (
-                <TableRow key={rec.i}>
+                <TableRow key={i}>
                   <TableCell>
-                    <Typography noWrap style={{ width: '10rem' }}>
+                    <Typography noWrap style={{ maxWidth: '10rem' }}>
                       {rec.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography noWrap style={{ width: '10rem' }}>
+                    <Typography noWrap style={{ maxWidth: '7rem' }}>
                       {rec.type}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Grid container>
+                    <Grid container direction='row'>
                       <Grid>
                         <IconButton
-                          disabled={defaultInputs.includes(rec.name)}
+                          disabled={rec.uneditable}
+                          onClick={() => handleEdit(rec,i)}>
+                          <Edit />
+                        </IconButton>
+                      </Grid>
+                      <Grid>
+                        <IconButton
+                         disabled={rec.uneditable}
                           onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={defaultInputs.includes(rec.name) || i === 0}
+                          disabled={ i === 0}
                           onClick={() => handlerUp(i)}>
                           <ArrowUpward />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={
-                            (defaultInputs.includes(rec.name) &&
-                              i <= defaultInputs.length) ||
-                            i === formInner.length - 1
-                          }
+                          disabled={i === formInner.length - 1}
                           onClick={() => handlerDown(i)}>
                           <ArrowDownward />
                         </IconButton>
@@ -139,7 +161,7 @@ function FormBuilder({
         </Box>
       </Grid>
 
-      <Grid container direction='column' justify='center' alignItems='center'>
+      <Grid container direction='column' justifyContent='center' alignItems='center'>
         <Button
           variant='contained'
           color='primary'
@@ -155,6 +177,12 @@ function FormBuilder({
           formFullInnerInner={formFullInner}
           setFlagInner={setFlag}
           show={show}
+
+          edit={edit}
+          setEdit={setEdit}
+          editIndex={editIndex}
+          editElement={editElement}
+
         />
       </Grid>
     </Grid>

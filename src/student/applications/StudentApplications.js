@@ -8,8 +8,9 @@ import {
   makeStyles,
   Typography
 } from '@material-ui/core';
+import { collection, where, query, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { db } from '../../firebase';
 
 const useStyles = makeStyles((theme) => ({
@@ -29,7 +30,11 @@ const useStyles = makeStyles((theme) => ({
 
 function ApplicationsList({ applications }) {
   return (
-    <Grid container justify='center' alignItems='center' direction='column'>
+    <Grid
+      container
+      justifyContent='center'
+      alignItems='center'
+      direction='column'>
       <Typography variant='h3'>Solicitudes de práctica</Typography>
       <List>
         <AddApplication />
@@ -42,7 +47,7 @@ function ApplicationsList({ applications }) {
 }
 
 function ApplicationItem({ application }) {
-  let history = useHistory();
+  let navigate = useNavigate();
   const classes = useStyles();
 
   let practicaColorStatus = (status) => {
@@ -61,7 +66,7 @@ function ApplicationItem({ application }) {
   return (
     <ListItem>
       <Grid item xs={12}>
-        <Card onClick={() => history.push(`/applications/${application.id}`)}>
+        <Card onClick={() => navigate(`/applications/${application.id}`)}>
           <CardContent>
             <Typography variant='h4'>{`Solicitud de práctica ${application.internshipNumber}`}</Typography>
             <Typography variant='h5'>{application.companyName}</Typography>
@@ -78,13 +83,12 @@ function ApplicationItem({ application }) {
 }
 
 function AddApplication() {
-  let history = useHistory();
+  let navigate = useNavigate();
   const { studentId, internshipId } = useParams();
   return (
     <ListItem>
       <Grid item xs={12}>
-        <Card
-          onClick={() => history.push(`/form/${studentId}/${internshipId}`)}>
+        <Card onClick={() => navigate(`/form/${studentId}/${internshipId}`)}>
           <CardContent>
             <Typography variant='h4' color='primary'>
               Agregar nueva solicitud de práctica
@@ -101,17 +105,17 @@ function StudentApplications() {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    db.collection('applications')
-      .where('internshipId', '==', internshipId)
-      .get()
-      .then((querySnapshot) => {
-        let temp = [];
-        querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
-        );
-        setApplications(temp);
-      });
-  });
+    let q = query(
+      collection('applications'),
+      where('internshipId', '==', internshipId)
+    );
+
+    return onSnapshot(q, (querySnapshot) => {
+      let temp = [];
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      setApplications(temp);
+    });
+  }, [internshipId]);
 
   return <ApplicationsList applications={applications} />;
 }

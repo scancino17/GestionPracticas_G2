@@ -17,17 +17,10 @@ import {
 import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
-import { db } from '../firebase';
 import { AssignmentLate, Check, Clear, Edit, Save } from '@material-ui/icons';
-import FormView from './FormView';
-import {
-  approvedApplication,
-  changeDetailsApplication,
-  deniedApplication
-} from '../InternshipStates';
-import { useHistory } from 'react-router-dom';
-import firebase from 'firebase';
-import { StudentNotificationTypes } from '../layout/NotificationMenu';
+import FormView from './builder_preview/FormView';
+import { useNavigate } from 'react-router-dom';
+import { useSupervisor } from '../providers/Supervisor';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,8 +92,7 @@ function FormCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
   const [minorChanges, setMinorChanges] = useState('');
-  const [applicationUser, setApplicationUser] = useState([]);
-  const history = useHistory();
+  const navigate = useNavigate();
   const [flag, setFlag] = useState(false);
   const [show, setShow] = useState(false);
   const [showMinorChanges, setShowMinorChanges] = useState(false);
@@ -109,31 +101,21 @@ function FormCheck() {
   const [rejectReason, setRejectReason] = useState('');
   const [approveReason, setApproveReason] = useState('');
   const classes = useStyles();
+  const {
+    getApplication,
+    updateApplication,
+    approveApplication,
+    rejectApplication,
+    amendApplication
+  } = useSupervisor();
 
   useEffect(() => {
-    db.collection('applications')
-      .doc(applicationId)
-      .get()
-      .then((doc) => {
-        const data = doc.data();
-        setApplication(data);
-        db.collection('users')
-          .doc(data.studentId)
-          .get()
-          .then((doc) => {
-            setApplicationUser(doc.data());
-          });
-      });
-  }, []);
+    let appData = getApplication(applicationId);
+    setApplication(appData);
+  }, [applicationId, getApplication]);
 
   function BackUp() {
-    db.collection('applications')
-      .doc(applicationId)
-      .get()
-      .then((doc) => {
-        const data = doc.data();
-        setApplication(data);
-      });
+    setApplication(getApplication(applicationId));
   }
 
   useEffect(() => {
@@ -144,103 +126,18 @@ function FormCheck() {
     const applicationData = application;
     delete applicationData.form;
 
-    db.collection('applications')
-      .doc(applicationId)
-      .update({ status: 'Aprobado', reason: approveReason });
-
-    db.collection('internships').doc(application.internshipId).update({
-      status: approvedApplication,
-      applicationData: applicationData,
-      applicationId: applicationId,
-      reason: approveReason
-    });
-
-    db.collection('users')
-      .doc(application.studentId)
-      .update({
-        reason: approveReason,
-        'currentInternship.lastApplication': applicationId,
-        'currentInternship.Empresa': applicationData.Empresa,
-        step: 2,
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.approvedApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
-
-    db.collection('mails').add({
-      to: applicationUser.email,
-      template: {
-        name: 'Approved',
-        data: { from_name: applicationUser.name }
-      }
-    });
+    approveApplication(applicationData, approveReason);
   }
 
   function handleReject() {
     setShow(false);
-    db.collection('applications')
-      .doc(applicationId)
-      .update({ status: 'Rechazado', reason: rejectReason });
-    db.collection('internships')
-      .doc(application.internshipId)
-      .update({ status: deniedApplication });
-
-    db.collection('users')
-      .doc(application.studentId)
-      .update({
-        'currentInternship.lastApplication': applicationId,
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.deniedApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
-
-    db.collection('mails').add({
-      to: applicationUser.email,
-      template: {
-        name: 'Failed',
-        data: {
-          from_name: applicationUser.name,
-          result: rejectReason
-        }
-      }
-    });
+    rejectApplication(application, rejectReason);
   }
 
   function handleMinorChanges() {
-    db.collection('internships')
-      .doc(application.internshipId)
-      .update({ status: changeDetailsApplication });
-
-    db.collection('applications')
-      .doc(applicationId)
-      .update({ status: 'Necesita cambios menores', reason: minorChanges });
-
-    db.collection('users')
-      .doc(application.studentId)
-      .update({
-        'currentInternship.lastApplication': applicationId,
-        [`notifications.${Date.now().toString()}`]: {
-          id: Date.now().toString(),
-          type: StudentNotificationTypes.changeDetailsApplication,
-          time: firebase.firestore.FieldValue.serverTimestamp()
-        }
-      });
-
-    db.collection('mails').add({
-      to: applicationUser.email,
-      template: {
-        name: 'FailedMinorChanges',
-        data: {
-          from_name: applicationUser.name,
-          result: rejectReason
-        }
-      }
-    });
+    amendApplication(application, rejectReason, minorChanges);
   }
+
   function handleSave() {
     const values = {};
     application.form.forEach((step) =>
@@ -249,10 +146,9 @@ function FormCheck() {
       })
     );
 
-    db.collection('applications')
-      .doc(applicationId)
-      .update({ form: application.form, ...values });
+    updateApplication(applicationId, { form: application.form, ...values });
   }
+
   return (
     <>
       {!edit && (
@@ -388,7 +284,7 @@ function FormCheck() {
               color='primary'
               onClick={() => {
                 handleReject();
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar rechazo
             </DenyButton>
@@ -426,7 +322,7 @@ function FormCheck() {
               onClick={() => {
                 handleApprove();
                 setShowApproved(false);
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar aprobación
             </Button>
@@ -460,7 +356,7 @@ function FormCheck() {
               onClick={() => {
                 handleMinorChanges();
                 setShowMinorChanges(false);
-                history.push('/applications');
+                navigate('/applications');
               }}>
               Confirmar solicitud
             </DenyButton>

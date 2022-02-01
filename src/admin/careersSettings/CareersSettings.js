@@ -9,46 +9,40 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
-import { db } from '../../firebase';
-import useAuth from '../../providers/Auth';
+import { useSupervisor } from '../../providers/Supervisor';
+import { ADMIN_ROLE, useUser } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 
 function CareersSettings() {
-  const { user } = useAuth();
-  const [careerId, setCareerId] = useState(
-    user.careerId ? user.careerId : null
+  const { userRole, careerId } = useUser();
+  const [selectedCareerId, setSelectedCareerId] = useState(
+    careerId ? careerId : null
   );
   const [career, setCareer] = useState();
   const [internships, setInternships] = useState(1);
   const [survey, setSurvey] = useState('');
+  const { getCareerData, updateCareer } = useSupervisor();
 
   useEffect(() => {
-    if (careerId)
-      db.collection('careers')
-        .doc(careerId)
-        .get()
-        .then((doc) => {
-          const data = doc.data();
-          setCareer(data);
-          setInternships(data.internships);
-          setSurvey(data.satisfactionSurvey);
-        });
-  }, [careerId]);
+    if (selectedCareerId) {
+      let career = getCareerData(selectedCareerId);
+      setCareer(career);
+      setInternships(career.internships);
+      setSurvey(career.satisfactionSurvey);
+    }
+  }, [selectedCareerId, getCareerData]);
 
   function handleSave() {
-    db.collection('careers')
-      .doc(careerId)
-      .update({
-        internships: parseInt(internships),
-        satisfactionSurvey: survey
-      })
-      .then(() =>
-        Swal.fire(
-          'Cambios guardados',
-          'Los cambios han sido guardados',
-          'success'
-        )
-      );
+    updateCareer(selectedCareerId, {
+      internships: parseInt(internships),
+      satisfactionSurvey: survey
+    }).then(() =>
+      Swal.fire(
+        'Cambios guardados',
+        'Los cambios han sido guardados',
+        'success'
+      )
+    );
   }
 
   return (
@@ -65,24 +59,24 @@ function CareersSettings() {
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid container direction='column' spacing={2}>
-          {!user.careerId && (
+          {userRole === ADMIN_ROLE && (
             <Grid
               item
               container
-              justify='flex-end'
+              justifyContent='flex-end'
               spacing={4}
-              style={{ marginBottom: '1rem' }}>
+              style={{ marginBottom: '1rem', width: '100%' }}>
               <Grid item>
                 <CareerSelector
-                  careerId={careerId}
-                  setCareerId={setCareerId}
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
                   excludeGeneral
                 />
               </Grid>
             </Grid>
           )}
           {career ? (
-            <Grid container direction='column' spacing={4}>
+            <Grid container direction='column' spacing={2}>
               <Grid item>
                 <Card>
                   <CardContent>
@@ -119,7 +113,7 @@ function CareersSettings() {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item container justify='flex-end'>
+              <Grid item container justifyContent='flex-end'>
                 <Grid item>
                   <Button
                     variant='contained'
@@ -135,10 +129,14 @@ function CareersSettings() {
               container
               direction='column'
               align='center'
-              justify='center'
+              justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
-                <img src='EmptyState-3x.png' width='300' />
+                <img
+                  src='EmptyState-3x.png'
+                  width='300'
+                  alt='Sin carrera seleccionada'
+                />
               </Grid>
               <Grid item>
                 <Typography variant='h5' color='textSecondary'>

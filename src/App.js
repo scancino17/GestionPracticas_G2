@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
-import useAuth from './providers/Auth';
+import {
+  ADMIN_ROLE,
+  STUDENT_ROLE,
+  SUPERVISOR_ROLE,
+  useUser
+} from './providers/User';
 import DashboardEstudiante from './student/DashboardEstudiante';
 import DashboardAdmin from './admin/dashboard/DashboardAdmin';
 import {
-  createMuiTheme,
+  createTheme,
   CssBaseline,
   darken,
   Grid,
@@ -14,8 +19,10 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
 import MakeAdmin from './utils/MakeAdmin';
+import { StudentProvider } from './providers/Student';
+import { SupervisorProvider } from './providers/Supervisor';
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       light: '#6782bc',
@@ -52,7 +59,7 @@ const theme = createMuiTheme({
 });
 
 function App() {
-  const { user, userData } = useAuth();
+  const { user, userData, userRole } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -61,15 +68,19 @@ function App() {
       {user ? (
         <>
           <TopBar setSidebarOpen={setSidebarOpen} />
-          {user.admin || user.supervisor ? (
-            <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
-          ) : user.student && userData ? (
-            <DashboardEstudiante onGoingIntern={false} />
+          {userRole === ADMIN_ROLE || userRole === SUPERVISOR_ROLE ? (
+            <SupervisorProvider>
+              <DashboardAdmin sidebarProps={{ sidebarOpen, setSidebarOpen }} />
+            </SupervisorProvider>
+          ) : userRole === STUDENT_ROLE && userData ? (
+            <StudentProvider>
+              <DashboardEstudiante />
+            </StudentProvider>
           ) : (
             <LoadingSkeleton />
           )}
           {/* Eliminar o comentar línea siguiente una vez se haya creado un usuario administrador*/}
-          <MakeAdmin /> {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
+          {/*<MakeAdmin />*/} {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
           {/* Eliminar o comentar línea anterior una vez se haya creado un usuario administrador*/}
         </>
       ) : (
@@ -83,7 +94,7 @@ function LoadingSkeleton() {
   return (
     <Grid
       container
-      justify='center'
+      justifyContent='center'
       alignItems='center'
       direction='column'
       style={{ marginTop: '4rem' }}>

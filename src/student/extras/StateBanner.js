@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, Typography, Grid, Paper, Box } from '@material-ui/core';
-import useAuth from '../../providers/Auth';
-import { db } from './../../firebase';
+import { useStudent } from '../../providers/Student';
 import * as internshipStates from '../../InternshipStates';
 
 const useStyles = makeStyles((theme) => ({
@@ -132,41 +131,28 @@ function StateBanner() {
   const [internshipState, setInternshipState] = useState('');
   const [reason, setReason] = useState('');
   const [grade, setGrade] = useState('');
-  const { userData } = useAuth();
+  const { currentInternshipData, lastApplication } = useStudent();
 
   useEffect(() => {
-    let isMounted = true;
-    const internshipId = userData.currentInternship.id;
-    db.collection('internships')
-      .doc(internshipId)
-      .get()
-      .then((query) => {
-        let data = query.data();
+    if (currentInternshipData) {
+      let state = currentInternshipData.extensionStatus
+        ? currentInternshipData.extensionStatus
+        : currentInternshipData.status;
+      setInternshipState(state);
 
-        if (isMounted) {
-          let state = data.extensionStatus ? data.extensionStatus : data.status;
-          setInternshipState(state);
+      if (states[state]?.applicationReason) {
+        setReason(lastApplication.reason);
+      } else {
+        setReason(
+          currentInternshipData.extensionStatus
+            ? currentInternshipData.reasonExtension
+            : currentInternshipData.reason
+        );
+      }
 
-          if (states[state]?.applicationReason) {
-            db.collection('applications')
-              .doc(userData.currentInternship.lastApplication)
-              .get()
-              .then((appQuery) => {
-                let appData = appQuery.data();
-                setReason(appData.reason);
-              });
-          } else {
-            setReason(
-              data.extensionStatus ? data.reasonExtension : data.reason
-            );
-          }
-
-          !!data.grade && setGrade(data.grade);
-        }
-      });
-
-    return () => (isMounted = false);
-  }, [userData]);
+      !!currentInternshipData.grade && setGrade(currentInternshipData.grade);
+    }
+  }, [currentInternshipData, lastApplication]);
 
   return (
     !!states[internshipState] &&

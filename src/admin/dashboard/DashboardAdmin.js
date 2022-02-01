@@ -101,11 +101,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Nuevas Intenciones</p>
                       <h2 className={classes.cardTitle}>
-<<<<<<< HEAD
                         <CountUp end={pendingIntentionsCount} duration={3} />
-=======
-                        <CountUp end={intentionsCount} duration={3} />
->>>>>>> origin/Responsive
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -126,11 +122,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Nuevos Formularios</p>
                       <h2 className={classes.cardTitle}>
-<<<<<<< HEAD
                         <CountUp end={pendingFormsCount} duration={3} />
-=======
-                        <CountUp end={formsCount} duration={3} />
->>>>>>> origin/Responsive
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -153,11 +145,7 @@ function DashboardAdmin({ sidebarProps }) {
                         Informes pendientes
                       </p>
                       <h2 className={classes.cardTitle}>
-<<<<<<< HEAD
                         <CountUp end={sentReportsCount} duration={3} />
-=======
-                        <CountUp end={reportsCount} duration={3} />
->>>>>>> origin/Responsive
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -176,11 +164,7 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardIcon>
                       <p className={classes.cardCategory}>Prácticas en Curso</p>
                       <h2 className={classes.cardTitle}>
-<<<<<<< HEAD
                         <CountUp end={ongoingInternshipsCount} duration={3} />
-=======
-                        <CountUp end={internshipCount} duration={3} />
->>>>>>> origin/Responsive
                       </h2>
                     </CardHeader>
                     <CardFooter stats>
@@ -215,11 +199,7 @@ function DashboardAdmin({ sidebarProps }) {
                       Estado de los Alumnos por Carrera
                     </p>
                   </CardHeader>
-<<<<<<< HEAD
-                  <CardBody>
-=======
                   <CardBody className={classes.canvasContainer}>
->>>>>>> origin/Responsive
                     <GroupedBarChart setExportable={setInternStatus} />
                   </CardBody>
                   <CardFooter stats>
@@ -242,11 +222,7 @@ function DashboardAdmin({ sidebarProps }) {
                         Empresas más Elegidas por los Practicantes
                       </p>
                     </CardHeader>
-<<<<<<< HEAD
-                    <CardBody>
-=======
                     <CardBody className={classes.canvasContainer}>
->>>>>>> origin/Responsive
                       <VerticalBar setExportable={setTopCompaniesRegistered} />
                     </CardBody>
                     <CardFooter stats>
@@ -267,7 +243,6 @@ function DashboardAdmin({ sidebarProps }) {
                       <p className={classes.cardCategory}>
                         Aprobados y Rechazados por Carrera
                       </p>
-<<<<<<< HEAD
                       {careerId === DEFAULT_CAREER && (
                         <CareerSelector
                           careerId={graphsCareerId}
@@ -278,18 +253,6 @@ function DashboardAdmin({ sidebarProps }) {
                     <CardBody>
                       <PieChart
                         graphsCareerId={graphsCareerId}
-=======
-                      {!user.careerId && (
-                        <CareerSelector
-                          careerId={careerId}
-                          setCareerId={setCareerId}
-                        />
-                      )}
-                    </CardHeader>
-                    <CardBody className={classes.pieChart}>
-                      <PieChart
-                        careerId={careerId}
->>>>>>> origin/Responsive
                         setExportable={setApplicationsStatus}
                       />
                     </CardBody>

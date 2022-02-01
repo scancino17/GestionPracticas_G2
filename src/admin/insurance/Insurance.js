@@ -61,7 +61,7 @@ function UploadModal({ internship, close, show }) {
 }
 
 function StudentItem({ internship }) {
-  const [showModal, setShowModal] = useState();
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <>
@@ -217,7 +217,7 @@ function Insurance() {
                 .slice((page - 1) * itemsPerPage, page * itemsPerPage)
                 .map(
                   (doc) =>
-                    (selectedCareerId === 'general' ||
+                    (selectedCareerId === DEFAULT_CAREER ||
                       selectedCareerId === doc.careerId) && (
                       <StudentItem
                         internship={doc}

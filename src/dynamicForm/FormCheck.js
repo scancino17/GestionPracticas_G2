@@ -18,7 +18,7 @@ import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
 import { AssignmentLate, Check, Clear, Edit, Save } from '@material-ui/icons';
-import FormView from './FormView';
+import FormView from './builder_preview/FormView';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisor } from '../providers/Supervisor';
 

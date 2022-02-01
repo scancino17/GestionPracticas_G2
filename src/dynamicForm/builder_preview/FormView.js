@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  Divider,
   Grid,
   InputLabel,
   List,
@@ -12,11 +16,11 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import Selector from './Selector';
+import Selector from '../camps/Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { GetApp } from '@material-ui/icons';
-import { storage } from '../firebase';
-import { customTypes, formTypes } from './formTypes';
+import { storage } from '../../firebase';
+import { customTypes, formTypes } from '../camps/formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useUser } from '../providers/User';
@@ -63,10 +67,12 @@ function FormView({
   applicationId,
   admin
 }) {
+  const { user } = useUser();
+
   useEffect(() => {
     setFlag(false);
   }, [form, flag]);
-  const { user, userData } = useUser();
+
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;
     setFlag(true);
@@ -78,7 +84,7 @@ function FormView({
         {form &&
           form.map((element, index) =>
             element.type === formTypes.formSelect ? (
-              <Grid item>
+              <Grid item key={index}>
                 <FormControl fullWidth variant='outlined'>
                   <InputLabel id={element.name}>{element.name}</InputLabel>
                   <Select
@@ -95,13 +101,15 @@ function FormView({
                     }>
                     <MenuItem value=''>None</MenuItem>
                     {element.options.map((option) => (
-                      <MenuItem value={option}>{option}</MenuItem>
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
             ) : element.type === formTypes.formTextInput ? (
-              <Grid item>
+              <Grid item key={index}>
                 <TextField
                   fullWidth
                   variant='outlined'
@@ -115,7 +123,7 @@ function FormView({
                 />
               </Grid>
             ) : element.type === formTypes.formFileInput ? (
-              <Grid item>
+              <Grid item key={index}>
                 <>
                   <Typography variant='h5'>{element.name}</Typography>
                   {
@@ -159,16 +167,87 @@ function FormView({
                 </>
               </Grid>
             ) : element.type === formTypes.formHeader ? (
-              <Grid item>
+              <Grid item key={index}>
                 <Typography variant='h5'>{element.name}</Typography>
               </Grid>
             ) : element.type === formTypes.formSpace ? (
-              <Grid item>
+              <Grid item key={index}>
                 <Typography variant='h5' />
+              </Grid>
+            ) : element.type === formTypes.formSatisfaction ? (
+              <Grid item key={index}>
+                <Divider />
+                <FormControl component='checkSatisfaction'>
+                  <Typography variant='h5'>{element.name}</Typography>
+                  <Typography
+                    variant='h10'
+                    style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                    {element.description + '\n'}
+                  </Typography>
+                  <Grid container justifyContent='flex-start'>
+                    <Grid item>
+                      <FormGroup aria-label='position'>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={element.value === 0}
+                              onChange={() => updateItem(index, 'value', 0)}
+                              style={{
+                                color: '#36568C'
+                              }}
+                            />
+                          }
+                          label=' Destacado '
+                          labelPlacement='end'
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={element.value === 1}
+                              onChange={() => updateItem(index, 'value', 1)}
+                              style={{
+                                color: '#36568C'
+                              }}
+                            />
+                          }
+                          label='   Bueno   '
+                          labelPlacement='end'
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={element.value === 2}
+                              onChange={() => updateItem(index, 'value', 2)}
+                              style={{
+                                color: '#36568C'
+                              }}
+                            />
+                          }
+                          label=' Suficiente '
+                          labelPlacement='end'
+                        />
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              checked={element.value === 3}
+                              onChange={() => updateItem(index, 'value', 3)}
+                              style={{
+                                color: '#36568C'
+                              }}
+                            />
+                          }
+                          label='Insuficiente'
+                          labelPlacement='end'
+                        />
+                      </FormGroup>
+                    </Grid>
+                  </Grid>
+                </FormControl>
+                <Divider />
               </Grid>
             ) : element.type === formTypes.formCustom ? (
               element.type2 === customTypes.formCiudad ? (
-                <Grid item>
+                <Grid item key={index}>
                   {readOnly ? (
                     <>
                       <TextField
@@ -197,7 +276,7 @@ function FormView({
                   )}
                 </Grid>
               ) : element.type2 === customTypes.formEmpresa ? (
-                <Grid item>
+                <Grid item key={index}>
                   {readOnly ? (
                     <>
                       <TextField
@@ -226,7 +305,7 @@ function FormView({
                   )}
                 </Grid>
               ) : element.type2 === customTypes.formStartDate ? (
-                <Grid item>
+                <Grid item key={index}>
                   <DatePicker
                     fullWidth
                     disableToolbar
@@ -244,7 +323,7 @@ function FormView({
                   />
                 </Grid>
               ) : element.type2 === customTypes.formEndDate ? (
-                <Grid item>
+                <Grid item key={index}>
                   <DatePicker
                     fullWidth
                     disableToolbar
@@ -262,7 +341,7 @@ function FormView({
                   />
                 </Grid>
               ) : element.type2 === customTypes.formCountry ? (
-                <Grid item>
+                <Grid item key={index}>
                   {readOnly ? (
                     <>
                       <TextField

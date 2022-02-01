@@ -3,7 +3,6 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
-  Box,
   Button,
   Container,
   Dialog,
@@ -34,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: theme.palette.text.secondary
+  },
+  bold: {
+    fontWeight: 600
   }
 }));
 
@@ -75,9 +77,11 @@ function IntentionList({ pendingIntentions, update }) {
       <Container style={{ marginTop: '2rem' }}>
         {pendingIntentions
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-          .map((internship) => (
+          .map((application, index) => (
+            //por el momento queda el indice como key
             <IntentionItem
-              internship={internship}
+              key={application.internshipId}
+              application={application}
               update={update}
               expanded={expanded}
               changeExpanded={changeExpanded}
@@ -118,8 +122,8 @@ function IntentionList({ pendingIntentions, update }) {
 
 const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
   const classes = useStyles();
-  const [showApprovalModal, setShowApprovalModal] = useState();
-  const [showRejectModal, setShowRejectModal] = useState();
+  const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
   const closeModal = () => {
     setShowApprovalModal(false);
@@ -145,33 +149,25 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
               <Typography variant='h6'>Detalles de postulante</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography>
-                <Box fontWeight='fontWeightMedium'>Nombre:</Box>
-              </Typography>
+              <Typography className={classes.bold}>Nombre:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{internship.name}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography>
-                <Box fontWeight='fontWeightMedium'>Rut:</Box>
-              </Typography>
+              <Typography className={classes.bold}>Rut:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{internship.rut}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography>
-                <Box fontWeight='fontWeightMedium'>Matrícula:</Box>
-              </Typography>
+              <Typography className={classes.bold}>Matrícula:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{internship.enrollmentNumber}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography>
-                <Box fontWeight='fontWeightMedium'>Correo:</Box>
-              </Typography>
+              <Typography className={classes.bold}>Correo:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>{internship.email}</Typography>

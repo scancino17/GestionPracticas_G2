@@ -83,7 +83,7 @@ function ApplicationsList() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Postulaciones de práctica</Typography>
+        <Typography variant='h4'>Inscripciones de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid
@@ -168,6 +168,7 @@ function ApplicationsList() {
               count={Math.ceil(filteredApplications.length / itemsPerPage)}
               page={page}
               color='primary'
+              style={{ marginBottom: '40px' }}
               onChange={(_, val) => setPage(val)}
             />
           ) : (
@@ -181,7 +182,7 @@ function ApplicationsList() {
                 <img src='post.png' width='300' />
               </Grid>
               <Typography variant='h5' color='textSecondary'>
-                No hay postulaciones de práctica disponibles
+                No hay inscripciones de práctica disponibles
               </Typography>
             </Grid>
           )}
@@ -200,7 +201,7 @@ function ApplicationItem({ application }) {
       onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
-        secondary={`Práctica ${application.internshipNumber} - ${application.Empresa}`}
+        secondary={`${application['Rut del estudiante']} - ${application['Número de matrícula']} - Práctica ${application.internshipNumber} - ${application.careerId}`}
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/applications/${application.id}`)}>

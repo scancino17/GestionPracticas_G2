@@ -69,15 +69,7 @@ function VerticalBar(props) {
   }, [applications]);
 
   const options = {
-    scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true
-          }
-        }
-      ]
-    }
+    maintainAspectRatio: false
   };
 
   useEffect(() => setLoaded(!!data), [data]);

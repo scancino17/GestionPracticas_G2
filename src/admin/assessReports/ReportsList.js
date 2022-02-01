@@ -123,7 +123,7 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={internship.applicationData.Empresa}
+        secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
       />
       <ListItemSecondaryAction>
         <IconButton

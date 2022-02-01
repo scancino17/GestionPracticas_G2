@@ -14,7 +14,8 @@ import {
   makeStyles,
   TextField,
   Typography,
-  withStyles
+  withStyles,
+  Box
 } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import { ExpandMore } from '@material-ui/icons';
@@ -90,6 +91,7 @@ function IntentionList({ pendingIntentions, update }) {
         <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
           {pendingIntentions && pendingIntentions.length > 0 ? (
             <Pagination
+              style={{ marginBottom: '40px' }}
               count={Math.ceil(pendingIntentions.length / itemsPerPage)}
               page={page}
               color='primary'
@@ -169,8 +171,17 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
             <Grid item xs={4}>
               <Typography className={classes.bold}>Correo:</Typography>
             </Grid>
+
             <Grid item xs={8}>
               <Typography>{internship.email}</Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Typography>
+                <Box fontWeight='fontWeightMedium'>Carrera:</Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>{internship.careerName}</Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
               <Typography>Práctica {internship.internshipNumber}</Typography>

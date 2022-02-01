@@ -42,6 +42,10 @@ const dashboardStyle = {
     paddingTop: '10px',
     marginBottom: '0'
   },
+  canvasContainer: {
+    height: '70vh',
+    width: '100%'
+  },
   cardCategoryWhite: {
     color: 'rgba(' + hexToRgb(whiteColor) + ',.62)',
     margin: '0',

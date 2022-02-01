@@ -23,7 +23,7 @@ import InternshipIntention from '../intention/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
-import EditForm from '../../dynamicForm/EditForm';
+import EditForm from '../../dynamicForm/builder_preview/form/EditForm';
 import FormCheck from '../../dynamicForm/FormCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';

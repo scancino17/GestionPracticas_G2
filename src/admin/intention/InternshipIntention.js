@@ -77,11 +77,11 @@ function IntentionList({ pendingIntentions, update }) {
       <Container style={{ marginTop: '2rem' }}>
         {pendingIntentions
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-          .map((application, index) => (
+          .map((internship, index) => (
             //por el momento queda el indice como key
             <IntentionItem
-              key={application.internshipId}
-              application={application}
+              key={internship.internshipId}
+              internship={internship}
               update={update}
               expanded={expanded}
               changeExpanded={changeExpanded}

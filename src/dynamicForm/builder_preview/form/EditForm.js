@@ -33,9 +33,9 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import CareerSelector from '../utils/CareerSelector';
-import { DEFAULT_CAREER, useUser } from '../providers/User';
-import { useSupervisor } from '../providers/Supervisor';
+import CareerSelector from '../../../utils/CareerSelector';
+import { DEFAULT_CAREER, useUser } from '../../../providers/User';
+import { useSupervisor } from '../../../providers/Supervisor';
 import { predefinedSurvey } from '../../predefined_forms/predefined';
 
 function EditForm() {

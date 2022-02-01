@@ -23,7 +23,7 @@ import { storage } from '../../firebase';
 import { customTypes, formTypes } from '../camps/formTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { useUser } from '../providers/User';
+import { useUser } from '../../providers/User';
 
 function InternshipIntentionFileList({
   student,

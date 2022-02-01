@@ -14,7 +14,7 @@ import { useUser } from '../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './formTypes';
+import { formTypes, customTypes } from './camps/formTypes';
 import {
   addDoc,
   collection,

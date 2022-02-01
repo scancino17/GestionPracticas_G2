@@ -4,7 +4,8 @@ import {
   Grid,
   TextField,
   Typography,
-  Paper
+  Paper,
+  Box
 } from '@material-ui/core';
 import { httpsCallable } from 'firebase/functions';
 import React, { useState } from 'react';
@@ -98,7 +99,7 @@ function CreateEmployerPanel() {
           </Typography>
           <Typography style={{ margin: '2rem' }}>
             La siguiente opción permite crear una cuenta de supervisor empleador
-            con fines de prueba. Cuidado, la opción es experimental, y no estará
+            con fines de prueba. Cuidado: la opción es experimental, y no estará
             relacionado a ningún estudiante.
           </Typography>
           <Grid
@@ -142,11 +143,103 @@ function CreateEmployerPanel() {
   );
 }
 
+function AssignInternshipPanel() {
+  const [studentEmail, setStudentEmail] = useState();
+  const [employerEmail, setEmployerEmail] = useState();
+  const { students } = useSupervisor();
+
+  function handleAssignSubmit(event) {
+    event.preventDefault();
+    assignEmployer();
+    setStudentEmail('');
+    setEmployerEmail('');
+  }
+
+  function assignEmployer() {
+    let { id, currentInternship } = students.find(
+      (item) => item.email === studentEmail
+    );
+    let data = {
+      employerEmail: employerEmail,
+      studentId: id,
+      internshipId: currentInternship.id
+    };
+    const assignInternshipToEmployer = httpsCallable(
+      functions,
+      'assignInternshipToEmployer'
+    );
+    console.log(data);
+    assignInternshipToEmployer(data);
+  }
+
+  return (
+    <Grid
+      conatiner
+      direction='column'
+      alignItems='center'
+      spacing={3}
+      style={{ paddingTop: '2rem' }}>
+      <Grid item container xs={12}>
+        <Paper>
+          <Typography variant='h4' style={{ margin: '2rem' }}>
+            Asignar práctica a Supervisor Empleador
+          </Typography>
+          <Typography style={{ margin: '2rem' }}>
+            La siguiente opción permite asignar la{' '}
+            <Box fontWeight='fontWeightBold' display='inline'>
+              actual práctica{' '}
+            </Box>
+            del estudiante dado al empleador dado. Utilizar esta función sin que
+            el estudiante se encuentre dando una práctica puede resultar en
+            comportamiento indeterminado.
+          </Typography>
+          <Grid
+            item
+            container
+            direction='row'
+            spacing={1}
+            alignItems='center'
+            alignContent='stretch'
+            style={{ margin: '2rem' }}>
+            <Grid item xs={4}>
+              <TextField
+                label='Correo del empleador'
+                value={employerEmail}
+                fullWidth
+                onChange={(e) => setEmployerEmail(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                label='Correo del estudiante'
+                value={studentEmail}
+                fullWidth
+                onChange={(e) => setStudentEmail(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Button
+                variant='contained'
+                color='primary'
+                style={{ marginTop: '1rem', marginLeft: '1rem' }}
+                disabled={employerEmail === '' && studentEmail === ''}
+                onClick={handleAssignSubmit}>
+                Asignar práctica
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid>
+    </Grid>
+  );
+}
+
 function ControlPanel() {
   return (
     <Container>
       <RestoreStudentPanel />
       <CreateEmployerPanel />
+      <AssignInternshipPanel />
     </Container>
   );
 }

@@ -251,6 +251,13 @@ exports.createEmployer = functions.https.onCall((data, context) => {
           functions.logger.info(
             `Employer ${userRecord.uid} created successfully.`
           );
+
+          admin
+            .firestore()
+            .collection('employers')
+            .doc(userRecord.uid)
+            .set({ internships: [] });
+
           admin
             .firestore()
             .collection('mails')
@@ -264,6 +271,37 @@ exports.createEmployer = functions.https.onCall((data, context) => {
                 }
               }
             });
+        });
+    });
+});
+
+exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
+  admin
+    .auth()
+    .listUsers()
+    .then((listUsersResult) => {
+      let employerId = listUsersResult.users
+        .filter((item) => item.customClaims && item.customClaims.employer)
+        .find((item) => item.email === data.employerEmail).uid;
+
+      admin
+        .firestore()
+        .collection('employers')
+        .doc(employerId)
+        .get()
+        .then((doc) => {
+          let data = doc.data();
+          const internships = data.internships;
+          internships.push({
+            studentId: data.studentId,
+            internshipId: data.internshipId
+          });
+
+          admin
+            .firestore()
+            .collection('employers')
+            .doc(employerId)
+            .update({ internships: internships });
         });
     });
 });

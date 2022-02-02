@@ -25,7 +25,6 @@ function ReportsList() {
   const { internships } = useSupervisor();
 
   const sentReportsList = useMemo(() => {
-    console.log(internships);
     if (internships)
       return internships.filter((item) => item.status === sentReport);
     else return [];

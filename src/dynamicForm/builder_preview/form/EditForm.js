@@ -72,7 +72,6 @@ function EditForm() {
   }
 
   function handleEdit(index) {
-    console.log(index);
     setEditValue(formFull[index].step);
     setIndexEdit(index);
     setEdit(true);

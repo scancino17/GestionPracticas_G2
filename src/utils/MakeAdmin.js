@@ -5,7 +5,7 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { functions } from '../firebase';
 import { useUser } from '../providers/User';
 
@@ -17,8 +17,6 @@ function MakeAdmin() {
     const makeAdmin = functions.httpsCallable('makeAdmin');
     makeAdmin({ uid: user.uid, name: name });
   }
-
-  useEffect(() => console.log(user), [user]);
 
   return (
     <Container>

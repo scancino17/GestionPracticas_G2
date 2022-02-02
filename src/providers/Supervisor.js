@@ -64,21 +64,18 @@ export function SupervisorProvider({ children }) {
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      console.log('apps', temp);
       setApplications(temp);
     });
 
     let intUnsub = onSnapshot(intRef, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      console.log('ints', temp);
       setInternships(temp);
     });
 
     let stuUnsub = onSnapshot(stuRef, (querySnapshot) => {
       const temp = [];
       querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      console.log('stus', temp);
       setStudents(temp);
     });
 

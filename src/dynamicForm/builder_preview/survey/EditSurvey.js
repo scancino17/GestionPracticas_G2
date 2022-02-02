@@ -36,7 +36,7 @@ import {
 } from '@material-ui/core';
 import CareerSelector from '../../../utils/CareerSelector';
 import useAuth from '../../../providers/Auth';
-import {predefinedSurvey } from '../../predefined_forms/predefined';
+import { predefinedSurvey } from '../../predefined_forms/predefined';
 
 function EditSurvey() {
   const [formFull, setFormFull] = useState(predefinedSurvey);
@@ -73,16 +73,13 @@ function EditSurvey() {
   }
 
   function handleEdit(index) {
-    console.log(index)
-    setEditValue(formFull[index].step)
+    setEditValue(formFull[index].step);
     setIndexEdit(index);
-    setEdit(true)
-
-  
+    setEdit(true);
   }
   function handleSaveChanges() {
     const aux = formFull;
-    aux[indexEdit].step=editValue;
+    aux[indexEdit].step = editValue;
     setFormFull(aux);
     setEdit(false);
   }
@@ -94,52 +91,41 @@ function EditSurvey() {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: `Eliminar`,
-      cancelButtonText: `Cancelar`,
+      cancelButtonText: `Cancelar`
     }).then((result) => {
       if (result.isConfirmed) {
         setFormFull((prev) => prev.filter((el) => el !== element));
         setShow(true);
-          setActiveStep(0);
+        setActiveStep(0);
       }
       if (result.isDismissed) {
         setShow(true);
       }
-    })
-    
-  
-
+    });
   }
 
   function handleUp(index) {
     setFormFull((prev) => array_move(prev, index, index - 1));
-
   }
 
   function handleDown(index) {
     setFormFull((prev) => array_move(prev, index, index + 1));
-
   }
 
-  function handleSave(){
-    
-      Swal.fire({
-        title: '¿Desea guardar los cambios?',
-        showDenyButton: true,
-        confirmButtonText: `Guardar`,
-        denyButtonText: `Salir`
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.collection('survey').doc(careerId).set({ form: formFull });
-          Swal.fire(
-            '¡Formulario Guardado!',
-            '',
-            'success'
-          ).then((result) => {
-            if (result.isConfirmed) navigate('/');
-          });
-        }
-      });
-    
+  function handleSave() {
+    Swal.fire({
+      title: '¿Desea guardar los cambios?',
+      showDenyButton: true,
+      confirmButtonText: `Guardar`,
+      denyButtonText: `Salir`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        db.collection('survey').doc(careerId).set({ form: formFull });
+        Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
+          if (result.isConfirmed) navigate('/');
+        });
+      }
+    });
   }
 
   function array_move(arr, old_index, new_index) {
@@ -161,7 +147,7 @@ function EditSurvey() {
 
   return (
     <Grid container direction='column'>
-        <div
+      <div
         style={{
           backgroundImage: "url('AdminBanner-Import.png')",
           backgroundSize: 'cover',
@@ -173,7 +159,12 @@ function EditSurvey() {
       </div>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {!user.careerId && (
-          <Grid container direction='row' justifyContent='flex-end' alignItems='center' spacing={4}>
+          <Grid
+            container
+            direction='row'
+            justifyContent='flex-end'
+            alignItems='center'
+            spacing={4}>
             <Grid item>
               <CareerSelector
                 careerId={careerId}
@@ -186,7 +177,7 @@ function EditSurvey() {
         {careerId ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
-              <Grid item  xs={12} md={5}>
+              <Grid item xs={12} md={5}>
                 <Typography variant='h5'>Etapas</Typography>
                 <Grid item container justifyContent='center'>
                   <Button
@@ -235,11 +226,11 @@ function EditSurvey() {
                 justifyContent='flex-end'
                 alignItems='center'
                 spacing={4}>
-                   <Grid item>
+                <Grid item>
                   <Button
                     variant='contained'
                     color='primary'
-                    startIcon={<Save/>}
+                    startIcon={<Save />}
                     onClick={handleSave}>
                     Guardar
                   </Button>
@@ -262,12 +253,11 @@ function EditSurvey() {
                     disabled={activeStep === formFull.length - 1}
                     onClick={handleNext}
                     endIcon={<ArrowForward />}>
-                      Siguiente
+                    Siguiente
                   </Button>
                 </Grid>
               </Grid>
             </Grid>
-           
           </Grid>
         ) : (
           <Grid
@@ -277,7 +267,11 @@ function EditSurvey() {
             justifyContent='center'
             style={{ marginTop: '6rem' }}>
             <Grid item>
-              <img src='EmptyState-3x.png' width='300' />
+              <img
+                src='EmptyState-3x.png'
+                width='300'
+                alt='Selecciona una carrera'
+              />
             </Grid>
             <Grid item>
               <Typography variant='h5' color='textSecondary'>
@@ -300,36 +294,32 @@ function EditSurvey() {
               <TableBody>
                 {formFull.map((form, i) => (
                   <TableRow key={form.i}>
-
-                    {(!edit || indexEdit!==i)?(
-                       <TableCell>{form.step}</TableCell>)
-                        :
-                        <TableCell>
+                    {!edit || indexEdit !== i ? (
+                      <TableCell>{form.step}</TableCell>
+                    ) : (
+                      <TableCell>
                         <TextField
-                        fullWidth
-                        
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                      />
-                       </TableCell>
-                      }
+                          fullWidth
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                        />
+                      </TableCell>
+                    )}
 
                     <TableCell>
-                      {(!edit || indexEdit!==i)?(
+                      {!edit || indexEdit !== i ? (
                         <IconButton
-                        disabled={edit}
+                          disabled={edit}
                           onClick={() => handleEdit(i)}>
-                          <Edit/>
-                        </IconButton>)
-                        :null}
-                        
-                        {!(!edit || indexEdit!==i)?(
-                        <IconButton
-                            onClick={() => handleSaveChanges(i)}>
-                            <Save />
-                          </IconButton>)
-                          :null
-                        }
+                          <Edit />
+                        </IconButton>
+                      ) : null}
+
+                      {!(!edit || indexEdit !== i) ? (
+                        <IconButton onClick={() => handleSaveChanges(i)}>
+                          <Save />
+                        </IconButton>
+                      ) : null}
                       <IconButton
                         disabled={form.uneditable || edit}
                         onClick={() => handleDelete(form)}>

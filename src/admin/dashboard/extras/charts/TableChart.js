@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { CircularProgress, Grid } from '@material-ui/core';
 import { useSupervisor } from '../../../../providers/Supervisor';
+
 const columns = [
   { field: 'country', headerName: 'País', flex: 1 },
   { field: 'interns', headerName: 'Total Practicantes', flex: 1 }
 ];
 
-function TableChart(props) {
+function TableChart({ setExportable }) {
   const [data, setData] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const { applications } = useSupervisor();
@@ -28,7 +29,7 @@ function TableChart(props) {
         }
       });
 
-    props.setExportable([
+    setExportable([
       Array.from(countryCounter.keys()),
       [Object.fromEntries(countryCounter)]
     ]);
@@ -44,7 +45,7 @@ function TableChart(props) {
     });
 
     setData(rows);
-  }, [applications]);
+  }, [applications, setExportable]);
 
   useEffect(() => setLoaded(!!data), [data]);
 

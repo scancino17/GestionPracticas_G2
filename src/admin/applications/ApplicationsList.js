@@ -16,7 +16,7 @@ import {
   Typography
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
@@ -179,7 +179,11 @@ function ApplicationsList() {
               justifyContent='center'
               style={{ marginTop: '6rem' }}>
               <Grid item>
-                <img src='post.png' width='300' />
+                <img
+                  src='post.png'
+                  width='300'
+                  alt='Sin inscripciones de práctica'
+                />
               </Grid>
               <Typography variant='h5' color='textSecondary'>
                 No hay inscripciones de práctica disponibles

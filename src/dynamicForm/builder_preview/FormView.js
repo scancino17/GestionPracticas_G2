@@ -43,7 +43,7 @@ function InternshipIntentionFileList({
       .then((url) => {
         setUrl(url);
       });
-  }, []);
+  }, [application, camp, internship, name, student]);
 
   return (
     <List>
@@ -71,7 +71,7 @@ function FormView({
 
   useEffect(() => {
     setFlag(false);
-  }, [form, flag]);
+  }, [form, flag, setFlag]);
 
   const updateItem = (index, whichvalue, newvalue) => {
     form[index][whichvalue] = newvalue;

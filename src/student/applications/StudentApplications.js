@@ -11,7 +11,6 @@ import {
 import { collection, where, query, onSnapshot } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { db } from '../../firebase';
 
 const useStyles = makeStyles((theme) => ({
   chipSuccess: {

@@ -35,8 +35,7 @@ import {
   sentReport,
   sentExtension,
   deniedExtension,
-  approvedExtension,
-  finishedInternship
+  approvedExtension
 } from '../../InternshipStates';
 import { AlarmAdd, ErrorOutline } from '@material-ui/icons';
 import { DropzoneArea } from 'material-ui-dropzone';
@@ -149,22 +148,14 @@ function ToDoItem({
 }
 
 function ToDoList() {
-  //const [internship, setInternship] = useState();
-
   // Esto existe si por algun motivo en algíun momento la lista de tareas
   // debe estar vacía. Actualmente, en ningún momento del proceso se llega a
   // este estado.
+  // eslint-disable-next-line no-unused-vars
   const [done, setDone] = useState(false);
 
-  const {
-    updateUser,
-    updateCurrentInternship,
-    step,
-    currentInternship,
-    lastApplication,
-    currentInternshipData
-  } = useStudent();
-
+  const { step, currentInternship, lastApplication, currentInternshipData } =
+    useStudent();
   const classes = useStyles();
   const [openDocs, setOpenDocs] = useState(false);
   const navigate = useNavigate();
@@ -172,15 +163,6 @@ function ToDoList() {
   const [showExtension, setShowExtension] = useState(false);
   const [openSendReport, setOpenSendReport] = useState(false);
   const [openReportAnnotations, setOpenReportAnnotations] = useState(false);
-
-  function handleFinish() {
-    updateCurrentInternship({
-      status: finishedInternship
-    });
-    updateUser({
-      step: 0
-    });
-  }
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -194,7 +176,7 @@ function ToDoList() {
         <AccordionDetails>
           {done ? (
             <Grid container direction='column' alignItems='center'>
-              <img src='AllDone.png' alt='Vacio' />
+              <img src='AllDone.png' alt='Sin tareas' />
               <Typography variant='h6'>
                 No tienes tareas pendientes de momento.
               </Typography>

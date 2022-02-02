@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Landing from './login/Landing';
 import {
@@ -18,7 +18,6 @@ import {
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
-import MakeAdmin from './utils/MakeAdmin';
 import { StudentProvider } from './providers/Student';
 import { SupervisorProvider } from './providers/Supervisor';
 
@@ -79,9 +78,6 @@ function App() {
           ) : (
             <LoadingSkeleton />
           )}
-          {/* Eliminar o comentar línea siguiente una vez se haya creado un usuario administrador*/}
-          {/*<MakeAdmin />*/} {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
-          {/* Eliminar o comentar línea anterior una vez se haya creado un usuario administrador*/}
         </>
       ) : (
         <Landing />

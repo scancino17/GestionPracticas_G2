@@ -11,9 +11,16 @@ import {
   Button,
   IconButton
 } from '@material-ui/core';
-import { Delete, ArrowUpward, ArrowDownward, Add, Edit } from '@material-ui/icons';
+import {
+  Delete,
+  ArrowUpward,
+  ArrowDownward,
+  Add,
+  Edit
+} from '@material-ui/icons';
 import ConstructorCamp from '../camps/ConstructorCamp';
 import Swal from 'sweetalert2';
+
 function FormBuilder({
   formInner,
   flag,
@@ -32,10 +39,9 @@ function FormBuilder({
     value: ''
   });
 
-
   useEffect(() => {
     setFlag(false);
-  }, [formInner, flag]);
+  }, [formInner, flag, setFlag]);
 
   function hadlerDelete(element, i) {
     Swal.fire({
@@ -43,7 +49,7 @@ function FormBuilder({
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: `Eliminar`,
-      cancelButtonText: `Cancelar`,
+      cancelButtonText: `Cancelar`
     }).then((result) => {
       if (result.isConfirmed) {
         const aux = formFullInner;
@@ -51,8 +57,7 @@ function FormBuilder({
         handlerSetFormInner(aux);
         setFlag(true);
       }
-    })
-    
+    });
   }
 
   function handlerUp(index) {
@@ -68,11 +73,12 @@ function FormBuilder({
     handlerSetFormInner(aux);
     setFlag(true);
   }
-  function handleEdit( rec, i){
-      setEditElement(rec);
-      setEditIndex(i);
-      setEdit(true)   
-      setShow(true);
+
+  function handleEdit(rec, i) {
+    setEditElement(rec);
+    setEditIndex(i);
+    setEdit(true);
+    setShow(true);
   }
 
   function array_move(arr, old_index, new_index) {
@@ -93,7 +99,11 @@ function FormBuilder({
       direction='column'
       justifyContent='flex-start'
       alignItems='flex-end'>
-      <Grid container direction='column' justifyContent='center' alignItems='center'>
+      <Grid
+        container
+        direction='column'
+        justifyContent='center'
+        alignItems='center'>
         <Box pl={6} pb={2}>
           <Table>
             <TableHead>
@@ -127,20 +137,20 @@ function FormBuilder({
                       <Grid>
                         <IconButton
                           disabled={rec.uneditable}
-                          onClick={() => handleEdit(rec,i)}>
+                          onClick={() => handleEdit(rec, i)}>
                           <Edit />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                         disabled={rec.uneditable}
+                          disabled={rec.uneditable}
                           onClick={() => hadlerDelete(rec, i)}>
                           <Delete />
                         </IconButton>
                       </Grid>
                       <Grid>
                         <IconButton
-                          disabled={ i === 0}
+                          disabled={i === 0}
                           onClick={() => handlerUp(i)}>
                           <ArrowUpward />
                         </IconButton>
@@ -161,7 +171,11 @@ function FormBuilder({
         </Box>
       </Grid>
 
-      <Grid container direction='column' justifyContent='center' alignItems='center'>
+      <Grid
+        container
+        direction='column'
+        justifyContent='center'
+        alignItems='center'>
         <Button
           variant='contained'
           color='primary'
@@ -177,12 +191,10 @@ function FormBuilder({
           formFullInnerInner={formFullInner}
           setFlagInner={setFlag}
           show={show}
-
           edit={edit}
           setEdit={setEdit}
           editIndex={editIndex}
           editElement={editElement}
-
         />
       </Grid>
     </Grid>

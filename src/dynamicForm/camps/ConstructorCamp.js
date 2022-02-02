@@ -17,7 +17,7 @@ import {
   DialogContent,
   DialogActions
 } from '@material-ui/core';
-import { Add, Delete, Edit, Save } from '@material-ui/icons';
+import { Add, Delete, Save } from '@material-ui/icons';
 import { customTypes, formTypes } from './formTypes';
 
 function ConstructorCamp({
@@ -42,12 +42,12 @@ function ConstructorCamp({
   const [newOption, setNewOption] = useState('');
 
   useEffect(() => {
-    if(edit){
-      setType(editElement.type)
-      setName(editElement.name)
-      setOptions(editElement.options)
+    if (edit) {
+      setType(editElement.type);
+      setName(editElement.name);
+      setOptions(editElement.options);
     }
-  }, [edit,editElement]);
+  }, [edit, editElement]);
 
   function handleSave() {
     let temp;
@@ -88,7 +88,7 @@ function ConstructorCamp({
         value: '',
         name: type2
       };
-    }else if (type === formTypes.formSatisfaction) {
+    } else if (type === formTypes.formSatisfaction) {
       temp = {
         type: type,
         value: null,
@@ -96,37 +96,35 @@ function ConstructorCamp({
         description: description
       };
     }
-    
+
     const aux = formFullInnerInner;
-    if(edit){
-      aux[indexInnerInner].form[editIndex]=temp;
+    if (edit) {
+      aux[indexInnerInner].form[editIndex] = temp;
       setEdit(false);
-    }else{
+    } else {
       aux[indexInnerInner].form.push(temp);
     }
-    handleExit()
+    handleExit();
     handlerSetFormInnerInner(aux);
     setFlagInner(true);
-    
   }
 
-  function handleExit(){
-    
+  function handleExit() {
     setName('');
     setType('');
     setType2('');
     setOptions([]);
     setEdit(false);
-    setShow(false)
+    setShow(false);
   }
-  function changeType(e){
+  function changeType(e) {
     setType(e.target.value);
     setOptions([]);
     setName('');
   }
 
   return (
-    <Dialog open={show} onClose={() =>handleExit() } fullWidth>
+    <Dialog open={show} onClose={() => handleExit()} fullWidth>
       <DialogTitle>Creación de Campo</DialogTitle>
       <DialogContent>
         <FormControl fullWidth style={{ marginBottom: '2rem' }}>
@@ -140,7 +138,9 @@ function ConstructorCamp({
             onChange={(e) => changeType(e)}>
             <MenuItem value=''>None</MenuItem>
             {Object.values(formTypes).map((option) => (
-              <MenuItem key={option} value={option}>{option}</MenuItem>
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -233,7 +233,7 @@ function ConstructorCamp({
               onChange={(e) => setName(e.target.value)}
             />
             <TextField
-              style={{marginTop:'1rem'}}
+              style={{ marginTop: '1rem' }}
               value={description}
               fullWidth
               multiline
@@ -242,8 +242,9 @@ function ConstructorCamp({
               label='Descripción'
               onChange={(e) => setDescription(e.target.value)}
             />
-         </FormControl>
-        ) : type === formTypes.formCustom && (
+          </FormControl>
+        ) : (
+          type === formTypes.formCustom && (
             <FormControl fullWidth>
               {/* select predefinido*/}
               <InputLabel>Tipo de Campo</InputLabel>
@@ -256,25 +257,31 @@ function ConstructorCamp({
                 onChange={(e) => setType2(e.target.value)}>
                 <MenuItem value=''>None</MenuItem>
                 {Object.values(customTypes).map((option) => (
-                  <MenuItem key={option} value={option}>{option}</MenuItem>
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
           )
-        }
+        )}
       </DialogContent>
       <DialogActions>
         <Button
-          disabled={!type  ||
-                    (type===formTypes.formCustom && (!type2 || type2===''))||
-                    (type===formTypes.formSelect && options.length===0)||
-                    ((type===formTypes.formFileInput || type===formTypes.formHeader || type===formTypes.formSelect || type===formTypes.formTextInput) 
-                      && (name===null ||name===''))
-                    }
+          disabled={
+            !type ||
+            (type === formTypes.formCustom && (!type2 || type2 === '')) ||
+            (type === formTypes.formSelect && options.length === 0) ||
+            ((type === formTypes.formFileInput ||
+              type === formTypes.formHeader ||
+              type === formTypes.formSelect ||
+              type === formTypes.formTextInput) &&
+              (name === null || name === ''))
+          }
           color='primary'
           startIcon={<Save />}
           onClick={() => {
-                handleSave();
+            handleSave();
           }}>
           Guardar campo
         </Button>

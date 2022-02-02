@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useSupervisor } from '../../../../providers/Supervisor';
 
-function VerticalBar(props) {
+function VerticalBar({ setExportable }) {
   const [data, setData] = useState();
   const [loaded, setLoaded] = useState(false);
   const { applications } = useSupervisor();
@@ -22,7 +22,7 @@ function VerticalBar(props) {
         }
       });
 
-    props.setExportable([
+    setExportable([
       Array.from(companyCounter.keys()),
       [Object.fromEntries(companyCounter)]
     ]);
@@ -66,7 +66,7 @@ function VerticalBar(props) {
     };
 
     setData(config);
-  }, [applications]);
+  }, [applications, setExportable]);
 
   const options = {
     maintainAspectRatio: false

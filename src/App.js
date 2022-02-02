@@ -85,9 +85,6 @@ function App() {
           ) : (
             <LoadingSkeleton />
           )}
-          {/* Eliminar o comentar línea siguiente una vez se haya creado un usuario administrador*/}
-          {/*<MakeAdmin />*/} {/* ELIMINAR O COMENTAR ESTA LÍNEA*/}
-          {/* Eliminar o comentar línea anterior una vez se haya creado un usuario administrador*/}
         </>
       ) : (
         <Landing />

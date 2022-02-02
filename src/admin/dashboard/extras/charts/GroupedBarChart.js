@@ -1,77 +1,99 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
 import { Bar } from 'react-chartjs-2';
-import { DEFAULT_CAREER } from '../../../../providers/User';
 import { useSupervisor } from '../../../../providers/Supervisor';
+import { DEFAULT_CAREER } from '../../../../providers/User';
 
-function GroupedBar(props) {
+const NO_CAREER = 'Otras carreras';
+
+function GroupedBar({ setExportable }) {
   const { students, careers } = useSupervisor();
-  const [data, setData] = useState();
   const [loaded, setLoaded] = useState(false);
-  let careersMap = new Map();
-  let noAction = new Map();
-  let applying = new Map();
-  let onIntern = new Map();
 
   const options = {
     maintainAspectRatio: false
   };
 
-  function standardizeMaps(doc) {
-    if (!noAction.has(careersMap.get(doc.careerId)))
-      noAction.set(careersMap.get(doc.careerId), 0);
-    if (!applying.has(careersMap.get(doc.careerId)))
-      applying.set(careersMap.get(doc.careerId), 0);
-    if (!onIntern.has(careersMap.get(doc.careerId)))
-      onIntern.set(careersMap.get(doc.careerId), 0);
-  }
+  // Mapa de carreras, las keys son el código de la carrera,
+  // los values son el nombre. Si este excede 34 caracteres, se corta
+  const careersMap = useMemo(() => {
+    const map = new Map();
+    careers
+      .filter((item) => item.id !== DEFAULT_CAREER)
+      .forEach((item) =>
+        map.set(
+          item.id,
+          item.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name
+        )
+      );
+    return map;
+  }, [careers]);
 
-  function getStudentsStatus() {
+  const { graphData, listData } = useMemo(() => {
+    if (!careersMap || !students) return null;
+    // Los keys de estos mapas son el nombre de la carrera.
+    // Los valores son la cuenta de cuantos estudiantes de la carrera key se encuentran en cada paso.
+    const noAction = new Map();
+    const applying = new Map();
+    const onIntern = new Map();
+
+    careersMap.forEach((value) => {
+      noAction.set(value, 0);
+      applying.set(value, 0);
+      onIntern.set(value, 0);
+    });
+
+    // En caso de que haya estudiantes que pertenezcan a una carrera que no se encuentre en el sistema
+    noAction.set(NO_CAREER, 0);
+    applying.set(NO_CAREER, 0);
+    onIntern.set(NO_CAREER, 0);
+
+    // Por cada estudiante, agregar al paso que le corresponde.
+    // Si no está en ningun paso, se asume que está en el paso 0 (practica disponible)
     students.forEach((doc) => {
+      // Obtener key correspondiente, si no existe, usar DEFAULT_CAREER como key
+      let key = careersMap.has(doc.careerId)
+        ? careersMap.get(doc.careerId)
+        : careersMap.get(NO_CAREER);
+      let counter;
+
+      // Agregar al paso que corresponde
       if (doc.step) {
         switch (doc.step) {
           case 0:
-            if (noAction.has(careersMap.get(doc.careerId))) {
-              let counter = noAction.get(careersMap.get(doc.careerId));
-              noAction.set(careersMap.get(doc.careerId), counter + 1);
-            } else {
-              noAction.set(careersMap.get(doc.careerId), 1);
-            }
-            standardizeMaps(doc);
+            counter = noAction.get(key);
+            noAction.set(key, counter + 1);
             break;
           case 1:
-            if (applying.has(careersMap.get(doc.careerId))) {
-              let counter = applying.get(careersMap.get(doc.careerId));
-              applying.set(careersMap.get(doc.careerId), counter + 1);
-            } else {
-              applying.set(careersMap.get(doc.careerId), 1);
-            }
-            standardizeMaps(doc);
+            counter = applying.get(key);
+            applying.set(key, counter + 1);
             break;
           case 2:
-            if (onIntern.has(careersMap.get(doc.careerId))) {
-              let counter = onIntern.get(careersMap.get(doc.careerId));
-              onIntern.set(careersMap.get(doc.careerId), counter + 1);
-            } else {
-              onIntern.set(careersMap.get(doc.careerId), 1);
-            }
-            standardizeMaps(doc);
+            counter = onIntern.get(key);
+            onIntern.set(key, counter + 1);
             break;
           default:
             break;
         }
       } else {
-        if (noAction.has(careersMap.get(doc.careerId))) {
-          let counter = noAction.get(careersMap.get(doc.careerId));
-          noAction.set(careersMap.get(doc.careerId), counter + 1);
-        } else {
-          noAction.set(careersMap.get(doc.careerId), 1);
-        }
-        standardizeMaps(doc);
+        counter = noAction.get(key);
+        noAction.set(key, counter + 1);
       }
     });
 
-    let list = [
+    // Si todos los estudiantes pertenecen a una carrera del sistema, eliminar esta entrada
+    if (
+      noAction.get(NO_CAREER) === 0 &&
+      applying.get(NO_CAREER) === 0 &&
+      onIntern.get(NO_CAREER) === 0
+    ) {
+      noAction.delete(NO_CAREER);
+      applying.delete(NO_CAREER);
+      onIntern.delete(NO_CAREER);
+    }
+
+    // Preparar datos y entregar a padre, para poder ser exportado como xslx
+    let listData = [
       Array.from(noAction.keys()),
       [
         Object.fromEntries(noAction),
@@ -80,9 +102,8 @@ function GroupedBar(props) {
       ]
     ];
 
-    props.setExportable(list);
-
-    let config = {
+    // Transformar datos a formato requerido por grafico
+    let graphData = {
       labels: Array.from(noAction.keys()),
       datasets: [
         {
@@ -103,27 +124,20 @@ function GroupedBar(props) {
       ]
     };
 
-    setData(config);
-  }
+    return { graphData, listData };
+  }, [careersMap, students]);
+
+  useEffect(() => setLoaded(!!graphData), [graphData]);
 
   useEffect(() => {
-    careers.forEach((career) => {
-      if (career.id !== DEFAULT_CAREER) {
-        careersMap.set(
-          career.id,
-          career.name.length > 34
-            ? `${career.name.slice(0, 34)}...`
-            : career.name
-        );
-      }
-    });
+    if (listData) setExportable(listData);
+  }, [listData, setExportable]);
 
-    getStudentsStatus();
-  }, [careers]);
-
-  useEffect(() => setLoaded(!!data), [data]);
-
-  return loaded ? <Bar data={data} options={options} /> : <CircularProgress />;
+  return loaded ? (
+    <Bar data={graphData} options={options} />
+  ) : (
+    <CircularProgress />
+  );
 }
 
 export default GroupedBar;

@@ -14,7 +14,7 @@ import ArchiveIcon from '@material-ui/icons/Archive';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import BusinessIcon from '@material-ui/icons/Business';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
@@ -64,11 +64,6 @@ function DashboardAdmin({ sidebarProps }) {
     sentReportsCount,
     ongoingInternshipsCount
   } = useSupervisor();
-
-  useEffect(() => {
-    console.log('Dashboard  Montado');
-    return () => console.log('Dashboard desmontado');
-  }, []);
 
   return (
     <div style={{ display: 'flex' }}>

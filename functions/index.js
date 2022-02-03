@@ -284,14 +284,17 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
         .filter((item) => item.customClaims && item.customClaims.employer)
         .find((item) => item.email === data.employerEmail).uid;
 
+      console.log(`Employer found: ${employerId}`);
+
       admin
         .firestore()
         .collection('employers')
         .doc(employerId)
         .get()
         .then((doc) => {
-          let data = doc.data();
-          const internships = data.internships;
+          let docData = doc.data();
+          const internships = docData.internships;
+          console.log(internships);
           internships.push({
             studentId: data.studentId,
             internshipId: data.internshipId

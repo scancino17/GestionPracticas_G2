@@ -1,4 +1,4 @@
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
 import { useUser } from './User';
@@ -25,11 +25,12 @@ export function EmployerProvider({ children }) {
 
   const getInterns = useCallback(() => {
     function addIntern(intern) {
-      setInternList((prevState) => {
-        let newState = prevState.slice();
-        newState.push(intern);
-        return newState;
-      });
+      if (!internList.find((item) => item.internshipId === intern.internshipId))
+        setInternList((prevState) => {
+          let newState = prevState.slice();
+          newState.push(intern);
+          return newState;
+        });
     }
 
     if (userData) {
@@ -44,24 +45,45 @@ export function EmployerProvider({ children }) {
           await getDoc(doc(db, 'users', intern.studentId))
         ).data();
 
-        addIntern({
-          internshipId: intern.internshipId,
-          studentId: intern.studentId,
-          studentName: studentData.name,
-          studentRut: studentData.rut,
-          studentCareer: studentData.careerName,
-          internStart: internData.applicationData['Fecha de inicio'],
-          internEnd: internData.applicationData['Fecha de término']
-        });
+        internData.applicationData &&
+          addIntern({
+            internshipId: intern.internshipId,
+            studentId: intern.studentId,
+            studentName: studentData.name,
+            studentRut: studentData.rut,
+            careerId: internData.careerId,
+            studentCareer: studentData.careerName,
+            internStart: internData.applicationData['Fecha de inicio'],
+            internEnd: internData.applicationData['Fecha de término']
+          });
       });
     }
-  }, [userData]);
+  }, [userData, internList]);
+
+  async function updateEmployer(update) {
+    await updateDoc(doc(db, 'employers', userId), update);
+  }
+
+  function addRemark(internship, remark) {
+    const remarkList = userData.remarks.slice();
+
+    remarkList.push({
+      studentId: internship.studentId,
+      internshipId: internship.internshipId,
+      careerId: internship.careerId,
+      remark: remark,
+      read: false
+    });
+
+    updateEmployer({ remarks: remarkList });
+  }
 
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
 
   return (
-    <EmployerContext.Provider value={{ employerLoaded, userData, internList }}>
+    <EmployerContext.Provider
+      value={{ employerLoaded, userData, internList, addRemark }}>
       {children}
     </EmployerContext.Provider>
   );

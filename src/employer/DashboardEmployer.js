@@ -5,12 +5,21 @@ import {
   Container,
   Accordion,
   makeStyles,
+  withStyles,
   AccordionSummary,
   AccordionDetails,
   AccordionActions,
-  Button
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  TextField,
+  DialogActions,
+  Box
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
+import { grey } from '@material-ui/core/colors';
 import { Skeleton } from '@material-ui/lab';
 import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
@@ -21,20 +30,43 @@ import rutFormatter from '../utils/RutFormatter';
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
-    flexBasis: '33.33%',
-    flexShrink: 0
+    [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
+    [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
   },
   secondaryHeading: {
     fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary
+    color: theme.palette.text.secondary,
+    [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
+    [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
+  },
+  endDateHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#de6363',
+    [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
+    [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
   },
   bold: {
     fontWeight: 600
+  },
+  redText: {
+    fontSize: theme.typography.pxToRem(15),
+    color: '#cf0000'
   }
 }));
 
+const SecondaryButton = withStyles((theme) => ({
+  root: {
+    color: grey[700]
+  }
+}))(Button);
+
 function InternItem({ internship, expanded, changeExpanded }) {
   const classes = useStyles();
+  const [showRemarkModal, setShowRemarkModal] = useState(false);
+
+  function closeModal() {
+    setShowRemarkModal(false);
+  }
 
   const {
     internshipId,
@@ -56,8 +88,13 @@ function InternItem({ internship, expanded, changeExpanded }) {
         onChange={changeExpanded(internshipId)}>
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Typography className={classes.heading}>{studentName}</Typography>
-          <Typography className={classes.secondaryHeading}>
-            {studentCareer}
+          <Hidden smDown>
+            <Typography className={classes.secondaryHeading}>
+              {studentCareer}
+            </Typography>
+          </Hidden>
+          <Typography className={classes.endDateHeading}>
+            {`Fecha de término: ${toLegibleDate(internEnd)}`}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
@@ -94,18 +131,71 @@ function InternItem({ internship, expanded, changeExpanded }) {
                 Fecha de término:
               </Typography>
             </Grid>
-            <Grid item xs={8}>
+            <Grid item xs={8} className={classes.redText}>
               <Typography>{toLegibleDate(internEnd)}</Typography>
             </Grid>
           </Grid>
         </AccordionDetails>
         <AccordionActions>
+          <Button color='primary' onClick={() => setShowRemarkModal(true)}>
+            Agregar observación
+          </Button>
           <Button color='primary' onClick={() => console.log('boop')}>
             Responder evaluación
           </Button>
         </AccordionActions>
       </Accordion>
+      <RemarkModal
+        internship={internship}
+        closeModal={closeModal}
+        showRemarkModal={showRemarkModal}
+      />
     </>
+  );
+}
+
+function RemarkModal({ internship, closeModal, showRemarkModal }) {
+  const [remark, setRemark] = useState('');
+  const { addRemark } = useEmployer();
+
+  function handleSubmit() {
+    addRemark(internship, remark);
+    setRemark('');
+    closeModal();
+  }
+
+  function handleRemarkChange(event) {
+    event.preventDefault();
+    setRemark(event.target.value);
+  }
+
+  return (
+    <Dialog fullWidth open={showRemarkModal} onClose={closeModal}>
+      <DialogTitle>Enviar observación a supervisor de escuela</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          Puede enviar un comentario respecto al estudiante{' '}
+          <Box fontWeight='fontWeightBold' display='inline'>
+            {internship.studentName}
+          </Box>{' '}
+          a su correspondiente supervisor de escuela a través de este medio.
+        </DialogContentText>
+        <TextField
+          multiline
+          minRows={4}
+          label='Observaciones'
+          variant='outlined'
+          onChange={handleRemarkChange}
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
+        <Button color='primary' onClick={handleSubmit}>
+          Enviar observación
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 
@@ -148,22 +238,16 @@ function DashboardEmployer() {
               </Grid>
             </Hidden>
             {employerLoaded ? (
-              internList.length ? (
-                <Container style={{ marginTop: '2rem' }}>
-                  {internList.map((internship, index) => (
-                    <InternItem
-                      key={index}
-                      internship={internship}
-                      expanded={expanded}
-                      changeExpanded={changeExpanded}
-                    />
-                  ))}
-                </Container>
-              ) : (
-                <Typography>
-                  Nada que ver por aquí. ¡Vuelve más tarde!
-                </Typography>
-              )
+              <Container style={{ marginTop: '2rem' }}>
+                {internList.map((internship, index) => (
+                  <InternItem
+                    key={index}
+                    internship={internship}
+                    expanded={expanded}
+                    changeExpanded={changeExpanded}
+                  />
+                ))}
+              </Container>
             ) : (
               <Grid
                 container

@@ -12,7 +12,7 @@ import {
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useUser, STUDENT_ROLE } from '../providers/User';
+import { useUser, STUDENT_ROLE, ADMIN_ROLE } from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
@@ -144,7 +144,7 @@ function TopBar({ setSidebarOpen }) {
         className={classes.appBar}>
         <Toolbar>
           <Hidden mdUp>
-            {!user.student && (
+            {userRole === ADMIN_ROLE && (
               <IconButton
                 color='inherit'
                 aria-label='open drawer'

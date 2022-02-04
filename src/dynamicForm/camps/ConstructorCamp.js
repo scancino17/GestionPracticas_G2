@@ -43,6 +43,9 @@ function ConstructorCamp({
 
   useEffect(() => {
     if (edit) {
+      if(editElement.description){
+        setDescription(editElement.description);
+      }
       setType(editElement.type);
       setName(editElement.name);
       setOptions(editElement.options);

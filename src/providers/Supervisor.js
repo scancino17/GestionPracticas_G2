@@ -144,6 +144,50 @@ export function SupervisorProvider({ children }) {
     await setDoc(doc(db, 'form', selectedCareerId), form, params);
   }
 
+
+  async function getSurveyForm(selectedCareerId) {
+    let response = await getDoc(doc(db, 'form-survey', selectedCareerId));
+    return response.data().form;
+  }
+
+  // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
+  // params está por si se quiere hacer merge con los datos en vez de reemplazar.
+  // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
+  async function setSurveyForm(
+    selectedCareerId,
+    form,
+    params = { merge: false }
+  ) {
+    await setDoc(doc(db, 'form-survey', selectedCareerId), form, params);
+  }
+
+
+
+  async function getEvaluateForm(selectedCareerId) {
+    let response = await getDoc(doc(db, 'form-evaluation', selectedCareerId));
+    return response.data().form;
+  }
+
+  // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
+  // params está por si se quiere hacer merge con los datos en vez de reemplazar.
+  // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
+  async function setEvaluateForm(
+    selectedCareerId,
+    form,
+    params = { merge: false }
+  ) {
+    await setDoc(doc(db, 'form-evaluation', selectedCareerId), form, params);
+  }
+
+  async function setSurveySended(
+    form
+  ) {
+    await addDoc('surveySended',form)
+   
+  }
+
+
+
   // mailTo es el correo al que se le enviará el mail.
   // templateName un string, el nombre del template a usar
   // Es decir, el nombre de uno de los archivos en /emailTemplates, sin la extensión
@@ -471,6 +515,12 @@ export function SupervisorProvider({ children }) {
         ongoingInternshipsCount,
         getCareerForm,
         setCareerForm,
+        getSurveyForm,
+        setSurveyForm,
+        getEvaluateForm,
+        setEvaluateForm,
+        setSurveySended,
+        updateInternship,
         getUserData,
         getApplication,
         getCareerData,

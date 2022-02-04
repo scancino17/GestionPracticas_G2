@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './builder_preview/DynamicForm';
-import { db, storage } from '../firebase';
+import DynamicForm from '../../dynamicForm/builder_preview/DynamicForm'
+import { db, storage } from '../../firebase';
 import {
   Step,
   StepLabel,
@@ -10,11 +10,11 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import { useUser } from '../providers/User';
+import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './camps/formTypes';
+import { sentApplication } from '../../InternshipStates';
+import { formTypes, customTypes } from '../camps/formTypes';
 import {
   addDoc,
   collection,
@@ -23,7 +23,7 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore';
-import { useStudent } from '../providers/Student';
+import { useStudent } from '../../providers/Student';
 
 function SendForm({ edit }) {
   const [formFull, setFormFull] = useState([]);

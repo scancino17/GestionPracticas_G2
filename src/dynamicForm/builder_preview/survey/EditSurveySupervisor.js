@@ -36,10 +36,10 @@ import {
 import CareerSelector from '../../../utils/CareerSelector';
 import { DEFAULT_CAREER, useUser } from '../../../providers/User';
 import { useSupervisor } from '../../../providers/Supervisor';
-import { predefinedSurveyStudent } from '../../predefined_forms/predefined';
+import { predefinedSurveySupervisor } from '../../predefined_forms/predefined';
 
-function EditSurvey({careerId, update1, setUpdate}) {
-  const [formFull, setFormFull] = useState(predefinedSurveyStudent);
+function EditEvaluation({careerId, update1, setUpdate}) {
+  const [formFull, setFormFull] = useState(predefinedSurveySupervisor);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
@@ -47,25 +47,25 @@ function EditSurvey({careerId, update1, setUpdate}) {
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [selectedCareerId, setSelectedCareerId] = useState(careerId);
-  const { getSurveyForm, setSurveyForm } = useSupervisor();
+  const { getEvaluateForm, setEvaluateForm } = useSupervisor();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (selectedCareerId && selectedCareerId !== DEFAULT_CAREER) {
-      getSurveyForm(selectedCareerId).then((careerForm) =>
+      getEvaluateForm(selectedCareerId).then((careerForm) =>
         setFormFull(careerForm)
       );
     }
-  }, [selectedCareerId, getSurveyForm]);
+  }, [selectedCareerId, getEvaluateForm]);
 
   useEffect(() => setFlag(false), [flag]);
   
   useEffect(() =>{
     if (careerId && careerId !== DEFAULT_CAREER) {
-      getSurveyForm(careerId).then((careerForm) =>
+      getEvaluateForm(careerId).then((careerForm) =>
         setFormFull(careerForm)
       );
-  }}, [careerId, getSurveyForm]);
+  }}, [careerId, getEvaluateForm]);
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -128,7 +128,7 @@ function EditSurvey({careerId, update1, setUpdate}) {
       denyButtonText: `Salir`
     }).then((result) => {
       if (result.isConfirmed) {
-        setSurveyForm(selectedCareerId, { form: formFull });
+        setEvaluateForm(selectedCareerId, { form: formFull });
         Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
           if (result.isConfirmed) navigate('/');
         });
@@ -155,13 +155,13 @@ function EditSurvey({careerId, update1, setUpdate}) {
 
   return (
     <Grid container direction='column'>
-      <Grid item  style={{ margin: '2rem' }}>
+       <Grid item  style={{ margin: '2rem' }}>
         <Typography variant='h4'>
-        Formulario de encuesta de satisfacción
+        Formulario de evaluación del estudiante
         </Typography>
-        </Grid>
+    </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-      
+     
         {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
@@ -354,4 +354,4 @@ function EditSurvey({careerId, update1, setUpdate}) {
   );
 }
 
-export default EditSurvey;
+export default EditEvaluation;

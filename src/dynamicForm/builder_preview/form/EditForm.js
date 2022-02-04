@@ -36,11 +36,10 @@ import {
 import CareerSelector from '../../../utils/CareerSelector';
 import { DEFAULT_CAREER, useUser } from '../../../providers/User';
 import { useSupervisor } from '../../../providers/Supervisor';
-import { predefinedSurvey } from '../../predefined_forms/predefined';
+import { predefinedForm} from '../../predefined_forms/predefined';
 
-function EditForm() {
-  const { careerId } = useUser();
-  const [formFull, setFormFull] = useState(predefinedSurvey);
+function EditForm({careerId, update1, setUpdate}) {
+  const [formFull, setFormFull] = useState(predefinedForm);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
@@ -60,6 +59,13 @@ function EditForm() {
   }, [selectedCareerId, getCareerForm]);
 
   useEffect(() => setFlag(false), [flag]);
+  
+  useEffect(() =>{
+    if (careerId && careerId !== DEFAULT_CAREER) {
+      getCareerForm(careerId).then((careerForm) =>
+        setFormFull(careerForm)
+      );
+  }}, [careerId, getCareerForm]);
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -149,34 +155,15 @@ function EditForm() {
 
   return (
     <Grid container direction='column'>
-      <div
-        style={{
-          backgroundImage: "url('AdminBanner-Edit.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          padding: '2rem'
-        }}>
+      <Grid item  style={{ margin: '2rem' }}>
+
         <Typography variant='h4'>
-          Formularios de inscripción de práctica
+        Formulario de inscripción de práctica
         </Typography>
-      </div>
+
+        </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {(!careerId || careerId === DEFAULT_CAREER) && (
-          <Grid
-            container
-            justifyContent='flex-end'
-            alignItems='center'
-            spacing={4}>
-            <Grid item>
-              <CareerSelector
-                careerId={selectedCareerId}
-                setCareerId={setSelectedCareerId}
-                excludeGeneral
-              />
-            </Grid>
-          </Grid>
-        )}
+
         {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
@@ -215,6 +202,8 @@ function EditForm() {
                 (form, i) =>
                   i === activeStep && (
                     <DynamicForm
+                      updateInner={update1}
+                      setUpdate={setUpdate}
                       form={form.form}
                       setForm={setFormFull}
                       formFull={formFull}

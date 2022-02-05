@@ -45,6 +45,7 @@ export function SupervisorProvider({ children }) {
   const [internships, setInternships] = useState();
   const [students, setStudents] = useState();
   const [careers, setCareers] = useState();
+  const [employers, setEmployers] = useState();
 
   /**
    * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
@@ -54,12 +55,14 @@ export function SupervisorProvider({ children }) {
     let appRef = collection(db, 'applications');
     let intRef = collection(db, 'internships');
     let stuRef = collection(db, 'users');
+    let empRef = collection(db, 'employers');
 
     // Limitar a carrera que le corresponde
     if (careerId !== DEFAULT_CAREER) {
       appRef = query(appRef, where('careerId', '==', careerId));
       intRef = query(intRef, where('careerId', '==', careerId));
       stuRef = query(stuRef, where('careerId', '==', careerId));
+      empRef = query(empRef, where('careers', 'array-contains', careerId));
     }
 
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
@@ -80,10 +83,40 @@ export function SupervisorProvider({ children }) {
       setStudents(temp);
     });
 
+    let empUnsub = onSnapshot(empRef, (querySnapshot) => {
+      const temp = [];
+
+      querySnapshot.forEach((doc) => {
+        if (careerId === DEFAULT_CAREER)
+          temp.push({ id: doc.id, ...doc.data() });
+        else {
+          let docData = doc.data();
+          let carList = docData.careers.filter(
+            (item) => item.careerId === careerId
+          );
+          let intList = docData.internships.filter(
+            (item) => item.careerId === careerId
+          );
+          let remList = docData.remarks.filter(
+            (item) => item.careerId === careerId
+          );
+          temp.push({
+            id: doc.id,
+            careers: carList,
+            internships: intList,
+            remarks: remList
+          });
+        }
+      });
+
+      setEmployers(temp);
+    });
+
     return () => {
       appUnsub();
       intUnsub();
       stuUnsub();
+      empUnsub();
     };
   }, [careerId]);
 
@@ -96,9 +129,9 @@ export function SupervisorProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (applications && internships && students && careers)
+    if (applications && internships && students && careers && employers)
       setSupervisorLoaded(true);
-  }, [applications, internships, students, careers]);
+  }, [applications, internships, students, careers, employers]);
 
   /** Llevar la cuenta de intenciones pendientes por revisar */
   const pendingIntentionsCount = useMemo(() => {
@@ -125,6 +158,38 @@ export function SupervisorProvider({ children }) {
     if (students) return students.filter((item) => item.step >= 2).length;
     else return 0;
   }, [students]);
+
+  const remarkList = useMemo(() => {
+    if (!employers || !internships) return [];
+    const remarks = [];
+
+    employers.forEach((employer) =>
+      remarks.push(
+        ...employer.remarks
+          .filter((item) => !item.read)
+          .map((remark, index) => {
+            const {
+              employerName,
+              employerEmail,
+              internshipNumber,
+              studentName,
+              careerName
+            } = internships.find((item) => item.id === remark.internshipId);
+            return {
+              index: index,
+              employerName: employerName,
+              employerEmail: employerEmail,
+              internshipNumber: internshipNumber,
+              studentName: studentName,
+              careerName,
+              ...remark
+            };
+          })
+      )
+    );
+
+    return remarks;
+  }, [employers, internships]);
 
   async function getCareerForm(selectedCareerId) {
     let response = await getDoc(doc(db, 'form', selectedCareerId));
@@ -194,6 +259,14 @@ export function SupervisorProvider({ children }) {
 
   function getApplication(applicationId) {
     return applications.find((item) => item.id === applicationId);
+  }
+
+  function getInternship(internshipId) {
+    return internships.find((item) => item.id === internshipId);
+  }
+
+  function getCurrentInternship(studentId) {
+    return getUserData(studentId).currentInternship;
   }
 
   function getCareerData(careerId) {
@@ -485,14 +558,18 @@ export function SupervisorProvider({ children }) {
         internships,
         students,
         careers,
+        employers,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,
         ongoingInternshipsCount,
+        remarkList,
         getCareerForm,
         setCareerForm,
         getUserData,
         getApplication,
+        getInternship,
+        getCurrentInternship,
         getCareerData,
         updateCareer,
         updateApplication,

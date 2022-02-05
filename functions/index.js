@@ -256,7 +256,7 @@ exports.createEmployer = functions.https.onCall((data, context) => {
             .firestore()
             .collection('employers')
             .doc(userRecord.uid)
-            .set({ internships: [], remarks: [] });
+            .set({ careers: [], internships: [], remarks: [] });
 
           admin
             .firestore()
@@ -280,31 +280,52 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
     .auth()
     .listUsers()
     .then((listUsersResult) => {
-      let employerId = listUsersResult.users
+      let employer = listUsersResult.users
         .filter((item) => item.customClaims && item.customClaims.employer)
-        .find((item) => item.email === data.employerEmail).uid;
+        .find((item) => item.email === data.employerEmail);
 
-      console.log(`Employer found: ${employerId}`);
+      console.log(`Employer found: ${employer.id}`);
 
       admin
         .firestore()
         .collection('employers')
-        .doc(employerId)
+        .doc(employer.id)
         .get()
         .then((doc) => {
           let docData = doc.data();
           const internships = docData.internships;
           console.log(internships);
+
+          const careers = docData.careers;
+          if (!careers.includes(data.careerdId)) careers.push(data.careerId);
+
           internships.push({
             studentId: data.studentId,
-            internshipId: data.internshipId
+            internshipId: data.internshipId,
+            careerId: data.careerId
           });
 
           admin
             .firestore()
             .collection('employers')
-            .doc(employerId)
-            .update({ internships: internships });
+            .doc(employer.id)
+            .update({ careers: careers, internships: internships });
+
+          admin.firestore().collection('users').doc(data.studentId).update({
+            'currentInternship.employerId': employer.id,
+            'currentInternship.employerName': employer.displayName,
+            'currentInternship.employerEmail': employer.email
+          });
+
+          admin
+            .firestore()
+            .collection('internships')
+            .doc(data.internshipId)
+            .update({
+              employerId: employer.id,
+              employerName: employer.displayName,
+              employerEmail: employer.email
+            });
         });
     });
 });

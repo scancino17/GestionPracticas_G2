@@ -208,7 +208,7 @@ function DashboardEmployer() {
     setExpanded(isExpanded ? panel : false);
 
   useEffect(() => {
-    if (internList.length === 1) setExpanded(internList[0].internshipId);
+    setExpanded(internList.length ? internList[0].internshipId : false);
   }, [internList]);
 
   return (

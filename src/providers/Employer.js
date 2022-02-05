@@ -25,12 +25,16 @@ export function EmployerProvider({ children }) {
 
   const getInterns = useCallback(() => {
     function addIntern(intern) {
-      if (!internList.find((item) => item.internshipId === intern.internshipId))
-        setInternList((prevState) => {
+      console.log(intern);
+      setInternList((prevState) => {
+        if (
+          !prevState.find((item) => item.internshipId === intern.internshipId)
+        ) {
           let newState = prevState.slice();
           newState.push(intern);
           return newState;
-        });
+        } else return prevState;
+      });
     }
 
     if (userData) {
@@ -45,20 +49,19 @@ export function EmployerProvider({ children }) {
           await getDoc(doc(db, 'users', intern.studentId))
         ).data();
 
-        internData.applicationData &&
-          addIntern({
-            internshipId: intern.internshipId,
-            studentId: intern.studentId,
-            studentName: studentData.name,
-            studentRut: studentData.rut,
-            careerId: internData.careerId,
-            studentCareer: studentData.careerName,
-            internStart: internData.applicationData['Fecha de inicio'],
-            internEnd: internData.applicationData['Fecha de término']
-          });
+        addIntern({
+          internshipId: intern.internshipId,
+          studentId: intern.studentId,
+          studentName: studentData.name,
+          studentRut: studentData.rut,
+          careerId: internData.careerId,
+          studentCareer: studentData.careerName,
+          internStart: internData.applicationData['Fecha de inicio'],
+          internEnd: internData.applicationData['Fecha de término']
+        });
       });
     }
-  }, [userData, internList]);
+  }, [userData]);
 
   async function updateEmployer(update) {
     await updateDoc(doc(db, 'employers', userId), update);
@@ -80,6 +83,7 @@ export function EmployerProvider({ children }) {
 
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
+  useEffect(() => console.log(userData), [userData]);
 
   return (
     <EmployerContext.Provider

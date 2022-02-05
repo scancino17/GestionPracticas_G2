@@ -46,6 +46,7 @@ import ControlPanel from '../../utils/ControlPanel';
 // eslint-disable-next-line no-unused-vars
 import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
+import RemarkList from '../remarks/RemarkList';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -303,6 +304,7 @@ function DashboardAdmin({ sidebarProps }) {
           path='/supervisor-management'
           element={<SupervisorManagement />}
         />
+        <Route path='/employer-remarks/' element={<RemarkList />} />
         <Route
           exact
           path='/wip'

@@ -156,13 +156,14 @@ function AssignInternshipPanel() {
   }
 
   function assignEmployer() {
-    let { id, currentInternship } = students.find(
+    let { id, currentInternship, careerId } = students.find(
       (item) => item.email === studentEmail
     );
     let data = {
       employerEmail: employerEmail,
       studentId: id,
-      internshipId: currentInternship.id
+      internshipId: currentInternship.id,
+      careerId: careerId
     };
     const assignInternshipToEmployer = httpsCallable(
       functions,

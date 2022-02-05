@@ -4,7 +4,7 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
-import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
+import { Badge, Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
 import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
@@ -17,6 +17,8 @@ import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
 import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
+import { Feedback } from '@material-ui/icons';
+import { useSupervisor } from '../providers/Supervisor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 
 function BarraLateral({ sidebarOpen, setSidebarOpen }) {
   const classes = useStyles();
+  const { remarkList } = useSupervisor();
 
   const items = [
     {
@@ -57,6 +60,15 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       label: 'Evaluar Prácticas',
       icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/internship-assessment'
+    },
+    {
+      label: 'Observaciones de supervisores',
+      icon: (
+        <Badge color='secondary' badgeContent={remarkList.length}>
+          <Feedback style={{ color: 'inherit', fontSize: 27 }} />
+        </Badge>
+      ),
+      path: 'employer-remarks'
     },
     {
       label: 'Extensión de Prácticas',

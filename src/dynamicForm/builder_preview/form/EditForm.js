@@ -38,7 +38,7 @@ import { DEFAULT_CAREER, useUser } from '../../../providers/User';
 import { useSupervisor } from '../../../providers/Supervisor';
 import { predefinedForm} from '../../predefined_forms/predefined';
 
-function EditForm({careerId, update1, setUpdate}) {
+function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) {
   const [formFull, setFormFull] = useState(predefinedForm);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -59,6 +59,11 @@ function EditForm({careerId, update1, setUpdate}) {
   }, [selectedCareerId, getCareerForm]);
 
   useEffect(() => setFlag(false), [flag]);
+  useEffect(() => {
+    if(value!==0 && open){
+      handleSave()
+    }
+  }, [value, open, handleSave]);
   
   useEffect(() =>{
     if (careerId && careerId !== DEFAULT_CAREER) {
@@ -125,14 +130,25 @@ function EditForm({careerId, update1, setUpdate}) {
       title: '¿Desea guardar los cambios?',
       showDenyButton: true,
       confirmButtonText: `Guardar`,
-      denyButtonText: `Salir`
+      denyButtonText: `No guardar`,
+      cancelButtonText:'Salir',
+      showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
         setCareerForm(selectedCareerId, { form: formFull });
         Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
-          if (result.isConfirmed) navigate('/');
+          setValueTab(value)
         });
       }
+      if (result.isDenied) {
+        setValueTab(value)
+       
+      }
+      if(result.dismiss){
+        setValue(valueTab)
+      }
+      
+      
     });
   }
 
@@ -202,8 +218,6 @@ function EditForm({careerId, update1, setUpdate}) {
                 (form, i) =>
                   i === activeStep && (
                     <DynamicForm
-                      updateInner={update1}
-                      setUpdate={setUpdate}
                       form={form.form}
                       setForm={setFormFull}
                       formFull={formFull}

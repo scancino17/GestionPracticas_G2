@@ -11,7 +11,7 @@ function DynamicForm({
   setForm,
   formFull,
   filesInner,
-  setFilesInner,updateInner,setUpdate
+  setFilesInner
 }) {
   const [flag, setFlag] = useState(false);
 

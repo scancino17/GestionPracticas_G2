@@ -16,7 +16,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Pagination } from '@material-ui/lab';
-import { useUser } from '../../providers/User';
+import { DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -24,6 +24,7 @@ import Tab from '@mui/material/Tab';
 
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
+import CareerSelector from '../../utils/CareerSelector';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -110,8 +111,8 @@ function ApplicationsList() {
     return (
       <>
         <List>
-          {filteredApplications &&
-            filteredApplications
+          {filteredApplicationsList &&
+            filteredApplicationsList
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((application) => (
                 <>
@@ -123,7 +124,20 @@ function ApplicationsList() {
       </>
     );
   };
+  const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [indice, setIndice] = useState(0);
+  const filteredApplicationsList = useMemo(() => {
+    if (filteredApplications) {
+      let filtered = filteredApplications.slice();
+      if (selectedCareerId !== 'general')
+        filtered = filtered.filter(
+          (item) => item.careerId === selectedCareerId
+        );
+      if (name !== '')
+        filtered = filtered.filter((item) => item.studentName.includes(name));
+      return filtered;
+    } else return [];
+  }, [filteredApplications, name, selectedCareerId]);
   return (
     <Grid container direction='column'>
       <Grid
@@ -223,7 +237,7 @@ function ApplicationsList() {
           </Box>
           <TabPanel value={value} index={indice}>
             <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-              <Grid item xs={12} sm={6} md={8}>
+              <Grid item xs={12} sm={4}>
                 <TextField
                   fullWidth
                   label='Buscar estudiante'
@@ -231,7 +245,13 @@ function ApplicationsList() {
                   onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={4}>
+              <Grid item xs={12} sm={4}>
+                <CareerSelector
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
                 <Button
                   color='primary'
                   variant='contained'
@@ -245,9 +265,12 @@ function ApplicationsList() {
             <Divider />
             <ApplicationListItem />
             <Grid container justifyContent='flex-end'>
-              {filteredApplications && filteredApplications.length > 0 ? (
+              {filteredApplicationsList &&
+              filteredApplicationsList.length > 0 ? (
                 <Pagination
-                  count={Math.ceil(filteredApplications.length / itemsPerPage)}
+                  count={Math.ceil(
+                    filteredApplicationsList.length / itemsPerPage
+                  )}
                   page={page}
                   color='primary'
                   style={{ marginBottom: '40px' }}

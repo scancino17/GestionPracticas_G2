@@ -30,6 +30,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import CareerSelector from '../../utils/CareerSelector';
+import { DEFAULT_CAREER } from '../../providers/User';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -96,13 +97,27 @@ const SecondaryButton = withStyles((theme) => ({
 
 function IntentionList({ pendingIntentions, update }) {
   const [expanded, setExpanded] = useState();
+  const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const itemsPerPage = 14;
   const [page, setPage] = useState(1);
+  const [name, setName] = useState('');
 
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  const filteredInternshipIntention = useMemo(() => {
+    if (pendingIntentions) {
+      let filtered = pendingIntentions.slice();
+      if (selectedCareerId !== 'general')
+        filtered = filtered.filter(
+          (item) => item.careerId === selectedCareerId
+        );
+      if (name !== '')
+        filtered = filtered.filter((item) => item.studentName.includes(name));
+      return filtered;
+    } else return [];
+  }, [pendingIntentions, name, selectedCareerId]);
   return (
     <Grid container direction='column'>
       <Grid
@@ -121,11 +136,19 @@ function IntentionList({ pendingIntentions, update }) {
       <Container style={{ marginTop: '2rem' }}>
         <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
           <Grid item xs={12} sm={4}>
-            <TextField fullWidth label='Buscar estudiante' />
+            <TextField
+              fullWidth
+              label='Buscar estudiante'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <CareerSelector />
+            <CareerSelector
+              careerId={selectedCareerId}
+              setCareerId={setSelectedCareerId}
+            />
           </Grid>
 
           <Grid item xs={12} sm={4}>
@@ -140,7 +163,7 @@ function IntentionList({ pendingIntentions, update }) {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {pendingIntentions
+        {filteredInternshipIntention
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
           .map((internship, index) => (
             //por el momento queda el indice como key
@@ -153,10 +176,13 @@ function IntentionList({ pendingIntentions, update }) {
             />
           ))}
         <Grid container justifyContent='flex-end' style={{ marginTop: '2rem' }}>
-          {pendingIntentions && pendingIntentions.length > 0 ? (
+          {filteredInternshipIntention &&
+          filteredInternshipIntention.length > 0 ? (
             <Pagination
               style={{ marginBottom: '40px' }}
-              count={Math.ceil(pendingIntentions.length / itemsPerPage)}
+              count={Math.ceil(
+                filteredInternshipIntention.length / itemsPerPage
+              )}
               page={page}
               color='primary'
               onChange={(_, val) => setPage(val)}

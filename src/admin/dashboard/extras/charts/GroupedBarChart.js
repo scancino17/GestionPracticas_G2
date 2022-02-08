@@ -23,7 +23,8 @@ function GroupedBar({ setExportable }) {
       .forEach((item) =>
         map.set(
           item.id,
-          item.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name
+          item.sigla
+          /*.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name */
         )
       );
     return map;

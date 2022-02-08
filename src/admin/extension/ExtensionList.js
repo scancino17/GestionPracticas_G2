@@ -6,22 +6,63 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  IconButton,
   Divider,
   TextField,
   List,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  Slide,
-  Button
+  Slide
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
 import { sentExtension } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { Button } from '@mui/material';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -78,26 +119,33 @@ function ExtensionList() {
         <Typography variant='h4'>Extensiones de prácticas</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid
-          container
-          justifyContent='flex-end'
-          alignItems='center'
-          spacing={4}>
-          <Grid item>
+        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+          <Grid item xs={12} sm={4}>
             <TextField
+              fullWidth
               label='Buscar estudiante'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
           {userRole === ADMIN_ROLE && (
-            <Grid item>
+            <Grid item xs={12} sm={4}>
               <CareerSelector
                 careerId={selectedCareerId}
                 setCareerId={setSelectedCareerId}
               />
             </Grid>
           )}
+
+          <Grid item xs={12} sm={4}>
+            <Button
+              fullWidth
+              color='primary'
+              variant='contained'
+              startIcon={<GetAppIcon />}>
+              Exportar datos
+            </Button>
+          </Grid>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
@@ -176,20 +224,24 @@ function IntershipItem({ internship }) {
         </ListItemSecondaryAction>
       </ListItem>
       {internship && (
-        <Dialog
-          open={showExtension}
+        <BootstrapDialog
+          fullWidth
           onClose={() => setShowExtension(false)}
-          TransitionComponent={Transition}
-          fullWidth>
-          <DialogTitle>Solicitud de extensión</DialogTitle>
-
-          <DialogContent>
+          aria-labelledby='customized-dialog-title'
+          open={showExtension}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShowExtension(false)}>
+            Solicitud de extensión
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <Grid container direction='column' spacing={2}>
               <Grid item>
                 <TextField
                   multiline
                   rows={4}
                   fullWidth
+                  disabled={true}
                   variant='outlined'
                   label='Razón de la solicitud'
                   value={internship.reasonExtension}
@@ -198,6 +250,7 @@ function IntershipItem({ internship }) {
               <Grid item>
                 <TextField
                   fullWidth
+                  disabled={true}
                   variant='outlined'
                   label='Fecha actual'
                   value={
@@ -213,6 +266,7 @@ function IntershipItem({ internship }) {
               </Grid>
               <Grid item>
                 <TextField
+                  disabled={true}
                   fullWidth
                   variant='outlined'
                   label='Fecha propuesta'
@@ -241,20 +295,26 @@ function IntershipItem({ internship }) {
               Aceptar
             </Button>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
-      <Dialog
-        open={showApproved || showDenied}
+      <BootstrapDialog
+        fullWidth
         onClose={() => {
           setShowApproved(false);
           setShowDenied(false);
         }}
         TransitionComponent={Transition}
-        fullWidth>
-        <DialogTitle>
+        aria-labelledby='customized-dialog-title'
+        open={showApproved || showDenied}>
+        <BootstrapDialogTitle
+          id='customized-dialog-title'
+          onClose={() => {
+            setShowApproved(false);
+            setShowDenied(false);
+          }}>
           {showApproved ? 'Aprobar' : 'Rechazar'} solicitud de extensión
-        </DialogTitle>
-        <DialogContent>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
           <TextField
             multiline
             rows={4}
@@ -286,7 +346,7 @@ function IntershipItem({ internship }) {
             {showApproved ? 'Aprobar' : 'Rechazar'}
           </Button>
         </DialogActions>
-      </Dialog>
+      </BootstrapDialog>
     </>
   );
 }

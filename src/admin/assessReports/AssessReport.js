@@ -1,9 +1,5 @@
 import {
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Grid,
   TextField,
   Typography,
@@ -21,6 +17,52 @@ import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { getDownloadURL, ref } from 'firebase/storage';
+
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 function AssessReport() {
   const [value, setValue] = useState(40);
@@ -189,13 +231,17 @@ function AssessReport() {
 
       {/*Modals */}
       {showChanges && (
-        <Dialog
-          open={showChanges}
-          onClose={() => SetShowChanges(false)}
+        <BootstrapDialog
           maxWidth='md'
-          fullWidth>
-          <DialogTitle>Solicitar cambios</DialogTitle>
-          <DialogContent>
+          onClose={() => SetShowChanges(false)}
+          aria-labelledby='customized-dialog-title'
+          open={showChanges}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => SetShowChanges(false)}>
+            Solicitar cambios
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <Editor
               editorState={changesEditorState}
               onEditorStateChange={setChangesEditorState}
@@ -244,15 +290,19 @@ function AssessReport() {
               Notificar cambios
             </Button>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
-
-      <Dialog
-        open={showEvaluate}
+      <BootstrapDialog
+        fullWidth
         onClose={() => SetShowEvaluate(false)}
-        fullWidth>
-        <DialogTitle>Evaluar Práctica</DialogTitle>
-        <DialogContent>
+        aria-labelledby='customized-dialog-title'
+        open={showEvaluate}>
+        <BootstrapDialogTitle
+          id='customized-dialog-title'
+          onClose={() => SetShowEvaluate(false)}>
+          Evaluar Práctica
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
           <Grid container justifyContent='center' alignContent='center'>
             <Grid item>
               <Typography variant='h2'>
@@ -333,7 +383,7 @@ function AssessReport() {
             Confirmar Evaluación
           </Button>
         </DialogActions>
-      </Dialog>
+      </BootstrapDialog>
     </>
   );
 }

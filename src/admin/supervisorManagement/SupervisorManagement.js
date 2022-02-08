@@ -4,8 +4,10 @@ import SupervisorTable from './SupervisorTable';
 
 function SupervisorManagement() {
   return (
-    <Grid container direction='column'>
-      <div
+    <Grid container>
+      <Grid
+        item
+        xs={12}
         style={{
           backgroundImage: "url('AdminBanner-Import.png')",
           backgroundSize: 'cover',
@@ -13,11 +15,15 @@ function SupervisorManagement() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Administrar encargados</Typography>
-      </div>
-      <Container style={{ marginTop: '2rem' }}>
-        <SupervisorTable />
-      </Container>
+        <Typography component={'span'} variant='h4'>
+          Administrar encargados
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Container style={{ marginTop: '2rem' }}>
+          <SupervisorTable />
+        </Container>
+      </Grid>
     </Grid>
   );
 }

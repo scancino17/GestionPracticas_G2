@@ -3,13 +3,8 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
-  Button,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
   DialogContentText,
-  DialogTitle,
   Grid,
   makeStyles,
   TextField,
@@ -24,7 +19,54 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Pagination } from '@material-ui/lab';
+import { Button } from '@mui/material';
+import PropTypes from 'prop-types';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import CareerSelector from '../../utils/CareerSelector';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -63,7 +105,8 @@ function IntentionList({ pendingIntentions, update }) {
 
   return (
     <Grid container direction='column'>
-      <div
+      <Grid
+        item
         style={{
           backgroundImage: "url('AdminBanner-Intention.png')",
           backgroundSize: 'cover',
@@ -71,10 +114,31 @@ function IntentionList({ pendingIntentions, update }) {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>
+        <Typography component={'span'} variant='h4'>
           Estudiantes con intención de práctica
         </Typography>
-      </div>
+      </Grid>
+      <Container style={{ marginTop: '2rem' }}>
+        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+          <Grid item xs={12} sm={4}>
+            <TextField fullWidth label='Buscar estudiante' />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <CareerSelector />
+          </Grid>
+
+          <Grid item xs={12} sm={4}>
+            <Button
+              fullWidth
+              color='primary'
+              variant='contained'
+              startIcon={<GetAppIcon />}>
+              Exportar datos
+            </Button>
+          </Grid>
+        </Grid>
+      </Container>
       <Container style={{ marginTop: '2rem' }}>
         {pendingIntentions
           .slice((page - 1) * itemsPerPage, page * itemsPerPage)
@@ -111,7 +175,7 @@ function IntentionList({ pendingIntentions, update }) {
                   alt='Sin intenciones de práctica'
                 />
               </Grid>
-              <Typography variant='h5' color='textSecondary'>
+              <Typography component={'span'} variant='h5' color='textSecondary'>
                 No hay intenciones de práctica disponibles
               </Typography>
             </Grid>
@@ -139,8 +203,11 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
         expanded={expanded === internshipId}
         onChange={changeExpanded(internshipId)}>
         <AccordionSummary expandIcon={<ExpandMore />}>
-          <Typography className={classes.heading}>{name}</Typography>
+          <Typography component={'span'} className={classes.heading}>
+            {name}
+          </Typography>
           <Typography
+            component={'span'}
             className={
               classes.secondaryHeading
             }>{`Intención de práctica ${internshipNumber}`}</Typography>
@@ -154,42 +221,52 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
               <Typography className={classes.bold}>Nombre:</Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{internship.name}</Typography>
+              <Typography component={'span'}>{internship.name}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.bold}>Rut:</Typography>
+              <Typography component={'span'} className={classes.bold}>
+                Rut:
+              </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{internship.rut}</Typography>
+              <Typography component={'span'}>{internship.rut}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography className={classes.bold}>Matrícula:</Typography>
+              <Typography component={'span'} className={classes.bold}>
+                Matrícula:
+              </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{internship.enrollmentNumber}</Typography>
+              <Typography component={'span'}>
+                {internship.enrollmentNumber}
+              </Typography>
             </Grid>
             <Grid item xs={4}>
               <Typography className={classes.bold}>Correo:</Typography>
             </Grid>
 
             <Grid item xs={8}>
-              <Typography>{internship.email}</Typography>
+              <Typography component={'span'}>{internship.email}</Typography>
             </Grid>
             <Grid item xs={4}>
-              <Typography>
+              <Typography component={'span'}>
                 <Box fontWeight='fontWeightMedium'>Carrera:</Box>
               </Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>{internship.careerName}</Typography>
+              <Typography component={'span'}>
+                {internship.careerName}
+              </Typography>
             </Grid>
             <Grid item xs={12} style={{ paddingTop: '.5rem' }}>
-              <Typography>Práctica {internship.internshipNumber}</Typography>
+              <Typography component={'span'}>
+                Práctica {internship.internshipNumber}
+              </Typography>
             </Grid>
           </Grid>
         </AccordionDetails>
         <AccordionActions>
-          <DenyButton color='primary' onClick={() => setShowRejectModal(true)}>
+          <DenyButton color='warning' onClick={() => setShowRejectModal(true)}>
             Rechazar
           </DenyButton>
           <Button color='primary' onClick={() => setShowApprovalModal(true)}>
@@ -228,12 +305,19 @@ const RejectModal = ({ internship, closeModal, update, showRejectModal }) => {
   }
 
   return (
-    <Dialog fullWidth open={showRejectModal} onClose={closeModal}>
-      <DialogTitle>Rechazar intención de práctica</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showRejectModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
+        Rechazar intención de práctica
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
+        <Typography gutterBottom>
           {`¿Está seguro de rechazar Práctica ${internship.internshipNumber} de ${internship.name}?`}
-        </DialogContentText>
+        </Typography>
+
         <TextField
           multiline
           rows={4}
@@ -244,10 +328,14 @@ const RejectModal = ({ internship, closeModal, update, showRejectModal }) => {
         />
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
-        <DenyButton onClick={handleReject}>Confirmar rechazo</DenyButton>
+        <DialogActions>
+          <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
+          <DenyButton color='warning' onClick={handleReject}>
+            Confirmar rechazo
+          </DenyButton>
+        </DialogActions>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 };
 
@@ -282,22 +370,31 @@ const ApprovalModal = ({
   }
 
   return (
-    <Dialog fullWidth open={showApprovalModal} onClose={closeModal}>
-      <DialogTitle>Aprobar intención de práctica</DialogTitle>
-      <DialogContent>
-        <DialogContentText>{`Aprobar intención de Práctica ${internship.internshipNumber} de ${internship.name}.`}</DialogContentText>
-        <DialogContentText>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showApprovalModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
+        Aprobar intención de práctica
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
+        <Typography gutterBottom>
+          {`Aprobar intención de Práctica ${internship.internshipNumber} de ${internship.name}.`}
+        </Typography>
+        <Typography gutterBottom>
           Adjunte los archivos correspondientes.
-        </DialogContentText>
+        </Typography>
+
         <DropzoneArea
           showFileNames
           acceptedFiles={['application/pdf']}
           onChange={handleLetterFile}
         />
         <DialogContentText />
-        <DialogContentText>
+        <Typography gutterBottom>
           Puede añadir observaciones pertinentes en el siguiente campo:
-        </DialogContentText>
+        </Typography>
         <TextField
           multiline
           rows={4}
@@ -308,16 +405,18 @@ const ApprovalModal = ({
         />
       </DialogContent>
       <DialogActions>
-        <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
-        <Button
-          color='primary'
-          variant='contained'
-          disabled={isConfirmDisabled}
-          onClick={handleApprove}>
-          Confirmar Aprobación
-        </Button>
+        <DialogActions>
+          <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
+          <Button
+            color='primary'
+            variant='contained'
+            disabled={isConfirmDisabled}
+            onClick={handleApprove}>
+            Confirmar Aprobación
+          </Button>
+        </DialogActions>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 };
 

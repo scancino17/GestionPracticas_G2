@@ -1,15 +1,10 @@
 import {
   Grid,
-  Button,
   Typography,
   Container,
   ListItem,
   ListItemText,
   Divider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   List,
   TextField
 } from '@material-ui/core';
@@ -24,6 +19,53 @@ import { approvedApplication } from '../../InternshipStates';
 import { useSupervisor } from '../../providers/Supervisor';
 import { DEFAULT_CAREER } from '../../providers/User';
 
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { Button } from '@mui/material';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
+
 function UploadModal({ internship, close, show }) {
   const [file, setFile] = useState([]);
   const { submitInsurance } = useSupervisor();
@@ -34,11 +76,18 @@ function UploadModal({ internship, close, show }) {
   }
 
   return (
-    <Dialog fullWidth open={show} onClose={close}>
-      <DialogTitle>
-        Adjunte el seguro de práctica de {internship.studentName}
-      </DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={close}
+      aria-labelledby='customized-dialog-title'
+      open={show}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={close}>
+        Adjuntar seguro de práctica
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
+        <Typography gutterBottom>
+          Adjunte el seguro de práctica de {internship.studentName}
+        </Typography>
         <DropzoneArea
           showFileNames
           filesLimit={1}
@@ -56,7 +105,7 @@ function UploadModal({ internship, close, show }) {
           Enviar seguro
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
@@ -86,7 +135,7 @@ function Insurance() {
   const [name, setName] = useState('');
   const [usersExport, setUsersExport] = useState([]);
   const [usersInsurance, setUsersInsurance] = useState([]);
-  const itemsPerPage = 8;
+  const itemsPerPage = 7;
   const [page, setPage] = useState(1);
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -149,6 +198,7 @@ function Insurance() {
       <ExcelFile
         element={
           <Button
+            fullWidth
             color='primary'
             variant='contained'
             startIcon={<GetAppIcon />}
@@ -160,7 +210,7 @@ function Insurance() {
                   .update({ alreadyDownloaded: true })
               )
             }>
-            Lista de estudiantes con postulación aprobada
+            Exportar postulaciones aprobadas
           </Button>
         }
         filename='Estudiantes para seguro'>
@@ -194,26 +244,28 @@ function Insurance() {
         }}>
         <Typography variant='h4'>Seguros de práctica de estudiantes</Typography>
       </div>
+
       <Container style={{ marginTop: '2rem' }}>
-        <Grid container justifyContent='flex-end' spacing={2}>
-          <Grid item>
-            <ExportarExcel />
-          </Grid>
-          <Grid item style={{ flexGrow: 1 }} />
-          <Grid item>
+        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+          <Grid item xs={12} sm={12} lg={4}>
             <TextField
+              fullWidth
               label='Buscar estudiante'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-          <Grid item>
+          <Grid item xs={12} sm={5} lg={4}>
             <CareerSelector
               careerId={selectedCareerId}
               setCareerId={setSelectedCareerId}
             />
           </Grid>
+          <Grid item xs={12} sm={7} lg={4}>
+            <ExportarExcel />
+          </Grid>
         </Grid>
+
         {filteredInsuranceList.length > 0 ? (
           <>
             <List>

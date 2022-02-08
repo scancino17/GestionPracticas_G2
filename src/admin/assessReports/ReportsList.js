@@ -11,12 +11,14 @@ import {
   TextField,
   List
 } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { NavigateNext } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
+import { Button } from '@mui/material';
 
 function ReportsList() {
   const [name, setName] = useState('');
@@ -53,26 +55,32 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid
-          container
-          justifyContent='flex-end'
-          alignItems='center'
-          spacing={4}>
-          <Grid item>
+        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+          <Grid item xs={12} sm={4}>
             <TextField
+              fullWidth
               label='Buscar estudiante'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
           {userRole === ADMIN_ROLE && (
-            <Grid item>
+            <Grid item xs={12} sm={4}>
               <CareerSelector
                 careerId={selectedCareerId}
                 setCareerId={setSelectedCareerId}
               />
             </Grid>
           )}
+          <Grid item xs={12} sm={4}>
+            <Button
+              fullWidth
+              color='primary'
+              variant='contained'
+              startIcon={<GetAppIcon />}>
+              Exportar datos
+            </Button>
+          </Grid>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>

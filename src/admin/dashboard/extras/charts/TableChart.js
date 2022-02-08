@@ -51,22 +51,25 @@ function TableChart({ setExportable }) {
 
   return (
     <Grid container>
+      {/*
       <Grid item xs={12} sm={6} md={6}>
-        {loaded ? (
-          <DataGrid
-            rows={data}
-            columns={columns}
-            pageSize={5}
-            autoHeight={true}
-            columnBuffer={2}
-          />
-        ) : (
-          <CircularProgress />
-        )}
+        
       </Grid>
       <Grid item xs={12} sm={6} md={6}>
         <img src='AdminTable.jpg' alt='Faceless Animation' width='100%' />
       </Grid>
+*/}
+      {loaded ? (
+        <DataGrid
+          rows={data}
+          columns={columns}
+          pageSize={5}
+          autoHeight={true}
+          columnBuffer={2}
+        />
+      ) : (
+        <CircularProgress />
+      )}
     </Grid>
   );
 }

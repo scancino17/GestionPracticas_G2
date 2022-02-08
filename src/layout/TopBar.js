@@ -2,13 +2,18 @@ import {
   AppBar,
   Badge,
   Hidden,
+  Box,
+  Divider,
+  ListItemIcon,
   IconButton,
   makeStyles,
   Menu,
   MenuItem,
   Snackbar,
-  Toolbar
+  Toolbar,
+  Typography
 } from '@material-ui/core';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -16,7 +21,7 @@ import { useUser, STUDENT_ROLE } from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
-
+import PasswordIcon from '@mui/icons-material/Password';
 const useStyles = makeStyles((theme) => ({
   logo: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
@@ -51,8 +56,27 @@ const useStyles = makeStyles((theme) => ({
 const ProfileMenu = ({ func }) => {
   return (
     <>
-      <MenuItem onClick={func.handleResetPassword}>Cambiar contraseña</MenuItem>
-      <MenuItem onClick={func.handleLogout}>Cerrar sesión</MenuItem>
+      <Box sx={{ my: 1.5, px: 2.5 }}>
+        <Typography variant='body1' noWrap>
+          {func.nombre}
+        </Typography>
+        <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
+          {func.email}
+        </Typography>
+      </Box>
+      <Divider sx={{ my: 1 }} />
+      <MenuItem>
+        <ListItemIcon onClick={func.handleResetPassword}>
+          <PasswordIcon fontSize='small' />
+        </ListItemIcon>
+        Cambiar Contraseña
+      </MenuItem>
+      <MenuItem onClick={func.handleLogout}>
+        <ListItemIcon>
+          <LogoutIcon fontSize='small' />
+        </ListItemIcon>
+        Cerrar sesión
+      </MenuItem>
     </>
   );
 };
@@ -72,7 +96,9 @@ function TopBar({ setSidebarOpen }) {
       <ProfileMenu
         func={{
           handleResetPassword: handleResetPassword,
-          handleLogout: handleLogout
+          handleLogout: handleLogout,
+          nombre: userData && userData.name,
+          email: user.email
         }}
       />
     );

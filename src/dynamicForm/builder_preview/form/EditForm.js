@@ -38,7 +38,7 @@ import { DEFAULT_CAREER, useUser } from '../../../providers/User';
 import { useSupervisor } from '../../../providers/Supervisor';
 import { predefinedForm} from '../../predefined_forms/predefined';
 
-function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) {
+function EditForm({open,setOpen,value,setValue,setValueTab,valueTab,careerId,setCareerId,careerIdTab,setCareerIdTab }) {
   const [formFull, setFormFull] = useState(predefinedForm);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -46,17 +46,32 @@ function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) 
   const [editValue, setEditValue] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [selectedCareerId, setSelectedCareerId] = useState(careerId);
+
   const { getCareerForm, setCareerForm } = useSupervisor();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (selectedCareerId && selectedCareerId !== DEFAULT_CAREER) {
-      getCareerForm(selectedCareerId).then((careerForm) =>
-        setFormFull(careerForm)
-      );
-    }
-  }, [selectedCareerId, getCareerForm]);
+    getCareerForm(careerId).then((careerForm) =>
+    {
+      console.log('----------')
+      console.log(careerForm)
+      console.log(formFull)
+      console.log('----------')
+      if(formFull && careerForm!==formFull){
+        if (careerId && careerId!==careerIdTab && careerId !== DEFAULT_CAREER) {
+          if(careerIdTab=== DEFAULT_CAREER ){
+            setCareerIdTab(careerId)
+            getCareerForm(careerId).then((careerForm) =>
+            setFormFull(careerForm),
+            );
+          }
+          else{
+            handleSave(true)
+          }
+        }
+      }
+    })
+    
+  }, [careerId, getCareerForm]);
 
   useEffect(() => setFlag(false), [flag]);
   useEffect(() => {
@@ -64,13 +79,14 @@ function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) 
       handleSave()
     }
   }, [value, open, handleSave]);
-  
+
+
   useEffect(() =>{
     if (careerId && careerId !== DEFAULT_CAREER) {
-      getCareerForm(careerId).then((careerForm) =>
+      getCareerForm(careerIdTab).then((careerForm) =>
         setFormFull(careerForm)
       );
-  }}, [careerId, getCareerForm]);
+  }}, [careerIdTab, getCareerForm]);
 
   const [activeStep, setActiveStep] = useState(0);
 
@@ -125,7 +141,8 @@ function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) 
     setFlag(true);
   }
 
-  function handleSave() {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function handleSave(changeCareer) {
     Swal.fire({
       title: '¿Desea guardar los cambios?',
       showDenyButton: true,
@@ -135,20 +152,43 @@ function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) 
       showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        setCareerForm(selectedCareerId, { form: formFull });
-        Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
+        setCareerForm(careerIdTab, { form: formFull });
+        if(changeCareer){
+          setCareerIdTab(careerId)
+
+          getCareerForm(careerIdTab).then((careerForm) =>
+          setFormFull(careerForm),
+          );
+        }
+        else{
           setValueTab(value)
-        });
+          setOpen(false)
+        }
+
+        Swal.fire('¡Formulario Guardado!', '', 'success');
       }
       if (result.isDenied) {
-        setValueTab(value)
+        if(changeCareer){
+          setCareerIdTab(careerId)
+
+          getCareerForm(careerIdTab).then((careerForm) =>
+          setFormFull(careerForm),
+          );
+        }
+        else{
+          setValueTab(value)
+          setOpen(false)
+        }
        
       }
       if(result.dismiss){
-        setValue(valueTab)
-      }
-      
-      
+        if(changeCareer){
+          setCareerId(careerIdTab)
+        }
+        else{
+          setValue(valueTab)
+        }
+      } 
     });
   }
 
@@ -180,7 +220,7 @@ function EditForm({careerId,open,setOpen,value,setValue,setValueTab,valueTab }) 
         </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
 
-        {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
+        {careerId && careerId !== DEFAULT_CAREER ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
               <Grid item xs={12} md={5}>

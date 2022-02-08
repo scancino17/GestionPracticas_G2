@@ -17,6 +17,7 @@ function SelectEdit() {
     const [open2, setOpen2] = useState(false);
     const [open3, setOpen3] = useState(false);
     const [selectedCareerId, setSelectedCareerId] = useState(careerId);
+    const [selectedCareerIdTab, setSelectedCareerIdTab] = useState(careerId);
 
     const handleChange = (event, newValue) => {
         if(selectedCareerId!==DEFAULT_CAREER){
@@ -70,7 +71,7 @@ function SelectEdit() {
                 <Grid container direction='row'>
                     <Grid item >
                         <CareerSelector
-                            careerId={selectedCareerId}
+                            careerId={selectedCareerIdTab}
                             setCareerId={setSelectedCareerId}
                             excludeGeneral
                         />
@@ -106,7 +107,12 @@ function SelectEdit() {
                         setValue={setValue} 
                         setValueTab={setValueTab} 
                         valueTab={valueTab} 
-                        careerId={selectedCareerId}/>}
+                        careerId={selectedCareerId}
+                        setCareerId={setSelectedCareerId}
+                        careerIdTab={selectedCareerIdTab}
+                        setCareerIdTab={setSelectedCareerIdTab}
+                        
+                        />}
 
                 {valueTab === 1 && selectedCareerId!==DEFAULT_CAREER && 
                     <EditSurvey                                          
@@ -125,7 +131,7 @@ function SelectEdit() {
                         setValue={setValue} 
                         setValueTab={setValueTab} 
                         careerId={selectedCareerId}/>}
-                        
+
                 {selectedCareerId===DEFAULT_CAREER && 
                     <Grid
                         container

@@ -87,26 +87,24 @@ export function SupervisorProvider({ children }) {
       const temp = [];
 
       querySnapshot.forEach((doc) => {
-        if (careerId === DEFAULT_CAREER)
-          temp.push({ id: doc.id, ...doc.data() });
-        else {
-          let docData = doc.data();
-          let carList = docData.careers.filter(
-            (item) => item.careerId === careerId
+        let docData = doc.data();
+        let carList = docData.careers.filter(
+          (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+        );
+        let intList = docData.internships.filter(
+          (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+        );
+        let remList = Object.entries(docData.remarks)
+          .map(([key, value]) => ({ id: key, ...value }))
+          .filter(
+            (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
           );
-          let intList = docData.internships.filter(
-            (item) => item.careerId === careerId
-          );
-          let remList = docData.remarks.filter(
-            (item) => item.careerId === careerId
-          );
-          temp.push({
-            id: doc.id,
-            careers: carList,
-            internships: intList,
-            remarks: remList
-          });
-        }
+        temp.push({
+          id: doc.id,
+          careers: carList,
+          internships: intList,
+          remarks: remList
+        });
       });
 
       setEmployers(temp);
@@ -163,11 +161,11 @@ export function SupervisorProvider({ children }) {
     if (!employers || !internships) return [];
     const remarks = [];
 
-    employers.forEach((employer) =>
-      remarks.push(
-        ...employer.remarks
-          .filter((item) => !item.read)
-          .map((remark, index) => {
+    employers.forEach(
+      (employer) =>
+        employer.remarks.length &&
+        remarks.push(
+          ...employer.remarks.map((remark, index) => {
             const {
               employerName,
               employerEmail,
@@ -177,6 +175,7 @@ export function SupervisorProvider({ children }) {
             } = internships.find((item) => item.id === remark.internshipId);
             return {
               index: index,
+              employerId: employer.id,
               employerName: employerName,
               employerEmail: employerEmail,
               internshipNumber: internshipNumber,
@@ -185,7 +184,7 @@ export function SupervisorProvider({ children }) {
               ...remark
             };
           })
-      )
+        )
     );
 
     return remarks;
@@ -550,6 +549,31 @@ export function SupervisorProvider({ children }) {
     });
   }
 
+  async function updateEmployer(employerId, update) {
+    await updateDoc(doc(db, 'employers', employerId), update);
+  }
+
+  async function updateRemark(remark, update) {
+    const {
+      employerName,
+      employerEmail,
+      internshipNumber,
+      studentName,
+      careerName,
+      id,
+      index,
+      ...reducedRemark
+    } = remark;
+    await updateEmployer(remark.employerId, {
+      [`remarks.${remark.id}`]: {
+        ...reducedRemark,
+        updateTime: serverTimestamp(),
+        evaluatingSupervisor: { name: displayName, email: email },
+        ...update
+      }
+    });
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
@@ -583,7 +607,8 @@ export function SupervisorProvider({ children }) {
         evaluateReport,
         rejectExtension,
         approveExtension,
-        resetStudent
+        resetStudent,
+        updateRemark
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

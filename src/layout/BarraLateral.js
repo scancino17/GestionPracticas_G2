@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
@@ -34,6 +34,10 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
   const classes = useStyles();
   const { remarkList } = useSupervisor();
 
+  const newRemarkCount = useMemo(() => {
+    return remarkList.filter((item) => !item.read).length;
+  }, [remarkList]);
+
   const items = [
     {
       label: 'Dashboard',
@@ -64,7 +68,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     {
       label: 'Observaciones de supervisores',
       icon: (
-        <Badge color='secondary' badgeContent={remarkList.length}>
+        <Badge color='secondary' badgeContent={newRemarkCount}>
           <Feedback style={{ color: 'inherit', fontSize: 27 }} />
         </Badge>
       ),

@@ -1,4 +1,10 @@
-import { doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  onSnapshot,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
 import { useUser } from './User';
@@ -67,23 +73,21 @@ export function EmployerProvider({ children }) {
     await updateDoc(doc(db, 'employers', userId), update);
   }
 
-  function addRemark(internship, remark) {
-    const remarkList = userData.remarks.slice();
-
-    remarkList.push({
-      studentId: internship.studentId,
-      internshipId: internship.internshipId,
-      careerId: internship.careerId,
-      remark: remark,
-      read: false
+  async function addRemark(internship, remark) {
+    await updateEmployer({
+      [`remarks.${Date.now()}`]: {
+        studentId: internship.studentId,
+        internshipId: internship.internshipId,
+        careerId: internship.careerId,
+        remark: remark,
+        read: false,
+        remarkTime: serverTimestamp()
+      }
     });
-
-    updateEmployer({ remarks: remarkList });
   }
 
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
-  useEffect(() => console.log(userData), [userData]);
 
   return (
     <EmployerContext.Provider

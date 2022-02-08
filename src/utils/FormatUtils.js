@@ -1,4 +1,4 @@
-export default function rutFormatter(rut) {
+export function rutFormatter(rut) {
   const digits = `${rut}`.split('').reverse();
   let serie = 2;
   let sum = 0;
@@ -24,4 +24,12 @@ export default function rutFormatter(rut) {
   }
 
   return `${new Intl.NumberFormat('es-CL').format(rut)}-${dig}`;
+}
+
+export function toLegibleDate(timestamp) {
+  return new Date(timestamp.seconds * 1000).toLocaleDateString('es-CL');
+}
+
+export function toLegibleTime(timestamp) {
+  return new Date(timestamp.seconds * 1000).toLocaleTimeString('es-CL');
 }

@@ -25,7 +25,7 @@ import React, { useState, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useEmployer } from '../providers/Employer';
 import { useUser } from '../providers/User';
-import rutFormatter from '../utils/RutFormatter';
+import { rutFormatter, toLegibleDate } from '../utils/FormatUtils';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -76,10 +76,6 @@ function InternItem({ internship, expanded, changeExpanded }) {
     internStart,
     internEnd
   } = internship;
-
-  function toLegibleDate(timestamp) {
-    return new Date(timestamp.seconds * 1000).toLocaleDateString('es-CL');
-  }
 
   return (
     <>

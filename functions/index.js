@@ -256,7 +256,7 @@ exports.createEmployer = functions.https.onCall((data, context) => {
             .firestore()
             .collection('employers')
             .doc(userRecord.uid)
-            .set({ careers: [], internships: [], remarks: [] });
+            .set({ careers: [], internships: [], remarks: {} });
 
           admin
             .firestore()

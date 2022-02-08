@@ -27,9 +27,17 @@ export function rutFormatter(rut) {
 }
 
 export function toLegibleDate(timestamp) {
-  return new Date(timestamp.seconds * 1000).toLocaleDateString('es-CL');
+  let time =
+    typeof timestamp === 'string'
+      ? parseInt(timestamp)
+      : timestamp.seconds * 1000;
+  return new Date(time).toLocaleDateString('es-CL');
 }
 
 export function toLegibleTime(timestamp) {
-  return new Date(timestamp.seconds * 1000).toLocaleTimeString('es-CL');
+  let time =
+    typeof timestamp === 'string'
+      ? parseInt(timestamp)
+      : timestamp.seconds * 1000;
+  return new Date(time).toLocaleTimeString('es-CL');
 }

@@ -149,21 +149,23 @@ function RemarkItem({ remark, expanded, changeExpanded }) {
                 <Grid item xs={12}>
                   <Typography>{remark.answer}</Typography>
                 </Grid>
-                <Grid
-                  item
-                  container
-                  direction='row'
-                  justifyContent='space-between'
-                  alignItems='center'
-                  style={{ paddingTop: '1rem' }}>
-                  <Typography className={classes.evaluatingSupervisorText}>
-                    Evaluado por {remark.evaluatingSupervisor.name}
-                  </Typography>
-                  <Typography className={classes.evaluatingSupervisorText}>
-                    {remark.evaluatingSupervisor.email}
-                  </Typography>
-                </Grid>
               </>
+            )}
+            {!!remark.evaluatingSupervisor && (
+              <Grid
+                item
+                container
+                direction='row'
+                justifyContent='space-between'
+                alignItems='center'
+                style={{ paddingTop: '1rem' }}>
+                <Typography className={classes.evaluatingSupervisorText}>
+                  Evaluado por {remark.evaluatingSupervisor.name}
+                </Typography>
+                <Typography className={classes.evaluatingSupervisorText}>
+                  {remark.evaluatingSupervisor.email}
+                </Typography>
+              </Grid>
             )}
           </Grid>
         </AccordionDetails>

@@ -5,7 +5,13 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore';
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo
+} from 'react';
 import { db } from '../firebase';
 import { useUser } from './User';
 
@@ -28,6 +34,29 @@ export function EmployerProvider({ children }) {
       setUserData(doc.data())
     );
   }, [userId]);
+
+  const remarksMap = useMemo(() => {
+    if (!userData) return new Map();
+    const remarksMap = new Map();
+    const internships = userData.internships.map((item) => item.internshipId);
+    internships.forEach((internship) => remarksMap.set(internship, []));
+
+    Object.entries(userData.remarks)
+      .map(([key, value]) => ({ id: key, ...value }))
+      .forEach((remark) => {
+        if (remarksMap.has(remark.internshipId)) {
+          const list = remarksMap.get(remark.internshipId).slice();
+          list.push(remark);
+          remarksMap.set(remark.internshipId, list);
+        }
+      });
+
+    Array.from(remarksMap.values()).forEach((list) =>
+      list.sort((f, s) => s.id - f.id)
+    );
+
+    return remarksMap;
+  }, [userData]);
 
   const getInterns = useCallback(() => {
     function addIntern(intern) {
@@ -88,10 +117,11 @@ export function EmployerProvider({ children }) {
 
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
+  useEffect(() => console.log(remarksMap), [remarksMap]);
 
   return (
     <EmployerContext.Provider
-      value={{ employerLoaded, userData, internList, addRemark }}>
+      value={{ employerLoaded, userData, internList, addRemark, remarksMap }}>
       {children}
     </EmployerContext.Provider>
   );

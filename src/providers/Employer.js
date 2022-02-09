@@ -60,7 +60,6 @@ export function EmployerProvider({ children }) {
 
   const getInterns = useCallback(() => {
     function addIntern(intern) {
-      console.log(intern);
       setInternList((prevState) => {
         if (
           !prevState.find((item) => item.internshipId === intern.internshipId)
@@ -115,13 +114,23 @@ export function EmployerProvider({ children }) {
     });
   }
 
+  function getInternData(internshipId) {
+    return internList.find((item) => item.internshipId === internshipId);
+  }
+
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
-  useEffect(() => console.log(remarksMap), [remarksMap]);
 
   return (
     <EmployerContext.Provider
-      value={{ employerLoaded, userData, internList, addRemark, remarksMap }}>
+      value={{
+        employerLoaded,
+        userData,
+        internList,
+        remarksMap,
+        addRemark,
+        getInternData
+      }}>
       {children}
     </EmployerContext.Provider>
   );

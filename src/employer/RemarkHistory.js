@@ -5,7 +5,9 @@ import {
   Typography,
   Button,
   Card,
-  CardContent
+  CardContent,
+  Box,
+  Hidden
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import React, { useMemo } from 'react';
@@ -67,12 +69,14 @@ function RemarkItem({ remark }) {
             direction='row'
             justifyContent='space-between'
             alignItems='center'>
-            <Typography
-              className={
-                classes.heading
-              }>{`Observación enviada el ${toLegibleDate(
-              remark.remarkTime
-            )} ${toLegibleTime(remark.remarkTime)}`}</Typography>
+            <Typography className={classes.heading}>
+              <Box display='inline'>
+                <Hidden smDown>Observación enviada el </Hidden>
+              </Box>
+              {`${toLegibleDate(remark.remarkTime)} ${toLegibleTime(
+                remark.remarkTime
+              )}`}
+            </Typography>
             {remark.read ? (
               <Typography className={classes.readHeading}>Leído</Typography>
             ) : (
@@ -87,11 +91,18 @@ function RemarkItem({ remark }) {
       {remark.read && (
         <Card className={classes.secondaryCard}>
           <CardContent>
-            <Typography className={classes.heading}>{`${
-              remark.answer ? 'Respuesta envíada' : 'Mensaje recibido'
-            } el ${toLegibleDate(remark.updateTime)} ${toLegibleTime(
-              remark.updateTime
-            )}`}</Typography>
+            <Typography className={classes.heading}>
+              <Box display='inline'>
+                <Hidden smDown>
+                  {`${
+                    remark.answer ? 'Respuesta envíada' : 'Mensaje recibido'
+                  } el `}
+                </Hidden>
+              </Box>
+              {`${toLegibleDate(remark.updateTime)} ${toLegibleTime(
+                remark.updateTime
+              )}`}
+            </Typography>
             {remark.answer && (
               <Typography style={{ marginTop: '.1rem', marginBottom: '.3rem' }}>
                 {remark.answer}
@@ -103,9 +114,12 @@ function RemarkItem({ remark }) {
               justifyContent='space-between'
               alignItems='center'>
               <Typography className={classes.mediumText}>
-                {`${remark.answer ? 'Mensaje enviado' : 'Recibido'} por ${
-                  remark.evaluatingSupervisor.name
-                }`}
+                <Box display='inline'>
+                  <Hidden smDown>
+                    {`${remark.answer ? 'Mensaje enviado' : 'Recibido'} por `}
+                  </Hidden>
+                </Box>
+                {remark.evaluatingSupervisor.name}
               </Typography>
               <Typography className={classes.mediumText}>
                 {remark.evaluatingSupervisor.email}
@@ -136,19 +150,21 @@ function RemarkHistory() {
   return remarksList && remarksList.length && internData ? (
     <>
       <Grid container direction='column'>
-        <div
-          style={{
-            backgroundImage: "url('../HomeBanner-3x.png')",
-            backgroundColor: '#e0f3f7',
-            backgroundSize: '100%',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            position: 'relative',
-            padding: '2rem'
-          }}>
-          <Typography variant='h4'>Historial de observaciones</Typography>
-          <Typography variant='h6'>{`Observaciones del estudiante ${internData.studentName}`}</Typography>
-        </div>
+        <Hidden smDown>
+          <div
+            style={{
+              backgroundImage: "url('../HomeBanner-3x.png')",
+              backgroundColor: '#e0f3f7',
+              backgroundSize: '100%',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              position: 'relative',
+              padding: '2rem'
+            }}>
+            <Typography variant='h4'>Historial de observaciones</Typography>
+            <Typography variant='h6'>{`Observaciones del estudiante ${internData.studentName}`}</Typography>
+          </div>
+        </Hidden>
         <RemarksList remarksList={remarksList} />
         <Container>
           <Grid

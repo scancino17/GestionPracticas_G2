@@ -17,8 +17,11 @@ import {
   Box,
   DialogTitle,
   DialogActions,
-  Divider
+  Divider,
+  Collapse,
+  IconButton
 } from '@material-ui/core';
+import classNames from 'classnames';
 import { grey } from '@material-ui/core/colors';
 import { ExpandMore } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
@@ -56,6 +59,16 @@ const useStyles = makeStyles((theme) => ({
   redText: {
     fontSize: theme.typography.pxToRem(15),
     color: '#cf0000'
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
   }
 }));
 
@@ -174,84 +187,111 @@ function InternItem({ internship, expanded, changeExpanded }) {
 function LastRemarkView({ internshipId }) {
   const { remarksMap } = useEmployer();
   const remarkList = remarksMap.get(internshipId);
+  const [expanded, setExpanded] = useState(false);
   const classes = useStyles();
+
+  function handleExpand(event) {
+    event.preventDefault();
+    setExpanded((prevState) => !prevState);
+  }
 
   return (
     remarkList.length && (
       <>
         <Grid
           item
-          xs={12}
-          style={{ paddingTop: '1rem', paddingBottom: '.5rem' }}>
-          <Divider />
+          container
+          direction='row'
+          justifyContent='space-between'
+          alignItems='center'
+          style={{ cursor: 'pointer' }}
+          onClick={handleExpand}>
+          <Grid item>
+            <Typography variant='h6'>Última observación: </Typography>
+          </Grid>
+          <Grid item>
+            <IconButton
+              className={classNames(classes.expand, {
+                [classes.expandOpen]: expanded
+              })}
+              style={{ marginRight: '-.75rem' }}
+              onClick={handleExpand}>
+              <ExpandMore />
+            </IconButton>
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant='h6'>Última observación: </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography className={classes.bold}>Enviado:</Typography>
-        </Grid>
-        <Grid item xs={8}>
-          <Typography>
-            {`${toLegibleDate(remarkList[0].id)} ${toLegibleTime(
-              remarkList[0].id
-            )}`}
-          </Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <Typography className={classes.bold}>Estado:</Typography>
-        </Grid>
-        <Grid item xs={8}>
-          <Typography>{remarkList[0].read ? 'Leído' : 'No Leído'}</Typography>
-        </Grid>
-        {remarkList[0].read && (
-          <>
+        <Collapse in={expanded} timeout='auto' unmountOnExit>
+          <Grid item container>
             <Grid item xs={4}>
-              <Typography className={classes.bold}>Recibido por:</Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Typography>{remarkList[0].evaluatingSupervisor.name}</Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.bold}>Correo:</Typography>
+              <Typography className={classes.bold}>Enviado:</Typography>
             </Grid>
             <Grid item xs={8}>
               <Typography>
-                {remarkList[0].evaluatingSupervisor.email}
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.bold}>
-                Última actualización:
-              </Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Typography>
-                {`${toLegibleDate(remarkList[0].updateTime)} ${toLegibleTime(
-                  remarkList[0].updateTime
+                {`${toLegibleDate(remarkList[0].id)} ${toLegibleTime(
+                  remarkList[0].id
                 )}`}
               </Typography>
             </Grid>
-          </>
-        )}
-        <Grid item xs={12} style={{ paddingTop: '1rem' }}>
-          <Typography className={classes.bold}>Mensaje:</Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>{remarkList[0].remark}</Typography>
-        </Grid>
-        {!!remarkList[0].answer && (
-          <>
-            <Grid item xs={12} style={{ paddingTop: '1rem' }}>
-              <Typography className={classes.bold}>
-                Respuesta de supervisor:
+            <Grid item xs={4}>
+              <Typography className={classes.bold}>Estado:</Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <Typography>
+                {remarkList[0].read ? 'Leído' : 'No Leído'}
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography>{remarkList[0].answer}</Typography>
+            {remarkList[0].read && (
+              <>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>
+                    Recibido por:
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>
+                    {remarkList[0].evaluatingSupervisor.name}
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>Correo:</Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>
+                    {remarkList[0].evaluatingSupervisor.email}
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>
+                    Última actualización:
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>
+                    {`${toLegibleDate(
+                      remarkList[0].updateTime
+                    )} ${toLegibleTime(remarkList[0].updateTime)}`}
+                  </Typography>
+                </Grid>
+              </>
+            )}
+            <Grid item xs={12} style={{ paddingTop: '1rem' }}>
+              <Typography variant='h6'>Mensaje:</Typography>
             </Grid>
-          </>
-        )}
+            <Grid item xs={12}>
+              <Typography>{remarkList[0].remark}</Typography>
+            </Grid>
+            {!!remarkList[0].answer && (
+              <>
+                <Grid item xs={12} style={{ paddingTop: '1rem' }}>
+                  <Typography variant='h6'>Respuesta de supervisor:</Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography>{remarkList[0].answer}</Typography>
+                </Grid>
+              </>
+            )}
+          </Grid>
+        </Collapse>
       </>
     )
   );
@@ -286,7 +326,7 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
         <TextField
           multiline
           minRows={4}
-          label='Observaciones'
+          label='Observación'
           variant='outlined'
           onChange={handleRemarkChange}
           fullWidth

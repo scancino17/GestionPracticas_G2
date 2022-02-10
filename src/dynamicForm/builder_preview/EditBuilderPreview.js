@@ -34,7 +34,6 @@ import {
 } from '@material-ui/core';
 import { DEFAULT_CAREER } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
-import { predefinedForm} from '../predefined_forms/predefined';
 import { Skeleton } from '@material-ui/lab';
 
 function EditBuilderPreview({
@@ -54,7 +53,7 @@ function EditBuilderPreview({
 }) {
 
   const _ = require('lodash'); 
-  const [formFull, setFormFull] = useState(predefinedForm);
+  const [formFull, setFormFull] = useState(null);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
@@ -76,6 +75,7 @@ function EditBuilderPreview({
 
 //peticion para actuializar variable careerIDTab
   useEffect(() => {
+    console.log('formfull',formFull)
       if (careerId && careerId!==careerIdTab && careerId !== DEFAULT_CAREER) {
         if(careerIdTab=== DEFAULT_CAREER ){
           setCareerIdTab(careerId)
@@ -341,7 +341,7 @@ function EditBuilderPreview({
         </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
 
-        {careerIdTab === careerId ? (
+        {careerIdTab === careerId && formFull ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
               <Grid item xs={12} md={5}>
@@ -450,6 +450,8 @@ function EditBuilderPreview({
                 </TableRow>
               </TableHead>
               <TableBody>
+                {formFull &&
+                <>
                 {formFull.map((form, i) => (
                   <TableRow key={form.i}>
                     {!edit || indexEdit !== i ? (
@@ -517,6 +519,7 @@ function EditBuilderPreview({
                     </IconButton>
                   </TableCell>
                 </TableRow>
+                </>}
               </TableBody>
             </Table>
           </DialogContent>

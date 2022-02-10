@@ -2,7 +2,7 @@ import { formTypes } from '../camps/formTypes';
 /**
  * Formulñarios predefinidos
  */
-      export const predefinedSurveyStudent = [
+      export const predefinedSurvey = [
     {
           step: 'INFORMACIÓN GENERAL DEL ESTUDIANTE Y DE LA EMPRESA',
           uneditable:true,
@@ -164,7 +164,7 @@ import { formTypes } from '../camps/formTypes';
           }
       ]
 
-      export const predefinedSurveySupervisor = [
+      export const predefinedEvaluation = [
           {
                 step: 'INFORMACIÓN GENERAL DEL ESTUDIANTE Y DE LA EMPRESA',
                 uneditable:true,
@@ -326,7 +326,7 @@ import { formTypes } from '../camps/formTypes';
                 }
       ]
 
-  export const predefinedForm = 
+      export const predefinedForm = 
     [
         {
           step: 'Información del estudiante',

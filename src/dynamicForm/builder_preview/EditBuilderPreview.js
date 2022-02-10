@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../DynamicForm';
+import DynamicForm from '../builder_preview/DynamicForm';
 import {
   Add,
   ArrowDownward,
@@ -11,7 +11,6 @@ import {
   Save,
   Edit
 } from '@material-ui/icons';
-import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import {
   Divider,
@@ -33,39 +32,187 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import { DEFAULT_CAREER } from '../../../providers/User';
-import { useSupervisor } from '../../../providers/Supervisor';
-import { predefinedSurveyStudent } from '../../predefined_forms/predefined';
+import { DEFAULT_CAREER } from '../../providers/User';
+import { useSupervisor } from '../../providers/Supervisor';
+import { predefinedForm} from '../predefined_forms/predefined';
+import { Skeleton } from '@material-ui/lab';
 
-function EditSurvey({ careerId, update1, setUpdate }) {
-  const [formFull, setFormFull] = useState(predefinedSurveyStudent);
+function EditBuilderPreview({
+    open,
+    value,
+    setValue,
+    setValueTab,
+    valueTab,
+    careerId,
+    setCareerId,
+    careerIdTab,
+    setCareerIdTab,
+    EditForm,
+    EditSurvey,
+    EditEvaluation
+    
+}) {
+
+  const _ = require('lodash'); 
+  const [formFull, setFormFull] = useState(predefinedForm);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
   const [editValue, setEditValue] = useState('');
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
-  const [selectedCareerId, setSelectedCareerId] = useState(careerId);
-  const { getSurveyForm, setSurveyForm } = useSupervisor();
-  const navigate = useNavigate();
+  const [activeStep, setActiveStep] = useState(0);
+  const { 
+        getCareerForm,
+        setCareerForm,
+        getSurveyForm,
+        setSurveyForm,
+        getEvaluateForm, 
+        setEvaluateForm
+        } = useSupervisor();
 
+
+
+
+//peticion para actuializar variable careerIDTab
   useEffect(() => {
-    if (selectedCareerId && selectedCareerId !== DEFAULT_CAREER) {
-      getSurveyForm(selectedCareerId).then((careerForm) =>
-        setFormFull(careerForm)
-      );
-    }
-  }, [selectedCareerId, getSurveyForm]);
+      if (careerId && careerId!==careerIdTab && careerId !== DEFAULT_CAREER) {
+        if(careerIdTab=== DEFAULT_CAREER ){
+          setCareerIdTab(careerId)
+        }
+        else{
+            changeCareer();
+        }
+      }
+  }, [careerId]);
+
+  //actualizar formulario al modificar la variable careerIdTab
+  useEffect(() => {
+   if(careerIdTab!== DEFAULT_CAREER){
+     getForm()
+   }
+}, [careerIdTab]);
 
   useEffect(() => setFlag(false), [flag]);
 
+  //peticion para actuializar variable de la pestaña
   useEffect(() => {
-    if (careerId && careerId !== DEFAULT_CAREER) {
-      getSurveyForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-  }, [careerId, getSurveyForm]);
+    console.log(open)
+    if(open){
+    console.log('change tab')
+    console.log('>>>>',(EditEvaluation?'evaluation':(EditForm?'form':(EditSurvey?'survey':null))))
+    //console.log(open)
+    if(value!==valueTab){
+      
+        changeTab();
+    }}
+  }, [value]);
 
-  const [activeStep, setActiveStep] = useState(0);
+  useEffect(() => getForm(), [valueTab]);
+
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  function getForm(){
+    if(EditForm){
+        getCareerForm(careerId).then((careerForm) =>
+            setFormFull(careerForm)
+        );
+    }
+    if(EditSurvey){
+        getSurveyForm(careerId).then((careerForm) =>
+            setFormFull(careerForm)
+        );
+    }
+    if(EditEvaluation){
+        getEvaluateForm(careerId).then((careerForm) =>
+            setFormFull(careerForm)
+        );
+    }
+  }
+
+  function setForm(){
+    if(EditForm){
+      setCareerForm(careerIdTab, { form: formFull });
+    }
+    if(EditSurvey){
+      setSurveyForm(careerIdTab, { form: formFull });
+    }
+    if(EditEvaluation){
+      setEvaluateForm(careerIdTab, { form: formFull });
+    }
+  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function changeCareer(){
+        if(EditForm){
+                    getCareerForm(careerIdTab).then((careerForm) =>{
+                        if(!_.isEqual(formFull, careerForm)){
+                            handleSave(true)
+                        }else{
+                            setCareerIdTab(careerId)
+                        }
+                    });
+                }
+                if(EditSurvey){
+                    getSurveyForm(careerIdTab).then((careerForm) =>{
+                        if(!_.isEqual(formFull, careerForm)){
+                            handleSave(true)
+                        }else{
+                            setCareerIdTab(careerId)
+                        }
+                    });
+                }
+                if(EditEvaluation){
+                    getEvaluateForm(careerIdTab).then((careerForm) =>{
+                        if(!_.isEqual(formFull, careerForm)){
+                            handleSave(true)
+                        }else{
+                            setCareerIdTab(careerId)
+                        }
+                    });
+                }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function changeTab(){
+      console.log('dentro cyhange tab')
+        if(EditForm){
+          console.log('form')
+            getCareerForm(careerIdTab).then((careerForm) =>{
+                if(!_.isEqual(formFull, careerForm)){
+                    handleSave()
+                }
+                else{
+                    setValueTab(value)
+                    //setOpen(false)
+                }
+            })
+        }
+        if(EditSurvey){
+          console.log('SURVEY')
+            getSurveyForm(careerIdTab).then((careerForm) =>{
+                if(!_.isEqual(formFull, careerForm)){
+                    handleSave()
+                }
+                else{
+                    setValueTab(value)
+                    //setOpen(false)
+                }
+            })
+        }
+        if(EditEvaluation){
+          console.log('EVALUATION')
+            getEvaluateForm(careerIdTab).then((careerForm) =>{
+                if(!_.isEqual(formFull, careerForm)){
+                    handleSave()
+                }
+                else{
+                    setValueTab(value)
+                    //setOpen(false)
+                }
+            })
+        }
+    }
+
 
   function handleNext() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -118,19 +265,48 @@ function EditSurvey({ careerId, update1, setUpdate }) {
     setFlag(true);
   }
 
-  function handleSave() {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function handleSave(changeCareer) {
     Swal.fire({
       title: '¿Desea guardar los cambios?',
       showDenyButton: true,
       confirmButtonText: `Guardar`,
-      denyButtonText: `Salir`
+      denyButtonText: `No guardar`,
+      cancelButtonText:'Salir',
+      showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        setSurveyForm(selectedCareerId, { form: formFull });
-        Swal.fire('¡Formulario Guardado!', '', 'success').then((result) => {
-          if (result.isConfirmed) navigate('/');
-        });
+        //guaradar formulario en la base de datos
+        setForm();
+        
+        if(changeCareer){
+          setCareerIdTab(careerId);
+        }
+        else{
+          setValueTab(value)
+          //setOpen(false)
+        }
+
+        Swal.fire('¡Formulario Guardado!', '', 'success');
       }
+      if (result.isDenied) {
+        if(changeCareer){
+          setCareerIdTab(careerId)
+        }
+        else{
+          setValueTab(value)
+          //setOpen(false)
+        }
+       
+      }
+      if(result.dismiss){
+        if(changeCareer){
+          setCareerId(careerIdTab)
+        }
+        else{
+          setValue(valueTab)
+        }
+      } 
     });
   }
 
@@ -153,13 +329,19 @@ function EditSurvey({ careerId, update1, setUpdate }) {
 
   return (
     <Grid container direction='column'>
-      <Grid item style={{ margin: '2rem' }}>
+      <Grid item  style={{ margin: '2rem' }}>
+
         <Typography variant='h4'>
-          Formulario de encuesta de satisfacción
+        {EditForm?'Formulario de inscripción de práctica':
+        (EditSurvey?'Edición formulario de encuesta de satisfacción':
+        (EditEvaluation?'Edición formulario de evaluación del estudiante':
+        null))}
         </Typography>
-      </Grid>
+
+        </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {selectedCareerId && selectedCareerId !== DEFAULT_CAREER ? (
+
+        {careerIdTab === careerId ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
               <Grid item xs={12} md={5}>
@@ -197,8 +379,6 @@ function EditSurvey({ careerId, update1, setUpdate }) {
                 (form, i) =>
                   i === activeStep && (
                     <DynamicForm
-                      updateInner={update1}
-                      setUpdate={setUpdate}
                       form={form.form}
                       setForm={setFormFull}
                       formFull={formFull}
@@ -247,21 +427,16 @@ function EditSurvey({ careerId, update1, setUpdate }) {
             </Grid>
           </Grid>
         ) : (
-          <Grid
-            container
-            direction='column'
-            align='center'
-            justifyContent='center'
-            style={{ marginTop: '6rem' }}>
-            <Grid item>
-              <img src='EmptyState-3x.png' width='300' alt='Banner' />
+          <Grid container direction='row'  justifyContent='center' spacing={8}>
+            <Grid item xs={12} md={5}>
+              <Skeleton variant="text"height={800} />
             </Grid>
-            <Grid item>
-              <Typography variant='h5' color='textSecondary'>
-                Selecciona una carrera para continuar
-              </Typography>
+            <Grid item xs={12} md={5}>
+              <Skeleton variant="text" height={800} />
             </Grid>
           </Grid>
+          
+         
         )}
         {/*Moddal */}
         <Dialog open={show} onClose={() => setShow(false)} fullWidth>
@@ -351,4 +526,4 @@ function EditSurvey({ careerId, update1, setUpdate }) {
   );
 }
 
-export default EditSurvey;
+export default EditBuilderPreview;

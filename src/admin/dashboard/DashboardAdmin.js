@@ -23,7 +23,7 @@ import InternshipIntention from '../intention/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
-import EditForm from '../../dynamicForm/builder_preview/form/EditForm';
+
 import FormCheck from '../../dynamicForm/FormCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
@@ -47,6 +47,7 @@ import ControlPanel from '../../utils/ControlPanel';
 import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 import RemarkList from '../remarks/RemarkList';
+import SelectEdit from '../../dynamicForm/SelectEdit';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -288,7 +289,7 @@ function DashboardAdmin({ sidebarProps }) {
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
-        <Route path='/edit-form' element={<EditForm />} />
+        <Route path='/edit-form' element={<SelectEdit />} />
         <Route path='/applications/:applicationId' element={<FormCheck />} />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />

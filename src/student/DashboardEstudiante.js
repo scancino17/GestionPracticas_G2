@@ -8,7 +8,7 @@ import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../InternshipStates';
-import SendForm from './../dynamicForm/SendForm';
+import SendForm from './../dynamicForm/send/SendForm';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {

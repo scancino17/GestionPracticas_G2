@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './builder_preview/DynamicForm';
-import { db, storage } from '../firebase';
+import DynamicForm from '../builder_preview/DynamicForm'
+import { db, storage } from '../../firebase';
 import {
   Step,
   StepLabel,
@@ -10,11 +10,11 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import { useUser } from '../providers/User';
+import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './camps/formTypes';
+import { sentApplication } from '../../InternshipStates';
+import { formTypes, customTypes } from '../camps/formTypes';
 import {
   addDoc,
   collection,
@@ -23,9 +23,11 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore';
-import { useStudent } from '../providers/Student';
+import { useStudent } from '../../providers/Student';
+import { updateInternship } from '../../providers/Supervisor';
 
-function SendForm({ edit }) {
+
+function SendEvaluation({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -33,34 +35,24 @@ function SendForm({ edit }) {
   const [files, setFiles] = useState([]);
   const { applicationId } = useParams();
   const navigate = useNavigate();
-  const [internshipId, setInternshipId] = useState();
   const { updateCurrentInternship } = useStudent();
+
+  const [internshipId, setInternshipId] = useState();
 
   useEffect(() => {
     if (userData) {
       setInternshipId(userData.currentInternship.id);
 
       if (!edit) {
-        const docRef = doc(db, 'form', userData.careerId);
+        const docRef = doc(db, 'form-evaluation', userData.careerId);
 
         getDoc(docRef).then((doc) => {
           const data = doc.data();
-          data.form[0].form[1].value = userData.name;
-          data.form[0].form[2].value = userData.rut;
-          data.form[0].form[3].value = userData.enrollmentNumber;
-          data.form[0].form[4].value = userData.email;
           if (data) setFormFull(data.form);
         });
-      } else {
-        const docRef = doc(db, 'applications', applicationId);
-        getDoc(docRef).then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
-      }
+      } 
     }
-  }, [userData, applicationId, edit]);
-
+  }, [userData, edit]);
   useEffect(() => {
     setFlag(false);
   }, [flag]);
@@ -96,7 +88,8 @@ function SendForm({ edit }) {
     );
   }
   //se guardan los archivos en el storage
-  function saveFiles(applicationId) {
+  function saveFiles(evaluateId) {
+    
     files.forEach((file) => {
       storage
         .ref()
@@ -104,7 +97,7 @@ function SendForm({ edit }) {
           //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
           //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
           //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
-          `/students-docs/${user.uid}/${internshipId}/applications/${applicationId}/${file.campName}/${file.file.name}`
+          `/students-docs/${user.uid}/${internshipId}/evaluate/${evaluateId}/${file.campName}/${file.file.name}`
         )
         .put(file.file);
     });
@@ -139,39 +132,22 @@ function SendForm({ edit }) {
         values[camp.name] = camp.value;
       })
     );
-
+    
+    
     if (!edit) {
-      addDoc(collection(db, 'applications'), {
+      addDoc(collection(db, 'send-evaluation'), {
         form: formFull,
-        studentId: user.uid,
-        studentName: userData.name,
-        email: userData.email,
-        careerId: userData.careerId,
-        internshipId: internshipId,
-        internshipNumber: userData.currentInternship.number,
-        status: 'En revisión',
-        creationDate: serverTimestamp(),
-        ...values
+
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
+          updateDoc(doc(db, 'internships', internshipId), {evaluate:true, evaluateId:docRef.id});
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-    } else {
-      updateDoc(doc(db, 'applications', applicationId), {
-        form: formFull,
-        status: 'En revisión',
-        ...values
-      }).then(() =>
-        //se guarda los archivos en la application correspondiente
-        saveFiles(applicationId)
-      );
-    }
-
-    updateCurrentInternship({ status: sentApplication });
+    } 
   }
 
   return (
@@ -186,7 +162,7 @@ function SendForm({ edit }) {
           position: 'relative',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Formulario</Typography>
+        <Typography variant='h4'>Formulario evaluación</Typography>
       </Grid>
 
       <Container>
@@ -280,4 +256,4 @@ function SendForm({ edit }) {
   );
 }
 
-export default SendForm;
+export default SendEvaluation;

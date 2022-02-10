@@ -177,7 +177,7 @@ function FormView({
             ) : element.type === formTypes.formSatisfaction ? (
               <Grid item key={index}>
                 <Divider />
-                <FormControl component='checkSatisfaction'>
+                <FormControl component='checksatisfaction'>
                   <Typography variant='h5'>{element.name}</Typography>
                   <Typography
                     variant='h10'

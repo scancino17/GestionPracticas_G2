@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../../dynamicForm/builder_preview/DynamicForm'
+import DynamicForm from '../../dynamicForm/builder_preview/DynamicForm';
 import { db, storage } from '../../firebase';
 import {
   Step,

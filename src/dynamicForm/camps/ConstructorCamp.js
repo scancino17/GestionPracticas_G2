@@ -43,7 +43,7 @@ function ConstructorCamp({
 
   useEffect(() => {
     if (edit) {
-      if(editElement.description){
+      if (editElement.description) {
         setDescription(editElement.description);
       }
       setType(editElement.type);

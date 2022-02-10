@@ -15,12 +15,11 @@ function DynamicForm({
 }) {
   const [flag, setFlag] = useState(false);
 
-
   return (
-    <Grid container direction='row'justifyContent='center' spacing={8}>
+    <Grid container direction='row' justifyContent='center' spacing={8}>
       {admin && (
         <>
-          <Grid item xs={12} md={5} >
+          <Grid item xs={12} md={5}>
             <FormBuilder
               flag={flag}
               setFlag={setFlag}
@@ -30,7 +29,7 @@ function DynamicForm({
               formFullInner={formFull}
             />
           </Grid>
-          <Divider orientation='vertical' flexItem/>
+          <Divider orientation='vertical' flexItem />
           <Grid item xs={12} md={6}>
             <FormView
               filesInnerInner={filesInner}

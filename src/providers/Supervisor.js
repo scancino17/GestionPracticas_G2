@@ -206,7 +206,6 @@ export function SupervisorProvider({ children }) {
     await setDoc(doc(db, 'form', selectedCareerId), form, params);
   }
 
-
   async function getSurveyForm(selectedCareerId) {
     let response = await getDoc(doc(db, 'form-survey', selectedCareerId));
     return response.data().form;
@@ -222,8 +221,6 @@ export function SupervisorProvider({ children }) {
   ) {
     await setDoc(doc(db, 'form-survey', selectedCareerId), form, params);
   }
-
-
 
   async function getEvaluateForm(selectedCareerId) {
     let response = await getDoc(doc(db, 'form-evaluation', selectedCareerId));
@@ -241,14 +238,9 @@ export function SupervisorProvider({ children }) {
     await setDoc(doc(db, 'form-evaluation', selectedCareerId), form, params);
   }
 
-  async function setSurveySended(
-    form
-  ) {
-    await addDoc('surveySended',form)
-   
+  async function setSurveySended(form) {
+    await addDoc('surveySended', form);
   }
-
-
 
   // mailTo es el correo al que se le enviará el mail.
   // templateName un string, el nombre del template a usar

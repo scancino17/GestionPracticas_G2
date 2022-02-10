@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../builder_preview/DynamicForm'
+import DynamicForm from '../builder_preview/DynamicForm';
 import { db, storage } from '../../firebase';
 import {
   Step,
@@ -12,18 +12,9 @@ import {
 } from '@material-ui/core';
 import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
-import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../../InternshipStates';
+import { useNavigate } from 'react-router-dom';
 import { formTypes, customTypes } from '../camps/formTypes';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore';
-import { useStudent } from '../../providers/Student';
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 function SendSurvey({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -31,10 +22,8 @@ function SendSurvey({ edit }) {
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
-  const { applicationId } = useParams();
   const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
-  const { updateCurrentInternship } = useStudent();
 
   useEffect(() => {
     if (userData) {
@@ -47,7 +36,7 @@ function SendSurvey({ edit }) {
           const data = doc.data();
           if (data) setFormFull(data.form);
         });
-      } 
+      }
     }
   }, [userData, edit]);
 
@@ -132,18 +121,20 @@ function SendSurvey({ edit }) {
 
     if (!edit) {
       addDoc(collection(db, 'send-survey'), {
-        form: formFull,
-
+        form: formFull
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
-          updateDoc(doc(db, 'internships', internshipId), {survey:true, surveyId:docRef.id});
+          updateDoc(doc(db, 'internships', internshipId), {
+            survey: true,
+            surveyId: docRef.id
+          });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-    } 
+    }
   }
 
   return (

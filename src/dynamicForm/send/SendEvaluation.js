@@ -162,7 +162,7 @@ function SendEvaluation({ edit }) {
           position: 'relative',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Formulario</Typography>
+        <Typography variant='h4'>Formulario evaluación</Typography>
       </Grid>
 
       <Container>

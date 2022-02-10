@@ -1,56 +1,25 @@
 import { Box, Grid, Tab, Tabs, Typography } from "@material-ui/core"; 
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEFAULT_CAREER, useUser } from "../providers/User";
 import CareerSelector from "../utils/CareerSelector";
-import EditForm from "./builder_preview/form/EditForm";
-
-import EditSurvey from "./builder_preview/survey/EditSurvey";
-import EditEvaluation from "./builder_preview/survey/EditSurveySupervisor";
+import EditBuilderPreview from "./builder_preview/EditBuilderPreview";
 
 function SelectEdit() {
     const { careerId } = useUser();
-    const [update, setUpdate] = useState('');
     const [value, setValue] = useState(0);
     const [valueTab, setValueTab] = useState(0);
-    const [open1, setOpen1] = useState(true);
-    const [open2, setOpen2] = useState(false);
-    const [open3, setOpen3] = useState(false);
     const [selectedCareerId, setSelectedCareerId] = useState(careerId);
     const [selectedCareerIdTab, setSelectedCareerIdTab] = useState(careerId);
 
+
     const handleChange = (event, newValue) => {
-        if(selectedCareerId!==DEFAULT_CAREER){
-            if(newValue===0){
-                setOpen1(true)
-            }
-            if(newValue===1){
-                setOpen2(true)
-            }
-            if(newValue===2){
-                setOpen3(true)
-            }
-            setValue(newValue) 
-        }else{
-            if(newValue===0){
-                setOpen1(true)
-                setOpen2(false)
-                setOpen3(false)
-            }
-            if(newValue===1){
-                setOpen1(false)
-                setOpen2(true)
-                setOpen3(false)
-            }
-            if(newValue===2){
-                setOpen1(false)
-                setOpen2(false)
-                setOpen3(true)
-            }   
+        if(selectedCareerIdTab===DEFAULT_CAREER){
+            setValue(newValue)
             setValueTab(newValue)
         }
-       
-       
+        console.log(newValue)
+        setValue(newValue)
     };
     
     return (
@@ -100,9 +69,8 @@ function SelectEdit() {
             </Box>
             </Grid>
                 {valueTab === 0 && selectedCareerId!==DEFAULT_CAREER && 
-                    <EditForm
-                        open={open1} 
-                        setOpen={setOpen1} 
+                    <EditBuilderPreview
+                        open={valueTab === 0}
                         value={value} 
                         setValue={setValue} 
                         setValueTab={setValueTab} 
@@ -111,26 +79,37 @@ function SelectEdit() {
                         setCareerId={setSelectedCareerId}
                         careerIdTab={selectedCareerIdTab}
                         setCareerIdTab={setSelectedCareerIdTab}
+                        EditForm
                         
                         />}
 
                 {valueTab === 1 && selectedCareerId!==DEFAULT_CAREER && 
-                    <EditSurvey                                          
-                        open={open2} 
-                        setOpen={setOpen2} 
+                    <EditBuilderPreview    
+                        open={valueTab === 1}                                      
                         value={value} 
                         setValue={setValue} 
                         setValueTab={setValueTab} 
-                        careerId={selectedCareerId}/>}
+                        valueTab={valueTab} 
+                        careerId={selectedCareerId}
+                        setCareerId={setSelectedCareerId}
+                        careerIdTab={selectedCareerIdTab}
+                        setCareerIdTab={setSelectedCareerIdTab}
+                        EditSurvey
+                    />}
 
                 {valueTab === 2 && selectedCareerId!==DEFAULT_CAREER && 
-                    <EditEvaluation 
-                        open={open3} 
-                        setOpen={setOpen3} 
+                    <EditBuilderPreview 
+                        open={valueTab === 2}
                         value={value} 
                         setValue={setValue} 
                         setValueTab={setValueTab} 
-                        careerId={selectedCareerId}/>}
+                        valueTab={valueTab} 
+                        careerId={selectedCareerId}
+                        setCareerId={setSelectedCareerId}
+                        careerIdTab={selectedCareerIdTab}
+                        setCareerIdTab={setSelectedCareerIdTab}
+                        EditEvaluation
+                    />}
 
                 {selectedCareerId===DEFAULT_CAREER && 
                     <Grid

@@ -17,7 +17,6 @@ import {
   Box,
   DialogTitle,
   DialogActions,
-  Divider,
   Collapse,
   IconButton
 } from '@material-ui/core';

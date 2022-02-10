@@ -1,8 +1,8 @@
 import { formTypes } from '../camps/formTypes';
 /**
- * Formulñarios predefinidos
+ * Formularios predefinidos
  */
-export const predefinedSurveyStudent = [
+export const predefinedSurvey = [
   {
     step: 'INFORMACIÓN GENERAL DEL ESTUDIANTE Y DE LA EMPRESA',
     uneditable: true,
@@ -157,7 +157,7 @@ export const predefinedSurveyStudent = [
   }
 ];
 
-export const predefinedSurveySupervisor = [
+export const predefinedEvaluation = [
   {
     step: 'INFORMACIÓN GENERAL DEL ESTUDIANTE Y DE LA EMPRESA',
     uneditable: true,

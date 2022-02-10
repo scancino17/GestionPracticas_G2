@@ -31,6 +31,11 @@ import { StudentNotificationTypes } from '../layout/NotificationMenu';
 import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { httpsCallable } from 'firebase/functions';
+import {
+  predefinedForm,
+  predefinedSurvey,
+  predefinedEvaluation
+} from '../dynamicForm/predefined_forms/predefined';
 
 const SupervisorContext = React.createContext();
 
@@ -191,8 +196,12 @@ export function SupervisorProvider({ children }) {
   }, [employers, internships]);
 
   async function getCareerForm(selectedCareerId) {
-    let response = await getDoc(doc(db, 'form', selectedCareerId));
-    return response.data().form;
+    try {
+      let response = await getDoc(doc(db, 'form', selectedCareerId));
+      return response.data().form;
+    } catch {
+      return predefinedForm;
+    }
   }
 
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
@@ -208,7 +217,11 @@ export function SupervisorProvider({ children }) {
 
   async function getSurveyForm(selectedCareerId) {
     let response = await getDoc(doc(db, 'form-survey', selectedCareerId));
-    return response.data().form;
+    try {
+      return response.data().form;
+    } catch {
+      return predefinedSurvey;
+    }
   }
 
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
@@ -223,8 +236,12 @@ export function SupervisorProvider({ children }) {
   }
 
   async function getEvaluateForm(selectedCareerId) {
-    let response = await getDoc(doc(db, 'form-evaluation', selectedCareerId));
-    return response.data().form;
+    try {
+      let response = await getDoc(doc(db, 'form-evaluation', selectedCareerId));
+      return response.data().form;
+    } catch {
+      return predefinedEvaluation;
+    }
   }
 
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }

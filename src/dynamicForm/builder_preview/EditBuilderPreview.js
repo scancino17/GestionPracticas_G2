@@ -34,7 +34,6 @@ import {
 } from '@material-ui/core';
 import { DEFAULT_CAREER } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
-import { predefinedForm } from '../predefined_forms/predefined';
 import { Skeleton } from '@material-ui/lab';
 
 function EditBuilderPreview({
@@ -52,7 +51,7 @@ function EditBuilderPreview({
   EditEvaluation
 }) {
   const _ = require('lodash');
-  const [formFull, setFormFull] = useState(predefinedForm);
+  const [formFull, setFormFull] = useState(null);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
@@ -78,7 +77,7 @@ function EditBuilderPreview({
         changeCareer();
       }
     }
-  }, [careerId]);
+  }, [careerId, careerIdTab, changeCareer, setCareerIdTab]);
 
   //actualizar formulario al modificar la variable careerIdTab
   useEffect(() => {
@@ -326,7 +325,7 @@ function EditBuilderPreview({
         </Typography>
       </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {careerIdTab === careerId ? (
+        {careerIdTab === careerId && formFull ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
               <Grid item xs={12} md={5}>
@@ -433,73 +432,77 @@ function EditBuilderPreview({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {formFull.map((form, i) => (
-                  <TableRow key={form.i}>
-                    {!edit || indexEdit !== i ? (
-                      <TableCell>{form.step}</TableCell>
-                    ) : (
+                {formFull && (
+                  <>
+                    {formFull.map((form, i) => (
+                      <TableRow key={form.i}>
+                        {!edit || indexEdit !== i ? (
+                          <TableCell>{form.step}</TableCell>
+                        ) : (
+                          <TableCell>
+                            <TextField
+                              fullWidth
+                              value={editValue}
+                              onChange={(e) => setEditValue(e.target.value)}
+                            />
+                          </TableCell>
+                        )}
+
+                        <TableCell>
+                          {!edit || indexEdit !== i ? (
+                            <IconButton
+                              disabled={edit}
+                              onClick={() => handleEdit(i)}>
+                              <Edit />
+                            </IconButton>
+                          ) : null}
+
+                          {!(!edit || indexEdit !== i) ? (
+                            <IconButton onClick={() => handleSaveChanges(i)}>
+                              <Save />
+                            </IconButton>
+                          ) : null}
+                          <IconButton
+                            disabled={form.uneditable || edit}
+                            onClick={() => handleDelete(form)}>
+                            <Delete />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === 0 || edit}
+                            onClick={() => handleUp(i)}>
+                            <ArrowUpward />
+                          </IconButton>
+                          <IconButton
+                            disabled={i === formFull.length - 1 || edit}
+                            onClick={() => handleDown(i)}>
+                            <ArrowDownward />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow>
                       <TableCell>
                         <TextField
                           fullWidth
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
+                          value={newOption}
+                          label='Nuevo paso del formulario'
+                          onChange={(e) => setNewOption(e.target.value)}
                         />
                       </TableCell>
-                    )}
-
-                    <TableCell>
-                      {!edit || indexEdit !== i ? (
+                      <TableCell>
                         <IconButton
-                          disabled={edit}
-                          onClick={() => handleEdit(i)}>
-                          <Edit />
+                          disabled={!newOption}
+                          onClick={() => {
+                            formFull.push({ step: newOption, form: [] });
+                            setFlag(true);
+                            setNewOption('');
+                          }}>
+                          <Add />
                         </IconButton>
-                      ) : null}
-
-                      {!(!edit || indexEdit !== i) ? (
-                        <IconButton onClick={() => handleSaveChanges(i)}>
-                          <Save />
-                        </IconButton>
-                      ) : null}
-                      <IconButton
-                        disabled={form.uneditable || edit}
-                        onClick={() => handleDelete(form)}>
-                        <Delete />
-                      </IconButton>
-                      <IconButton
-                        disabled={i === 0 || edit}
-                        onClick={() => handleUp(i)}>
-                        <ArrowUpward />
-                      </IconButton>
-                      <IconButton
-                        disabled={i === formFull.length - 1 || edit}
-                        onClick={() => handleDown(i)}>
-                        <ArrowDownward />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                <TableRow>
-                  <TableCell>
-                    <TextField
-                      fullWidth
-                      value={newOption}
-                      label='Nuevo paso del formulario'
-                      onChange={(e) => setNewOption(e.target.value)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      disabled={!newOption}
-                      onClick={() => {
-                        formFull.push({ step: newOption, form: [] });
-                        setFlag(true);
-                        setNewOption('');
-                      }}>
-                      <Add />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                      </TableCell>
+                    </TableRow>
+                  </>
+                )}
               </TableBody>
             </Table>
           </DialogContent>

@@ -160,7 +160,8 @@ function Insurance() {
             id: internship.id,
             ...internship.applicationData,
             stringInicio: inicio,
-            stringTermino: termino
+            stringTermino: termino,
+            carrera: internship.careerName
           });
         }
         if (!internship.seguroDisponible) {

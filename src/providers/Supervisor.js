@@ -61,30 +61,45 @@ export function SupervisorProvider({ children }) {
       stuRef = query(stuRef, where('careerId', '==', careerId));
     }
 
-    let appUnsub = onSnapshot(appRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setApplications(temp);
-    });
+    if (careers) {
+      let appUnsub = onSnapshot(appRef, (querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) =>
+          temp.push({
+            id: doc.id,
+            careerName: careers
+              .filter((item) => item.id === doc.data().careerId)
+              .map((nombre) => {
+                return nombre.name;
+              })[0],
+            ...doc.data()
+          })
+        );
+        setApplications(temp);
+      });
+      let intUnsub = onSnapshot(intRef, (querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+        setInternships(temp);
+      });
 
-    let intUnsub = onSnapshot(intRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setInternships(temp);
-    });
+      let stuUnsub = onSnapshot(stuRef, (querySnapshot) => {
+        const temp = [];
+        querySnapshot.forEach((doc) =>
+          temp.push({ id: doc.id, ...doc.data() })
+        );
+        setStudents(temp);
+      });
 
-    let stuUnsub = onSnapshot(stuRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setStudents(temp);
-    });
-
-    return () => {
-      appUnsub();
-      intUnsub();
-      stuUnsub();
-    };
-  }, [careerId]);
+      return () => {
+        appUnsub();
+        intUnsub();
+        stuUnsub();
+      };
+    }
+  }, [careerId, careers]);
 
   useEffect(() => {
     return onSnapshot(collection(db, 'careers'), (querySnapshot) => {

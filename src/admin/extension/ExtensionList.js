@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Grid,
   Container,
@@ -26,6 +26,9 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -106,6 +109,44 @@ function ExtensionList() {
     return filtered;
   }, [sentExtensionList, selectedCareerId, name]);
 
+  function ExportarExcel() {
+    let temp = [];
+    if (filteredInternships) {
+      filteredInternships.map((doc) =>
+        temp.push({
+          id: doc.id,
+          nombre: doc.studentName,
+          matricula: doc.applicationData['Número de matrícula'],
+          rut: doc.applicationData['Rut del estudiante'],
+          carrera: doc.careerName,
+          practica: doc.internshipNumber,
+          email: doc.studentEmail
+        })
+      );
+    }
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}>
+            Exportar datos
+          </Button>
+        }
+        filename={`Solicitudes de extensión de práctica`}>
+        <ExcelSheet data={temp} name='Extensiones de práctica'>
+          <ExcelColumn label='Nombre estudiante' value='nombre' />
+          <ExcelColumn label='N° de Matrícula' value='matricula' />
+          <ExcelColumn label='RUT estudiante' value='rut' />
+          <ExcelColumn label='Carrera' value='carrera' />
+          <ExcelColumn label='Tipo de práctica' value='practica' />
+          <ExcelColumn label='Correo' value='email' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
   return (
     <Grid container direction='column'>
       <div
@@ -138,13 +179,7 @@ function ExtensionList() {
           )}
 
           <Grid item xs={12} sm={4}>
-            <Button
-              fullWidth
-              color='primary'
-              variant='contained'
-              startIcon={<GetAppIcon />}>
-              Exportar datos
-            </Button>
+            <ExportarExcel />
           </Grid>
         </Grid>
       </Container>
@@ -152,10 +187,10 @@ function ExtensionList() {
         {filteredInternships.length > 0 ? (
           <List>
             {filteredInternships.map((internship) => (
-              <>
+              <div key={internship.id}>
                 <IntershipItem key={internship.id} internship={internship} />
                 <Divider />
-              </>
+              </div>
             ))}
           </List>
         ) : (

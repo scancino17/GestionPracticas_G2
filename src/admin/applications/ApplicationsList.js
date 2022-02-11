@@ -25,6 +25,9 @@ import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { Button } from '@mui/material';
 import CareerSelector from '../../utils/CareerSelector';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -71,6 +74,14 @@ function ApplicationsList() {
   const itemsPerPage = 6;
   const [page, setPage] = useState(1);
   const { user } = useUser();
+  const [indice, setIndice] = useState(0);
+  const estados = [
+    'En revisión',
+    'Aprobadas',
+    'Rechazadas',
+    'Necesita cambios',
+    'Todos'
+  ];
   const { applications } = useSupervisor();
 
   const filteredApplications = useMemo(() => {
@@ -115,17 +126,17 @@ function ApplicationsList() {
             filteredApplicationsList
               .slice((page - 1) * itemsPerPage, page * itemsPerPage)
               .map((application) => (
-                <>
+                <div key={application.id}>
                   <ApplicationItem application={application} />
                   <Divider />
-                </>
+                </div>
               ))}
         </List>
       </>
     );
   };
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
-  const [indice, setIndice] = useState(0);
+
   const filteredApplicationsList = useMemo(() => {
     if (filteredApplications) {
       let filtered = filteredApplications.slice();
@@ -138,6 +149,34 @@ function ApplicationsList() {
       return filtered;
     } else return [];
   }, [filteredApplications, name, selectedCareerId]);
+
+  function ExportarExcel() {
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}>
+            Exportar datos
+          </Button>
+        }
+        filename={`Inscripciones de práctica - ${estados[indice]}`}>
+        <ExcelSheet
+          data={filteredApplicationsList}
+          name='Insctipciones de práctica'>
+          <ExcelColumn label='Nombre estudiante' value='studentName' />
+          <ExcelColumn label='N° de Matrícula' value='Número de matrícula' />
+          <ExcelColumn label='RUT estudiante' value='Rut del estudiante' />
+          <ExcelColumn label='Carrera' value='careerName' />
+          <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
+          <ExcelColumn label='Correo' value='email' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
+
   return (
     <Grid container direction='column'>
       <Grid
@@ -252,13 +291,7 @@ function ApplicationsList() {
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <Button
-                  color='primary'
-                  variant='contained'
-                  startIcon={<GetAppIcon />}
-                  fullWidth>
-                  Exportar datos
-                </Button>
+                <ExportarExcel />
               </Grid>
             </Grid>
 
@@ -311,11 +344,12 @@ function ApplicationItem({ application }) {
 
   return (
     <ListItem
+      key={application.toString()}
       button
       onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
-        secondary={`${application['Rut del estudiante']} - ${application['Número de matrícula']} - Práctica ${application.internshipNumber} - ${application.careerId}`}
+        secondary={`${application['Rut del estudiante']} - ${application['Número de matrícula']} - Práctica ${application.internshipNumber} - ${application.careerName}`}
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/applications/${application.id}`)}>

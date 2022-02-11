@@ -59,11 +59,13 @@ function TableChart({ setExportable }) {
         <img src='AdminTable.jpg' alt='Faceless Animation' width='100%' />
       </Grid>
 */}
+
       {loaded ? (
         <DataGrid
           rows={data}
           columns={columns}
           pageSize={5}
+          rowsPerPageOptions={[5]}
           autoHeight={true}
           columnBuffer={2}
         />

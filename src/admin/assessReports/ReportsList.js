@@ -19,6 +19,9 @@ import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Button } from '@mui/material';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 
 function ReportsList() {
   const [name, setName] = useState('');
@@ -41,7 +44,42 @@ function ReportsList() {
       filtered = filtered.filter((item) => item.studentName.includes(name));
     return filtered;
   }, [sentReportsList, selectedCareerId, name]);
+  function ExportarExcel() {
+    const temp = [];
+    filteredInternshipsList.forEach((doc) =>
+      temp.push({
+        nombre: doc.studentName,
+        matricula: doc.applicationData['Número de matrícula'],
+        rut: doc.applicationData['Rut del estudiante'],
+        carrera: doc.careerName,
+        practica: doc.internshipNumber,
+        email: doc.studentEmail
+      })
+    );
 
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}>
+            Exportar datos
+          </Button>
+        }
+        filename={`Estudiantes con evaluación de informe pendiente`}>
+        <ExcelSheet data={temp} name='Extensiones de práctica'>
+          <ExcelColumn label='Nombre estudiante' value='nombre' />
+          <ExcelColumn label='N° de Matrícula' value='matricula' />
+          <ExcelColumn label='RUT estudiante' value='rut' />
+          <ExcelColumn label='Carrera' value='carrera' />
+          <ExcelColumn label='Tipo de práctica' value='practica' />
+          <ExcelColumn label='Correo' value='email' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
   return (
     <Grid container direction='column'>
       <div
@@ -73,13 +111,7 @@ function ReportsList() {
             </Grid>
           )}
           <Grid item xs={12} sm={4}>
-            <Button
-              fullWidth
-              color='primary'
-              variant='contained'
-              startIcon={<GetAppIcon />}>
-              Exportar datos
-            </Button>
+            <ExportarExcel />
           </Grid>
         </Grid>
       </Container>
@@ -87,10 +119,10 @@ function ReportsList() {
         {filteredInternshipsList.length > 0 ? (
           <List>
             {filteredInternshipsList.map((internship) => (
-              <>
+              <div key={internship.id}>
                 <ReportItem internship={internship} />
                 <Divider />
-              </>
+              </div>
             ))}
           </List>
         ) : (

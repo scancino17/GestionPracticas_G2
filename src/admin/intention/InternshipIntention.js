@@ -31,6 +31,9 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import CareerSelector from '../../utils/CareerSelector';
 import { DEFAULT_CAREER } from '../../providers/User';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -101,7 +104,7 @@ function IntentionList({ pendingIntentions, update }) {
   const itemsPerPage = 14;
   const [page, setPage] = useState(1);
   const [name, setName] = useState('');
-
+  const { careers } = useSupervisor();
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -118,6 +121,33 @@ function IntentionList({ pendingIntentions, update }) {
       return filtered;
     } else return [];
   }, [pendingIntentions, name, selectedCareerId]);
+  function ExportarExcel() {
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}>
+            Exportar datos
+          </Button>
+        }
+        filename='Estudiantes con intención de práctica'>
+        <ExcelSheet
+          data={filteredInternshipIntention}
+          name='Estudiantes para seguro'>
+          <ExcelColumn label='Nombre estudiante' value='name' />
+          <ExcelColumn label='N° de Matrícula' value='enrollmentNumber' />
+          <ExcelColumn label='RUT estudiante' value='rut' />
+          <ExcelColumn label='Carrera' value='careerName' />
+          <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
+          <ExcelColumn label='Correo' value='email' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
+
   return (
     <Grid container direction='column'>
       <Grid
@@ -152,13 +182,7 @@ function IntentionList({ pendingIntentions, update }) {
           </Grid>
 
           <Grid item xs={12} sm={4}>
-            <Button
-              fullWidth
-              color='primary'
-              variant='contained'
-              startIcon={<GetAppIcon />}>
-              Exportar datos
-            </Button>
+            <ExportarExcel />
           </Grid>
         </Grid>
       </Container>

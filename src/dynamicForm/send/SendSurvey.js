@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../builder_preview/DynamicForm'
+import DynamicForm from '../builder_preview/DynamicForm';
 import { db, storage } from '../../firebase';
 import {
   Step,
@@ -47,7 +47,7 @@ function SendSurvey({ edit }) {
           const data = doc.data();
           if (data) setFormFull(data.form);
         });
-      } 
+      }
     }
   }, [userData, edit]);
 
@@ -132,18 +132,20 @@ function SendSurvey({ edit }) {
 
     if (!edit) {
       addDoc(collection(db, 'send-survey'), {
-        form: formFull,
-
+        form: formFull
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
-          updateDoc(doc(db, 'internships', internshipId), {survey:true, surveyId:docRef.id});
+          updateDoc(doc(db, 'internships', internshipId), {
+            survey: true,
+            surveyId: docRef.id
+          });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-    } 
+    }
   }
 
   return (

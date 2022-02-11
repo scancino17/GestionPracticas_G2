@@ -39,16 +39,19 @@ function ConstructorCamp({
   const [openSelect, setopenSelect] = useState(false);
   const [openSelect2, setopenSelect2] = useState(false);
   const [options, setOptions] = useState([]);
+  const [optionsSatisfaction, setOptionsSatisfaction] = useState([]);
+  const [newOptionSatisfaction, setNewOptionSatisfaction] = useState('');
   const [newOption, setNewOption] = useState('');
 
   useEffect(() => {
     if (edit) {
-      if(editElement.description){
+      if (editElement.description) {
         setDescription(editElement.description);
       }
       setType(editElement.type);
       setName(editElement.name);
       setOptions(editElement.options);
+      setOptionsSatisfaction(editElement.options);
     }
   }, [edit, editElement]);
 
@@ -96,6 +99,7 @@ function ConstructorCamp({
         type: type,
         value: null,
         name: name,
+        options: optionsSatisfaction,
         description: description
       };
     }
@@ -113,17 +117,21 @@ function ConstructorCamp({
   }
 
   function handleExit() {
-    setName('');
     setType('');
     setType2('');
+    setName('');
     setOptions([]);
+    setOptionsSatisfaction([]);
+    setDescription('');
     setEdit(false);
     setShow(false);
   }
   function changeType(e) {
     setType(e.target.value);
-    setOptions([]);
     setName('');
+    setOptions([]);
+    setOptionsSatisfaction([]);
+    setDescription('');
   }
 
   return (
@@ -245,6 +253,52 @@ function ConstructorCamp({
               label='Descripción'
               onChange={(e) => setDescription(e.target.value)}
             />
+            <Typography style={{ marginTop: '1rem' }}>Opciones</Typography>
+            <Table>
+              <TableBody>
+                {optionsSatisfaction &&
+                  optionsSatisfaction.map((option) => (
+                    <TableRow key={option.i}>
+                      <TableCell>
+                        <Typography>{option}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() =>
+                            setOptionsSatisfaction((prev) =>
+                              prev.filter((element) => element !== option)
+                            )
+                          }>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                <TableRow>
+                  <TableCell>
+                    <TextField
+                      fullWidth
+                      variant='outlined'
+                      value={newOptionSatisfaction}
+                      label='Nueva opción'
+                      onChange={(e) => setNewOptionSatisfaction(e.target.value)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      disabled={!newOptionSatisfaction}
+                      onClick={() => {
+                        setOptionsSatisfaction((prev) =>
+                          prev.concat(newOptionSatisfaction)
+                        );
+                        setNewOptionSatisfaction('');
+                      }}>
+                      <Add />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </FormControl>
         ) : (
           type === formTypes.formCustom && (
@@ -275,11 +329,16 @@ function ConstructorCamp({
             !type ||
             (type === formTypes.formCustom && (!type2 || type2 === '')) ||
             (type === formTypes.formSelect && options.length === 0) ||
+            (type === formTypes.formSatisfaction &&
+              optionsSatisfaction.length === 0) ||
             ((type === formTypes.formFileInput ||
               type === formTypes.formHeader ||
               type === formTypes.formSelect ||
-              type === formTypes.formTextInput) &&
-              (name === null || name === ''))
+              type === formTypes.formTextInput ||
+              type === formTypes.formSatisfaction) &&
+              (name === null || name === '')) ||
+            (type === formTypes.formSatisfaction &&
+              (description === null || description === ''))
           }
           color='primary'
           startIcon={<Save />}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../builder_preview/DynamicForm'
+import DynamicForm from '../builder_preview/DynamicForm';
 import { db, storage } from '../../firebase';
 import {
   Step,
@@ -26,7 +26,6 @@ import {
 import { useStudent } from '../../providers/Student';
 import { updateInternship } from '../../providers/Supervisor';
 
-
 function SendEvaluation({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
@@ -50,7 +49,7 @@ function SendEvaluation({ edit }) {
           const data = doc.data();
           if (data) setFormFull(data.form);
         });
-      } 
+      }
     }
   }, [userData, edit]);
   useEffect(() => {
@@ -89,7 +88,6 @@ function SendEvaluation({ edit }) {
   }
   //se guardan los archivos en el storage
   function saveFiles(evaluateId) {
-    
     files.forEach((file) => {
       storage
         .ref()
@@ -132,22 +130,23 @@ function SendEvaluation({ edit }) {
         values[camp.name] = camp.value;
       })
     );
-    
-    
+
     if (!edit) {
       addDoc(collection(db, 'send-evaluation'), {
-        form: formFull,
-
+        form: formFull
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
-          updateDoc(doc(db, 'internships', internshipId), {evaluate:true, evaluateId:docRef.id});
+          updateDoc(doc(db, 'internships', internshipId), {
+            evaluate: true,
+            evaluateId: docRef.id
+          });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-    } 
+    }
   }
 
   return (

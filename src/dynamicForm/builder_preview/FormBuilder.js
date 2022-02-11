@@ -36,7 +36,7 @@ function FormBuilder({
     type: '',
     name: '',
     options: '',
-    description:'',
+    description: '',
     value: ''
   });
 

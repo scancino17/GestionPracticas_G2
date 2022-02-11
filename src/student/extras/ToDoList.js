@@ -17,6 +17,7 @@ import {
 import React, { useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
+import { RiSurveyLine } from 'react-icons/ri';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { makeStyles } from '@material-ui/core/styles';
 import { useUser } from '../../providers/User';
@@ -278,6 +279,22 @@ function ToDoList() {
                     <Divider />
                   </>
                 )}
+
+              {step === 2 && currentInternshipData && (
+                <>
+                  <ToDoItem
+                    icon={<RiSurveyLine className={classes.icon} />}
+                    title='Responder encuesta de satisfacción'
+                    body='Al finalizar tu periodo de práctica, dinos como fue tu experiencia.'
+                    buttonText='Responder'
+                    buttonOnClick={() => navigate('/send-survey')}
+                    disabled={
+                      currentInternshipData && currentInternshipData.survey
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
               {currentInternshipData &&
                 currentInternshipData.status === reportNeedsChanges && (
                   <>

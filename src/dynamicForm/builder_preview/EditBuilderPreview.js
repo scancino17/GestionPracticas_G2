@@ -39,11 +39,9 @@ import { DEFAULT_CAREER } from '../../providers/User';
 
 function EditBuilderPreview({
   selectedTab,
-  setSelectedTab,
   setCurrentTab,
   currentTab,
   selectedCareer,
-  setSelectedCareer,
   currentCareer,
   setCurrentCareer,
   formType

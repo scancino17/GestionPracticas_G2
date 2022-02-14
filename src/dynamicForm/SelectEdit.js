@@ -8,22 +8,30 @@ import { FormTypes } from './camps/FormTypes';
 
 function SelectEdit() {
   const { careerId } = useUser();
-  const [value, setValue] = useState(0);
-  const [valueTab, setValueTab] = useState(0);
-  const [selectedCareerId, setSelectedCareerId] = useState(careerId);
-  const [selectedCareerIdTab, setSelectedCareerIdTab] = useState(careerId);
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [selectedCareer, setSelectedCareer] = useState(careerId);
+  const [currentCareer, setCurrentCareer] = useState(careerId);
 
-  const handleChange = (event, newValue) => {
-    if (selectedCareerIdTab === DEFAULT_CAREER) {
-      setValue(newValue);
-      setValueTab(newValue);
+  const handleChangeTab = (event, newValue) => {
+    event.preventDefault();
+
+    setSelectedTab(newValue);
+    if (currentCareer === DEFAULT_CAREER) {
+      setCurrentTab(newValue);
     }
-    setValue(newValue);
+  };
+
+  const handleChangeCareer = (newValue) => {
+    setSelectedCareer(newValue);
+    if (currentCareer === DEFAULT_CAREER) {
+      setCurrentCareer(newValue);
+    }
   };
 
   useEffect(
-    () => console.log(`value: ${value} valueTab: ${valueTab}`),
-    [value, valueTab]
+    () => console.log(currentTab, selectedTab, currentCareer, selectedCareer),
+    [selectedTab, currentTab, currentCareer, selectedCareer]
   );
 
   return (
@@ -42,8 +50,8 @@ function SelectEdit() {
           <Grid container direction='row'>
             <Grid item>
               <CareerSelector
-                careerId={selectedCareerIdTab}
-                setCareerId={setSelectedCareerId}
+                careerId={currentCareer}
+                setCareerId={handleChangeCareer}
                 excludeGeneral
               />
             </Grid>
@@ -57,8 +65,8 @@ function SelectEdit() {
             variant='fullWidth'
             scrollButtons
             allowScrollButtonsMobile
-            value={valueTab}
-            onChange={handleChange}
+            value={currentTab}
+            onChange={handleChangeTab}
             aria-label='wrapped label tabs example'>
             <Tab
               value={0}
@@ -75,49 +83,49 @@ function SelectEdit() {
           </Tabs>
         </Box>
       </Grid>
-      {valueTab === 0 && selectedCareerId !== DEFAULT_CAREER && (
+      {currentTab === 0 && selectedCareer !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          value={value}
-          setValue={setValue}
-          setValueTab={setValueTab}
-          valueTab={valueTab}
-          careerId={selectedCareerId}
-          setCareerId={setSelectedCareerId}
-          careerIdTab={selectedCareerIdTab}
-          setCareerIdTab={setSelectedCareerIdTab}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          setCurrentTab={setCurrentTab}
+          currentTab={currentTab}
+          selectedCareer={selectedCareer}
+          setSelectedCareer={setSelectedCareer}
+          currentCareer={currentCareer}
+          setCurrentCareer={setCurrentCareer}
           formType={FormTypes.ApplicationForm}
         />
       )}
 
-      {valueTab === 1 && selectedCareerId !== DEFAULT_CAREER && (
+      {currentTab === 1 && selectedCareer !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          value={value}
-          setValue={setValue}
-          setValueTab={setValueTab}
-          valueTab={valueTab}
-          careerId={selectedCareerId}
-          setCareerId={setSelectedCareerId}
-          careerIdTab={selectedCareerIdTab}
-          setCareerIdTab={setSelectedCareerIdTab}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          setCurrentTab={setCurrentTab}
+          currentTab={currentTab}
+          selectedCareer={selectedCareer}
+          setSelectedCareer={setSelectedCareer}
+          currentCareer={currentCareer}
+          setCurrentCareer={setCurrentCareer}
           formType={FormTypes.SurveyForm}
         />
       )}
 
-      {valueTab === 2 && selectedCareerId !== DEFAULT_CAREER && (
+      {currentTab === 2 && selectedCareer !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          value={value}
-          setValue={setValue}
-          setValueTab={setValueTab}
-          valueTab={valueTab}
-          careerId={selectedCareerId}
-          setCareerId={setSelectedCareerId}
-          careerIdTab={selectedCareerIdTab}
-          setCareerIdTab={setSelectedCareerIdTab}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          setCurrentTab={setCurrentTab}
+          currentTab={currentTab}
+          selectedCareer={selectedCareer}
+          setSelectedCareer={setSelectedCareer}
+          currentCareer={currentCareer}
+          setCurrentCareer={setCurrentCareer}
           formType={FormTypes.EvaluationForm}
         />
       )}
 
-      {selectedCareerId === DEFAULT_CAREER && (
+      {selectedCareer === DEFAULT_CAREER && (
         <Grid
           container
           direction='column'

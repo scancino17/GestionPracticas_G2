@@ -23,7 +23,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
 import PasswordIcon from '@mui/icons-material/Password';
 const useStyles = makeStyles((theme) => ({
-  logo: {
+  logoAdmin: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
     maxHeight: '4rem',
 
@@ -43,6 +43,21 @@ const useStyles = makeStyles((theme) => ({
       maxHeight: '0rem'
     }
   },
+  logoStudent: {
+    maxHeight: '4rem',
+
+    '@media (max-width: 370px)': {
+      maxHeight: '3.5rem'
+    },
+    '@media (max-width: 345px)': {
+      maxHeight: '3rem'
+    },
+
+    '@media (max-width: 340px)': {
+      maxHeight: '0rem'
+    }
+  },
+
   icon: {
     '& svg': {
       fontSize: 40
@@ -170,7 +185,7 @@ function TopBar({ setSidebarOpen }) {
         className={classes.appBar}>
         <Toolbar>
           <Hidden mdUp>
-            {!user.student && (
+            {userRole !== STUDENT_ROLE && (
               <IconButton
                 color='inherit'
                 aria-label='open drawer'
@@ -180,11 +195,20 @@ function TopBar({ setSidebarOpen }) {
               </IconButton>
             )}
           </Hidden>
+
           <IconButton
             disableRipple
             onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
+            <img
+              className={
+                userRole === STUDENT_ROLE
+                  ? classes.logoStudent
+                  : classes.logoAdmin
+              }
+              src='logo5b-utal.png'
+              alt='logo'
+            />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
           {userRole === STUDENT_ROLE && (
@@ -217,7 +241,11 @@ function TopBar({ setSidebarOpen }) {
             disableRipple
             onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
+            <img
+              className={classes.logoAdmin}
+              src='logo5b-utal.png'
+              alt='logo'
+            />
           </IconButton>
         </Toolbar>
       )}

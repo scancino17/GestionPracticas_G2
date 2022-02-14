@@ -187,58 +187,24 @@ function FormView({
                   <Grid container justifyContent='flex-start'>
                     <Grid item>
                       <FormGroup aria-label='position'>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={element.value === 0}
-                              onChange={() => updateItem(index, 'value', 0)}
-                              style={{
-                                color: '#36568C'
-                              }}
+                        {element.options &&
+                          element.options.map((option, indexOption) => (
+                            <FormControlLabel
+                              control={
+                                <Checkbox
+                                  checked={element.value === indexOption}
+                                  onChange={() =>
+                                    updateItem(index, 'value', indexOption)
+                                  }
+                                  style={{
+                                    color: '#36568C'
+                                  }}
+                                />
+                              }
+                              label={option}
+                              labelPlacement='end'
                             />
-                          }
-                          label=' Destacado '
-                          labelPlacement='end'
-                        />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={element.value === 1}
-                              onChange={() => updateItem(index, 'value', 1)}
-                              style={{
-                                color: '#36568C'
-                              }}
-                            />
-                          }
-                          label='   Bueno   '
-                          labelPlacement='end'
-                        />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={element.value === 2}
-                              onChange={() => updateItem(index, 'value', 2)}
-                              style={{
-                                color: '#36568C'
-                              }}
-                            />
-                          }
-                          label=' Suficiente '
-                          labelPlacement='end'
-                        />
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={element.value === 3}
-                              onChange={() => updateItem(index, 'value', 3)}
-                              style={{
-                                color: '#36568C'
-                              }}
-                            />
-                          }
-                          label='Insuficiente'
-                          labelPlacement='end'
-                        />
+                          ))}
                       </FormGroup>
                     </Grid>
                   </Grid>

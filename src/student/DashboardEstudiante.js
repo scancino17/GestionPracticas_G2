@@ -9,6 +9,7 @@ import ApplicationDetails from './applications/ApplicationDetails';
 import InternshipIntention from './InternshipIntention';
 import { finishedIntentionProcess } from '../InternshipStates';
 import SendApplication from './../dynamicForm/send/SendApplication';
+import SendSurvey from './../dynamicForm/send/SendSurvey';
 import { Skeleton } from '@material-ui/lab';
 
 function DashboardEstudiante() {
@@ -81,6 +82,7 @@ function DashboardEstudiante() {
       />
       {/**este es el que va al formulario dinamico */}
       <Route path='/send-form' element={<SendApplication />} />
+      <Route path='/send-survey' element={<SendSurvey />} />
       {/**este es el que va al formulario dinamico para edicion */}
       <Route
         path='/edit-form/:applicationId'

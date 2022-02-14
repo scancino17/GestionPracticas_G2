@@ -35,9 +35,9 @@ import {
 import { DEFAULT_CAREER } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Skeleton } from '@material-ui/lab';
+import { FormTypes } from '../camps/FormTypes';
 
 function EditBuilderPreview({
-  open,
   value,
   setValue,
   setValueTab,
@@ -46,9 +46,7 @@ function EditBuilderPreview({
   setCareerId,
   careerIdTab,
   setCareerIdTab,
-  EditForm,
-  EditSurvey,
-  EditEvaluation
+  formType
 }) {
   const _ = require('lodash');
   const [formFull, setFormFull] = useState(null);
@@ -59,16 +57,9 @@ function EditBuilderPreview({
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const {
-    getCareerForm,
-    setCareerForm,
-    getSurveyForm,
-    setSurveyForm,
-    getEvaluateForm,
-    setEvaluateForm
-  } = useSupervisor();
+  const { getForm, setForm } = useSupervisor();
 
-  //peticion para actuializar variable careerIDTab
+  // Petición para actuializar variable careerIDTab
   useEffect(() => {
     if (careerId && careerId !== careerIdTab && careerId !== DEFAULT_CAREER) {
       if (careerIdTab === DEFAULT_CAREER) {
@@ -79,128 +70,52 @@ function EditBuilderPreview({
     }
   }, [careerId, careerIdTab, changeCareer, setCareerIdTab]);
 
-  //actualizar formulario al modificar la variable careerIdTab
+  // Actualizar formulario al modificar la variable careerIdTab
   useEffect(() => {
     if (careerIdTab !== DEFAULT_CAREER) {
-      getForm();
+      getForm(formType, careerId).then((careerForm) => setFormFull(careerForm));
     }
   }, [careerIdTab]);
 
   useEffect(() => setFlag(false), [flag]);
 
-  //peticion para actuializar variable de la pestaña
+  // Petición para actualizar la variable de la pestaña
   useEffect(() => {
-    console.log(open);
-    if (open) {
-      console.log('change tab');
-      console.log(
-        '>>>>',
-        EditEvaluation
-          ? 'evaluation'
-          : EditForm
-          ? 'form'
-          : EditSurvey
-          ? 'survey'
-          : null
-      );
-      //console.log(open)
-      if (value !== valueTab) {
-        changeTab();
-      }
+    console.log('change tab');
+    console.log('>>>>', formType);
+    //console.log(open)
+    if (value !== valueTab) {
+      changeTab();
     }
   }, [value]);
 
-  useEffect(() => getForm(), [valueTab]);
+  useEffect(
+    () =>
+      getForm(formType, careerId).then((careerForm) => setFormFull(careerForm)),
+    [valueTab]
+  );
 
-  function getForm() {
-    if (EditForm) {
-      getCareerForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-    if (EditSurvey) {
-      getSurveyForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-    if (EditEvaluation) {
-      getEvaluateForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-  }
-
-  function setForm() {
-    if (EditForm) {
-      setCareerForm(careerIdTab, { form: formFull });
-    }
-    if (EditSurvey) {
-      setSurveyForm(careerIdTab, { form: formFull });
-    }
-    if (EditEvaluation) {
-      setEvaluateForm(careerIdTab, { form: formFull });
-    }
-  }
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function changeCareer() {
-    if (EditForm) {
-      getCareerForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
-    if (EditSurvey) {
-      getSurveyForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
-    if (EditEvaluation) {
-      getEvaluateForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
+    getForm(formType, careerIdTab).then((careerForm) => {
+      if (!_.isEqual(formFull, careerForm)) {
+        handleSave(true);
+      } else {
+        setCareerIdTab(careerId);
+      }
+    });
   }
 
   function changeTab() {
-    console.log('dentro cyhange tab');
-    if (EditForm) {
-      console.log('form');
-      getCareerForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
-      });
-    }
-    if (EditSurvey) {
-      console.log('SURVEY');
-      getSurveyForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
-      });
-    }
-    if (EditEvaluation) {
-      console.log('EVALUATION');
-      getEvaluateForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
-      });
-    }
+    console.log('dentro changeTab tab', formType);
+    getForm(formType, careerIdTab).then((careerForm) => {
+      if (!_.isEqual(formFull, careerForm)) {
+        handleSave();
+      } else {
+        setValueTab(value);
+        //setOpen(false)
+      }
+    });
   }
 
   function handleNext() {
@@ -264,8 +179,8 @@ function EditBuilderPreview({
       showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        //guaradar formulario en la base de datos
-        setForm();
+        // Guardar formulario en la base de datos
+        setForm(formType, careerIdTab, { form: formFull });
 
         if (changeCareer) {
           setCareerIdTab(careerId);
@@ -315,13 +230,16 @@ function EditBuilderPreview({
     <Grid container direction='column'>
       <Grid item style={{ margin: '2rem' }}>
         <Typography variant='h4'>
-          {EditForm
-            ? 'Formulario de inscripción de práctica'
-            : EditSurvey
-            ? 'Edición formulario de encuesta de satisfacción'
-            : EditEvaluation
-            ? 'Edición formulario de evaluación del estudiante'
-            : null}
+          {
+            {
+              [FormTypes.ApplicationForm]:
+                'Formulario de inscripción de práctica',
+              [FormTypes.EvaluationForm]:
+                'Edición formulario de evaluación del estudiante',
+              [FormTypes.SurveyForm]:
+                'Edición formulario de encuesta de satisfacción'
+            }[formType]
+          }
         </Typography>
       </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>

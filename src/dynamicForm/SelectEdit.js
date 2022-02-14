@@ -1,9 +1,10 @@
 import { Box, Grid, Tab, Tabs, Typography } from '@material-ui/core';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
 import EditBuilderPreview from './builder_preview/EditBuilderPreview';
+import { FormTypes } from './camps/FormTypes';
 
 function SelectEdit() {
   const { careerId } = useUser();
@@ -17,9 +18,13 @@ function SelectEdit() {
       setValue(newValue);
       setValueTab(newValue);
     }
-    console.log(newValue);
     setValue(newValue);
   };
+
+  useEffect(
+    () => console.log(`value: ${value} valueTab: ${valueTab}`),
+    [value, valueTab]
+  );
 
   return (
     <Grid container direction='column'>
@@ -72,7 +77,6 @@ function SelectEdit() {
       </Grid>
       {valueTab === 0 && selectedCareerId !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          open={valueTab === 0}
           value={value}
           setValue={setValue}
           setValueTab={setValueTab}
@@ -81,13 +85,12 @@ function SelectEdit() {
           setCareerId={setSelectedCareerId}
           careerIdTab={selectedCareerIdTab}
           setCareerIdTab={setSelectedCareerIdTab}
-          EditForm
+          formType={FormTypes.ApplicationForm}
         />
       )}
 
       {valueTab === 1 && selectedCareerId !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          open={valueTab === 1}
           value={value}
           setValue={setValue}
           setValueTab={setValueTab}
@@ -96,13 +99,12 @@ function SelectEdit() {
           setCareerId={setSelectedCareerId}
           careerIdTab={selectedCareerIdTab}
           setCareerIdTab={setSelectedCareerIdTab}
-          EditSurvey
+          formType={FormTypes.SurveyForm}
         />
       )}
 
       {valueTab === 2 && selectedCareerId !== DEFAULT_CAREER && (
         <EditBuilderPreview
-          open={valueTab === 2}
           value={value}
           setValue={setValue}
           setValueTab={setValueTab}
@@ -111,7 +113,7 @@ function SelectEdit() {
           setCareerId={setSelectedCareerId}
           careerIdTab={selectedCareerIdTab}
           setCareerIdTab={setSelectedCareerIdTab}
-          EditEvaluation
+          formType={FormTypes.EvaluationForm}
         />
       )}
 

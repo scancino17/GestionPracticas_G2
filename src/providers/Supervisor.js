@@ -36,6 +36,7 @@ import {
   predefinedSurvey,
   predefinedEvaluation
 } from '../dynamicForm/predefined_forms/predefined';
+import { FormTypes } from '../dynamicForm/camps/FormTypes';
 
 const SupervisorContext = React.createContext();
 
@@ -195,64 +196,38 @@ export function SupervisorProvider({ children }) {
     return remarks;
   }, [employers, internships]);
 
-  async function getCareerForm(selectedCareerId) {
+  // formType debe ser uno de los valores del objeto FormTypes del archivo FormTypes.js
+  async function getForm(formType, selectedCareerId) {
+    function getPredefinedForm(formType) {
+      switch (formType) {
+        case FormTypes.SurveyForm:
+          return predefinedSurvey;
+        case FormTypes.EvaluationForm:
+          return predefinedEvaluation;
+        default:
+          return predefinedForm;
+      }
+    }
+
     try {
-      let response = await getDoc(doc(db, 'form', selectedCareerId));
+      let response = await getDoc(doc(db, formType, selectedCareerId));
       return response.data().form;
     } catch {
-      return predefinedForm;
+      return getPredefinedForm(formType);
     }
   }
 
+  // formType debe ser uno de los valores del objeto FormTypes del archivo FormTypes.js
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
   // params está por si se quiere hacer merge con los datos en vez de reemplazar.
   // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
-  async function setCareerForm(
+  async function setForm(
+    formType,
     selectedCareerId,
     form,
     params = { merge: false }
   ) {
-    await setDoc(doc(db, 'form', selectedCareerId), form, params);
-  }
-
-  async function getSurveyForm(selectedCareerId) {
-    let response = await getDoc(doc(db, 'form-survey', selectedCareerId));
-    try {
-      return response.data().form;
-    } catch {
-      return predefinedSurvey;
-    }
-  }
-
-  // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
-  // params está por si se quiere hacer merge con los datos en vez de reemplazar.
-  // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
-  async function setSurveyForm(
-    selectedCareerId,
-    form,
-    params = { merge: false }
-  ) {
-    await setDoc(doc(db, 'form-survey', selectedCareerId), form, params);
-  }
-
-  async function getEvaluateForm(selectedCareerId) {
-    try {
-      let response = await getDoc(doc(db, 'form-evaluation', selectedCareerId));
-      return response.data().form;
-    } catch {
-      return predefinedEvaluation;
-    }
-  }
-
-  // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
-  // params está por si se quiere hacer merge con los datos en vez de reemplazar.
-  // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
-  async function setEvaluateForm(
-    selectedCareerId,
-    form,
-    params = { merge: false }
-  ) {
-    await setDoc(doc(db, 'form-evaluation', selectedCareerId), form, params);
+    await setDoc(doc(db, formType, selectedCareerId), form, params);
   }
 
   async function setSurveySended(form) {
@@ -641,12 +616,8 @@ export function SupervisorProvider({ children }) {
         sentReportsCount,
         ongoingInternshipsCount,
         remarkList,
-        getCareerForm,
-        setCareerForm,
-        getSurveyForm,
-        setSurveyForm,
-        getEvaluateForm,
-        setEvaluateForm,
+        getForm,
+        setForm,
         setSurveySended,
         updateInternship,
         getUserData,

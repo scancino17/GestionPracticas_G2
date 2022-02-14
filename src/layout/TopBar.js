@@ -112,7 +112,7 @@ function TopBar({ setSidebarOpen }) {
         func={{
           handleResetPassword: handleResetPassword,
           handleLogout: handleLogout,
-          nombre: userData && userData.name,
+          nombre: user && user.displayName,
           email: user.email
         }}
       />

@@ -151,7 +151,6 @@ function ReportsList() {
 
 function ReportItem({ internship }) {
   const navigate = useNavigate();
-
   return (
     <ListItem
       button
@@ -162,7 +161,7 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
+        secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials}`}
       />
       <ListItemSecondaryAction>
         <IconButton

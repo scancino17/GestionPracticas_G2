@@ -93,9 +93,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClick={() => setSidebarOpen((prevState) => !prevState)}
-          onClose={() => setSidebarOpen((prevState) => !prevState)}
-          onOpen={() => setSidebarOpen((prevState) => !prevState)}>
+          onClick={() => setSidebarOpen(false)}
+          onClose={() => setSidebarOpen(false)}
+          onOpen={() => setSidebarOpen(true)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>

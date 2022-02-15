@@ -117,7 +117,7 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerName}`}
+          secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerInitials}`}
         />
       </ListItem>
       <Divider />

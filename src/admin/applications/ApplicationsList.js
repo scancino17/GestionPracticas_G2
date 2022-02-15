@@ -349,7 +349,7 @@ function ApplicationItem({ application }) {
       onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
-        secondary={`${application['Rut del estudiante']} - ${application['Número de matrícula']} - Práctica ${application.internshipNumber} - ${application.careerName}`}
+        secondary={`${application['Rut del estudiante']} - Práctica ${application.internshipNumber} - ${application.careerInitials}`}
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/applications/${application.id}`)}>

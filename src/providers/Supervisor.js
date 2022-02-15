@@ -67,6 +67,11 @@ export function SupervisorProvider({ children }) {
         querySnapshot.forEach((doc) =>
           temp.push({
             id: doc.id,
+            careerInitials: careers
+              .filter((item) => item.id === doc.data().careerId)
+              .map((nombre) => {
+                return nombre.sigla;
+              })[0],
             careerName: careers
               .filter((item) => item.id === doc.data().careerId)
               .map((nombre) => {
@@ -80,7 +85,16 @@ export function SupervisorProvider({ children }) {
       let intUnsub = onSnapshot(intRef, (querySnapshot) => {
         const temp = [];
         querySnapshot.forEach((doc) =>
-          temp.push({ id: doc.id, ...doc.data() })
+          temp.push({
+            id: doc.id,
+            careerInitials: careers
+              .filter((item) => item.id === doc.data().careerId)
+              .map((nombre) => {
+                return nombre.sigla;
+              })[0],
+
+            ...doc.data()
+          })
         );
         setInternships(temp);
       });

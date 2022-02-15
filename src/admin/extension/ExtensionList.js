@@ -222,7 +222,7 @@ function IntershipItem({ internship }) {
   const [showDenied, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reason, setReason] = useState('');
-  const { rejectExtension, approveExtension } = useSupervisor();
+  const { rejectExtension, approveExtension, careers } = useSupervisor();
 
   function TransformDate(date) {
     return (
@@ -247,7 +247,7 @@ function IntershipItem({ internship }) {
         }}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
+          secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials}`}
         />
         <ListItemSecondaryAction>
           <IconButton

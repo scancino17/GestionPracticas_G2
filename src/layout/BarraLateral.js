@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main
   },
   drawer: {
-    width: 300,
+    width: 250,
     flexShrink: 0
   }
 }));
@@ -85,7 +85,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/extension-list'
     },
     {
-      label: 'Edición Formulario de Inscripción',
+      label: 'Edición formularios',
       icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/edit-form'
     },
@@ -114,9 +114,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClick={() => setSidebarOpen((prevState) => !prevState)}
-          onClose={() => setSidebarOpen((prevState) => !prevState)}
-          onOpen={() => setSidebarOpen((prevState) => !prevState)}>
+          onClick={() => setSidebarOpen(false)}
+          onClose={() => setSidebarOpen(false)}
+          onOpen={() => setSidebarOpen(true)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>

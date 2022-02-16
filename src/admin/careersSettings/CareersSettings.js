@@ -66,7 +66,7 @@ function CareersSettings() {
               justifyContent='flex-end'
               spacing={4}
               style={{ marginBottom: '1rem', width: '100%' }}>
-              <Grid item>
+              <Grid item xs={8} sm={4}>
                 <CareerSelector
                   careerId={selectedCareerId}
                   setCareerId={setSelectedCareerId}

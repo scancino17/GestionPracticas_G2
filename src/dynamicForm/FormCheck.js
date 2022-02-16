@@ -6,12 +6,7 @@ import {
   makeStyles,
   TextField,
   Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  withStyles,
-  DialogContentText
+  withStyles
 } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
@@ -32,6 +27,51 @@ import { useSupervisor } from '../providers/Supervisor';
 import Backdrop from '@material-ui/core/Backdrop';
 import SpeedDial from '@material-ui/lab/SpeedDial';
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   root: {
     // Este flex: auto está aqui para que los form abajo puedan ocupar todo el tamaño del grid que los contiene
@@ -236,7 +276,7 @@ function FormCheck() {
           }}>
           <Typography variant='h4'>Revisión Postulación</Typography>
         </Grid>
-        <Container>
+        <Container style={{ paddingBottom: '5rem' }}>
           {application.form &&
             application.form.map((step) => (
               <Grid item>
@@ -258,12 +298,21 @@ function FormCheck() {
         </Container>
       </Grid>
       {show && (
-        <Dialog open={show} onClose={() => setShow(false)} fullWidth>
-          <DialogTitle>Rechazar postulación de práctica</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+        <BootstrapDialog
+          fullWidth
+          onClose={() => setShow(false)}
+          aria-labelledby='customized-dialog-title'
+          open={show}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShow(false)}>
+            Rechazar postulación de práctica
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
               ¿Está seguro de rechazar postulación de Práctica?
-            </DialogContentText>
+            </Typography>
+
             <TextField
               fullWidth
               label='Razón de rechazo'
@@ -286,18 +335,23 @@ function FormCheck() {
               Confirmar rechazo
             </DenyButton>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
       {showApproved && (
-        <Dialog
-          open={showApproved}
+        <BootstrapDialog
+          fullWidth
           onClose={() => setShowApproved(false)}
-          fullWidth>
-          <DialogTitle>Aprobar postulación de práctica</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+          aria-labelledby='customized-dialog-title'
+          open={showApproved}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShowApproved(false)}>
+            Aprobar postulación de práctica
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
               ¿Está seguro de aceptar la postulación de Práctica ?
-            </DialogContentText>
+            </Typography>
             <TextField
               fullWidth
               label='Comentarios'
@@ -324,15 +378,20 @@ function FormCheck() {
               Confirmar aprobación
             </Button>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
       {showMinorChanges && (
-        <Dialog
-          open={showMinorChanges}
+        <BootstrapDialog
+          fullWidth
           onClose={() => setShowMinorChanges(false)}
-          fullWidth>
-          <DialogTitle>Solicitud de cambios</DialogTitle>
-          <DialogContent>
+          aria-labelledby='customized-dialog-title'
+          open={showMinorChanges}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShowMinorChanges(false)}>
+            Solicitud de cambios
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <TextField
               fullWidth
               label='Cambios necesarios'
@@ -358,7 +417,7 @@ function FormCheck() {
               Confirmar solicitud
             </DenyButton>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
     </>
   );

@@ -29,15 +29,18 @@ const useStyles = makeStyles({
   logo: {
     maxWidth: '22.5rem',
     '@media (max-width: 360px)': {
-      maxWidth: '20.5rem'
+      maxWidth: '2.5rem'
     },
-    '@media (max-width: 325px)': {
-      maxWidth: '18.5rem'
+    '@media (max-width: 350px)': {
+      maxWidth: '16.5rem'
+    },
+    '@media (max-width: 345px)': {
+      maxWidth: '15.5rem'
     },
     '@media (max-width: 285px)': {
       maxWidth: '15.5rem'
     },
-    '@media (min-width: 361px)': {
+    '@media (min-width: 371px)': {
       maxWidth: '19.5rem'
     },
     '@media (min-width: 600px)': {

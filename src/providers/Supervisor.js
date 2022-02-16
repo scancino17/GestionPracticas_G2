@@ -54,11 +54,21 @@ export function SupervisorProvider({ children }) {
   const [employers, setEmployers] = useState();
   const [evaluations, setEvaluations] = useState();
 
+  useEffect(() => {
+    return onSnapshot(collection(db, 'careers'), (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      setCareers(temp);
+    });
+  }, []);
+
   /**
    * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
    * limitar a las carreras que le corresponde.
    */
   useEffect(() => {
+    if (!careers) return;
+
     let appRef = collection(db, 'applications');
     let intRef = collection(db, 'internships');
     let stuRef = collection(db, 'users');
@@ -76,13 +86,34 @@ export function SupervisorProvider({ children }) {
 
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
       const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E.';
+        const name = career ? career.name : 'No encontrado';
+
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          careerName: name,
+          ...docData
+        });
+      });
       setApplications(temp);
     });
 
     let intUnsub = onSnapshot(intRef, (querySnapshot) => {
       const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E';
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          ...docData
+        });
+      });
       setInternships(temp);
     });
 
@@ -132,15 +163,7 @@ export function SupervisorProvider({ children }) {
       empUnsub();
       evaUnsub();
     };
-  }, [careerId]);
-
-  useEffect(() => {
-    return onSnapshot(collection(db, 'careers'), (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setCareers(temp);
-    });
-  }, []);
+  }, [careers, careerId]);
 
   useEffect(() => {
     if (applications && internships && students && careers && employers)

@@ -9,14 +9,20 @@ import {
   IconButton,
   Divider,
   TextField,
-  List
+  List,
+  Button
 } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { NavigateNext } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
+
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 
 function ReportsList() {
   const [name, setName] = useState('');
@@ -39,7 +45,42 @@ function ReportsList() {
       filtered = filtered.filter((item) => item.studentName.includes(name));
     return filtered;
   }, [sentReportsList, selectedCareerId, name]);
+  function ExportarExcel() {
+    const temp = [];
+    filteredInternshipsList.forEach((doc) =>
+      temp.push({
+        nombre: doc.studentName,
+        matricula: doc.applicationData['Número de matrícula'],
+        rut: doc.applicationData['Rut del estudiante'],
+        carrera: doc.careerName,
+        practica: doc.internshipNumber,
+        email: doc.studentEmail
+      })
+    );
 
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetAppIcon />}>
+            Exportar datos
+          </Button>
+        }
+        filename={`Estudiantes con evaluación de informe pendiente`}>
+        <ExcelSheet data={temp} name='Extensiones de práctica'>
+          <ExcelColumn label='Nombre estudiante' value='nombre' />
+          <ExcelColumn label='N° de Matrícula' value='matricula' />
+          <ExcelColumn label='RUT estudiante' value='rut' />
+          <ExcelColumn label='Carrera' value='carrera' />
+          <ExcelColumn label='Tipo de práctica' value='practica' />
+          <ExcelColumn label='Correo' value='email' />
+        </ExcelSheet>
+      </ExcelFile>
+    );
+  }
   return (
     <Grid container direction='column'>
       <div
@@ -53,36 +94,36 @@ function ReportsList() {
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid
-          container
-          justifyContent='flex-end'
-          alignItems='center'
-          spacing={4}>
-          <Grid item>
+        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+          <Grid item xs={12} sm={4}>
             <TextField
+              fullWidth
               label='Buscar estudiante'
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
           {userRole === ADMIN_ROLE && (
-            <Grid item>
+            <Grid item xs={12} sm={4}>
               <CareerSelector
                 careerId={selectedCareerId}
                 setCareerId={setSelectedCareerId}
               />
             </Grid>
           )}
+          <Grid item xs={12} sm={4}>
+            <ExportarExcel />
+          </Grid>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
         {filteredInternshipsList.length > 0 ? (
           <List>
             {filteredInternshipsList.map((internship) => (
-              <>
+              <div key={internship.id}>
                 <ReportItem internship={internship} />
                 <Divider />
-              </>
+              </div>
             ))}
           </List>
         ) : (
@@ -111,7 +152,6 @@ function ReportsList() {
 
 function ReportItem({ internship }) {
   const navigate = useNavigate();
-
   return (
     <ListItem
       button
@@ -122,7 +162,7 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={`${internship.applicationData['Rut del estudiante']} - ${internship.applicationData['Número de matrícula']} - Práctica ${internship.internshipNumber} - ${internship.careerName}`}
+        secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials}`}
       />
       <ListItemSecondaryAction>
         <IconButton

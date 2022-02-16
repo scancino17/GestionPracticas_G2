@@ -101,7 +101,7 @@ function DashboardAdmin({ sidebarProps }) {
                           <Grid item xs={3}>
                             <Avatar
                               sx={{
-                                backgroundColor: 'warning.main',
+                                backgroundColor: '#375C8C ',
                                 height: 56,
                                 width: 56
                               }}>
@@ -153,7 +153,7 @@ function DashboardAdmin({ sidebarProps }) {
                           <Grid item xs={3}>
                             <Avatar
                               sx={{
-                                backgroundColor: 'success.main',
+                                backgroundColor: 'rgba(54, 162, 235, 1)',
                                 height: 56,
                                 width: 56
                               }}>
@@ -202,7 +202,7 @@ function DashboardAdmin({ sidebarProps }) {
                           <Grid item xs={3}>
                             <Avatar
                               sx={{
-                                backgroundColor: 'danger.main',
+                                backgroundColor: 'rgba(75, 192, 192, 1)',
                                 height: 56,
                                 width: 56
                               }}>

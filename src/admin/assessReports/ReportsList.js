@@ -9,7 +9,8 @@ import {
   IconButton,
   Divider,
   TextField,
-  List
+  List,
+  Button
 } from '@material-ui/core';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { NavigateNext } from '@material-ui/icons';
@@ -18,7 +19,7 @@ import { sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
-import { Button } from '@mui/material';
+
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';

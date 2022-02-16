@@ -9,7 +9,8 @@ import {
   Divider,
   TextField,
   List,
-  Slide
+  Slide,
+  Button
 } from '@material-ui/core';
 import { NavigateNext } from '@material-ui/icons';
 import { sentExtension } from '../../InternshipStates';
@@ -25,7 +26,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { Button } from '@mui/material';
+
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';

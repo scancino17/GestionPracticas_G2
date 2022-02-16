@@ -280,7 +280,7 @@ function FormCheck() {
           }}>
           <Typography variant='h4'>Revisión Postulación</Typography>
         </Grid>
-        <Container>
+        <Container style={{ paddingBottom: '5rem' }}>
           {application.form &&
             application.form.map((step) => (
               <Grid item>

@@ -10,7 +10,8 @@ import {
   TextField,
   Typography,
   withStyles,
-  Box
+  Box,
+  Button
 } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import { ExpandMore } from '@material-ui/icons';
@@ -19,7 +20,7 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Pagination } from '@material-ui/lab';
-import { Button } from '@mui/material';
+
 import PropTypes from 'prop-types';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { styled } from '@mui/material/styles';

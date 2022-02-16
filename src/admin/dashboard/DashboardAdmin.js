@@ -21,7 +21,13 @@ import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../intention/InternshipIntention';
 import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
-import { Container, Grid, makeStyles, Select, Typography } from '@material-ui/core';
+import {
+  Container,
+  Grid,
+  makeStyles,
+  Select,
+  Typography
+} from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 
 import FormCheck from '../../dynamicForm/FormCheck';
@@ -46,6 +52,7 @@ import { useUser, DEFAULT_CAREER } from '../../providers/User';
 import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 import SelectEdit from '../../dynamicForm/SelectEdit';
+import Metrics from '../../dynamicForm/metrics/Metrics';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId } = useUser();
@@ -292,7 +299,7 @@ function DashboardAdmin({ sidebarProps }) {
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
-        <Route path='/edit-form' element={<SelectEdit />} />
+        <Route path='/edit-form' element={<Metrics />} />
         <Route path='/applications/:applicationId' element={<FormCheck />} />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />

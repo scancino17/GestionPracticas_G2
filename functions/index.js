@@ -302,7 +302,8 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
           internships.push({
             studentId: data.studentId,
             internshipId: data.internshipId,
-            careerId: data.careerId
+            careerId: data.careerId,
+            employerEvaluated: false
           });
 
           admin
@@ -324,7 +325,8 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
             .update({
               employerId: employer.id,
               employerName: employer.displayName,
-              employerEmail: employer.email
+              employerEmail: employer.email,
+              employerEvaluated: false
             });
         });
     });

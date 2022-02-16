@@ -81,7 +81,7 @@ function DashboardEstudiante() {
         }
       />
       {/**este es el que va al formulario dinamico */}
-      <Route path='/send-form' element={<SendApplication />} />
+      <Route path='/send-application' element={<SendApplication />} />
       <Route path='/send-survey' element={<SendSurvey />} />
       {/**este es el que va al formulario dinamico para edicion */}
       <Route

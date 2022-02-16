@@ -63,6 +63,12 @@ function EditBuilderPreview({
   useEffect(
     () =>
       getForm(formType, currentCareer).then((careerForm) => {
+        // Ojo: structuredClone crea una copia profunda de careerForm.
+        // El método es global, implementado por los navegadores y nodejs.
+        // En febrero de 2022, su implementación es *muy* reciente,
+        // y todavía no es del todo soportado por navegadores comunes
+        // por lo que podría dar problemas. A futuro, esta función debería
+        // ser implementada tal cual se usa aquí.
         setEditableForm(structuredClone(careerForm));
         setCurrentForm(careerForm);
       }),

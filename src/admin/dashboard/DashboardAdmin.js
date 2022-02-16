@@ -48,6 +48,7 @@ import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 import RemarkList from '../remarks/RemarkList';
 import SelectEdit from '../../dynamicForm/SelectEdit';
+import EvaluationsList from '../evaluations/EvaluationsList';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -289,6 +290,7 @@ function DashboardAdmin({ sidebarProps }) {
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
+        <Route exact path='/evaluations' element={<EvaluationsList />} />
         <Route path='/edit-form' element={<SelectEdit />} />
         <Route path='/applications/:applicationId' element={<FormCheck />} />
         <Route path='/import' element={<ImportStudents />} />

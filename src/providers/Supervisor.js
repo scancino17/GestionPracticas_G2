@@ -52,6 +52,7 @@ export function SupervisorProvider({ children }) {
   const [students, setStudents] = useState();
   const [careers, setCareers] = useState();
   const [employers, setEmployers] = useState();
+  const [evaluations, setEvaluations] = useState();
 
   /**
    * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
@@ -62,6 +63,7 @@ export function SupervisorProvider({ children }) {
     let intRef = collection(db, 'internships');
     let stuRef = collection(db, 'users');
     let empRef = collection(db, 'employers');
+    let evaRef = collection(db, 'send-evaluation');
 
     // Limitar a carrera que le corresponde
     if (careerId !== DEFAULT_CAREER) {
@@ -69,6 +71,7 @@ export function SupervisorProvider({ children }) {
       intRef = query(intRef, where('careerId', '==', careerId));
       stuRef = query(stuRef, where('careerId', '==', careerId));
       empRef = query(empRef, where('careers', 'array-contains', careerId));
+      evaRef = query(evaRef, where('careerId', '==', careerId));
     }
 
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
@@ -116,11 +119,18 @@ export function SupervisorProvider({ children }) {
       setEmployers(temp);
     });
 
+    let evaUnsub = onSnapshot(evaRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      setEvaluations(temp);
+    });
+
     return () => {
       appUnsub();
       intUnsub();
       stuUnsub();
       empUnsub();
+      evaUnsub();
     };
   }, [careerId]);
 
@@ -195,6 +205,31 @@ export function SupervisorProvider({ children }) {
 
     return remarks;
   }, [employers, internships]);
+
+  const employerEvaluations = useMemo(() => {
+    const employerList = [];
+
+    evaluations &&
+      evaluations.forEach((evaluation) => {
+        console.log(evaluation);
+        const {
+          name: studentName,
+          rut: studentRut,
+          enrollmentNumber: studentNumber
+        } = students.find((item) => item.id === evaluation.studentId);
+        const { internshipNumber } = internships.find(
+          (item) => item.id === evaluation.internshipId
+        );
+        employerList.push({
+          ...evaluation,
+          studentName,
+          studentRut,
+          studentNumber,
+          internshipNumber
+        });
+      });
+    return employerList;
+  }, [evaluations, internships, students]);
 
   // formType debe ser uno de los valores del objeto FormTypes del archivo FormTypes.js
   async function getForm(formType, selectedCareerId) {
@@ -616,6 +651,7 @@ export function SupervisorProvider({ children }) {
         sentReportsCount,
         ongoingInternshipsCount,
         remarkList,
+        employerEvaluations,
         getForm,
         setForm,
         setSurveySended,

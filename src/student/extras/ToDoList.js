@@ -212,7 +212,7 @@ function ToDoList() {
                           : 'Completar'
                       }
                       internship={currentInternshipData}
-                      buttonOnClick={() => navigate('/send-form')}
+                      buttonOnClick={() => navigate('/send-application')}
                       disabled={
                         currentInternshipData &&
                         currentInternshipData.status === sentApplication

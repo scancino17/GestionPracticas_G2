@@ -17,7 +17,7 @@ import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
 import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
-import { Feedback } from '@material-ui/icons';
+import { AssignmentInd, Feedback } from '@material-ui/icons';
 import { useSupervisor } from '../providers/Supervisor';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,11 +61,6 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       adminOnly: true
     },
     {
-      label: 'Evaluar Prácticas',
-      icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
-      path: '/internship-assessment'
-    },
-    {
       label: 'Observaciones de supervisores',
       icon: (
         <Badge color='secondary' badgeContent={newRemarkCount}>
@@ -73,6 +68,16 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         </Badge>
       ),
       path: 'employer-remarks'
+    },
+    {
+      label: 'Evaluar Prácticas',
+      icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/internship-assessment'
+    },
+    {
+      label: 'Evaluación de supervisores',
+      icon: <AssignmentInd style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/evaluations'
     },
     {
       label: 'Extensión de Prácticas',

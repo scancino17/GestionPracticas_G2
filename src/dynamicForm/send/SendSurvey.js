@@ -13,7 +13,7 @@ import {
 import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-import { FieldTypes, CustomTypes } from '../camps/FormTypes';
+import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
 import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 function SendSurvey({ edit }) {
@@ -30,7 +30,7 @@ function SendSurvey({ edit }) {
       setInternshipId(userData.currentInternship.id);
 
       if (!edit) {
-        const docRef = doc(db, 'form-survey', userData.careerId);
+        const docRef = doc(db, FormTypes.SurveyForm, userData.careerId);
 
         getDoc(docRef).then((doc) => {
           const data = doc.data();

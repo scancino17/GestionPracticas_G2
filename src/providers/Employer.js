@@ -12,6 +12,7 @@ import React, {
   useCallback,
   useMemo
 } from 'react';
+import { FormTypes } from '../dynamicForm/camps/FormTypes';
 import { db } from '../firebase';
 import { useUser } from './User';
 
@@ -89,6 +90,7 @@ export function EmployerProvider({ children }) {
           studentName: studentData.name,
           studentRut: studentData.rut,
           careerId: internData.careerId,
+          employerEvaluated: intern.employerEvaluated,
           studentCareer: studentData.careerName,
           internStart: internData.applicationData['Fecha de inicio'],
           internEnd: internData.applicationData['Fecha de término']
@@ -100,6 +102,18 @@ export function EmployerProvider({ children }) {
   async function updateEmployer(update) {
     await updateDoc(doc(db, 'employers', userId), update);
   }
+
+  const evaluationForms = useMemo(() => {
+    const map = new Map();
+    if (userData) {
+      userData.careers.forEach((career) =>
+        getDoc(doc(db, FormTypes.EvaluationForm, career)).then((docData) =>
+          map.set(career, docData.data().form)
+        )
+      );
+    }
+    return map;
+  }, [userData]);
 
   async function addRemark(internship, remark) {
     await updateEmployer({
@@ -118,6 +132,22 @@ export function EmployerProvider({ children }) {
     return internList.find((item) => item.internshipId === internshipId);
   }
 
+  function updateInternData(internshipId, update) {
+    const oldIntern = userData.internships.find(
+      (item) => item.internshipId === internshipId
+    );
+
+    if (!oldIntern) return;
+    const newList = userData.internships
+      .filter((item) => item.internshipId !== internshipId)
+      .slice();
+    newList.push({
+      ...oldIntern,
+      ...update
+    });
+    updateEmployer({ internships: newList });
+  }
+
   useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
 
@@ -128,8 +158,10 @@ export function EmployerProvider({ children }) {
         userData,
         internList,
         remarksMap,
+        evaluationForms,
         addRemark,
-        getInternData
+        getInternData,
+        updateInternData
       }}>
       {children}
     </EmployerContext.Provider>

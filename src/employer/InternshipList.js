@@ -97,7 +97,8 @@ function InternItem({ internship, expanded, changeExpanded }) {
     studentRut,
     studentCareer,
     internStart,
-    internEnd
+    internEnd,
+    employerEvaluated
   } = internship;
 
   return (
@@ -169,8 +170,11 @@ function InternItem({ internship, expanded, changeExpanded }) {
           <Button color='primary' onClick={() => setShowRemarkModal(true)}>
             Agregar observación
           </Button>
-          <Button color='primary' onClick={() => console.log('boop')}>
-            Responder evaluación
+          <Button
+            color='primary'
+            onClick={() => navigate(`/send-evaluation/${internshipId}`)}
+            disabled={employerEvaluated}>
+            {employerEvaluated ? 'Evaluación enviada' : 'Responder evaluación'}
           </Button>
         </AccordionActions>
       </Accordion>

@@ -41,3 +41,7 @@ export function toLegibleTime(timestamp) {
       : timestamp.seconds * 1000;
   return new Date(time).toLocaleTimeString('es-CL');
 }
+
+export function toLegibleDateTime(timestamp) {
+  return `${toLegibleDate(timestamp)} ${toLegibleTime(timestamp)}`;
+}

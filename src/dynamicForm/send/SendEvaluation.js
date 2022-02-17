@@ -10,6 +10,7 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FieldTypes, CustomTypes } from '../camps/FormTypes';
@@ -160,96 +161,102 @@ function SendEvaluation({ edit }) {
           }}>
           <Typography variant='h4'>Formulario evaluación</Typography>
         </Grid>
-
-        <Container>
-          <Stepper
-            activeStep={activeStep}
-            alternativeLabel
-            style={{ margin: '2rem', backgroundColor: 'transparent' }}>
-            {formFull.map((step) => (
-              <Step key={step.step}>
-                <StepLabel>{step.step}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          {activeStep === formFull.length ? (
-            <>
-              <Typography>Guardar</Typography>
-              <Button variant='contained' color='primary' onClick={handleSave}>
-                Guardar
-              </Button>
-            </>
-          ) : (
-            <Grid container direction='column' spacing={2}>
-              <Grid item>
-                {formFull.map(
-                  (form, i) =>
-                    i === activeStep && (
-                      // formview
-                      <DynamicForm
-                        form={form.form}
-                        setForm={setFormFull}
-                        formFull={formFull}
-                        index={i}
-                        filesInner={files}
-                        setFilesInner={() => setFiles}
-                        student
-                      />
-                    )
-                )}
-              </Grid>
-              <Grid item container justifyContent='flex-end' spacing={2}>
+        {formFull ? (
+          <Container>
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              style={{ margin: '2rem', backgroundColor: 'transparent' }}>
+              {formFull.map((step) => (
+                <Step key={step.step}>
+                  <StepLabel>{step.step}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            {activeStep === formFull.length ? (
+              <>
+                <Typography>Guardar</Typography>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={handleSave}>
+                  Guardar
+                </Button>
+              </>
+            ) : (
+              <Grid container direction='column' spacing={2}>
                 <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === 0}
-                    onClick={handleBack}>
-                    Anterior
-                  </Button>
+                  {formFull.map(
+                    (form, i) =>
+                      i === activeStep && (
+                        // formview
+                        <DynamicForm
+                          form={form.form}
+                          setForm={setFormFull}
+                          formFull={formFull}
+                          index={i}
+                          filesInner={files}
+                          setFilesInner={() => setFiles}
+                          student
+                        />
+                      )
+                  )}
                 </Grid>
-                <Grid item>
-                  {activeStep !== formFull.length - 1 && (
+                <Grid item container justifyContent='flex-end' spacing={2}>
+                  <Grid item>
                     <Button
                       variant='contained'
                       color='primary'
-                      onClick={handleNext}>
-                      Siguiente
+                      disabled={activeStep === 0}
+                      onClick={handleBack}>
+                      Anterior
                     </Button>
-                  )}
-                  {activeStep === formFull.length - 1 && (
-                    <Button
-                      variant='contained'
-                      color='primary'
-                      onClick={() => {
-                        Swal.fire({
-                          title: '¿Desea enviar su solicitud?',
-                          text: 'Revisa bien el formulario antes de enviarlo',
-                          icon: 'warning',
-                          showCancelButton: true,
-                          confirmButtonText: `Enviar`,
-                          cancelButtonText: `Cancelar`
-                        }).then((result) => {
-                          if (result.isConfirmed) {
-                            handleSave();
-                            Swal.fire(
-                              '¡Formulario enviado!',
-                              '',
-                              'success'
-                            ).then((result) => {
-                              if (result.isConfirmed) navigate('/');
-                            });
-                          }
-                        });
-                      }}>
-                      Enviar
-                    </Button>
-                  )}
+                  </Grid>
+                  <Grid item>
+                    {activeStep !== formFull.length - 1 && (
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleNext}>
+                        Siguiente
+                      </Button>
+                    )}
+                    {activeStep === formFull.length - 1 && (
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                          Swal.fire({
+                            title: '¿Desea enviar su solicitud?',
+                            text: 'Revisa bien el formulario antes de enviarlo',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: `Enviar`,
+                            cancelButtonText: `Cancelar`
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleSave();
+                              Swal.fire(
+                                '¡Formulario enviado!',
+                                '',
+                                'success'
+                              ).then((result) => {
+                                if (result.isConfirmed) navigate('/');
+                              });
+                            }
+                          });
+                        }}>
+                        Enviar
+                      </Button>
+                    )}
+                  </Grid>
                 </Grid>
               </Grid>
-            </Grid>
-          )}
-        </Container>
+            )}
+          </Container>
+        ) : (
+          <Skeleton animation='pulse' width='100%' height='100%' />
+        )}
       </Grid>
     )
   );

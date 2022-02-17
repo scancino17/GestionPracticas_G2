@@ -23,7 +23,7 @@ import {
 
 import WarningIcon from '@material-ui/icons/Warning';
 
-import FormCheck from '../../dynamicForm/FormCheck';
+import ApplicationCheck from '../../dynamicForm/check/ApplicationCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
 import TableChart from './extras/charts/TableChart';
@@ -50,6 +50,7 @@ import { useSupervisor } from '../../providers/Supervisor';
 import RemarkList from '../remarks/RemarkList';
 import SelectEdit from '../../dynamicForm/SelectEdit';
 import EvaluationsList from '../evaluations/EvaluationsList';
+import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -415,7 +416,14 @@ function DashboardAdmin({ sidebarProps }) {
         <Route exact path='/applications' element={<ApplicationsList />} />
         <Route exact path='/evaluations' element={<EvaluationsList />} />
         <Route path='/edit-form' element={<SelectEdit />} />
-        <Route path='/applications/:applicationId' element={<FormCheck />} />
+        <Route
+          path='/applications/:applicationId'
+          element={<ApplicationCheck />}
+        />
+        <Route
+          path='/evaluations/:evaluationId'
+          element={<EvaluationCheck />}
+        />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />
         <Route path='/insurance-list' element={<Insurance />} />

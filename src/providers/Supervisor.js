@@ -238,9 +238,10 @@ export function SupervisorProvider({ children }) {
         const {
           name: studentName,
           rut: studentRut,
-          enrollmentNumber: studentNumber
+          enrollmentNumber: studentNumber,
+          email: studentEmail
         } = students.find((item) => item.id === evaluation.studentId);
-        const { internshipNumber } = internships.find(
+        const { internshipNumber, careerInitials } = internships.find(
           (item) => item.id === evaluation.internshipId
         );
         employerList.push({
@@ -248,7 +249,9 @@ export function SupervisorProvider({ children }) {
           studentName,
           studentRut,
           studentNumber,
-          internshipNumber
+          studentEmail,
+          internshipNumber,
+          careerInitials
         });
       });
     return employerList;

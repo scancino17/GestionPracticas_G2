@@ -20,9 +20,9 @@ import {
   CancelOutlined,
   MenuOutlined
 } from '@material-ui/icons';
-import FormView from './builder_preview/FormView';
+import FormView from '../builder_preview/FormView';
 import { useNavigate } from 'react-router-dom';
-import { useSupervisor } from '../providers/Supervisor';
+import { useSupervisor } from '../../providers/Supervisor';
 
 import Backdrop from '@material-ui/core/Backdrop';
 import SpeedDial from '@material-ui/lab/SpeedDial';
@@ -104,7 +104,7 @@ const SecondaryButton = withStyles((theme) => ({
   }
 }))(Button);
 
-function FormCheck() {
+function ApplicationCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
   const [minorChanges, setMinorChanges] = useState('');
@@ -164,7 +164,7 @@ function FormCheck() {
     {
       edit: false,
       icon: <Check />,
-      name: 'Aprovar',
+      name: 'Aprobar',
       function: handleShowApproved
     },
     {
@@ -423,4 +423,4 @@ function FormCheck() {
   );
 }
 
-export default FormCheck;
+export default ApplicationCheck;

@@ -1,5 +1,4 @@
 import { Box, Grid, Tab, Tabs, Typography } from '@material-ui/core';
-
 import { useEffect, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
@@ -12,7 +11,6 @@ function SelectEdit() {
   const [currentTab, setCurrentTab] = useState(0);
   const [selectedCareer, setSelectedCareer] = useState(careerId);
   const [currentCareer, setCurrentCareer] = useState(careerId);
-
   const handleChangeTab = (event, newValue) => {
     event.preventDefault();
 
@@ -48,7 +46,7 @@ function SelectEdit() {
 
         <Grid item>
           <Grid container direction='row'>
-            <Grid item>
+            <Grid item xs={12} sm={6} lg={3}>
               <CareerSelector
                 careerId={currentCareer}
                 setCareerId={handleChangeCareer}
@@ -59,12 +57,12 @@ function SelectEdit() {
         </Grid>
       </div>
       <Grid item>
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', borderColor: 'divider', borderBottom: 1 }}>
           <Tabs
-            indicatorColor='secondary'
-            variant='fullWidth'
+            variant='scrollable'
             scrollButtons
             allowScrollButtonsMobile
+            indicatorColor='primary'
             value={currentTab}
             onChange={handleChangeTab}
             aria-label='wrapped label tabs example'>

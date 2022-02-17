@@ -39,6 +39,7 @@ import { DEFAULT_CAREER } from '../../providers/User';
 
 function EditBuilderPreview({
   selectedTab,
+  setSelectedTab,
   setCurrentTab,
   currentTab,
   selectedCareer,
@@ -136,13 +137,19 @@ function EditBuilderPreview({
       showDenyButton: true,
       confirmButtonText: `Guardar`,
       denyButtonText: `No guardar`,
-      cancelButtonText: 'Salir',
+      cancelButtonText: 'Cerrar',
       showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
         // Guardar formulario en la base de datos
         setForm(formType, currentCareer, { form: editableForm });
         Swal.fire('¡Formulario Guardado!', '', 'success');
+      }
+      if (result.isDismissed) {
+        setSelectedTab(currentTab);
+        // selectedTab no cambia instantáneamente, si no se retorna aqui
+        // se forzará un rerender, descartando los cambios
+        return;
       }
       if (currentTab !== selectedTab) setCurrentTab(selectedTab);
       if (currentCareer !== selectedCareer) setCurrentCareer(selectedCareer);
@@ -156,7 +163,8 @@ function EditBuilderPreview({
     selectedTab,
     setCurrentCareer,
     setCurrentTab,
-    setForm
+    setForm,
+    setSelectedTab
   ]);
 
   // Manejar cambios de pestaña o carrera

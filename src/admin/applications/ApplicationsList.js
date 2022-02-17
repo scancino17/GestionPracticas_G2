@@ -17,7 +17,7 @@ import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Pagination } from '@material-ui/lab';
-import { DEFAULT_CAREER, useUser } from '../../providers/User';
+import { DEFAULT_CAREER, useUser, ADMIN_ROLE } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -63,18 +63,16 @@ function a11yProps(index) {
 }
 
 function ApplicationsList() {
-  const [careerId, setCareerId] = useState('general');
   const [name, setName] = useState('');
   const [statuses, setStatuses] = useState({
     reviewing: true,
-    approved: true,
-    rejected: true,
-    needChanges: true
+    approved: false,
+    rejected: false,
+    needChanges: false
   });
   const { reviewing, approved, rejected, needChanges } = statuses;
   const itemsPerPage = 6;
   const [page, setPage] = useState(1);
-  const { user } = useUser();
   const [indice, setIndice] = useState(0);
   const estados = [
     'En revisión',
@@ -83,13 +81,12 @@ function ApplicationsList() {
     'Necesita cambios',
     'Todos'
   ];
+  const { userRole } = useUser();
   const { applications } = useSupervisor();
 
   const filteredApplications = useMemo(() => {
     if (applications) {
       let filtered = applications.slice();
-      if (careerId !== 'general')
-        filtered = filtered.filter((item) => item.careerId === careerId);
       if (name !== '')
         filtered = filtered.filter((item) => item.studentName.includes(name));
       if (!reviewing)
@@ -104,21 +101,14 @@ function ApplicationsList() {
         );
       return filtered;
     } else return [];
-  }, [
-    applications,
-    careerId,
-    name,
-    reviewing,
-    approved,
-    rejected,
-    needChanges
-  ]);
+  }, [applications, name, reviewing, approved, rejected, needChanges]);
 
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
   const ApplicationListItem = () => {
     return (
       <>
@@ -277,7 +267,7 @@ function ApplicationsList() {
           </Box>
           <TabPanel value={value} index={indice}>
             <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-              <Grid item xs={12} sm={4}>
+              <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
                 <TextField
                   fullWidth
                   label='Buscar estudiante'
@@ -285,12 +275,15 @@ function ApplicationsList() {
                   onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
-              <Grid item xs={12} sm={4}>
-                <CareerSelector
-                  careerId={selectedCareerId}
-                  setCareerId={setSelectedCareerId}
-                />
-              </Grid>
+              {userRole === ADMIN_ROLE && (
+                <Grid item xs={12} sm={4}>
+                  <CareerSelector
+                    careerId={selectedCareerId}
+                    setCareerId={setSelectedCareerId}
+                  />
+                </Grid>
+              )}
+
               <Grid item xs={12} sm={4}>
                 <ExportarExcel />
               </Grid>

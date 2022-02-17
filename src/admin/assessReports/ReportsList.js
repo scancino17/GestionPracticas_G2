@@ -95,7 +95,7 @@ function ReportsList() {
       </div>
       <Container style={{ marginTop: '2rem' }}>
         <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
             <TextField
               fullWidth
               label='Buscar estudiante'

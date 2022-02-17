@@ -16,20 +16,26 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  Box,
-  FormControl,
-  FormLabel,
-  FormGroup,
-  FormControlLabel,
-  Checkbox
+  Box as TextBox,
+  Divider
 } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { ExpandMore, GetApp } from '@material-ui/icons';
+import { Pagination } from '@material-ui/lab';
 import { grey } from '@material-ui/core/colors';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSupervisor } from '../../providers/Supervisor';
 import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
-import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import {
+  toLegibleDate,
+  toLegibleDateTime,
+  toLegibleTime
+} from '../../utils/FormatUtils';
+import { Box, Tab, Tabs } from '@mui/material';
+import PropTypes from 'prop-types';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -57,6 +63,38 @@ const SecondaryButton = withStyles((theme) => ({
     color: grey[700]
   }
 }))(Button);
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Grid
+      role='tabpanel'
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component={'span'}>{children}</Typography>
+        </Box>
+      )}
+    </Grid>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`
+  };
+}
 
 function RemarkItem({ remark, expanded, changeExpanded }) {
   const classes = useStyles();
@@ -216,13 +254,13 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
       <DialogContent>
         <DialogContentText>
           Puede responder la observación respecto al estudiante{' '}
-          <Box fontWeight='fontWeightBold' display='inline'>
+          <TextBox fontWeight='fontWeightBold' display='inline'>
             {remark.studentName}
-          </Box>{' '}
+          </TextBox>{' '}
           a su supervisor{' '}
-          <Box fontWeight='fontWeightBold' display='inline'>
+          <TextBox fontWeight='fontWeightBold' display='inline'>
             {remark.employerName}
-          </Box>{' '}
+          </TextBox>{' '}
           a través de este medio.
         </DialogContentText>
         <TextField
@@ -251,6 +289,10 @@ function RemarkList() {
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [expanded, setExpanded] = useState();
   const [selected, setSelected] = useState({ read: false, notRead: true });
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [page, setPage] = useState(1);
+  const [indice, setIndice] = useState(0);
+  const itemsPerPage = 14;
 
   const changeExpanded = (panel) => (event, isExpanded) =>
     setExpanded(isExpanded ? panel : false);
@@ -275,15 +317,79 @@ function RemarkList() {
       );
   }, [name, remarkList, selectedCareerId, selected]);
 
-  function handleCheckboxes(e) {
-    setSelected((prev) => {
-      return { ...prev, [e.target.name]: e.target.checked };
-    });
+  function handleChangeTab(event, newValue) {
+    event.preventDefault();
+    setSelectedTab(newValue);
+  }
+
+  function ExportarExcel() {
+    const estados = ['Leídos', 'No leídos', 'Todos'];
+
+    return (
+      <ExcelFile
+        element={
+          <Button
+            fullWidth
+            color='primary'
+            variant='contained'
+            startIcon={<GetApp />}>
+            Exportar datos
+          </Button>
+        }
+        filename={`Observaciones de supervisores - ${estados[indice]}`}>
+        <ExcelSheet
+          data={filteredRemarkList}
+          name='Observaciones de supervisores'>
+          <ExcelColumn label='Nombre estudiante' value='studentName' />
+          <ExcelColumn label='Carrera' value='careerName' />
+          <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
+          <ExcelColumn label='Nombre del supervisor' value='employerName' />
+          <ExcelColumn label='Correo del supervisor' value='employerEmail' />
+          <ExcelColumn
+            label='Fecha de envío'
+            value={(col) => toLegibleDateTime(col.remarkTime)}
+          />
+          <ExcelColumn
+            label='Estado'
+            value={(col) => (col.read ? 'Leído' : 'No leído')}
+          />
+          <ExcelColumn label='Observación' value='remark' />
+          <ExcelColumn
+            label='Nombre encargado'
+            value={(col) =>
+              col.evaluatingSupervisor
+                ? col.evaluatingSupervisor.name
+                : 'Sin evaluar'
+            }
+          />
+          <ExcelColumn
+            label='Correo encargado'
+            value={(col) =>
+              col.evaluatingSupervisor
+                ? col.evaluatingSupervisor.email
+                : 'Sin evaluar'
+            }
+          />
+          <ExcelColumn
+            label='Fecha de respuesta'
+            value={(col) =>
+              col.updateTime
+                ? toLegibleDateTime(col.updateTime)
+                : 'Sin respuesta'
+            }
+          />
+          <ExcelColumn
+            label='Respuesta encargado'
+            value={(col) => (col.answer ? col.answer : 'Sin respuesta')}
+          />
+        </ExcelSheet>
+      </ExcelFile>
+    );
   }
 
   return (
     <Grid container direction='column'>
-      <div
+      <Grid
         style={{
           backgroundImage: "url('AdminBanner-Evaluate.png')",
           backgroundSize: 'cover',
@@ -291,89 +397,126 @@ function RemarkList() {
           backgroundRepeat: 'no-repeat',
           padding: '2rem'
         }}>
-        <Typography variant='h4'>Observaciones de empleadores</Typography>
-      </div>
+        <Typography component={'span'} variant='h4'>
+          Observaciones de empleadores
+        </Typography>
+      </Grid>
       <Container style={{ marginTop: '2rem' }}>
-        <Grid
-          container
-          justifyContent='flex-end'
-          alignItems='center'
-          spacing={4}>
-          <Grid item>
-            <TextField
-              label='Buscar por nombre'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </Grid>
-          <Grid item>
-            <FormControl>
-              <FormLabel>Estado</FormLabel>
-              <FormGroup row>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={selected.notRead}
-                      onChange={handleCheckboxes}
-                      name='notRead'
-                    />
-                  }
-                  label='No Leído'
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              variant='scrollable'
+              scrollButtons
+              allowScrollButtonsMobile
+              value={selectedTab}
+              onChange={handleChangeTab}
+              aria-label='Selección de observaciones a mostrar'>
+              <Tab
+                label='No leído'
+                {...a11yProps(0)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: false, notRead: true });
+                  setIndice(0);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Leído'
+                {...a11yProps(1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: false });
+                  setIndice(1);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Todas'
+                {...a11yProps(2)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: true });
+                  setIndice(2);
+                  setPage(1);
+                }}
+              />
+            </Tabs>
+          </Box>
+          <TabPanel value={selectedTab} index={indice}>
+            <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+              <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
+                <TextField
+                  fullWidth
+                  label='Buscar por nombre'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={selected.read}
-                      onChange={handleCheckboxes}
-                      name='read'
-                    />
-                  }
-                  label='Leído'
-                />
-              </FormGroup>
-            </FormControl>
-          </Grid>
-          {userRole === ADMIN_ROLE && (
-            <Grid item>
-              <CareerSelector
-                careerId={selectedCareerId}
-                setCareerId={setSelectedCareerId}
-              />
+              </Grid>
+              {userRole === ADMIN_ROLE && (
+                <Grid item xs={12} sm={4}>
+                  <CareerSelector
+                    careerId={selectedCareerId}
+                    setCareerId={setSelectedCareerId}
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={4}>
+                <ExportarExcel />
+              </Grid>
+              <Divider />
+              <Container style={{ marginTop: '2rem' }}>
+                {filteredRemarkList.length > 0 && (
+                  <Container style={{ marginTop: '2rem' }}>
+                    {filteredRemarkList
+                      .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                      .map((remark) => (
+                        <RemarkItem
+                          key={remark.index}
+                          remark={remark}
+                          expanded={expanded}
+                          changeExpanded={changeExpanded}
+                        />
+                      ))}
+                  </Container>
+                )}
+              </Container>
+
+              <Grid
+                container
+                justifyContent='flex-end'
+                style={{ marginTop: '2rem' }}>
+                {filteredRemarkList.length > 0 ? (
+                  <Pagination
+                    count={Math.ceil(filteredRemarkList.length / itemsPerPage)}
+                    page={page}
+                    color='primary'
+                    style={{ marginBottom: '40px' }}
+                    onChange={(_, val) => setPage(val)}
+                  />
+                ) : (
+                  <Grid
+                    container
+                    direction='column'
+                    align='center'
+                    justifyContent='center'
+                    style={{ marginTop: '6rem' }}>
+                    <Grid item>
+                      <img
+                        src='evaluate.png'
+                        width='300'
+                        alt='Sin observaciones disponibles'
+                      />
+                    </Grid>
+                    <Typography variant='h5' color='textSecondary'>
+                      No hay observaciones de empleadores disponibles
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
-          )}
-        </Grid>
-      </Container>
-      <Container style={{ marginTop: '2rem' }}>
-        {filteredRemarkList.length > 0 ? (
-          <Container style={{ marginTop: '2rem' }}>
-            {filteredRemarkList.map((remark) => (
-              <RemarkItem
-                key={remark.index}
-                remark={remark}
-                expanded={expanded}
-                changeExpanded={changeExpanded}
-              />
-            ))}
-          </Container>
-        ) : (
-          <Grid
-            container
-            direction='column'
-            align='center'
-            justifyContent='center'
-            style={{ marginTop: '6rem' }}>
-            <Grid item>
-              <img
-                src='evaluate.png'
-                width='300'
-                alt='Sin observaciones disponibles'
-              />
-            </Grid>
-            <Typography variant='h5' color='textSecondary'>
-              No hay observaciones de empleadores disponibles
-            </Typography>
-          </Grid>
-        )}
+          </TabPanel>
+        </Box>
       </Container>
     </Grid>
   );

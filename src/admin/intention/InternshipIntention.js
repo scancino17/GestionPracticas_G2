@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Pagination } from '@material-ui/lab';
-
+import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
 import PropTypes from 'prop-types';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { styled } from '@mui/material/styles';
@@ -31,7 +31,6 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import CareerSelector from '../../utils/CareerSelector';
-import { DEFAULT_CAREER } from '../../providers/User';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
@@ -105,7 +104,7 @@ function IntentionList({ pendingIntentions, update }) {
   const itemsPerPage = 14;
   const [page, setPage] = useState(1);
   const [name, setName] = useState('');
-  const { careers } = useSupervisor();
+  const { userRole } = useUser();
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -122,6 +121,7 @@ function IntentionList({ pendingIntentions, update }) {
       return filtered;
     } else return [];
   }, [pendingIntentions, name, selectedCareerId]);
+
   function ExportarExcel() {
     return (
       <ExcelFile
@@ -166,7 +166,7 @@ function IntentionList({ pendingIntentions, update }) {
       </Grid>
       <Container style={{ marginTop: '2rem' }}>
         <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
             <TextField
               fullWidth
               label='Buscar estudiante'
@@ -174,13 +174,14 @@ function IntentionList({ pendingIntentions, update }) {
               onChange={(e) => setName(e.target.value)}
             />
           </Grid>
-
-          <Grid item xs={12} sm={4}>
-            <CareerSelector
-              careerId={selectedCareerId}
-              setCareerId={setSelectedCareerId}
-            />
-          </Grid>
+          {userRole === ADMIN_ROLE && (
+            <Grid item xs={12} sm={4}>
+              <CareerSelector
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
+              />
+            </Grid>
+          )}
 
           <Grid item xs={12} sm={4}>
             <ExportarExcel />

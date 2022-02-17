@@ -22,10 +22,11 @@ import { useSupervisor } from '../providers/Supervisor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    background: theme.palette.primary.main
+    background: theme.palette.primary.main,
+    width: '300px'
   },
   drawer: {
-    width: 250,
+    width: '300px',
     flexShrink: 0
   }
 }));
@@ -61,7 +62,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       adminOnly: true
     },
     {
-      label: 'Observaciones de supervisores',
+      label: 'Observación supervisores',
       icon: (
         <Badge color='secondary' badgeContent={newRemarkCount}>
           <Feedback style={{ color: 'inherit', fontSize: 27 }} />

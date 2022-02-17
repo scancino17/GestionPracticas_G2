@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme) => ({
   endDateHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: '#de6363',
+    fontWeight: 500,
     [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
     [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
   },
@@ -98,7 +99,8 @@ function InternItem({ internship, expanded, changeExpanded }) {
     studentCareer,
     internStart,
     internEnd,
-    employerEvaluated
+    employerEvaluated,
+    evaluationTime
   } = internship;
 
   return (
@@ -154,6 +156,16 @@ function InternItem({ internship, expanded, changeExpanded }) {
             <Grid item xs={8} className={classes.redText}>
               <Typography>{toLegibleDate(internEnd)}</Typography>
             </Grid>
+            {employerEvaluated && (
+              <>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>Evaluado en:</Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>{toLegibleDate(evaluationTime)}</Typography>
+                </Grid>
+              </>
+            )}
             <LastRemarkView
               internshipId={internshipId}
               expanded={expandedRemark}
@@ -212,7 +224,7 @@ function LastRemarkView({ internshipId }) {
           <Grid item>
             <Typography variant='h6'>Última observación: </Typography>
           </Grid>
-          <Grid item>
+          <Grid item onClick={handleExpand}>
             <IconButton
               className={classNames(classes.expand, {
                 [classes.expandOpen]: expanded
@@ -317,14 +329,17 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
 
   return (
     <Dialog fullWidth open={showRemarkModal} onClose={closeModal}>
-      <DialogTitle>Enviar observación a supervisor de escuela</DialogTitle>
+      <DialogTitle>
+        Enviar observación a supervisor de la universidad
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
           Puede enviar un comentario respecto al estudiante{' '}
           <Box fontWeight='fontWeightBold' display='inline'>
             {internship.studentName}
           </Box>{' '}
-          a su correspondiente supervisor de escuela a través de este medio.
+          a su correspondiente supervisor de la universidad a través de este
+          medio.
         </DialogContentText>
         <TextField
           multiline

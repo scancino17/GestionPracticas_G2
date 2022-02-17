@@ -29,6 +29,7 @@ export function EmployerProvider({ children }) {
   const [userData, setUserData] = useState();
   const [employerLoaded, setLoaded] = useState(false);
   const [internList, setInternList] = useState([]);
+  const isEqual = require('lodash/isEqual');
 
   useEffect(() => {
     return onSnapshot(doc(db, 'employers', userId), (doc) =>
@@ -61,14 +62,30 @@ export function EmployerProvider({ children }) {
 
   const getInterns = useCallback(() => {
     function addIntern(intern) {
+      const sortFn = (f, s) => f.internEnd.seconds - s.internEnd.seconds;
+
       setInternList((prevState) => {
-        if (
-          !prevState.find((item) => item.internshipId === intern.internshipId)
-        ) {
-          let newState = prevState.slice();
-          newState.push(intern);
-          return newState;
-        } else return prevState;
+        const inList = prevState.find(
+          (item) => item.internshipId === intern.internshipId
+        );
+
+        if (inList) {
+          if (!isEqual(inList, intern)) {
+            const newList = prevState
+              .slice()
+              .filter((item) => item.internshipId !== inList.internshipId);
+            newList.push(intern);
+            newList.sort(sortFn);
+            return newList;
+          } else {
+            return prevState;
+          }
+        } else {
+          const newList = prevState.slice();
+          newList.push(intern);
+          newList.sort(sortFn);
+          return newList;
+        }
       });
     }
 
@@ -91,13 +108,15 @@ export function EmployerProvider({ children }) {
           studentRut: studentData.rut,
           careerId: internData.careerId,
           employerEvaluated: intern.employerEvaluated,
+          evaluationTime: intern.evaluationTime,
+          evaluationId: intern.evaluationId,
           studentCareer: studentData.careerName,
           internStart: internData.applicationData['Fecha de inicio'],
           internEnd: internData.applicationData['Fecha de término']
         });
       });
     }
-  }, [userData]);
+  }, [isEqual, userData]);
 
   async function updateEmployer(update) {
     await updateDoc(doc(db, 'employers', userId), update);
@@ -145,6 +164,8 @@ export function EmployerProvider({ children }) {
       ...oldIntern,
       ...update
     });
+    console.log({ ...oldIntern, ...update });
+    console.log(newList);
     updateEmployer({ internships: newList });
   }
 

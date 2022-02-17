@@ -14,7 +14,13 @@ import { Skeleton } from '@material-ui/lab';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FieldTypes, CustomTypes } from '../camps/FormTypes';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
 import { useEmployer } from '../../providers/Employer';
 import { useUser } from '../../providers/User';
 import { ref, uploadBytes } from 'firebase/storage';
@@ -128,7 +134,8 @@ function SendEvaluation({ edit }) {
         internshipId: internshipId,
         employerId: userId,
         read: false,
-        form: formFull
+        form: formFull,
+        sentTime: serverTimestamp()
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
@@ -137,12 +144,16 @@ function SendEvaluation({ edit }) {
             employerEvaluated: true,
             employerEvaluationId: docRef.id
           });
+
+          updateInternData(internshipId, {
+            employerEvaluated: true,
+            evaluationId: docRef.id,
+            evaluationTime: serverTimestamp()
+          });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-
-      updateInternData(internshipId, { employerEvaluated: true });
     }
   }
 

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Button from '@material-ui/core/Button';
-import { Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
+import { Badge, Drawer, Hidden, makeStyles, Toolbar } from '@material-ui/core';
 import PollIcon from '@material-ui/icons/Poll';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import GroupIcon from '@material-ui/icons/Group';
@@ -17,19 +17,27 @@ import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
 import AddAlarmIcon from '@material-ui/icons/AddAlarm';
 import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
+import { AssignmentInd, Feedback } from '@material-ui/icons';
+import { useSupervisor } from '../providers/Supervisor';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    background: theme.palette.primary.main
+    background: theme.palette.primary.main,
+    width: '300px'
   },
   drawer: {
-    width: 300,
+    width: '300px',
     flexShrink: 0
   }
 }));
 
 function BarraLateral({ sidebarOpen, setSidebarOpen }) {
   const classes = useStyles();
+  const { remarkList } = useSupervisor();
+
+  const newRemarkCount = useMemo(() => {
+    return remarkList.filter((item) => !item.read).length;
+  }, [remarkList]);
 
   const items = [
     {
@@ -54,9 +62,23 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       adminOnly: true
     },
     {
+      label: 'Observación supervisores',
+      icon: (
+        <Badge color='secondary' badgeContent={newRemarkCount}>
+          <Feedback style={{ color: 'inherit', fontSize: 27 }} />
+        </Badge>
+      ),
+      path: 'employer-remarks'
+    },
+    {
       label: 'Evaluar Prácticas',
       icon: <AssignmentIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/internship-assessment'
+    },
+    {
+      label: 'Evaluación de supervisores',
+      icon: <AssignmentInd style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/evaluations'
     },
     {
       label: 'Extensión de Prácticas',
@@ -64,7 +86,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/extension-list'
     },
     {
-      label: 'Edición Formulario de Inscripción',
+      label: 'Edición formularios',
       icon: <DescriptionIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/edit-form'
     },
@@ -93,9 +115,9 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
         <SwipeableDrawer
           classes={{ paper: classes.paper }}
           open={sidebarOpen}
-          onClick={() => setSidebarOpen((prevState) => !prevState)}
-          onClose={() => setSidebarOpen((prevState) => !prevState)}
-          onOpen={() => setSidebarOpen((prevState) => !prevState)}>
+          onClick={() => setSidebarOpen(false)}
+          onClose={() => setSidebarOpen(false)}
+          onOpen={() => setSidebarOpen(true)}>
           <SidebarItems items={items} />
         </SwipeableDrawer>
       </Hidden>

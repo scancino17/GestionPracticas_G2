@@ -20,7 +20,7 @@ import Selector from '../camps/Selector';
 import { DropzoneArea } from 'material-ui-dropzone';
 import { GetApp } from '@material-ui/icons';
 import { storage } from '../../firebase';
-import { customTypes, formTypes } from '../camps/formTypes';
+import { CustomTypes, FieldTypes } from '../camps/FormTypes';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { useUser } from '../../providers/User';
@@ -80,11 +80,11 @@ function FormView({
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container direction='column' spacing={4}>
+      <Grid container spacing={4}>
         {form &&
           form.map((element, index) =>
-            element.type === formTypes.formSelect ? (
-              <Grid item key={index}>
+            element.type === FieldTypes.formSelect ? (
+              <Grid item xs={12} sm={6} key={index}>
                 <FormControl fullWidth variant='outlined'>
                   <InputLabel id={element.name}>{element.name}</InputLabel>
                   <Select
@@ -108,8 +108,8 @@ function FormView({
                   </Select>
                 </FormControl>
               </Grid>
-            ) : element.type === formTypes.formTextInput ? (
-              <Grid item key={index}>
+            ) : element.type === FieldTypes.formTextInput ? (
+              <Grid item xs={12} sm={6} key={index}>
                 <TextField
                   fullWidth
                   variant='outlined'
@@ -122,8 +122,8 @@ function FormView({
                   }
                 />
               </Grid>
-            ) : element.type === formTypes.formFileInput ? (
-              <Grid item key={index}>
+            ) : element.type === FieldTypes.formFileInput ? (
+              <Grid item xs={12} key={index}>
                 <>
                   <Typography variant='h5'>{element.name}</Typography>
                   {
@@ -166,16 +166,16 @@ function FormView({
                   }
                 </>
               </Grid>
-            ) : element.type === formTypes.formHeader ? (
-              <Grid item key={index}>
+            ) : element.type === FieldTypes.formHeader ? (
+              <Grid item xs={12} key={index}>
                 <Typography variant='h5'>{element.name}</Typography>
               </Grid>
-            ) : element.type === formTypes.formSpace ? (
-              <Grid item key={index}>
+            ) : element.type === FieldTypes.formSpace ? (
+              <Grid item xs={12} key={index}>
                 <Typography variant='h5' />
               </Grid>
-            ) : element.type === formTypes.formSatisfaction ? (
-              <Grid item key={index}>
+            ) : element.type === FieldTypes.formSatisfaction ? (
+              <Grid item xs={12} key={index}>
                 <Divider />
                 <FormControl component='checksatisfaction'>
                   <Typography variant='h5'>{element.name}</Typography>
@@ -211,9 +211,9 @@ function FormView({
                 </FormControl>
                 <Divider />
               </Grid>
-            ) : element.type === formTypes.formCustom ? (
-              element.type2 === customTypes.formCiudad ? (
-                <Grid item key={index}>
+            ) : element.type === FieldTypes.formCustom ? (
+              element.type2 === CustomTypes.formCiudad ? (
+                <Grid xs={12} sm={6} item key={index}>
                   {readOnly ? (
                     <>
                       <TextField
@@ -241,8 +241,8 @@ function FormView({
                     />
                   )}
                 </Grid>
-              ) : element.type2 === customTypes.formEmpresa ? (
-                <Grid item key={index}>
+              ) : element.type2 === CustomTypes.formEmpresa ? (
+                <Grid item xs={12} sm={6} key={index}>
                   {readOnly ? (
                     <>
                       <TextField
@@ -270,14 +270,14 @@ function FormView({
                     />
                   )}
                 </Grid>
-              ) : element.type2 === customTypes.formStartDate ? (
-                <Grid item key={index}>
+              ) : element.type2 === CustomTypes.formStartDate ? (
+                <Grid item xs={12} sm={3} key={index}>
                   <DatePicker
                     fullWidth
                     disableToolbar
                     variant='inline'
                     format='dd/MM/yyyy'
-                    label={customTypes.formStartDate}
+                    label={CustomTypes.formStartDate}
                     value={
                       element.value === ''
                         ? new Date()
@@ -288,14 +288,14 @@ function FormView({
                     onChange={(date) => updateItem(index, 'value', date)}
                   />
                 </Grid>
-              ) : element.type2 === customTypes.formEndDate ? (
-                <Grid item key={index}>
+              ) : element.type2 === CustomTypes.formEndDate ? (
+                <Grid item xs={12} sm={3} key={index}>
                   <DatePicker
                     fullWidth
                     disableToolbar
                     variant='inline'
                     format='dd/MM/yyyy'
-                    label={customTypes.formEndDate}
+                    label={CustomTypes.formEndDate}
                     value={
                       element.value === ''
                         ? new Date()
@@ -306,8 +306,8 @@ function FormView({
                     onChange={(date) => updateItem(index, 'value', date)}
                   />
                 </Grid>
-              ) : element.type2 === customTypes.formCountry ? (
-                <Grid item key={index}>
+              ) : element.type2 === CustomTypes.formCountry ? (
+                <Grid item xs={12} sm={6} key={index}>
                   {readOnly ? (
                     <>
                       <TextField

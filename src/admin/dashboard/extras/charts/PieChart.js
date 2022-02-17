@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut, Pie } from 'react-chartjs-2';
 import { useSupervisor } from '../../../../providers/Supervisor';
 import { DEFAULT_CAREER } from '../../../../providers/User';
 
@@ -12,8 +12,8 @@ const genData = (approved, rejected) => ({
     {
       label: 'Estado',
       data: [approved, rejected],
-      backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-      borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+      backgroundColor: ['rgba(75, 192, 192, 1)', '#375C8C'],
+      borderColor: ['rgba(75, 192, 192, 1)', '#375C8C'],
       borderWidth: 1
     }
   ]
@@ -120,7 +120,7 @@ function PieChart({ graphsCareerId, setExportable }) {
     if (listData) setExportable(listData);
   }, [listData, setExportable]);
 
-  return loaded ? <Pie data={graphData} /> : <CircularProgress />;
+  return loaded ? <Doughnut data={graphData} /> : <CircularProgress />;
 }
 
 export default PieChart;

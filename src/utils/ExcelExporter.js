@@ -20,11 +20,11 @@ function ExcelExporter(props) {
           Exportar datos
         </div>
       }>
-      {props.data.slice(1).map((dataset) => {
+      {props.data.slice(1).map((dataset, i) => {
         return (
-          <ExcelSheet data={dataset} name='Single Page'>
-            {props.data[0].map((col) => {
-              return <ExcelColumn label={col} value={col} />;
+          <ExcelSheet key={i} data={dataset} name='Single Page'>
+            {props.data[0].map((col, i) => {
+              return <ExcelColumn key={i} label={col} value={col} />;
             })}
           </ExcelSheet>
         );

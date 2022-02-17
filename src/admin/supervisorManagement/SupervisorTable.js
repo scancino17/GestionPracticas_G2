@@ -9,16 +9,11 @@ import {
   TableBody,
   Table,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
   TextField,
   DialogContentText,
-  DialogActions,
   MenuItem,
   FormControlLabel,
   Checkbox,
-  IconButton,
   makeStyles,
   withStyles,
   Typography,
@@ -31,6 +26,52 @@ import { grey } from '@material-ui/core/colors';
 import { DeleteForever, Edit, Replay } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import { DEFAULT_CAREER } from '../../providers/User';
+
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 const useStyles = makeStyles(() => ({
   tableCell: {
@@ -116,13 +157,20 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
   );
 
   return (
-    <Dialog fullWidth open onClose={closeModal}>
-      <DialogTitle>Crear nuevo encargado</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
+        Crear nuevo encargado
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
+        <Typography component={'span'} gutterBottom>
           Indique los siguientes datos para crear una cuenta de encargado. Se
           enviará un correo al email ingresado para establecer una contraseña.
-        </DialogContentText>
+        </Typography>
+
         <TextField
           className={classes.textFieldMargin}
           label='Nombre de encargado'
@@ -151,7 +199,7 @@ const CreateSupervisorModal = ({ closeModal, update }) => {
           Crear cuenta de supervisor
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 };
 
@@ -292,105 +340,109 @@ function SupervisorTable() {
   }, [supervisors]);
 
   return (
-    <>
-      <TableContainer component={Paper}>
-        <Grid container justifyContent='flex-end' style={{ padding: '1rem' }}>
-          <Button
-            color='primary'
-            variant='contained'
-            onClick={() =>
-              setShowModal(
-                <CreateSupervisorModal
-                  closeModal={closeModal}
-                  update={updateSupervisorList}
-                />
-              )
-            }>
-            Crear Encargado
-          </Button>
-          <IconButton
-            className={classes.buttonMargin}
-            onClick={updateSupervisorList}>
-            <Replay />
-          </IconButton>
-        </Grid>
-        {loaded ? (
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell style={{ paddingLeft: '2rem' }}>Nombre</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>ID Carrera</TableCell>
-                <TableCell>Fecha de creación</TableCell>
-                <TableCell>Último Ingreso</TableCell>
-                <TableCell style={{ paddingRight: '2rem' }}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {supervisors?.map((supervisor) => (
-                <TableRow
-                  className={classes.tableCell}
-                  hover
-                  key={supervisor.uid}>
-                  <TableCell style={{ paddingLeft: '2rem' }}>
-                    {supervisor.displayName}
-                  </TableCell>
-                  <TableCell>{supervisor.email}</TableCell>
-                  <TableCell>{supervisor.customClaims.careerId}</TableCell>
-                  <TableCell>{supervisor.metadata.creationTime}</TableCell>
-                  <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
-                  <TableCell
-                    className='appear-item'
-                    style={{ paddingRight: '2rem' }}>
-                    <IconButton
-                      size='small'
-                      className={classes.buttonMargin}
-                      onClick={() =>
-                        setShowModal(
-                          <EditSupervisorModal
-                            closeModal={closeModal}
-                            supervisor={supervisor}
-                            update={updateSupervisorList}
-                          />
-                        )
-                      }>
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      size='small'
-                      className={classes.buttonMargin}
-                      onClick={() =>
-                        setShowModal(
-                          <DeleteSupervisorModal
-                            closeModal={closeModal}
-                            supervisor={supervisor}
-                            update={updateSupervisorList}
-                          />
-                        )
-                      }>
-                      <DeleteForever />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <Grid direction='column' style={{ padding: '2rem' }}>
-            <Skeleton animation='wave' width='100%' height='3rem' />
-            <Skeleton animation='wave' width='100%' height='3rem' />
-            <Skeleton animation='wave' width='100%' height='3rem' />
+    <Grid container>
+      <Grid item xs={12}>
+        <TableContainer component={Paper}>
+          <Grid container justifyContent='flex-end' style={{ padding: '1rem' }}>
+            <Button
+              color='primary'
+              variant='contained'
+              onClick={() =>
+                setShowModal(
+                  <CreateSupervisorModal
+                    closeModal={closeModal}
+                    update={updateSupervisorList}
+                  />
+                )
+              }>
+              Crear Encargado
+            </Button>
+            <IconButton
+              className={classes.buttonMargin}
+              onClick={updateSupervisorList}>
+              <Replay />
+            </IconButton>
           </Grid>
-        )}
-      </TableContainer>
-      <Typography style={{ marginTop: '1rem' }}>
-        <Box fontStyle='italic' fontWeight='light'>
-          Los cambios pueden tardar hasta un minuto en verse reflejados.
-          Refresque la tabla si no ve reflejada la acción.
-        </Box>
-      </Typography>
-      {showModal}
-    </>
+          {loaded ? (
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ paddingLeft: '2rem' }}>Nombre</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>ID Carrera</TableCell>
+                  <TableCell>Fecha de creación</TableCell>
+                  <TableCell>Último Ingreso</TableCell>
+                  <TableCell style={{ paddingRight: '2rem' }}></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {supervisors?.map((supervisor) => (
+                  <TableRow
+                    className={classes.tableCell}
+                    hover
+                    key={supervisor.uid}>
+                    <TableCell style={{ paddingLeft: '2rem' }}>
+                      {supervisor.displayName}
+                    </TableCell>
+                    <TableCell>{supervisor.email}</TableCell>
+                    <TableCell>{supervisor.customClaims.careerId}</TableCell>
+                    <TableCell>{supervisor.metadata.creationTime}</TableCell>
+                    <TableCell>{supervisor.metadata.lastSignInTime}</TableCell>
+                    <TableCell
+                      className='appear-item'
+                      style={{ paddingRight: '2rem' }}>
+                      <IconButton
+                        size='small'
+                        className={classes.buttonMargin}
+                        onClick={() =>
+                          setShowModal(
+                            <EditSupervisorModal
+                              closeModal={closeModal}
+                              supervisor={supervisor}
+                              update={updateSupervisorList}
+                            />
+                          )
+                        }>
+                        <Edit />
+                      </IconButton>
+                      <IconButton
+                        size='small'
+                        className={classes.buttonMargin}
+                        onClick={() =>
+                          setShowModal(
+                            <DeleteSupervisorModal
+                              closeModal={closeModal}
+                              supervisor={supervisor}
+                              update={updateSupervisorList}
+                            />
+                          )
+                        }>
+                        <DeleteForever />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Grid style={{ padding: '2rem' }}>
+              <Skeleton animation='wave' width='100%' height='3rem' />
+              <Skeleton animation='wave' width='100%' height='3rem' />
+              <Skeleton animation='wave' width='100%' height='3rem' />
+            </Grid>
+          )}
+        </TableContainer>
+      </Grid>
+      <Grid item xs={12} style={{ marginTop: '1rem' }}>
+        <Typography component={'span'}>
+          <Box fontStyle='italic' fontWeight='light'>
+            Los cambios pueden tardar hasta un minuto en verse reflejados.
+            Refresque la tabla si no ve reflejada la acción.
+          </Box>
+        </Typography>
+        {showModal}
+      </Grid>
+    </Grid>
   );
 }
 

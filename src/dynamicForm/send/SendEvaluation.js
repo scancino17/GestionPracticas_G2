@@ -10,48 +10,38 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import { useUser } from '../../providers/User';
+import { Skeleton } from '@material-ui/lab';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../../InternshipStates';
-import { formTypes, customTypes } from '../camps/formTypes';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore';
-import { useStudent } from '../../providers/Student';
-import { updateInternship } from '../../providers/Supervisor';
+import { FieldTypes, CustomTypes } from '../camps/FormTypes';
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { useEmployer } from '../../providers/Employer';
+import { useUser } from '../../providers/User';
+import { ref, uploadBytes } from 'firebase/storage';
 
 function SendEvaluation({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
-  const { applicationId } = useParams();
-  const navigate = useNavigate();
-  const { updateCurrentInternship } = useStudent();
 
-  const [internshipId, setInternshipId] = useState();
+  const navigate = useNavigate();
+  const { internshipId } = useParams();
+  const [loaded, setLoaded] = useState(false);
+  const { evaluationForms, getInternData, updateInternData } = useEmployer();
+  const { userId } = useUser();
 
   useEffect(() => {
-    if (userData) {
-      setInternshipId(userData.currentInternship.id);
-
-      if (!edit) {
-        const docRef = doc(db, 'form-evaluation', userData.careerId);
-
-        getDoc(docRef).then((doc) => {
-          const data = doc.data();
-          if (data) setFormFull(data.form);
-        });
+    if (internshipId) {
+      const internData = getInternData(internshipId);
+      if (internData) {
+        const form = evaluationForms.get(internData.careerId);
+        setFormFull(form);
+        setLoaded(true);
       }
     }
-  }, [userData, edit]);
+  }, [evaluationForms, getInternData, internshipId]);
+
   useEffect(() => {
     setFlag(false);
   }, [flag]);
@@ -75,7 +65,7 @@ function SendEvaluation({ edit }) {
   function extractFiles() {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
-        if (camp.type === formTypes.formFileInput) {
+        if (camp.type === FieldTypes.formFileInput) {
           if (camp.value && !(typeof camp.value === 'string')) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
@@ -89,15 +79,14 @@ function SendEvaluation({ edit }) {
   //se guardan los archivos en el storage
   function saveFiles(evaluateId) {
     files.forEach((file) => {
-      storage
-        .ref()
-        .child(
-          //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
-          //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
-          //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
-          `/students-docs/${user.uid}/${internshipId}/evaluate/${evaluateId}/${file.campName}/${file.file.name}`
-        )
-        .put(file.file);
+      //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
+      //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
+      //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
+      const storageRef = ref(
+        storage,
+        `/students-docs/${userId}/${internshipId}/evaluate/${evaluateId}/${file.campName}/${file.file.name}`
+      );
+      uploadBytes(storageRef, file.file);
     });
   }
   function dataVerify() {
@@ -121,9 +110,9 @@ function SendEvaluation({ edit }) {
     formFull.forEach((step) =>
       step.form.forEach((camp) => {
         if (
-          camp.type === formTypes.formCustom &&
-          (camp.type2 === customTypes.formStartDate ||
-            camp.type2 === customTypes.formEndDate) &&
+          camp.type === FieldTypes.formCustom &&
+          (camp.type2 === CustomTypes.formStartDate ||
+            camp.type2 === CustomTypes.formEndDate) &&
           camp.value === ''
         )
           camp.value = new Date();
@@ -132,126 +121,144 @@ function SendEvaluation({ edit }) {
     );
 
     if (!edit) {
+      const internData = getInternData(internshipId);
       addDoc(collection(db, 'send-evaluation'), {
+        careerId: internData.careerId,
+        studentId: internData.studentId,
+        internshipId: internshipId,
+        employerId: userId,
+        read: false,
         form: formFull
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
           updateDoc(doc(db, 'internships', internshipId), {
-            evaluate: true,
-            evaluateId: docRef.id
+            employerEvaluated: true,
+            employerEvaluationId: docRef.id
           });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
+
+      updateInternData(internshipId, { employerEvaluated: true });
     }
   }
 
   return (
-    <Grid container direction='column'>
-      <Grid
-        style={{
-          backgroundImage: "url('HomeBanner-4x.png')",
-          backgroundColor: '#e0f3f7',
-          backgroundSize: '100%',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          position: 'relative',
-          padding: '2rem'
-        }}>
-        <Typography variant='h4'>Formulario evaluación</Typography>
-      </Grid>
-
-      <Container>
-        <Stepper
-          activeStep={activeStep}
-          alternativeLabel
-          style={{ margin: '2rem', backgroundColor: 'transparent' }}>
-          {formFull.map((step) => (
-            <Step key={step.step}>
-              <StepLabel>{step.step}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-        {activeStep === formFull.length ? (
-          <>
-            <Typography>Guardar</Typography>
-            <Button variant='contained' color='primary' onClick={handleSave}>
-              Guardar
-            </Button>
-          </>
-        ) : (
-          <Grid container direction='column' spacing={2}>
-            <Grid item>
-              {formFull.map(
-                (form, i) =>
-                  i === activeStep && (
-                    // formview
-                    <DynamicForm
-                      form={form.form}
-                      setForm={setFormFull}
-                      formFull={formFull}
-                      index={i}
-                      filesInner={files}
-                      setFilesInner={() => setFiles}
-                      student
-                    />
-                  )
-              )}
-            </Grid>
-            <Grid item container justifyContent='flex-end' spacing={2}>
-              <Grid item>
+    loaded && (
+      <Grid container direction='column'>
+        <Grid
+          style={{
+            backgroundImage: "url('HomeBanner-4x.png')",
+            backgroundColor: '#e0f3f7',
+            backgroundSize: '100%',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            position: 'relative',
+            padding: '2rem'
+          }}>
+          <Typography variant='h4'>Formulario evaluación</Typography>
+        </Grid>
+        {formFull ? (
+          <Container>
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              style={{ margin: '2rem', backgroundColor: 'transparent' }}>
+              {formFull.map((step) => (
+                <Step key={step.step}>
+                  <StepLabel>{step.step}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            {activeStep === formFull.length ? (
+              <>
+                <Typography>Guardar</Typography>
                 <Button
                   variant='contained'
                   color='primary'
-                  disabled={activeStep === 0}
-                  onClick={handleBack}>
-                  Anterior
+                  onClick={handleSave}>
+                  Guardar
                 </Button>
-              </Grid>
-              <Grid item>
-                {activeStep !== formFull.length - 1 && (
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleNext}>
-                    Siguiente
-                  </Button>
-                )}
-                {activeStep === formFull.length - 1 && (
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={() => {
-                      Swal.fire({
-                        title: '¿Desea enviar su solicitud?',
-                        text: 'Revisa bien el formulario antes de enviarlo',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: `Enviar`,
-                        cancelButtonText: `Cancelar`
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          handleSave();
-                          Swal.fire('¡Formulario enviado!', '', 'success').then(
-                            (result) => {
-                              if (result.isConfirmed) navigate('/');
+              </>
+            ) : (
+              <Grid container direction='column' spacing={2}>
+                <Grid item>
+                  {formFull.map(
+                    (form, i) =>
+                      i === activeStep && (
+                        // formview
+                        <DynamicForm
+                          form={form.form}
+                          setForm={setFormFull}
+                          formFull={formFull}
+                          index={i}
+                          filesInner={files}
+                          setFilesInner={() => setFiles}
+                          student
+                        />
+                      )
+                  )}
+                </Grid>
+                <Grid item container justifyContent='flex-end' spacing={2}>
+                  <Grid item>
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    {activeStep !== formFull.length - 1 && (
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={handleNext}>
+                        Siguiente
+                      </Button>
+                    )}
+                    {activeStep === formFull.length - 1 && (
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                          Swal.fire({
+                            title: '¿Desea enviar su solicitud?',
+                            text: 'Revisa bien el formulario antes de enviarlo',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: `Enviar`,
+                            cancelButtonText: `Cancelar`
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleSave();
+                              Swal.fire(
+                                '¡Formulario enviado!',
+                                '',
+                                'success'
+                              ).then((result) => {
+                                if (result.isConfirmed) navigate('/');
+                              });
                             }
-                          );
-                        }
-                      });
-                    }}>
-                    Enviar
-                  </Button>
-                )}
+                          });
+                        }}>
+                        Enviar
+                      </Button>
+                    )}
+                  </Grid>
+                </Grid>
               </Grid>
-            </Grid>
-          </Grid>
+            )}
+          </Container>
+        ) : (
+          <Skeleton animation='pulse' width='100%' height='100%' />
         )}
-      </Container>
-    </Grid>
+      </Grid>
+    )
   );
 }
 

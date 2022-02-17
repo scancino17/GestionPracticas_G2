@@ -12,18 +12,9 @@ import {
 } from '@material-ui/core';
 import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
-import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../../InternshipStates';
-import { formTypes, customTypes } from '../camps/formTypes';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore';
-import { useStudent } from '../../providers/Student';
+import { useNavigate } from 'react-router-dom';
+import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 
 function SendSurvey({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -31,17 +22,15 @@ function SendSurvey({ edit }) {
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
-  const { applicationId } = useParams();
   const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
-  const { updateCurrentInternship } = useStudent();
 
   useEffect(() => {
     if (userData) {
       setInternshipId(userData.currentInternship.id);
 
       if (!edit) {
-        const docRef = doc(db, 'form-survey', userData.careerId);
+        const docRef = doc(db, FormTypes.SurveyForm, userData.careerId);
 
         getDoc(docRef).then((doc) => {
           const data = doc.data();
@@ -74,7 +63,7 @@ function SendSurvey({ edit }) {
   function extractFiles() {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
-        if (camp.type === formTypes.formFileInput) {
+        if (camp.type === FieldTypes.formFileInput) {
           if (camp.value && !(typeof camp.value === 'string')) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
@@ -120,9 +109,9 @@ function SendSurvey({ edit }) {
     formFull.forEach((step) =>
       step.form.forEach((camp) => {
         if (
-          camp.type === formTypes.formCustom &&
-          (camp.type2 === customTypes.formStartDate ||
-            camp.type2 === customTypes.formEndDate) &&
+          camp.type === FieldTypes.formCustom &&
+          (camp.type2 === CustomTypes.formStartDate ||
+            camp.type2 === CustomTypes.formEndDate) &&
           camp.value === ''
         )
           camp.value = new Date();

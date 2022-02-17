@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import DynamicForm from '../builder_preview/DynamicForm';
 import {
   Add,
@@ -32,26 +32,24 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
-import { DEFAULT_CAREER } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Skeleton } from '@material-ui/lab';
+import { FormTypes } from '../camps/FormTypes';
+import { DEFAULT_CAREER } from '../../providers/User';
 
 function EditBuilderPreview({
-  open,
-  value,
-  setValue,
-  setValueTab,
-  valueTab,
-  careerId,
-  setCareerId,
-  careerIdTab,
-  setCareerIdTab,
-  EditForm,
-  EditSurvey,
-  EditEvaluation
+  selectedTab,
+  setSelectedTab,
+  setCurrentTab,
+  currentTab,
+  selectedCareer,
+  currentCareer,
+  setCurrentCareer,
+  formType
 }) {
   const _ = require('lodash');
-  const [formFull, setFormFull] = useState(null);
+  const [editableForm, setEditableForm] = useState(null);
+  const [currentForm, setCurrentForm] = useState(null);
   const [show, setShow] = useState(false);
   const [edit, setEdit] = useState(false);
   const [indexEdit, setIndexEdit] = useState(-1);
@@ -59,131 +57,26 @@ function EditBuilderPreview({
   const [newOption, setNewOption] = useState('');
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
-  const {
-    getCareerForm,
-    setCareerForm,
-    getSurveyForm,
-    setSurveyForm,
-    getEvaluateForm,
-    setEvaluateForm
-  } = useSupervisor();
+  const { getForm, setForm } = useSupervisor();
 
-  //peticion para actuializar variable careerIDTab
-  useEffect(() => {
-    console.log('formfull', formFull);
-    if (careerId && careerId !== careerIdTab && careerId !== DEFAULT_CAREER) {
-      if (careerIdTab === DEFAULT_CAREER) {
-        setCareerIdTab(careerId);
-      } else {
-        changeCareer();
-      }
-    }
-  }, [careerId]);
-
-  //actualizar formulario al modificar la variable careerIdTab
-  useEffect(() => {
-    if (careerIdTab !== DEFAULT_CAREER) {
-      getForm();
-    }
-  }, [careerIdTab]);
+  // Cargar datos cuando cambie el tipo de formulario o la carrera seleccionada
+  // También hace la carga inicial
+  useEffect(
+    () =>
+      getForm(formType, currentCareer).then((careerForm) => {
+        // Ojo: structuredClone crea una copia profunda de careerForm.
+        // El método es global, implementado por los navegadores y nodejs.
+        // En febrero de 2022, su implementación es *muy* reciente,
+        // y todavía no es del todo soportado por navegadores comunes
+        // por lo que podría dar problemas. A futuro, esta función debería
+        // ser implementada tal cual se usa aquí.
+        setEditableForm(structuredClone(careerForm));
+        setCurrentForm(careerForm);
+      }),
+    [currentCareer, formType, getForm]
+  );
 
   useEffect(() => setFlag(false), [flag]);
-
-  //peticion para actuializar variable de la pestaña
-  useEffect(() => {
-    if (value !== valueTab) {
-      changeTab();
-    }
-  }, [value]);
-
-  useEffect(() => getForm(), [valueTab]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function getForm() {
-    if (EditForm) {
-      getCareerForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-    if (EditSurvey) {
-      getSurveyForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-    if (EditEvaluation) {
-      getEvaluateForm(careerId).then((careerForm) => setFormFull(careerForm));
-    }
-  }
-
-  function setForm() {
-    if (EditForm) {
-      setCareerForm(careerIdTab, { form: formFull });
-    }
-    if (EditSurvey) {
-      setSurveyForm(careerIdTab, { form: formFull });
-    }
-    if (EditEvaluation) {
-      setEvaluateForm(careerIdTab, { form: formFull });
-    }
-  }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function changeCareer() {
-    if (EditForm) {
-      getCareerForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
-    if (EditSurvey) {
-      getSurveyForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
-    if (EditEvaluation) {
-      getEvaluateForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave(true);
-        } else {
-          setCareerIdTab(careerId);
-        }
-      });
-    }
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function changeTab() {
-    if (EditForm) {
-      getCareerForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
-      });
-    }
-    if (EditSurvey) {
-      getSurveyForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-        }
-      });
-    }
-    if (EditEvaluation) {
-      getEvaluateForm(careerIdTab).then((careerForm) => {
-        if (!_.isEqual(formFull, careerForm)) {
-          handleSave();
-        } else {
-          setValueTab(value);
-        }
-      });
-    }
-  }
 
   function handleNext() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -195,14 +88,15 @@ function EditBuilderPreview({
 
   function handleEdit(index) {
     console.log(index);
-    setEditValue(formFull[index].step);
+    setEditValue(editableForm[index].step);
     setIndexEdit(index);
     setEdit(true);
   }
+
   function handleSaveChanges() {
-    const aux = formFull;
+    const aux = editableForm;
     aux[indexEdit].step = editValue;
-    setFormFull(aux);
+    setEditableForm(aux);
     setEdit(false);
   }
 
@@ -216,7 +110,7 @@ function EditBuilderPreview({
       cancelButtonText: `Cancelar`
     }).then((result) => {
       if (result.isConfirmed) {
-        setFormFull((prev) => prev.filter((el) => el !== element));
+        setEditableForm((prev) => prev.filter((el) => el !== element));
         setShow(true);
         setActiveStep(0);
       }
@@ -227,55 +121,96 @@ function EditBuilderPreview({
   }
 
   function handleUp(index) {
-    setFormFull((prev) => array_move(prev, index, index - 1));
+    setEditableForm((prev) => array_move(prev, index, index - 1));
     setFlag(true);
   }
 
   function handleDown(index) {
-    setFormFull((prev) => array_move(prev, index, index + 1));
+    setEditableForm((prev) => array_move(prev, index, index + 1));
     setFlag(true);
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function handleSave(changeCareer) {
+  // Manejar guardado de cambios
+  const handleSave = useCallback(() => {
     Swal.fire({
       title: '¿Desea guardar los cambios?',
       showDenyButton: true,
       confirmButtonText: `Guardar`,
       denyButtonText: `No guardar`,
-      cancelButtonText: 'Salir',
+      cancelButtonText: 'Cerrar',
       showCancelButton: true
     }).then((result) => {
       if (result.isConfirmed) {
-        //guaradar formulario en la base de datos
-        setForm();
-
-        if (changeCareer) {
-          setCareerIdTab(careerId);
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
-
+        // Guardar formulario en la base de datos
+        setForm(formType, currentCareer, { form: editableForm });
         Swal.fire('¡Formulario Guardado!', '', 'success');
       }
-      if (result.isDenied) {
-        if (changeCareer) {
-          setCareerIdTab(careerId);
-        } else {
-          setValueTab(value);
-          //setOpen(false)
-        }
+      if (result.isDismissed) {
+        setSelectedTab(currentTab);
+        // selectedTab no cambia instantáneamente, si no se retorna aqui
+        // se forzará un rerender, descartando los cambios
+        return;
       }
-      if (result.dismiss) {
-        if (changeCareer) {
-          setCareerId(careerIdTab);
-        } else {
-          setValue(valueTab);
-        }
-      }
+      if (currentTab !== selectedTab) setCurrentTab(selectedTab);
+      if (currentCareer !== selectedCareer) setCurrentCareer(selectedCareer);
     });
-  }
+  }, [
+    currentCareer,
+    currentTab,
+    editableForm,
+    formType,
+    selectedCareer,
+    selectedTab,
+    setCurrentCareer,
+    setCurrentTab,
+    setForm,
+    setSelectedTab
+  ]);
+
+  // Manejar cambios de pestaña o carrera
+  const handleChanges = useCallback(() => {
+    // Decartar si la carrera inicial es el default
+    // Este caso es manejado por el componente padre (SelectEdit.js)
+    // Si hubiera que decoplar los componentes, bastaría con ponerlo como
+    // condición en el if que le sigue al siguiente.
+    if (currentCareer === DEFAULT_CAREER) return;
+
+    // Descartar si no se ha cambiado de pestaña
+    if (currentTab === selectedTab && selectedCareer === currentCareer) return;
+
+    // Manejar casos en que no ha habido cambios
+    // Si los forms son null, se cuenta como que no ha habido cambios,
+    // Se permite que cambie de pestaña
+    if (
+      !(currentForm && editableForm) ||
+      _.isEqual(currentForm, editableForm)
+    ) {
+      // Caso: cambiar tab
+      if (currentTab !== selectedTab) setCurrentTab(selectedTab);
+      // Caso: cambiar carrera
+      if (currentCareer !== selectedCareer) setCurrentCareer(selectedCareer);
+      // Terminar ejecución
+      return;
+    }
+
+    // De aquí en adelante, ha habido cambios en el formulario
+    handleSave();
+  }, [
+    selectedTab,
+    selectedCareer,
+    currentTab,
+    currentCareer,
+    _,
+    currentForm,
+    editableForm,
+    setCurrentTab,
+    setCurrentCareer,
+    handleSave
+  ]);
+
+  // Correr callback para controlar cambio de pestaña / carrera
+  // Y mostrar modal de guardar cambios al haber cambios no guardados.
+  useEffect(() => handleChanges(), [handleChanges]);
 
   function array_move(arr, old_index, new_index) {
     while (old_index < 0) {
@@ -298,17 +233,20 @@ function EditBuilderPreview({
     <Grid container direction='column'>
       <Grid item style={{ margin: '2rem' }}>
         <Typography variant='h4'>
-          {EditForm
-            ? 'Formulario de inscripción de práctica'
-            : EditSurvey
-            ? 'Edición formulario de encuesta de satisfacción'
-            : EditEvaluation
-            ? 'Edición formulario de evaluación del estudiante'
-            : null}
+          {
+            {
+              [FormTypes.ApplicationForm]:
+                'Formulario de inscripción de práctica',
+              [FormTypes.EvaluationForm]:
+                'Edición formulario de evaluación del estudiante',
+              [FormTypes.SurveyForm]:
+                'Edición formulario de encuesta de satisfacción'
+            }[formType]
+          }
         </Typography>
       </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
-        {careerIdTab === careerId && formFull ? (
+        {currentCareer === selectedCareer && editableForm ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
             <Grid container direction='row' justifyContent='center' spacing={8}>
               <Grid item xs={12} md={5}>
@@ -330,7 +268,7 @@ function EditBuilderPreview({
                   activeStep={activeStep}
                   alternativeLabel
                   style={{ backgroundColor: 'transparent' }}>
-                  {formFull.map((step) => (
+                  {editableForm.map((step) => (
                     <Step key={step.step}>
                       <StepLabel>{step.step}</StepLabel>
                     </Step>
@@ -342,13 +280,13 @@ function EditBuilderPreview({
               <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
                 Campos
               </Typography>
-              {formFull.map(
+              {editableForm.map(
                 (form, i) =>
                   i === activeStep && (
                     <DynamicForm
                       form={form.form}
-                      setForm={setFormFull}
-                      formFull={formFull}
+                      setForm={setEditableForm}
+                      formFull={editableForm}
                       index={i}
                       admin
                     />
@@ -384,7 +322,7 @@ function EditBuilderPreview({
                   <Button
                     variant='contained'
                     color='primary'
-                    disabled={activeStep === formFull.length - 1}
+                    disabled={activeStep === editableForm.length - 1}
                     onClick={handleNext}
                     endIcon={<ArrowForward />}>
                     Siguiente
@@ -415,9 +353,9 @@ function EditBuilderPreview({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {formFull && (
+                {editableForm && (
                   <>
-                    {formFull.map((form, i) => (
+                    {editableForm.map((form, i) => (
                       <TableRow key={form.i}>
                         {!edit || indexEdit !== i ? (
                           <TableCell>{form.step}</TableCell>
@@ -456,7 +394,7 @@ function EditBuilderPreview({
                             <ArrowUpward />
                           </IconButton>
                           <IconButton
-                            disabled={i === formFull.length - 1 || edit}
+                            disabled={i === editableForm.length - 1 || edit}
                             onClick={() => handleDown(i)}>
                             <ArrowDownward />
                           </IconButton>
@@ -476,7 +414,7 @@ function EditBuilderPreview({
                         <IconButton
                           disabled={!newOption}
                           onClick={() => {
-                            formFull.push({ step: newOption, form: [] });
+                            editableForm.push({ step: newOption, form: [] });
                             setFlag(true);
                             setNewOption('');
                           }}>

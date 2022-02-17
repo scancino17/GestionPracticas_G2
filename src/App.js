@@ -5,6 +5,7 @@ import {
   ADMIN_ROLE,
   STUDENT_ROLE,
   SUPERVISOR_ROLE,
+  EMPLOYER_ROLE,
   useUser
 } from './providers/User';
 import DashboardEstudiante from './student/DashboardEstudiante';
@@ -20,6 +21,8 @@ import { Skeleton } from '@material-ui/lab';
 import TopBar from './layout/TopBar';
 import { StudentProvider } from './providers/Student';
 import { SupervisorProvider } from './providers/Supervisor';
+import { EmployerProvider } from './providers/Employer';
+import DashboardEmployer from './employer/DashboardEmployer';
 
 const theme = createTheme({
   palette: {
@@ -75,6 +78,10 @@ function App() {
             <StudentProvider>
               <DashboardEstudiante />
             </StudentProvider>
+          ) : userRole === EMPLOYER_ROLE ? (
+            <EmployerProvider>
+              <DashboardEmployer />
+            </EmployerProvider>
           ) : (
             <LoadingSkeleton />
           )}

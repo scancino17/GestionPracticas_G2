@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from '../../dynamicForm/builder_preview/DynamicForm';
+import DynamicForm from '../builder_preview/DynamicForm';
 import { db, storage } from '../../firebase';
 import {
   Step,
@@ -14,7 +14,7 @@ import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../../InternshipStates';
-import { formTypes, customTypes } from '../camps/formTypes';
+import { FieldTypes, CustomTypes } from '../camps/FormTypes';
 import {
   addDoc,
   collection,
@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { useStudent } from '../../providers/Student';
 
-function SendForm({ edit }) {
+function SendApplication({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
@@ -84,7 +84,7 @@ function SendForm({ edit }) {
   function extractFiles() {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
-        if (camp.type === formTypes.formFileInput) {
+        if (camp.type === FieldTypes.formFileInput) {
           if (camp.value && !(typeof camp.value === 'string')) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
@@ -130,9 +130,9 @@ function SendForm({ edit }) {
     formFull.forEach((step) =>
       step.form.forEach((camp) => {
         if (
-          camp.type === formTypes.formCustom &&
-          (camp.type2 === customTypes.formStartDate ||
-            camp.type2 === customTypes.formEndDate) &&
+          camp.type === FieldTypes.formCustom &&
+          (camp.type2 === CustomTypes.formStartDate ||
+            camp.type2 === CustomTypes.formEndDate) &&
           camp.value === ''
         )
           camp.value = new Date();
@@ -280,4 +280,4 @@ function SendForm({ edit }) {
   );
 }
 
-export default SendForm;
+export default SendApplication;

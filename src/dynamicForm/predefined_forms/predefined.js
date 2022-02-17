@@ -1,6 +1,6 @@
-import { formTypes } from '../camps/formTypes';
+import { FieldTypes } from '../camps/FormTypes';
 /**
- * Formulñarios predefinidos
+ * Formularios predefinidos
  */
 export const predefinedSurvey = [
   {
@@ -8,47 +8,47 @@ export const predefinedSurvey = [
     uneditable: true,
     form: [
       {
-        type: formTypes.formSatisfaction,
+        type: FieldTypes.formSatisfaction,
         name: 'Habilidades Comunicativas:',
         description:
           'Refiere a la capacidad de comunicar discursos en forma oral y escrita, basándose en los recursos lingüísticos académicos, para desempeñarse en situaciones del ámbito profesional.',
         value: null
       },
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Estudiante: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Nombre del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Rut del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Número de matrícula',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Correo del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Telefono',
         value: '',
 
@@ -56,33 +56,33 @@ export const predefinedSurvey = [
       },
       //===============================================
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Institución: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Nombre',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'RUT',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Giro',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Dirección',
         value: '',
 
@@ -90,54 +90,54 @@ export const predefinedSurvey = [
       },
       //======================
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Unidad Receptora: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Área',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Dirección',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Supervisor',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Titulo (Supervisor)',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Cargo',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Teléfono',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Correo',
         value: '',
 
@@ -163,47 +163,47 @@ export const predefinedEvaluation = [
     uneditable: true,
     form: [
       {
-        type: formTypes.formSatisfaction,
+        type: FieldTypes.formSatisfaction,
         name: 'Habilidades Comunicativas:',
         description:
           'Refiere a la capacidad de comunicar discursos en forma oral y escrita, basándose en los recursos lingüísticos académicos, para desempeñarse en situaciones del ámbito profesional.',
         value: null
       },
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Estudiante: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Nombre del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Rut del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Número de matrícula',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Correo del estudiante',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Telefono',
         value: '',
 
@@ -211,33 +211,33 @@ export const predefinedEvaluation = [
       },
       //===============================================
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Institución: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Nombre',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'RUT',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Giro',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Dirección',
         value: '',
 
@@ -245,54 +245,54 @@ export const predefinedEvaluation = [
       },
       //======================
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Unidad Receptora: ',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Área',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Dirección',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Supervisor',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Titulo (Supervisor)',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Cargo',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Teléfono',
         value: '',
 
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Correo',
         value: '',
 
@@ -318,34 +318,34 @@ export const predefinedForm = [
     uneditable: true,
     form: [
       {
-        type: formTypes.formHeader,
+        type: FieldTypes.formHeader,
         name: 'Información del estudiante',
         value: 'Información del estudiante',
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Nombre del estudiante',
         value: '',
         readOnly: true,
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Rut del estudiante',
         value: '',
         readOnly: true,
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Número de matrícula',
         value: '',
         readOnly: true,
         uneditable: true
       },
       {
-        type: formTypes.formTextInput,
+        type: FieldTypes.formTextInput,
         name: 'Correo del estudiante',
         value: '',
         readOnly: true,

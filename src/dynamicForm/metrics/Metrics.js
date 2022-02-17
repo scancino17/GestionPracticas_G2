@@ -1,4 +1,10 @@
-import { CircularProgress, Grid, Box, Typography } from '@material-ui/core';
+import {
+  CircularProgress,
+  Grid,
+  Box,
+  Typography,
+  Divider
+} from '@material-ui/core';
 import { DataGrid } from '@material-ui/data-grid';
 import { map } from 'draft-js/lib/DefaultDraftBlockRenderMap';
 import { useEffect, useState } from 'react';
@@ -27,31 +33,33 @@ function Metrics() {
         setCareerId={setSelectedCareerId}
         excludeGeneral
       />
-      <Typography>jajaj xd </Typography>
       {formFull &&
         formFull.map((step, stepIndex) =>
           step.form.map((camp) => (
-            <>
+            <Grid container direction='row'>
               {camp.type === 'Menú de opciones' && (
-                <>
-                  <Typography>{camp.name}</Typography>
+                <Grid item style={{ marginBottom: '6rem' }}>
+                  <Typography variant='h4'>{camp.name}</Typography>
                   <Chart step={stepIndex} name={camp.name} />
-                </>
+                  <Divider />
+                </Grid>
               )}
               {camp.type === 'Medidor satisfacción' && (
-                <>
-                  <Typography>{camp.name}</Typography>
+                <Grid item style={{ marginBottom: '6rem' }}>
+                  <Typography variant='h4'>{camp.name}</Typography>
                   <Chart step={stepIndex} name={camp.name} />
-                </>
+                  <Divider />
+                </Grid>
               )}
               {camp.type === 'Campos predefinidos' &&
                 camp.type2 === 'Fecha de inicio' && (
-                  <>
-                    <Typography>{camp.name}</Typography>
+                  <Grid item style={{ marginBottom: '6rem' }}>
+                    <Typography variant='h4'>{camp.name}</Typography>
                     <Chart step={stepIndex} name={camp.name} />
-                  </>
+                    <Divider />
+                  </Grid>
                 )}
-            </>
+            </Grid>
           ))
         )}
     </Grid>
@@ -331,23 +339,25 @@ function Metrics() {
     return (
       <>
         {loaded ? (
-          <Grid container>
-            <Grid item xs={6}>
-              <DataGrid
-                rows={data}
-                columns={columns}
-                pageSize={5}
-                autoHeight={true}
-                columnBuffer={2}
-              />
+          <Grid container direction='column'>
+            <Grid container direction='row'>
+              <Grid item xs={4}>
+                <DataGrid
+                  rows={data}
+                  columns={columns}
+                  pageSize={5}
+                  autoHeight={true}
+                  columnBuffer={2}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <Bar data={dataBarChart} options={optionsBarChart} />
+              </Grid>
+              <Grid item xs={4}>
+                <Pie data={dataPieChart} />
+              </Grid>
             </Grid>
-            <Grid item xs={6}>
-              <Bar data={dataBarChart} options={optionsBarChart} />
-            </Grid>
-            <Grid item xs={6}>
-              <Pie data={dataPieChart} />
-            </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={10}>
               <Box sx={{ width: 1000, height: 400 }}>
                 <Line options={optionsLine} data={dataLineChart} />
               </Box>

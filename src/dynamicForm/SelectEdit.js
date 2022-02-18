@@ -1,5 +1,5 @@
 import { Box, Grid, Tab, Tabs, Typography } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
 import EditBuilderPreview from './builder_preview/EditBuilderPreview';
@@ -26,11 +26,6 @@ function SelectEdit() {
       setCurrentCareer(newValue);
     }
   };
-
-  useEffect(
-    () => console.log(currentTab, selectedTab, currentCareer, selectedCareer),
-    [selectedTab, currentTab, currentCareer, selectedCareer]
-  );
 
   return (
     <Grid container direction='column'>

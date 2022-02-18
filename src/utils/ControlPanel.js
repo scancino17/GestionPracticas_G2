@@ -169,7 +169,6 @@ function AssignInternshipPanel() {
       functions,
       'assignInternshipToEmployer'
     );
-    console.log(data);
     assignInternshipToEmployer(data);
   }
 

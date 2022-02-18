@@ -87,7 +87,6 @@ function EditBuilderPreview({
   }
 
   function handleEdit(index) {
-    console.log(index);
     setEditValue(editableForm[index].step);
     setIndexEdit(index);
     setEdit(true);

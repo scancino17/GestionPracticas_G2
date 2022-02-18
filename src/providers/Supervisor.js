@@ -234,7 +234,6 @@ export function SupervisorProvider({ children }) {
 
     evaluations &&
       evaluations.forEach((evaluation) => {
-        console.log(evaluation);
         const {
           name: studentName,
           rut: studentRut,

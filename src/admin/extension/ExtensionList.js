@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Grid,
   Container,
@@ -223,7 +223,7 @@ function IntershipItem({ internship }) {
   const [showDenied, setShowDenied] = useState(false);
   const [showExtension, setShowExtension] = useState(false);
   const [reason, setReason] = useState('');
-  const { rejectExtension, approveExtension, careers } = useSupervisor();
+  const { rejectExtension, approveExtension } = useSupervisor();
 
   function TransformDate(date) {
     return (

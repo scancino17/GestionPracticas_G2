@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CircularProgress } from '@material-ui/core';
-import { Doughnut, Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import { useSupervisor } from '../../../../providers/Supervisor';
 import { DEFAULT_CAREER } from '../../../../providers/User';
 

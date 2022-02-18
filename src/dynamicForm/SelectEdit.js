@@ -61,7 +61,7 @@ function SelectEdit() {
             {matches && (
               <Grid item xs={12}>
                 <Card>
-                  <CardContent>
+                  <CardContent style={{ background: '#ffecb3' }}>
                     <Typography>
                       Para obtener una mejor experiencia visual se recomienda
                       usar el editor de formularios en tablet o computador

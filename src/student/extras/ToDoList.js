@@ -3,10 +3,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   Grid,
   Hidden,
@@ -17,6 +13,7 @@ import {
 import React, { useState } from 'react';
 import { FaChevronDown, FaWpforms } from 'react-icons/fa';
 import { FiDownload } from 'react-icons/fi';
+import { RiSurveyLine } from 'react-icons/ri';
 import { IoDocumentAttachOutline } from 'react-icons/io5';
 import { makeStyles } from '@material-ui/core/styles';
 import { useUser } from '../../providers/User';
@@ -43,6 +40,52 @@ import draftToHtml from 'draftjs-to-html';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 import { serverTimestamp } from 'firebase/firestore';
 import { useStudent } from '../../providers/Student';
+
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
@@ -211,7 +254,7 @@ function ToDoList() {
                           : 'Completar'
                       }
                       internship={currentInternshipData}
-                      buttonOnClick={() => navigate('/send-form')}
+                      buttonOnClick={() => navigate('/send-application')}
                       disabled={
                         currentInternshipData &&
                         currentInternshipData.status === sentApplication
@@ -278,6 +321,22 @@ function ToDoList() {
                     <Divider />
                   </>
                 )}
+
+              {step === 2 && currentInternshipData && (
+                <>
+                  <ToDoItem
+                    icon={<RiSurveyLine className={classes.icon} />}
+                    title='Responder encuesta de satisfacción'
+                    body='Al finalizar tu periodo de práctica, dinos como fue tu experiencia.'
+                    buttonText='Responder'
+                    buttonOnClick={() => navigate('/send-survey')}
+                    disabled={
+                      currentInternshipData && currentInternshipData.survey
+                    }
+                  />
+                  <Divider />
+                </>
+              )}
               {currentInternshipData &&
                 currentInternshipData.status === reportNeedsChanges && (
                   <>
@@ -380,14 +439,19 @@ function DialogExtension({ internship, open, setOpen }) {
   }
 
   return (
-    <Dialog
-      open={open}
+    <BootstrapDialog
+      fullWidth
       onClose={() => setOpen(false)}
+      aria-labelledby='customized-dialog-title'
+      open={open}
       TransitionComponent={Transition}
-      maxWidth='sm'
-      fullWidth={true}>
-      <DialogTitle>Solicitud de extensión</DialogTitle>
-      <DialogContent>
+      maxWidth='sm'>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={() => setOpen(false)}>
+        Solicitud de extensión
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <Grid container direction='column' spacing={2}>
           <Grid item>
             <TextField
@@ -456,7 +520,7 @@ function DialogExtension({ internship, open, setOpen }) {
           Solicitar
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
@@ -482,9 +546,17 @@ function SendReportDialog({ open, setOpen }) {
   }
 
   return (
-    <Dialog fullWidth onClose={() => setOpen(false)} open={open}>
-      <DialogTitle>Enviar informe de práctica</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={() => setOpen(false)}
+      aria-labelledby='customized-dialog-title'
+      open={open}>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={() => setOpen(false)}>
+        Enviar informe de práctica
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <Grid item xs={12}>
           <DropzoneArea
             showFileNames
@@ -509,15 +581,23 @@ function SendReportDialog({ open, setOpen }) {
           enviar
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
 function ReportAnnotationsDialog({ open, setOpen, internship }) {
   return (
-    <Dialog fullWidth open={open} onClose={() => setOpen(false)}>
-      <DialogTitle>Observaciones de tu informe</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={() => setOpen(false)}
+      aria-labelledby='customized-dialog-title'
+      open={open}>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={() => setOpen(false)}>
+        Observaciones de tu informe
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         {internship && internship.reportAnnotations && (
           <div
             dangerouslySetInnerHTML={{
@@ -540,7 +620,7 @@ function ReportAnnotationsDialog({ open, setOpen, internship }) {
           Aceptar
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
@@ -553,9 +633,17 @@ function DocsDialogSeguro({ open, setOpen }) {
   }
 
   return (
-    <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
-      <DialogTitle>Seguro para práctica</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={handleCloseDocsDialog}
+      aria-labelledby='customized-dialog-title'
+      open={open}>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={handleCloseDocsDialog}>
+        Seguro para práctica
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         {currentInternship && (
           <SeguroPracticaFileList
             studentId={userId}
@@ -568,7 +656,7 @@ function DocsDialogSeguro({ open, setOpen }) {
           Cerrar
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
@@ -581,9 +669,17 @@ function DocsDialog({ open, setOpen }) {
   }
 
   return (
-    <Dialog fullWidth onClose={handleCloseDocsDialog} open={open}>
-      <DialogTitle>Descargar documentos</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={handleCloseDocsDialog}
+      aria-labelledby='customized-dialog-title'
+      open={open}>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={handleCloseDocsDialog}>
+        Descargar documentos
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         {currentInternship && (
           <InternshipIntentionFileList
             studentId={userId}
@@ -596,7 +692,7 @@ function DocsDialog({ open, setOpen }) {
           Cerrar
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 

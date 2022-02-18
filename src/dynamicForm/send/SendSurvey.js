@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import DynamicForm from './builder_preview/DynamicForm';
-import { db, storage } from '../firebase';
+import DynamicForm from '../builder_preview/DynamicForm';
+import { db, storage } from '../../firebase';
 import {
   Step,
   StepLabel,
@@ -10,56 +10,35 @@ import {
   Container,
   Grid
 } from '@material-ui/core';
-import { useUser } from '../providers/User';
+import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
-import { useNavigate, useParams } from 'react-router-dom';
-import { sentApplication } from '../InternshipStates';
-import { formTypes, customTypes } from './camps/formTypes';
-import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  serverTimestamp,
-  updateDoc
-} from 'firebase/firestore';
-import { useStudent } from '../providers/Student';
+import { useNavigate } from 'react-router-dom';
+import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
+import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
 
-function SendForm({ edit }) {
+function SendSurvey({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const { user, userData } = useUser();
   const [files, setFiles] = useState([]);
-  const { applicationId } = useParams();
   const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
-  const { updateCurrentInternship } = useStudent();
 
   useEffect(() => {
     if (userData) {
       setInternshipId(userData.currentInternship.id);
 
       if (!edit) {
-        const docRef = doc(db, 'form', userData.careerId);
+        const docRef = doc(db, FormTypes.SurveyForm, userData.careerId);
 
-        getDoc(docRef).then((doc) => {
-          const data = doc.data();
-          data.form[0].form[1].value = userData.name;
-          data.form[0].form[2].value = userData.rut;
-          data.form[0].form[3].value = userData.enrollmentNumber;
-          data.form[0].form[4].value = userData.email;
-          if (data) setFormFull(data.form);
-        });
-      } else {
-        const docRef = doc(db, 'applications', applicationId);
         getDoc(docRef).then((doc) => {
           const data = doc.data();
           if (data) setFormFull(data.form);
         });
       }
     }
-  }, [userData, applicationId, edit]);
+  }, [userData, edit]);
 
   useEffect(() => {
     setFlag(false);
@@ -84,7 +63,7 @@ function SendForm({ edit }) {
   function extractFiles() {
     formFull.forEach((step, i) =>
       step.form.forEach((camp, j) => {
-        if (camp.type === formTypes.formFileInput) {
+        if (camp.type === FieldTypes.formFileInput) {
           if (camp.value && !(typeof camp.value === 'string')) {
             files.push({ campName: camp.name, file: camp.value[0] });
             //se tiene que cambiar el valor de value en el formulario ya que nos se puede guardar un archivo en el firestore
@@ -96,7 +75,7 @@ function SendForm({ edit }) {
     );
   }
   //se guardan los archivos en el storage
-  function saveFiles(applicationId) {
+  function saveFiles(surveyId) {
     files.forEach((file) => {
       storage
         .ref()
@@ -104,7 +83,7 @@ function SendForm({ edit }) {
           //en la ruta se accede a la carpeta del estudiante luego a las de la intership luego a las de las aplications
           //luego se entra a la de aplication correspondiente, dentro de esta hay carpetas para cada campo de archivos para poder
           //diferenciarlos y finalmente se guardan ahi con su nombre correspondiente
-          `/students-docs/${user.uid}/${internshipId}/applications/${applicationId}/${file.campName}/${file.file.name}`
+          `/students-docs/${user.uid}/${internshipId}/survey/${surveyId}/${file.campName}/${file.file.name}`
         )
         .put(file.file);
     });
@@ -130,9 +109,9 @@ function SendForm({ edit }) {
     formFull.forEach((step) =>
       step.form.forEach((camp) => {
         if (
-          camp.type === formTypes.formCustom &&
-          (camp.type2 === customTypes.formStartDate ||
-            camp.type2 === customTypes.formEndDate) &&
+          camp.type === FieldTypes.formCustom &&
+          (camp.type2 === CustomTypes.formStartDate ||
+            camp.type2 === CustomTypes.formEndDate) &&
           camp.value === ''
         )
           camp.value = new Date();
@@ -141,37 +120,21 @@ function SendForm({ edit }) {
     );
 
     if (!edit) {
-      addDoc(collection(db, 'applications'), {
-        form: formFull,
-        studentId: user.uid,
-        studentName: userData.name,
-        email: userData.email,
-        careerId: userData.careerId,
-        internshipId: internshipId,
-        internshipNumber: userData.currentInternship.number,
-        status: 'En revisión',
-        creationDate: serverTimestamp(),
-        ...values
+      addDoc(collection(db, 'send-survey'), {
+        form: formFull
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente
           saveFiles(docRef.id);
+          updateDoc(doc(db, 'internships', internshipId), {
+            survey: true,
+            surveyId: docRef.id
+          });
         })
         .catch((error) => {
           console.error('Error adding document: ', error);
         });
-    } else {
-      updateDoc(doc(db, 'applications', applicationId), {
-        form: formFull,
-        status: 'En revisión',
-        ...values
-      }).then(() =>
-        //se guarda los archivos en la application correspondiente
-        saveFiles(applicationId)
-      );
     }
-
-    updateCurrentInternship({ status: sentApplication });
   }
 
   return (
@@ -280,4 +243,4 @@ function SendForm({ edit }) {
   );
 }
 
-export default SendForm;
+export default SendSurvey;

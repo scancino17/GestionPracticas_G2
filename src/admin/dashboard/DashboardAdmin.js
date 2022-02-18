@@ -1,15 +1,4 @@
-import Card from './extras/Card/Card';
-import CardHeader from './extras/Card/CardHeader.js';
-import CardBody from './extras/Card/CardBody.js';
-import CardIcon from './extras/Card/CardIcon.js';
-import CardFooter from './extras/Card/CardFooter.js';
-import {
-  MdMultilineChart,
-  MdEqualizer,
-  MdPieChart,
-  MdPublic,
-  MdUpdate
-} from 'react-icons/md';
+import { MdUpdate } from 'react-icons/md';
 import ArchiveIcon from '@material-ui/icons/Archive';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -20,16 +9,27 @@ import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../intention/InternshipIntention';
-import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
-import { Container, Grid, makeStyles, Typography } from '@material-ui/core';
+
+import { Container, Divider } from '@material-ui/core';
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  CardHeader
+} from '@mui/material';
+
 import WarningIcon from '@material-ui/icons/Warning';
-import EditForm from '../../dynamicForm/builder_preview/form/EditForm';
-import FormCheck from '../../dynamicForm/FormCheck';
+
+import ApplicationCheck from '../../dynamicForm/check/ApplicationCheck';
 import VerticalBar from './extras/charts/VerticalBar';
 import PieChart from './extras/charts/PieChart';
 import TableChart from './extras/charts/TableChart';
 import GroupedBarChart from './extras/charts/GroupedBarChart';
 import ImportStudents from '../import/ImportStudents';
+
 import Insurance from '../insurance/Insurance';
 import CareerSelector from '../../utils/CareerSelector';
 import ReportsList from '../assessReports/ReportsList';
@@ -38,18 +38,23 @@ import ExtensionList from '../extension/ExtensionList';
 import CareersSettings from '../careersSettings/CareersSettings';
 import SupervisorManagement from '../supervisorManagement/SupervisorManagement';
 import ExcelExporter from '../../utils/ExcelExporter';
-import { useUser, DEFAULT_CAREER } from '../../providers/User';
+import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
+import ControlPanel from '../../utils/ControlPanel';
 
 // La siguiente línea registra todos los elementos de chart.js
-// No es inútil: eliminarla romperá TODOS los gráficos al recargar los gráficos.
+// No es inútil: eliminarla rompera TODOS los gráficos al recargar los gráficos.
 // eslint-disable-next-line no-unused-vars
 import Chart from 'chart.js/auto';
+
 import { useSupervisor } from '../../providers/Supervisor';
+import RemarkList from '../remarks/RemarkList';
+import SelectEdit from '../../dynamicForm/SelectEdit';
+import EvaluationsList from '../evaluations/EvaluationsList';
+import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
 
 function DashboardAdmin({ sidebarProps }) {
-  const { careerId } = useUser();
-  const useStyles = makeStyles(styles);
-  const classes = useStyles();
+  const { careerId, userRole } = useUser();
+
   const navigate = useNavigate();
   const [topCompaniesRegistered, setTopCompaniesRegistered] = useState([]);
   const [internStatus, setInternStatus] = useState([]);
@@ -72,225 +77,357 @@ function DashboardAdmin({ sidebarProps }) {
           exact
           path='/'
           element={
-            <Container>
-              <Grid
-                style={{
-                  backgroundImage: "url('HomeBanner-Admin.png')",
-                  backgroundSize: 'cover',
-                  padding: '2rem',
-                  marginTop: '2rem',
-                  marginBottom: '1rem',
-                  borderRadius: '1rem'
-                }}
-                container>
-                <Typography variant='h4'>Resumen del proceso</Typography>
-              </Grid>
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Card
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => navigate('/internship-intention')}>
-                    <CardHeader color='warning' stats icon>
-                      <CardIcon color='warning'>
-                        <ArchiveIcon />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>Nuevas Intenciones</p>
-                      <h2 className={classes.cardTitle}>
-                        <CountUp end={pendingIntentionsCount} duration={3} />
-                      </h2>
-                    </CardHeader>
-                    <CardFooter stats>
-                      <div className={classes.stats}>
-                        <MdUpdate />
-                        Actualizado recientemente
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Card
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => navigate('/applications')}>
-                    <CardHeader color='success' stats icon>
-                      <CardIcon color='success'>
-                        <ListAltIcon />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>Nuevos Formularios</p>
-                      <h2 className={classes.cardTitle}>
-                        <CountUp end={pendingFormsCount} duration={3} />
-                      </h2>
-                    </CardHeader>
-                    <CardFooter stats>
-                      <div className={classes.stats}>
-                        <MdUpdate />
-                        Actualizado recientemente
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Card
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => navigate('/internship-assessment')}>
-                    <CardHeader color='danger' stats icon>
-                      <CardIcon color='danger'>
-                        <AssignmentIcon />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>
-                        Informes pendientes
-                      </p>
-                      <h2 className={classes.cardTitle}>
-                        <CountUp end={sentReportsCount} duration={3} />
-                      </h2>
-                    </CardHeader>
-                    <CardFooter stats>
-                      <div className={classes.stats}>
-                        <MdUpdate />
-                        Actualizado recientemente
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </Grid>
-                <Grid item xs={12} sm={6} md={3}>
-                  <Card>
-                    <CardHeader color='info' stats icon>
-                      <CardIcon color='info'>
-                        <BusinessIcon />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>Prácticas en Curso</p>
-                      <h2 className={classes.cardTitle}>
-                        <CountUp end={ongoingInternshipsCount} duration={3} />
-                      </h2>
-                    </CardHeader>
-                    <CardFooter stats>
-                      <div className={classes.stats}>
-                        <MdUpdate />
-                        Actualizado recientemente
-                      </div>
-                    </CardFooter>
-                  </Card>
-                </Grid>
-              </Grid>
-              <Grid
-                style={{
-                  backgroundImage: "url('HomeBanner-Admin-1-b.png')",
-                  backgroundSize: 'cover',
-                  padding: '2rem',
-                  marginTop: '2rem',
-                  marginBottom: '2rem',
-                  borderRadius: '1rem'
-                }}
-                container>
-                <Typography variant='h4'>Estadísticas</Typography>
-              </Grid>
-              {/*Charts*/}
-              <Grid>
-                <Card>
-                  <CardHeader color='rose' icon>
-                    <CardIcon color='rose'>
-                      <MdMultilineChart />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>
-                      Estado de los Alumnos por Carrera
-                    </p>
-                  </CardHeader>
-                  <CardBody className={classes.canvasContainer}>
-                    <GroupedBarChart setExportable={setInternStatus} />
-                  </CardBody>
-                  <CardFooter stats>
-                    <ExcelExporter
-                      filename='Estado de los Alumnos por Carrera'
-                      data={internStatus}
-                    />
-                  </CardFooter>
-                </Card>
-              </Grid>
+            <Box
+              component='main'
+              sx={{
+                flexGrow: 1,
+                py: 8
+              }}>
+              <Container style={{ marginTop: '1rem' }} maxWidth={false}>
+                <Grid container spacing={3}>
+                  <Grid item lg={3} sm={6} xl={3} xs={12}>
+                    <Card sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Grid
+                          container
+                          sx={{ justifyContent: 'space-between' }}>
+                          <Grid
+                            item
+                            xs={9}
+                            onClick={() => navigate('/internship-intention')}>
+                            <Typography
+                              color='textSecondary'
+                              gutterBottom
+                              variant='overline'>
+                              Nuevas intenciones
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={3}>
+                            <Avatar
+                              sx={{
+                                backgroundColor: '#375C8C ',
+                                height: 56,
+                                width: 56
+                              }}>
+                              <ArchiveIcon />
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Typography color='textPrimary' variant='h4'>
+                              <CountUp
+                                end={pendingIntentionsCount}
+                                duration={3}
+                              />
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Box
+                              sx={{
+                                pt: 2,
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}>
+                              <MdUpdate />
+                              <Typography
+                                color='textSecondary'
+                                variant='caption'>
+                                Actualizado recientemente
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xl={3} lg={3} sm={6} xs={12}>
+                    <Card sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Grid container>
+                          <Grid
+                            item
+                            xs={9}
+                            onClick={() => navigate('/applications')}>
+                            <Typography
+                              color='textSecondary'
+                              gutterBottom
+                              variant='overline'>
+                              Nuevos formularios
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={3}>
+                            <Avatar
+                              sx={{
+                                backgroundColor: 'rgba(54, 162, 235, 1)',
+                                height: 56,
+                                width: 56
+                              }}>
+                              <ListAltIcon />
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Typography color='textPrimary' variant='h4'>
+                              <CountUp end={pendingFormsCount} duration={3} />
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Box
+                              sx={{
+                                pt: 2,
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}>
+                              <MdUpdate />
+                              <Typography
+                                color='textSecondary'
+                                variant='caption'>
+                                Actualizado recientemente
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xl={3} lg={3} sm={6} xs={12}>
+                    <Card sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Grid container>
+                          <Grid
+                            item
+                            xs={9}
+                            onClick={() => navigate('/internship-assessment')}>
+                            <Typography
+                              color='textSecondary'
+                              gutterBottom
+                              variant='overline'>
+                              Informes pendientes
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={3}>
+                            <Avatar
+                              sx={{
+                                backgroundColor: 'rgba(75, 192, 192, 1)',
+                                height: 56,
+                                width: 56
+                              }}>
+                              <AssignmentIcon />
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Typography color='textPrimary' variant='h4'>
+                              <CountUp end={sentReportsCount} duration={3} />
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Box
+                              sx={{
+                                pt: 2,
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}>
+                              <MdUpdate />
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={8} md={8}>
-                  <Card>
-                    <CardHeader color='warning' icon>
-                      <CardIcon color='warning'>
-                        <MdEqualizer />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>
-                        Empresas más Elegidas por los Practicantes
-                      </p>
-                    </CardHeader>
-                    <CardBody className={classes.canvasContainer}>
-                      <VerticalBar setExportable={setTopCompaniesRegistered} />
-                    </CardBody>
-                    <CardFooter stats>
-                      <ExcelExporter
-                        filename='Empresas mas Elegidas por los Practicantes'
-                        data={topCompaniesRegistered}
-                      />
-                    </CardFooter>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={4} md={4}>
-                  <Card>
-                    <CardHeader color='info' icon>
-                      <CardIcon color='info'>
-                        <MdPieChart />
-                      </CardIcon>
-                      <p className={classes.cardCategory}>
-                        Aprobados y Rechazados por Carrera
-                      </p>
-                      {careerId === DEFAULT_CAREER && (
-                        <CareerSelector
-                          careerId={graphsCareerId}
-                          setCareerId={setGraphsCareerId}
+                              <Typography
+                                color='textSecondary'
+                                variant='caption'>
+                                Actualizado recientemente
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item xl={3} lg={3} sm={6} xs={12}>
+                    <Card sx={{ height: '100%' }}>
+                      <CardContent>
+                        <Grid container>
+                          <Grid item xs={9}>
+                            <Typography
+                              color='textSecondary'
+                              gutterBottom
+                              variant='overline'>
+                              Prácticas en curso
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={3}>
+                            <Avatar
+                              sx={{
+                                backgroundColor: 'info.main',
+                                height: 56,
+                                width: 56
+                              }}>
+                              <BusinessIcon />
+                            </Avatar>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Typography color='textPrimary' variant='h4'>
+                              <CountUp
+                                end={ongoingInternshipsCount}
+                                duration={3}
+                              />
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12}>
+                            <Box
+                              sx={{
+                                pt: 2,
+                                display: 'flex',
+                                alignItems: 'center'
+                              }}>
+                              <MdUpdate />
+                              <Typography
+                                color='textSecondary'
+                                variant='caption'>
+                                Actualizado recientemente
+                              </Typography>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                  <Grid item lg={8} md={12} xl={9} xs={12}>
+                    <Card>
+                      <CardHeader title='Estado de los alumnos por carrera' />
+                      <Divider />
+                      <CardContent>
+                        <Box
+                          sx={{
+                            height: 435,
+                            position: 'relative'
+                          }}>
+                          <GroupedBarChart setExportable={setInternStatus} />
+                        </Box>
+                      </CardContent>
+                      <Divider />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          p: 2
+                        }}>
+                        <ExcelExporter
+                          filename='Estado de los Alumnos por Carrera'
+                          data={internStatus}
                         />
-                      )}
-                    </CardHeader>
-                    <CardBody>
-                      <PieChart
-                        graphsCareerId={graphsCareerId}
-                        setExportable={setApplicationsStatus}
-                      />
-                    </CardBody>
-                    <CardFooter stats>
-                      <ExcelExporter
-                        filename='Aprobados y Rechazados por Carrera'
-                        data={applicationsStatus}
-                      />
-                    </CardFooter>
-                  </Card>
+                      </Box>
+                    </Card>
+                  </Grid>
+                  <Grid item lg={4} md={6} xl={3} xs={12}>
+                    <Card>
+                      <CardHeader title='Aprobados y rechazados por carrera' />
+                      <Divider />
+                      <CardContent>
+                        <Box
+                          sx={{
+                            height: '100%',
+                            position: 'relative'
+                          }}>
+                          {careerId === DEFAULT_CAREER && (
+                            <CareerSelector
+                              careerId={graphsCareerId}
+                              setCareerId={setGraphsCareerId}
+                            />
+                          )}
+                          <PieChart
+                            graphsCareerId={graphsCareerId}
+                            setExportable={setApplicationsStatus}
+                          />
+                        </Box>
+                      </CardContent>
+                      <Divider />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          p: 2,
+                          height: '100%'
+                        }}>
+                        <ExcelExporter
+                          filename='Aprobados y Rechazados por Carrera'
+                          data={applicationsStatus}
+                        />
+                      </Box>
+                    </Card>
+                  </Grid>
+                  <Grid item lg={4} md={6} xl={4} xs={12}>
+                    <Card>
+                      <CardHeader title='Prácticas registradas en el extranjero' />
+                      <Divider />
+                      <CardContent>
+                        <Box
+                          sx={{
+                            p: 2,
+                            height: '100%'
+                          }}>
+                          <TableChart setExportable={setInternCountries} />
+                        </Box>
+                      </CardContent>
+                      <Divider />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          p: 2,
+                          height: '100%'
+                        }}>
+                        <ExcelExporter
+                          filename='Practicas registradas en el extranjero'
+                          data={internCountries}
+                        />
+                      </Box>
+                    </Card>
+                  </Grid>
+                  <Grid item lg={8} md={12} xl={8} xs={12}>
+                    <Card>
+                      <CardHeader title='Empresas más elegidas por los practicantes' />
+                      <Divider />
+                      <CardContent>
+                        <Box
+                          sx={{
+                            height: 400,
+                            position: 'relative'
+                          }}>
+                          <VerticalBar
+                            setExportable={setTopCompaniesRegistered}
+                          />
+                        </Box>
+                      </CardContent>
+                      <Divider />
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                          p: 2
+                        }}>
+                        <ExcelExporter
+                          filename='Empresas mas Elegidas por los Practicantes'
+                          data={topCompaniesRegistered}
+                        />
+                      </Box>
+                    </Card>
+                  </Grid>
                 </Grid>
-              </Grid>
-
-              <Grid>
-                <Card>
-                  <CardHeader color='success' icon>
-                    <CardIcon color='success'>
-                      <MdPublic />
-                    </CardIcon>
-                    <p className={classes.cardCategory}>
-                      Prácticas registradas en el extranjero
-                    </p>
-                  </CardHeader>
-                  <CardBody>
-                    <TableChart setExportable={setInternCountries} />
-                  </CardBody>
-                  <CardFooter stats>
-                    <ExcelExporter
-                      filename='Practicas registradas en el extranjero'
-                      data={internCountries}
-                    />
-                  </CardFooter>
-                </Card>
-              </Grid>
-            </Container>
+              </Container>
+            </Box>
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
-        <Route path='/edit-form' element={<EditForm />} />
-        <Route path='/applications/:applicationId' element={<FormCheck />} />
+        <Route exact path='/evaluations' element={<EvaluationsList />} />
+        <Route path='/edit-form' element={<SelectEdit />} />
+        <Route
+          path='/applications/:applicationId'
+          element={<ApplicationCheck />}
+        />
+        <Route
+          path='/evaluations/:evaluationId'
+          element={<EvaluationCheck />}
+        />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />
         <Route path='/insurance-list' element={<Insurance />} />
+
         <Route exact path='/internship-assessment' element={<ReportsList />} />
         <Route
           path='/internship-assessment/:studentId/:internshipId'
@@ -302,6 +439,7 @@ function DashboardAdmin({ sidebarProps }) {
           path='/supervisor-management'
           element={<SupervisorManagement />}
         />
+        <Route path='/employer-remarks/' element={<RemarkList />} />
         <Route
           exact
           path='/wip'
@@ -315,6 +453,9 @@ function DashboardAdmin({ sidebarProps }) {
             </Grid>
           }
         />
+        {userRole === ADMIN_ROLE && (
+          <Route path='/control-panel/' element={<ControlPanel />} />
+        )}
       </Routes>
     </div>
   );

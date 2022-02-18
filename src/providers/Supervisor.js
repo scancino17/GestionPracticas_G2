@@ -13,7 +13,7 @@ import {
 import { ref, uploadBytes } from 'firebase/storage';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from './User';
-import { db, storage } from '../firebase';
+import { db, functions, storage } from '../firebase';
 import {
   approvedApplication,
   approvedExtension,
@@ -30,6 +30,13 @@ import {
 import { StudentNotificationTypes } from '../layout/NotificationMenu';
 import { convertToRaw } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
+import { httpsCallable } from 'firebase/functions';
+import {
+  predefinedForm,
+  predefinedSurvey,
+  predefinedEvaluation
+} from '../dynamicForm/predefined_forms/predefined';
+import { FormTypes } from '../dynamicForm/camps/FormTypes';
 
 const SupervisorContext = React.createContext();
 
@@ -44,47 +51,8 @@ export function SupervisorProvider({ children }) {
   const [internships, setInternships] = useState();
   const [students, setStudents] = useState();
   const [careers, setCareers] = useState();
-
-  /**
-   * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
-   * limitar a las carreras que le corresponde.
-   */
-  useEffect(() => {
-    let appRef = collection(db, 'applications');
-    let intRef = collection(db, 'internships');
-    let stuRef = collection(db, 'users');
-
-    // Limitar a carrera que le corresponde
-    if (careerId !== DEFAULT_CAREER) {
-      appRef = query(appRef, where('careerId', '==', careerId));
-      intRef = query(intRef, where('careerId', '==', careerId));
-      stuRef = query(stuRef, where('careerId', '==', careerId));
-    }
-
-    let appUnsub = onSnapshot(appRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setApplications(temp);
-    });
-
-    let intUnsub = onSnapshot(intRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setInternships(temp);
-    });
-
-    let stuUnsub = onSnapshot(stuRef, (querySnapshot) => {
-      const temp = [];
-      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
-      setStudents(temp);
-    });
-
-    return () => {
-      appUnsub();
-      intUnsub();
-      stuUnsub();
-    };
-  }, [careerId]);
+  const [employers, setEmployers] = useState();
+  const [evaluations, setEvaluations] = useState();
 
   useEffect(() => {
     return onSnapshot(collection(db, 'careers'), (querySnapshot) => {
@@ -94,10 +62,113 @@ export function SupervisorProvider({ children }) {
     });
   }, []);
 
+  /**
+   * Obtener aplicaciones, prácticas y estudiantes. Si el usuario pertenece a una carrera,
+   * limitar a las carreras que le corresponde.
+   */
   useEffect(() => {
-    if (applications && internships && students && careers)
+    if (!careers) return;
+
+    let appRef = collection(db, 'applications');
+    let intRef = collection(db, 'internships');
+    let stuRef = collection(db, 'users');
+    let empRef = collection(db, 'employers');
+    let evaRef = collection(db, 'send-evaluation');
+
+    // Limitar a carrera que le corresponde
+    if (careerId !== DEFAULT_CAREER) {
+      appRef = query(appRef, where('careerId', '==', careerId));
+      intRef = query(intRef, where('careerId', '==', careerId));
+      stuRef = query(stuRef, where('careerId', '==', careerId));
+      empRef = query(empRef, where('careers', 'array-contains', careerId));
+      evaRef = query(evaRef, where('careerId', '==', careerId));
+    }
+
+    let appUnsub = onSnapshot(appRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E.';
+        const name = career ? career.name : 'No encontrado';
+
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          careerName: name,
+          ...docData
+        });
+      });
+      setApplications(temp);
+    });
+
+    let intUnsub = onSnapshot(intRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E';
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          ...docData
+        });
+      });
+      setInternships(temp);
+    });
+
+    let stuUnsub = onSnapshot(stuRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      setStudents(temp);
+    });
+
+    let empUnsub = onSnapshot(empRef, (querySnapshot) => {
+      const temp = [];
+
+      querySnapshot.forEach((doc) => {
+        let docData = doc.data();
+        let carList = docData.careers.filter(
+          (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+        );
+        let intList = docData.internships.filter(
+          (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+        );
+        let remList = Object.entries(docData.remarks)
+          .map(([key, value]) => ({ id: key, ...value }))
+          .filter(
+            (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+          );
+        temp.push({
+          id: doc.id,
+          careers: carList,
+          internships: intList,
+          remarks: remList
+        });
+      });
+
+      setEmployers(temp);
+    });
+
+    let evaUnsub = onSnapshot(evaRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => temp.push({ id: doc.id, ...doc.data() }));
+      setEvaluations(temp);
+    });
+
+    return () => {
+      appUnsub();
+      intUnsub();
+      stuUnsub();
+      empUnsub();
+      evaUnsub();
+    };
+  }, [careers, careerId]);
+
+  useEffect(() => {
+    if (applications && internships && students && careers && employers)
       setSupervisorLoaded(true);
-  }, [applications, internships, students, careers]);
+  }, [applications, internships, students, careers, employers]);
 
   /** Llevar la cuenta de intenciones pendientes por revisar */
   const pendingIntentionsCount = useMemo(() => {
@@ -125,20 +196,102 @@ export function SupervisorProvider({ children }) {
     else return 0;
   }, [students]);
 
-  async function getCareerForm(selectedCareerId) {
-    let response = await getDoc(doc(db, 'form', selectedCareerId));
-    return response.data().form;
+  const remarkList = useMemo(() => {
+    if (!employers || !internships) return [];
+    const remarks = [];
+
+    employers.forEach(
+      (employer) =>
+        employer.remarks.length &&
+        remarks.push(
+          ...employer.remarks.map((remark, index) => {
+            const {
+              employerName,
+              employerEmail,
+              internshipNumber,
+              studentName,
+              careerName
+            } = internships.find((item) => item.id === remark.internshipId);
+            return {
+              index: index,
+              employerId: employer.id,
+              employerName: employerName,
+              employerEmail: employerEmail,
+              internshipNumber: internshipNumber,
+              studentName: studentName,
+              careerName,
+              ...remark
+            };
+          })
+        )
+    );
+
+    return remarks;
+  }, [employers, internships]);
+
+  const employerEvaluations = useMemo(() => {
+    const employerList = [];
+
+    evaluations &&
+      evaluations.forEach((evaluation) => {
+        const {
+          name: studentName,
+          rut: studentRut,
+          enrollmentNumber: studentNumber,
+          email: studentEmail
+        } = students.find((item) => item.id === evaluation.studentId);
+        const { internshipNumber, careerInitials } = internships.find(
+          (item) => item.id === evaluation.internshipId
+        );
+        employerList.push({
+          ...evaluation,
+          studentName,
+          studentRut,
+          studentNumber,
+          studentEmail,
+          internshipNumber,
+          careerInitials
+        });
+      });
+    return employerList;
+  }, [evaluations, internships, students]);
+
+  // formType debe ser uno de los valores del objeto FormTypes del archivo FormTypes.js
+  async function getForm(formType, selectedCareerId) {
+    function getPredefinedForm(formType) {
+      switch (formType) {
+        case FormTypes.SurveyForm:
+          return predefinedSurvey;
+        case FormTypes.EvaluationForm:
+          return predefinedEvaluation;
+        default:
+          return predefinedForm;
+      }
+    }
+
+    try {
+      let response = await getDoc(doc(db, formType, selectedCareerId));
+      return response.data().form;
+    } catch {
+      return getPredefinedForm(formType);
+    }
   }
 
+  // formType debe ser uno de los valores del objeto FormTypes del archivo FormTypes.js
   // form es un objeto que contiene el form. La estructura seria { form: ...<el_form> }
   // params está por si se quiere hacer merge con los datos en vez de reemplazar.
   // El comportamiento default es no pasar ningun param, y sobreescribir lo que ya había.
-  async function setCareerForm(
+  async function setForm(
+    formType,
     selectedCareerId,
     form,
     params = { merge: false }
   ) {
-    await setDoc(doc(db, 'form', selectedCareerId), form, params);
+    await setDoc(doc(db, formType, selectedCareerId), form, params);
+  }
+
+  async function setSurveySended(form) {
+    await addDoc('surveySended', form);
   }
 
   // mailTo es el correo al que se le enviará el mail.
@@ -193,6 +346,14 @@ export function SupervisorProvider({ children }) {
 
   function getApplication(applicationId) {
     return applications.find((item) => item.id === applicationId);
+  }
+
+  function getInternship(internshipId) {
+    return internships.find((item) => item.id === internshipId);
+  }
+
+  function getCurrentInternship(studentId) {
+    return getUserData(studentId).currentInternship;
   }
 
   function getCareerData(careerId) {
@@ -454,6 +615,53 @@ export function SupervisorProvider({ children }) {
     );
   }
 
+  function resetStudent(studentEmail) {
+    let studentId = students.find((item) => item.email === studentEmail).id;
+
+    const internshipsIds = [];
+    internships.forEach((item) => {
+      if (item.studentId === studentId) internshipsIds.push(item.id);
+    });
+
+    const applicationsId = [];
+    applications.forEach((item) => {
+      if (item.studentId === studentId) applicationsId.push(item.id);
+    });
+
+    const restoreStudent = httpsCallable(functions, 'restoreStudent');
+    restoreStudent({
+      studentId: studentId,
+      internships: internshipsIds,
+      applications,
+      applicationsId
+    });
+  }
+
+  async function updateEmployer(employerId, update) {
+    await updateDoc(doc(db, 'employers', employerId), update);
+  }
+
+  async function updateRemark(remark, update) {
+    const {
+      employerName,
+      employerEmail,
+      internshipNumber,
+      studentName,
+      careerName,
+      id,
+      index,
+      ...reducedRemark
+    } = remark;
+    await updateEmployer(remark.employerId, {
+      [`remarks.${remark.id}`]: {
+        ...reducedRemark,
+        updateTime: serverTimestamp(),
+        evaluatingSupervisor: { name: displayName, email: email },
+        ...update
+      }
+    });
+  }
+
   return (
     <SupervisorContext.Provider
       value={{
@@ -462,14 +670,21 @@ export function SupervisorProvider({ children }) {
         internships,
         students,
         careers,
+        employers,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,
         ongoingInternshipsCount,
-        getCareerForm,
-        setCareerForm,
+        remarkList,
+        employerEvaluations,
+        getForm,
+        setForm,
+        setSurveySended,
+        updateInternship,
         getUserData,
         getApplication,
+        getInternship,
+        getCurrentInternship,
         getCareerData,
         updateCareer,
         updateApplication,
@@ -482,7 +697,9 @@ export function SupervisorProvider({ children }) {
         amendReport,
         evaluateReport,
         rejectExtension,
-        approveExtension
+        approveExtension,
+        resetStudent,
+        updateRemark
       }}>
       {supervisorLoaded && children}
     </SupervisorContext.Provider>

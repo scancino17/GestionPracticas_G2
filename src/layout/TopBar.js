@@ -2,23 +2,33 @@ import {
   AppBar,
   Badge,
   Hidden,
+  Box,
+  Divider,
+  ListItemIcon,
   IconButton,
   makeStyles,
   Menu,
   MenuItem,
   Snackbar,
-  Toolbar
+  Toolbar,
+  Typography
 } from '@material-ui/core';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { AccountCircle, Notifications } from '@material-ui/icons';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useUser, STUDENT_ROLE } from '../providers/User';
+import {
+  useUser,
+  STUDENT_ROLE,
+  ADMIN_ROLE,
+  SUPERVISOR_ROLE
+} from '../providers/User';
 import MenuIcon from '@material-ui/icons/Menu';
 import MuiAlert from '@material-ui/lab/Alert';
 import NotificationMenu from './NotificationMenu';
-
+import PasswordIcon from '@mui/icons-material/Password';
 const useStyles = makeStyles((theme) => ({
-  logo: {
+  logoAdmin: {
     // Dejar en 2.5rem para respetar tamaño appbar, dejar en 4 rem para que sea legible
     maxHeight: '4rem',
 
@@ -38,6 +48,21 @@ const useStyles = makeStyles((theme) => ({
       maxHeight: '0rem'
     }
   },
+  logoStudent: {
+    maxHeight: '4rem',
+
+    '@media (max-width: 370px)': {
+      maxHeight: '3.5rem'
+    },
+    '@media (max-width: 345px)': {
+      maxHeight: '3rem'
+    },
+
+    '@media (max-width: 340px)': {
+      maxHeight: '0rem'
+    }
+  },
+
   icon: {
     '& svg': {
       fontSize: 40
@@ -51,8 +76,27 @@ const useStyles = makeStyles((theme) => ({
 const ProfileMenu = ({ func }) => {
   return (
     <>
-      <MenuItem onClick={func.handleResetPassword}>Cambiar contraseña</MenuItem>
-      <MenuItem onClick={func.handleLogout}>Cerrar sesión</MenuItem>
+      <Box sx={{ my: 1.5, px: 2.5 }}>
+        <Typography variant='body1' noWrap>
+          {func.nombre}
+        </Typography>
+        <Typography variant='body2' sx={{ color: 'text.secondary' }} noWrap>
+          {func.email}
+        </Typography>
+      </Box>
+      <Divider sx={{ my: 1 }} />
+      <MenuItem>
+        <ListItemIcon onClick={func.handleResetPassword}>
+          <PasswordIcon fontSize='small' />
+        </ListItemIcon>
+        Cambiar Contraseña
+      </MenuItem>
+      <MenuItem onClick={func.handleLogout}>
+        <ListItemIcon>
+          <LogoutIcon fontSize='small' />
+        </ListItemIcon>
+        Cerrar sesión
+      </MenuItem>
     </>
   );
 };
@@ -72,7 +116,9 @@ function TopBar({ setSidebarOpen }) {
       <ProfileMenu
         func={{
           handleResetPassword: handleResetPassword,
-          handleLogout: handleLogout
+          handleLogout: handleLogout,
+          nombre: user && user.displayName,
+          email: user.email
         }}
       />
     );
@@ -144,7 +190,7 @@ function TopBar({ setSidebarOpen }) {
         className={classes.appBar}>
         <Toolbar>
           <Hidden mdUp>
-            {!user.student && (
+            {(userRole === ADMIN_ROLE || userRole === SUPERVISOR_ROLE) && (
               <IconButton
                 color='inherit'
                 aria-label='open drawer'
@@ -154,11 +200,20 @@ function TopBar({ setSidebarOpen }) {
               </IconButton>
             )}
           </Hidden>
+
           <IconButton
             disableRipple
             onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
+            <img
+              className={
+                userRole === STUDENT_ROLE
+                  ? classes.logoStudent
+                  : classes.logoAdmin
+              }
+              src='logo5b-utal.png'
+              alt='logo'
+            />
           </IconButton>
           <div style={{ flexGrow: 1 }} />
           {userRole === STUDENT_ROLE && (
@@ -191,7 +246,11 @@ function TopBar({ setSidebarOpen }) {
             disableRipple
             onClick={() => navigate('/')}
             style={{ backgroundColor: 'transparent' }}>
-            <img className={classes.logo} src='logo5b-utal.png' alt='logo' />
+            <img
+              className={classes.logoAdmin}
+              src='logo5b-utal.png'
+              alt='logo'
+            />
           </IconButton>
         </Toolbar>
       )}

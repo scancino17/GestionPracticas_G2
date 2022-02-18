@@ -6,22 +6,72 @@ import {
   makeStyles,
   TextField,
   Typography,
-  Fab,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  withStyles,
-  DialogContentText
+  withStyles
 } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import Swal from 'sweetalert2';
 import { useParams } from 'react-router-dom';
-import { AssignmentLate, Check, Clear, Edit, Save } from '@material-ui/icons';
-import FormView from './builder_preview/FormView';
+import {
+  AssignmentLate,
+  Check,
+  Clear,
+  Edit,
+  Save,
+  CancelOutlined,
+  MenuOutlined
+} from '@material-ui/icons';
+import FormView from '../builder_preview/FormView';
 import { useNavigate } from 'react-router-dom';
-import { useSupervisor } from '../providers/Supervisor';
+import { useSupervisor } from '../../providers/Supervisor';
 
+import Backdrop from '@material-ui/core/Backdrop';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   root: {
     // Este flex: auto está aqui para que los form abajo puedan ocupar todo el tamaño del grid que los contiene
@@ -34,41 +84,7 @@ const useStyles = makeStyles((theme) => ({
       width: '100%'
     }
   },
-  topBottomPadding: {
-    paddingTop: '1rem',
-    paddingBottom: '1rem'
-  },
-  fabAccept: {
-    position: 'fixed',
-    zIndex: 1,
-    bottom: theme.spacing(2),
-    right: theme.spacing(2)
-  },
-  fabDecline: {
-    position: 'fixed',
-    zIndex: 1,
-    bottom: theme.spacing(2),
-    right: theme.spacing(18)
-  },
-  fabMinorChanges: {
-    position: 'fixed',
-    zIndex: 1,
-    bottom: theme.spacing(2),
-    right: theme.spacing(50)
-  },
-  fabEdit: {
-    position: 'fixed',
-    zIndex: 1,
-    bottom: theme.spacing(2),
-    right: theme.spacing(35)
-  },
-  fabExitEdit: {
-    position: 'fixed',
-    zIndex: 1,
-    bottom: theme.spacing(2),
-    right: theme.spacing(20)
-  },
-  fabSave: {
+  speedDial: {
     position: 'fixed',
     zIndex: 1,
     bottom: theme.spacing(2),
@@ -88,7 +104,7 @@ const SecondaryButton = withStyles((theme) => ({
   }
 }))(Button);
 
-function FormCheck() {
+function ApplicationCheck() {
   const { applicationId } = useParams();
   const [application, setApplication] = useState([]);
   const [minorChanges, setMinorChanges] = useState('');
@@ -100,6 +116,81 @@ function FormCheck() {
   const [edit, setEdit] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [approveReason, setApproveReason] = useState('');
+  const [open, setOpen] = useState(false);
+
+  const handleSave = () => {
+    Swal.fire({
+      title: '¿Desea aplicar los cambios?',
+      showCancelButton: true,
+      confirmButtonText: `Aceptar`,
+      cancelButtonText: `Cancelar`
+    }).then((result) => {
+      if (result.isConfirmed) {
+        save();
+        Swal.fire('¡Cambios Guardados!', '', 'success');
+        setEdit(false);
+      }
+    });
+  };
+
+  const handleCancel = () => {
+    BackUp();
+    handleEdit();
+  };
+
+  const handleShowMinorChanges = () => {
+    setShowMinorChanges(true);
+  };
+  const handleShow = () => {
+    setShow(true);
+  };
+
+  const handleEdit = () => {
+    setEdit(!edit);
+    handleClose();
+  };
+  const handleShowApproved = () => {
+    setShowApproved(true);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const actions = [
+    {
+      edit: false,
+      icon: <Check />,
+      name: 'Aprobar',
+      function: handleShowApproved
+    },
+    {
+      edit: false,
+      icon: <Clear />,
+      color: '#ff0000',
+      name: 'Rechazar',
+      function: handleShow
+    },
+    {
+      edit: false,
+      icon: <AssignmentLate />,
+      name: 'Cambios menores',
+      function: handleShowMinorChanges
+    },
+    { edit: false, icon: <Edit />, name: 'Editar', function: handleEdit },
+
+    {
+      edit: true,
+      icon: <CancelOutlined />,
+      name: 'Cancelar',
+      function: handleCancel
+    },
+    { edit: true, icon: <Save />, name: 'Guardar', function: handleSave }
+  ];
+
   const classes = useStyles();
   const {
     getApplication,
@@ -138,7 +229,7 @@ function FormCheck() {
     amendApplication(application, rejectReason, minorChanges);
   }
 
-  function handleSave() {
+  function save() {
     const values = {};
     application.form.forEach((step) =>
       step.form.forEach((camp) => {
@@ -151,83 +242,29 @@ function FormCheck() {
 
   return (
     <>
-      {!edit && (
-        <>
-          <Fab
-            variant='extended'
-            color='primary'
-            className={classes.fabAccept}
-            onClick={() => {
-              setShowApproved(true);
-            }}>
-            <Check />
-            Aprobar
-          </Fab>
-          <Fab
-            variant='extended'
-            color='secondary'
-            className={classes.fabDecline}
-            onClick={() => setShow(true)}>
-            <Clear />
-            Rechazar
-          </Fab>
-          <Fab
-            variant='extended'
-            color='secondary'
-            className={classes.fabMinorChanges}
-            onClick={() => setShowMinorChanges(true)}>
-            <AssignmentLate />
-            Cambios menores
-          </Fab>
-          <Fab
-            variant='extended'
-            color='secondary'
-            className={classes.fabEdit}
-            onClick={() => {
-              setEdit(!edit);
-            }}>
-            <Edit />
-            Editar
-          </Fab>
-        </>
-      )}
-      {edit && (
-        <>
-          <Fab
-            variant='extended'
-            color='secondary'
-            className={classes.fabExitEdit}
-            onClick={() => {
-              BackUp();
+      <>
+        <Backdrop open={open} />
+        <SpeedDial
+          ariaLabel='SpeedDial tooltip example'
+          className={classes.speedDial}
+          icon={edit ? <Edit /> : <MenuOutlined />}
+          onClose={handleClose}
+          onOpen={handleOpen}
+          open={open}>
+          {actions.map((action, i) =>
+            action.edit === edit ? (
+              <SpeedDialAction
+                tooltipOpen
+                key={i}
+                icon={action.icon}
+                tooltipTitle={action.name}
+                onClick={action.function}
+              />
+            ) : null
+          )}
+        </SpeedDial>
+      </>
 
-              setEdit(!edit);
-            }}>
-            <Edit />
-            Cancelar
-          </Fab>
-          <Fab
-            variant='extended'
-            color='primary'
-            className={classes.fabSave}
-            onClick={() => {
-              Swal.fire({
-                title: '¿Desea aplicar los cambios?',
-                showCancelButton: true,
-                confirmButtonText: `Aceptar`,
-                cancelButtonText: `Cancelar`
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  handleSave();
-                  Swal.fire('¡Cambios Guardados!', '', 'success');
-                  setEdit(false);
-                }
-              });
-            }}>
-            <Save />
-            Guardar
-          </Fab>
-        </>
-      )}
       <Grid container direction='column'>
         <Grid
           style={{
@@ -239,7 +276,7 @@ function FormCheck() {
           }}>
           <Typography variant='h4'>Revisión Postulación</Typography>
         </Grid>
-        <Container>
+        <Container style={{ paddingBottom: '5rem' }}>
           {application.form &&
             application.form.map((step) => (
               <Grid item>
@@ -261,12 +298,21 @@ function FormCheck() {
         </Container>
       </Grid>
       {show && (
-        <Dialog open={show} onClose={() => setShow(false)} fullWidth>
-          <DialogTitle>Rechazar postulación de práctica</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+        <BootstrapDialog
+          fullWidth
+          onClose={() => setShow(false)}
+          aria-labelledby='customized-dialog-title'
+          open={show}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShow(false)}>
+            Rechazar postulación de práctica
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
               ¿Está seguro de rechazar postulación de Práctica?
-            </DialogContentText>
+            </Typography>
+
             <TextField
               fullWidth
               label='Razón de rechazo'
@@ -289,18 +335,23 @@ function FormCheck() {
               Confirmar rechazo
             </DenyButton>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
       {showApproved && (
-        <Dialog
-          open={showApproved}
+        <BootstrapDialog
+          fullWidth
           onClose={() => setShowApproved(false)}
-          fullWidth>
-          <DialogTitle>Aprobar postulación de práctica</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
+          aria-labelledby='customized-dialog-title'
+          open={showApproved}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShowApproved(false)}>
+            Aprobar postulación de práctica
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
+            <Typography gutterBottom>
               ¿Está seguro de aceptar la postulación de Práctica ?
-            </DialogContentText>
+            </Typography>
             <TextField
               fullWidth
               label='Comentarios'
@@ -327,15 +378,20 @@ function FormCheck() {
               Confirmar aprobación
             </Button>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
       {showMinorChanges && (
-        <Dialog
-          open={showMinorChanges}
+        <BootstrapDialog
+          fullWidth
           onClose={() => setShowMinorChanges(false)}
-          fullWidth>
-          <DialogTitle>Solicitud de cambios</DialogTitle>
-          <DialogContent>
+          aria-labelledby='customized-dialog-title'
+          open={showMinorChanges}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShowMinorChanges(false)}>
+            Solicitud de cambios
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <TextField
               fullWidth
               label='Cambios necesarios'
@@ -361,10 +417,10 @@ function FormCheck() {
               Confirmar solicitud
             </DenyButton>
           </DialogActions>
-        </Dialog>
+        </BootstrapDialog>
       )}
     </>
   );
 }
 
-export default FormCheck;
+export default ApplicationCheck;

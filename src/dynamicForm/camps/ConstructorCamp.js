@@ -10,16 +10,55 @@ import {
   TableRow,
   TextField,
   Button,
-  IconButton,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions
+  Typography
 } from '@material-ui/core';
 import { Add, Delete, Save } from '@material-ui/icons';
-import { customTypes, formTypes } from './formTypes';
+import { CustomTypes, FieldTypes } from './FormTypes';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 function ConstructorCamp({
   show,
   setShow,
@@ -39,25 +78,31 @@ function ConstructorCamp({
   const [openSelect, setopenSelect] = useState(false);
   const [openSelect2, setopenSelect2] = useState(false);
   const [options, setOptions] = useState([]);
+  const [optionsSatisfaction, setOptionsSatisfaction] = useState([]);
+  const [newOptionSatisfaction, setNewOptionSatisfaction] = useState('');
   const [newOption, setNewOption] = useState('');
 
   useEffect(() => {
     if (edit) {
+      if (editElement.description) {
+        setDescription(editElement.description);
+      }
       setType(editElement.type);
       setName(editElement.name);
       setOptions(editElement.options);
+      setOptionsSatisfaction(editElement.options);
     }
   }, [edit, editElement]);
 
   function handleSave() {
     let temp;
-    if (type === formTypes.formTextInput) {
+    if (type === FieldTypes.formTextInput) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === formTypes.formSelect) {
+    } else if (type === FieldTypes.formSelect) {
       temp = {
         type: type,
         name: name,
@@ -65,34 +110,35 @@ function ConstructorCamp({
         value: '',
         open: false
       };
-    } else if (type === formTypes.formFileInput) {
+    } else if (type === FieldTypes.formFileInput) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === formTypes.formHeader) {
+    } else if (type === FieldTypes.formHeader) {
       temp = {
         type: type,
         name: name,
         value: ''
       };
-    } else if (type === formTypes.formSpace) {
+    } else if (type === FieldTypes.formSpace) {
       temp = {
         type: type
       };
-    } else if (type === formTypes.formCustom) {
+    } else if (type === FieldTypes.formCustom) {
       temp = {
         type: type,
         type2: type2,
         value: '',
         name: type2
       };
-    } else if (type === formTypes.formSatisfaction) {
+    } else if (type === FieldTypes.formSatisfaction) {
       temp = {
         type: type,
         value: null,
         name: name,
+        options: optionsSatisfaction,
         description: description
       };
     }
@@ -110,23 +156,35 @@ function ConstructorCamp({
   }
 
   function handleExit() {
-    setName('');
     setType('');
     setType2('');
+    setName('');
     setOptions([]);
+    setOptionsSatisfaction([]);
+    setDescription('');
     setEdit(false);
     setShow(false);
   }
   function changeType(e) {
     setType(e.target.value);
-    setOptions([]);
     setName('');
+    setOptions([]);
+    setOptionsSatisfaction([]);
+    setDescription('');
   }
 
   return (
-    <Dialog open={show} onClose={() => handleExit()} fullWidth>
-      <DialogTitle>Creación de Campo</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={() => handleExit()}
+      aria-labelledby='customized-dialog-title'
+      open={show}>
+      <BootstrapDialogTitle
+        id='customized-dialog-title'
+        onClose={() => handleExit()}>
+        Creación de Campo
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <FormControl fullWidth style={{ marginBottom: '2rem' }}>
           <InputLabel>Tipo de Campo</InputLabel>
           <Select
@@ -137,14 +195,14 @@ function ConstructorCamp({
             onOpen={() => setopenSelect(true)}
             onChange={(e) => changeType(e)}>
             <MenuItem value=''>None</MenuItem>
-            {Object.values(formTypes).map((option) => (
+            {Object.values(FieldTypes).map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        {type === formTypes.formTextInput ? (
+        {type === FieldTypes.formTextInput ? (
           <TextField
             value={name}
             fullWidth
@@ -152,7 +210,7 @@ function ConstructorCamp({
             label='Nombre'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === formTypes.formSelect ? (
+        ) : type === FieldTypes.formSelect ? (
           <>
             <TextField
               value={name}
@@ -205,7 +263,7 @@ function ConstructorCamp({
               </TableBody>
             </Table>
           </>
-        ) : type === formTypes.formFileInput ? (
+        ) : type === FieldTypes.formFileInput ? (
           <TextField
             fullWidth
             value={name}
@@ -213,7 +271,7 @@ function ConstructorCamp({
             label='Nombre'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === formTypes.formHeader ? (
+        ) : type === FieldTypes.formHeader ? (
           <TextField
             fullWidth
             value={name}
@@ -221,9 +279,9 @@ function ConstructorCamp({
             label='Título'
             onChange={(e) => setName(e.target.value)}
           />
-        ) : type === formTypes.formSpace ? (
+        ) : type === FieldTypes.formSpace ? (
           <></>
-        ) : type === formTypes.formSatisfaction ? (
+        ) : type === FieldTypes.formSatisfaction ? (
           <FormControl fullWidth>
             <TextField
               value={name}
@@ -242,9 +300,55 @@ function ConstructorCamp({
               label='Descripción'
               onChange={(e) => setDescription(e.target.value)}
             />
+            <Typography style={{ marginTop: '1rem' }}>Opciones</Typography>
+            <Table>
+              <TableBody>
+                {optionsSatisfaction &&
+                  optionsSatisfaction.map((option) => (
+                    <TableRow key={option.i}>
+                      <TableCell>
+                        <Typography>{option}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() =>
+                            setOptionsSatisfaction((prev) =>
+                              prev.filter((element) => element !== option)
+                            )
+                          }>
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                <TableRow>
+                  <TableCell>
+                    <TextField
+                      fullWidth
+                      variant='outlined'
+                      value={newOptionSatisfaction}
+                      label='Nueva opción'
+                      onChange={(e) => setNewOptionSatisfaction(e.target.value)}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      disabled={!newOptionSatisfaction}
+                      onClick={() => {
+                        setOptionsSatisfaction((prev) =>
+                          prev.concat(newOptionSatisfaction)
+                        );
+                        setNewOptionSatisfaction('');
+                      }}>
+                      <Add />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
           </FormControl>
         ) : (
-          type === formTypes.formCustom && (
+          type === FieldTypes.formCustom && (
             <FormControl fullWidth>
               {/* select predefinido*/}
               <InputLabel>Tipo de Campo</InputLabel>
@@ -256,7 +360,7 @@ function ConstructorCamp({
                 onOpen={() => setopenSelect2(true)}
                 onChange={(e) => setType2(e.target.value)}>
                 <MenuItem value=''>None</MenuItem>
-                {Object.values(customTypes).map((option) => (
+                {Object.values(CustomTypes).map((option) => (
                   <MenuItem key={option} value={option}>
                     {option}
                   </MenuItem>
@@ -270,13 +374,18 @@ function ConstructorCamp({
         <Button
           disabled={
             !type ||
-            (type === formTypes.formCustom && (!type2 || type2 === '')) ||
-            (type === formTypes.formSelect && options.length === 0) ||
-            ((type === formTypes.formFileInput ||
-              type === formTypes.formHeader ||
-              type === formTypes.formSelect ||
-              type === formTypes.formTextInput) &&
-              (name === null || name === ''))
+            (type === FieldTypes.formCustom && (!type2 || type2 === '')) ||
+            (type === FieldTypes.formSelect && options.length === 0) ||
+            (type === FieldTypes.formSatisfaction &&
+              optionsSatisfaction.length === 0) ||
+            ((type === FieldTypes.formFileInput ||
+              type === FieldTypes.formHeader ||
+              type === FieldTypes.formSelect ||
+              type === FieldTypes.formTextInput ||
+              type === FieldTypes.formSatisfaction) &&
+              (name === null || name === '')) ||
+            (type === FieldTypes.formSatisfaction &&
+              (description === null || description === ''))
           }
           color='primary'
           startIcon={<Save />}
@@ -286,7 +395,7 @@ function ConstructorCamp({
           Guardar campo
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 

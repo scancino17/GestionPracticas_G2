@@ -23,7 +23,8 @@ function GroupedBar({ setExportable }) {
       .forEach((item) =>
         map.set(
           item.id,
-          item.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name
+          item.sigla
+          /*.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name */
         )
       );
     return map;
@@ -109,17 +110,17 @@ function GroupedBar({ setExportable }) {
         {
           label: 'Sin Práctica',
           data: Array.from(noAction.values()),
-          backgroundColor: 'rgb(255, 99, 132)'
+          backgroundColor: '#375C8C'
         },
         {
           label: 'En Proceso de Inscripción',
           data: Array.from(applying.values()),
-          backgroundColor: 'rgb(54, 162, 235)'
+          backgroundColor: 'rgba(54, 162, 235, 1)'
         },
         {
           label: 'En Práctica',
           data: Array.from(onIntern.values()),
-          backgroundColor: 'rgb(75, 192, 192)'
+          backgroundColor: 'rgba(75, 192, 192, 1)'
         }
       ]
     };

@@ -1,4 +1,15 @@
-import { Box, Grid, Tab, Tabs, Typography } from '@material-ui/core';
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  Tab,
+  Tabs,
+  Typography,
+  useMediaQuery
+} from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
@@ -31,10 +42,12 @@ function SelectEdit() {
     () => console.log(currentTab, selectedTab, currentCareer, selectedCareer),
     [selectedTab, currentTab, currentCareer, selectedCareer]
   );
-
+  const tabSize = useMediaQuery('(max-width:1450px)', { noSsr: true });
+  const matches = useMediaQuery('(max-width:400px)', { noSsr: true });
   return (
     <Grid container direction='column'>
-      <div
+      <Grid
+        item
         style={{
           backgroundImage: "url('AdminBanner-Edit.png')",
 
@@ -43,42 +56,62 @@ function SelectEdit() {
           padding: '2rem'
         }}>
         <Typography variant='h4'>Edición de formularios</Typography>
-
-        <Grid item>
-          <Grid container direction='row'>
-            <Grid item xs={12} sm={6} lg={3}>
+      </Grid>
+      <Grid item>
+        <Box margin={'1rem'}>
+          <Grid
+            container
+            direction='row-reverse'
+            justifyContent='flex-start'
+            alignItems='center'
+            spacing={4}>
+            {matches && (
+              <Grid item xs={12}>
+                <Card>
+                  <CardContent>
+                    <Typography>
+                      Para obtener una mejor experiencia visual se recomienda
+                      usar el editor de formularios en tablet o computador
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
+            <Grid item xs={12} sm={5} lg={4}>
               <CareerSelector
                 careerId={currentCareer}
                 setCareerId={handleChangeCareer}
                 excludeGeneral
               />
             </Grid>
+
+            <Grid item xs={12} lg={tabSize ? 12 : 8}>
+              <Box
+                sx={{ width: '100%', borderColor: 'divider', borderBottom: 1 }}>
+                <Tabs
+                  variant='scrollable'
+                  scrollButtons
+                  allowScrollButtonsMobile
+                  indicatorColor='primary'
+                  value={currentTab}
+                  onChange={handleChangeTab}
+                  aria-label='wrapped label tabs example'>
+                  <Tab
+                    value={0}
+                    label='Edición formulario de inscripción de práctica'
+                  />
+                  <Tab
+                    value={1}
+                    label='Edición formulario de encuesta de satisfacción'
+                  />
+                  <Tab
+                    value={2}
+                    label='Edición formulario de evaluación del estudiante'
+                  />
+                </Tabs>
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
-      <Grid item>
-        <Box sx={{ width: '100%', borderColor: 'divider', borderBottom: 1 }}>
-          <Tabs
-            variant='scrollable'
-            scrollButtons
-            allowScrollButtonsMobile
-            indicatorColor='primary'
-            value={currentTab}
-            onChange={handleChangeTab}
-            aria-label='wrapped label tabs example'>
-            <Tab
-              value={0}
-              label='Edición formulario de inscripción de práctica'
-            />
-            <Tab
-              value={1}
-              label='Edición formulario de encuesta de satisfacción'
-            />
-            <Tab
-              value={2}
-              label='Edición formulario de evaluación del estudiante'
-            />
-          </Tabs>
         </Box>
       </Grid>
       {currentTab === 0 && selectedCareer !== DEFAULT_CAREER && (

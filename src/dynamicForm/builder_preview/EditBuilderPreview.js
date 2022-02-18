@@ -16,11 +16,7 @@ import {
   Divider,
   Button,
   Container,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Grid,
-  IconButton,
   Step,
   StepLabel,
   Stepper,
@@ -30,12 +26,59 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography
+  Typography,
+  Box
 } from '@material-ui/core';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Skeleton } from '@material-ui/lab';
 import { FormTypes } from '../camps/FormTypes';
 import { DEFAULT_CAREER } from '../../providers/User';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 function EditBuilderPreview({
   selectedTab,
@@ -228,54 +271,75 @@ function EditBuilderPreview({
     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
     return arr; // for testing purposes
   }
+  function isMovileDevice() {
+    let check = false;
+    (function (a) {
+      if (
+        /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
+          a
+        ) ||
+        /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(
+          a.substr(0, 4)
+        )
+      )
+        check = true;
+    })(navigator.userAgent || navigator.vendor || window.opera);
+    return check;
+  }
+  const matches = useMediaQuery('(max-width:650px)');
 
   return (
     <Grid container direction='column'>
-      <Grid item style={{ margin: '2rem' }}>
-        <Typography variant='h4'>
-          {
-            {
-              [FormTypes.ApplicationForm]:
-                'Formulario de inscripción de práctica',
-              [FormTypes.EvaluationForm]:
-                'Edición formulario de evaluación del estudiante',
-              [FormTypes.SurveyForm]:
-                'Edición formulario de encuesta de satisfacción'
-            }[formType]
-          }
-        </Typography>
-      </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {currentCareer === selectedCareer && editableForm ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
-            <Grid container direction='row' justifyContent='center' spacing={8}>
-              <Grid item xs={12} md={5}>
-                <Typography variant='h5'>Etapas</Typography>
-                <Grid item container justifyContent='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    startIcon={<Build />}
-                    onClick={() => setShow(true)}>
-                    Administrar Etapas
-                  </Button>
+            <Grid item>
+              <Grid
+                container
+                direction='row'
+                justifyContent='center'
+                spacing={isMovileDevice() && matches ? 0 : 6}>
+                <Grid item xs={12} sm md xl>
+                  <Box
+                    sx={{
+                      minWidth: isMovileDevice() && matches ? 300 : 318
+                    }}>
+                    <Typography variant='h5'>Etapas</Typography>
+                    <Grid item container justifyContent='center'>
+                      <Button
+                        style={{ marginTop: '20px', marginBottom: '20px' }}
+                        variant='contained'
+                        color='primary'
+                        startIcon={<Build />}
+                        onClick={() => setShow(true)}>
+                        Administrar Etapas
+                      </Button>
+                    </Grid>
+                  </Box>
+                </Grid>
+                <Divider orientation='vertical' flexItem />
+
+                <Grid item xs={12} sm md xl>
+                  <Box
+                    sx={{
+                      minWidth: isMovileDevice() && matches ? 300 : 410
+                    }}>
+                    <Typography variant='h5'>Previsualización</Typography>
+                    <Stepper
+                      activeStep={activeStep}
+                      alternativeLabel
+                      style={{ backgroundColor: 'transparent' }}>
+                      {editableForm.map((step) => (
+                        <Step key={step.step}>
+                          <StepLabel>{step.step}</StepLabel>
+                        </Step>
+                      ))}
+                    </Stepper>
+                  </Box>
                 </Grid>
               </Grid>
-              <Divider orientation='vertical' flexItem />
-              <Grid item xs={12} md={6}>
-                <Typography variant='h5'>Previsualización</Typography>
-                <Stepper
-                  activeStep={activeStep}
-                  alternativeLabel
-                  style={{ backgroundColor: 'transparent' }}>
-                  {editableForm.map((step) => (
-                    <Step key={step.step}>
-                      <StepLabel>{step.step}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Grid>
             </Grid>
+
             <Grid item>
               <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
                 Campos
@@ -292,41 +356,46 @@ function EditBuilderPreview({
                     />
                   )
               )}
-              <Grid
-                container
-                item
-                justifyContent='flex-end'
-                alignItems='center'
-                spacing={4}>
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    startIcon={<Save />}
-                    onClick={handleSave}>
-                    Guardar
-                  </Button>
-                </Grid>
-
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === 0}
-                    startIcon={<ArrowBack />}
-                    onClick={handleBack}>
-                    Anterior
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === editableForm.length - 1}
-                    onClick={handleNext}
-                    endIcon={<ArrowForward />}>
-                    Siguiente
-                  </Button>
+              <Grid item>
+                <Grid
+                  container
+                  direction='row'
+                  justifyContent='flex-end'
+                  alignItems='center'
+                  spacing={1}
+                  style={{ marginTop: '20px', marginBottom: '20px' }}>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      startIcon={<ArrowBack />}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === editableForm.length - 1}
+                      onClick={handleNext}
+                      endIcon={<ArrowForward />}>
+                      Siguiente
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      startIcon={<Save />}
+                      onClick={handleSave}>
+                      Guardar
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -342,9 +411,18 @@ function EditBuilderPreview({
           </Grid>
         )}
         {/*Moddal */}
-        <Dialog open={show} onClose={() => setShow(false)} fullWidth>
-          <DialogTitle>Pasos del formulario</DialogTitle>
-          <DialogContent>
+
+        <BootstrapDialog
+          fullWidth
+          onClose={() => setShow(false)}
+          aria-labelledby='customized-dialog-title'
+          open={show}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShow(false)}>
+            Pasos del formulario
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <Table>
               <TableHead>
                 <TableRow>
@@ -427,7 +505,7 @@ function EditBuilderPreview({
               </TableBody>
             </Table>
           </DialogContent>
-        </Dialog>
+        </BootstrapDialog>
       </Container>
     </Grid>
   );

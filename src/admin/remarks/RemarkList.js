@@ -250,7 +250,7 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
 
   return (
     <Dialog fullWidth open={showAnswerModal} onClose={closeModal}>
-      <DialogTitle>Enviar observación a supervisor de escuela</DialogTitle>
+      <DialogTitle>Responder observación de supervisor</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Puede responder la observación respecto al estudiante{' '}

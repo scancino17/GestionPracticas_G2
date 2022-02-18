@@ -29,6 +29,7 @@ export function EmployerProvider({ children }) {
   const [userData, setUserData] = useState();
   const [employerLoaded, setLoaded] = useState(false);
   const [internList, setInternList] = useState([]);
+  const [sentEvaluations, setSentEvaluations] = useState();
   const isEqual = require('lodash/isEqual');
 
   useEffect(() => {
@@ -37,30 +38,9 @@ export function EmployerProvider({ children }) {
     );
   }, [userId]);
 
-  const remarksMap = useMemo(() => {
-    if (!userData) return new Map();
-    const remarksMap = new Map();
-    const internships = userData.internships.map((item) => item.internshipId);
-    internships.forEach((internship) => remarksMap.set(internship, []));
+  const loadInterns = useCallback(() => {
+    if (!userData) return;
 
-    Object.entries(userData.remarks)
-      .map(([key, value]) => ({ id: key, ...value }))
-      .forEach((remark) => {
-        if (remarksMap.has(remark.internshipId)) {
-          const list = remarksMap.get(remark.internshipId).slice();
-          list.push(remark);
-          remarksMap.set(remark.internshipId, list);
-        }
-      });
-
-    Array.from(remarksMap.values()).forEach((list) =>
-      list.sort((f, s) => s.id - f.id)
-    );
-
-    return remarksMap;
-  }, [userData]);
-
-  const getInterns = useCallback(() => {
     function addIntern(intern) {
       const sortFn = (f, s) => f.internEnd.seconds - s.internEnd.seconds;
 
@@ -89,34 +69,91 @@ export function EmployerProvider({ children }) {
       });
     }
 
-    if (userData) {
-      const dataList = userData.internships;
+    Object.entries(userData.interns).forEach(([key, value]) => {
+      const { studentId } = value;
+      const internshipId = key;
 
-      dataList.forEach(async (intern) => {
-        const internData = (
-          await getDoc(doc(db, 'internships', intern.internshipId))
-        ).data();
+      getDoc(doc(db, 'internships', internshipId)).then((internDoc) => {
+        const internship = internDoc.data();
+        getDoc(doc(db, 'users', studentId)).then((studentDoc) => {
+          const student = studentDoc.data();
 
-        const studentData = (
-          await getDoc(doc(db, 'users', intern.studentId))
-        ).data();
-
-        addIntern({
-          internshipId: intern.internshipId,
-          studentId: intern.studentId,
-          studentName: studentData.name,
-          studentRut: studentData.rut,
-          careerId: internData.careerId,
-          employerEvaluated: intern.employerEvaluated,
-          evaluationTime: intern.evaluationTime,
-          evaluationId: intern.evaluationId,
-          studentCareer: studentData.careerName,
-          internStart: internData.applicationData['Fecha de inicio'],
-          internEnd: internData.applicationData['Fecha de término']
+          const { careerId, applicationData } = internship;
+          const {
+            'Fecha de inicio': internStart,
+            'Fecha de término': internEnd
+          } = applicationData;
+          const {
+            name: studentName,
+            rut: studentRut,
+            careerName: studentCareer
+          } = student;
+          addIntern({
+            internshipId,
+            studentId,
+            careerId,
+            internStart,
+            internEnd,
+            studentName,
+            studentRut,
+            studentCareer,
+            ...value
+          });
         });
       });
-    }
+    });
   }, [isEqual, userData]);
+
+  useEffect(() => loadInterns(), [loadInterns]);
+
+  const loadSentEvaluations = useCallback(() => {
+    if (!(internList && internList.length)) {
+      setSentEvaluations({});
+      return;
+    }
+
+    function addEvaluation(evaluation) {
+      setSentEvaluations((prevState) =>
+        prevState[evaluation.internshipId]
+          ? prevState
+          : { ...prevState, [evaluation.internshipId]: evaluation }
+      );
+    }
+
+    internList.forEach(async (item) => {
+      if (item.evaluationId) {
+        getDoc(doc(db, 'send-evaluation', item.evaluationId)).then((evaDoc) => {
+          const { form, ...evaData } = evaDoc.data();
+          addEvaluation(evaData);
+        });
+      }
+    });
+  }, [internList]);
+
+  useEffect(() => loadSentEvaluations(), [loadSentEvaluations]);
+
+  const remarksMap = useMemo(() => {
+    if (!userData) return new Map();
+    const remarksMap = new Map();
+    const internships = userData.internships.map((item) => item.internshipId);
+    internships.forEach((internship) => remarksMap.set(internship, []));
+
+    Object.entries(userData.remarks)
+      .map(([key, value]) => ({ id: key, ...value }))
+      .forEach((remark) => {
+        if (remarksMap.has(remark.internshipId)) {
+          const list = remarksMap.get(remark.internshipId).slice();
+          list.push(remark);
+          remarksMap.set(remark.internshipId, list);
+        }
+      });
+
+    Array.from(remarksMap.values()).forEach((list) =>
+      list.sort((f, s) => s.id - f.id)
+    );
+
+    return remarksMap;
+  }, [userData]);
 
   async function updateEmployer(update) {
     await updateDoc(doc(db, 'employers', userId), update);
@@ -151,25 +188,26 @@ export function EmployerProvider({ children }) {
     return internList.find((item) => item.internshipId === internshipId);
   }
 
-  function updateInternData(internshipId, update) {
-    const oldIntern = userData.internships.find(
-      (item) => item.internshipId === internshipId
-    );
-
-    if (!oldIntern) return;
-    const newList = userData.internships
-      .filter((item) => item.internshipId !== internshipId)
-      .slice();
-    newList.push({
-      ...oldIntern,
-      ...update
+  async function updateInternData(internshipId, update) {
+    const {
+      careerId,
+      employerEvaluated,
+      evaluationId,
+      studentId,
+      evaluationTime
+    } = getInternData(internshipId);
+    await updateEmployer({
+      [`interns.${internshipId}`]: {
+        careerId,
+        employerEvaluated,
+        evaluationId,
+        studentId,
+        evaluationTime,
+        ...update
+      }
     });
-    console.log({ ...oldIntern, ...update });
-    console.log(newList);
-    updateEmployer({ internships: newList });
   }
 
-  useEffect(() => getInterns(), [getInterns]);
   useEffect(() => setLoaded(!!internList), [internList]);
 
   return (
@@ -180,6 +218,7 @@ export function EmployerProvider({ children }) {
         internList,
         remarksMap,
         evaluationForms,
+        sentEvaluations,
         addRemark,
         getInternData,
         updateInternData

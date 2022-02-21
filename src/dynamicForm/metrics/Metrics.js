@@ -1,67 +1,70 @@
 import {
   CircularProgress,
   Grid,
-  Box,
   Typography,
-  Divider
+  Divider,
+  Card,
+  CardHeader,
+  CardContent,
+  CardActionArea,
+  CardActions,
+  Button
 } from '@material-ui/core';
+import GetAppIcon from '@material-ui/icons/GetApp';
 import { DataGrid } from '@material-ui/data-grid';
-import { map } from 'draft-js/lib/DefaultDraftBlockRenderMap';
+
 import { useEffect, useState } from 'react';
-import { Bar, Line, Pie } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
+import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
+import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import { useSupervisor } from '../../providers/Supervisor';
 import { useUser } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
+import { FormTypes } from '../camps/FormTypes';
+import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import ExcelExporter from '../../utils/ExcelExporter';
+import { MdFileDownload } from 'react-icons/md';
 
 function Metrics() {
   const { careerId } = useUser();
   const [selectedCareerId, setSelectedCareerId] = useState(careerId);
   const [formFull, setFormFull] = useState();
-  const { getCareerForm, getSurveyForm, getEvaluateForm } = useSupervisor();
+  const { getForm } = useSupervisor();
 
   useEffect(() => {
-    getCareerForm(selectedCareerId).then((careerForm) =>
-      setFormFull(careerForm)
-    );
-  }, [selectedCareerId]);
+    if (selectedCareerId !== 'general') {
+      getForm(FormTypes.EvaluationForm, selectedCareerId).then((careerForm) => {
+        setFormFull(careerForm);
+      });
+    }
+  }, [selectedCareerId, getForm]);
 
   return (
-    <Grid style={{ marginLeft: 20 }}>
-      <Typography>Metricas</Typography>
-      <CareerSelector
-        careerId={selectedCareerId}
-        setCareerId={setSelectedCareerId}
-        excludeGeneral
-      />
-      {formFull &&
-        formFull.map((step, stepIndex) =>
-          step.form.map((camp) => (
-            <Grid container direction='row'>
-              {camp.type === 'Menú de opciones' && (
-                <Grid item style={{ marginBottom: '6rem' }}>
-                  <Typography variant='h4'>{camp.name}</Typography>
-                  <Chart step={stepIndex} name={camp.name} />
-                  <Divider />
-                </Grid>
-              )}
-              {camp.type === 'Medidor satisfacción' && (
-                <Grid item style={{ marginBottom: '6rem' }}>
-                  <Typography variant='h4'>{camp.name}</Typography>
-                  <Chart step={stepIndex} name={camp.name} />
-                  <Divider />
-                </Grid>
-              )}
-              {camp.type === 'Campos predefinidos' &&
-                camp.type2 === 'Fecha de inicio' && (
-                  <Grid item style={{ marginBottom: '6rem' }}>
-                    <Typography variant='h4'>{camp.name}</Typography>
+    <Grid container direction='column' style={{ marginLeft: 20 }}>
+      <Grid item sx={6}>
+        <Typography>Metricas</Typography>
+        <CareerSelector
+          careerId={selectedCareerId}
+          setCareerId={setSelectedCareerId}
+          excludeGeneral
+        />
+      </Grid>
+
+      <Grid item container spacing={2}>
+        {formFull &&
+          selectedCareerId !== 'general' &&
+          formFull.map((step, stepIndex) =>
+            step.form.map(
+              (camp) =>
+                camp.type === 'Menú de opciones' ||
+                (camp.type === 'Medidor satisfacción' && (
+                  <Grid item xs={12} md={4} style={{ marginBottom: '1rem' }}>
                     <Chart step={stepIndex} name={camp.name} />
-                    <Divider />
                   </Grid>
-                )}
-            </Grid>
-          ))
-        )}
+                ))
+            )
+          )}
+      </Grid>
     </Grid>
   );
 
@@ -70,12 +73,17 @@ function Metrics() {
       { field: 'name', headerName: 'Nombre', flex: 1 },
       { field: 'count', headerName: 'Total', flex: 1 }
     ];
+    const colors = [
+      'rgba(52, 92, 140, 1)',
+      'rgba(76, 196, 196, 1)',
+      'rgba(52, 164, 236, 1)',
+      'rgba(92, 180, 236, 1)'
+    ];
     const [data, setData] = useState([]);
     const [dataBarChart, setDataBarChart] = useState([]);
     const [dataPieChart, setDataPieChart] = useState([]);
-    const [dataLineChart, setDataLineChart] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    const { applications } = useSupervisor();
+    const { evaluations } = useSupervisor();
 
     useEffect(() => {
       const selectCounter = new Map();
@@ -83,6 +91,7 @@ function Metrics() {
       //cargar opciones predefinidas en los casos en los que se puedan calcular
       formFull[step].form.map((camp) => {
         if (
+          camp.options &&
           camp.name === name &&
           (camp.type === 'Medidor satisfacción' ||
             camp.type === 'Menú de opciones')
@@ -91,11 +100,8 @@ function Metrics() {
         }
       });
 
-      applications
-        .filter(
-          (item) =>
-            item.status === 'Aprobado' && item.careerId === selectedCareerId
-        )
+      evaluations
+        .filter((item) => item.careerId === selectedCareerId)
         .forEach((doc) => {
           if (doc.form[step]) {
             doc.form[step].form.map((camp) => {
@@ -108,23 +114,6 @@ function Metrics() {
                 if (selectCounter.has(camp.value)) {
                   let counter = selectCounter.get(camp.value);
                   selectCounter.set(camp.value, counter + 1);
-                }
-              }
-
-              // contador datos fechas
-              else if (
-                camp.type === 'Campos predefinidos' &&
-                camp.name === name &&
-                (camp.type2 === 'Fecha de inicio' ||
-                  camp.type2 === 'Fecha de término')
-              ) {
-                var dateAux = camp.value.toDate();
-
-                if (selectCounter.has(dateAux)) {
-                  let counter = selectCounter.get(dateAux);
-                  selectCounter.set(dateAux, counter + 1);
-                } else {
-                  selectCounter.set(dateAux, 1);
                 }
               }
             });
@@ -142,63 +131,6 @@ function Metrics() {
         i++;
       });
 
-      //ordenar fechas
-      if (name === 'Fecha de inicio' || name === 'Fecha de término') {
-        rows.sort(function (a, b) {
-          var nameA = a.name;
-          var nameB = b.name;
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-
-          // names must be equal
-          return 0;
-        });
-        //add dates
-
-        var newDates = getDaysArray(rows[0].name, rows[rows.length - 1].name);
-        newDates.map((date) => {
-          if (selectCounter.has(date)) {
-          } else {
-            selectCounter.set(date, 0);
-          }
-        });
-
-        entries = Array.from(selectCounter.entries());
-        entries.forEach((entry) => {
-          rows.push({ id: i, name: entry[0], count: entry[1] });
-          i++;
-        });
-        //re-format dates
-        rows.sort(function (a, b) {
-          var nameA = a.name;
-          var nameB = b.name;
-          if (nameA < nameB) {
-            return -1;
-          }
-          if (nameA > nameB) {
-            return 1;
-          }
-
-          // names must be equal
-          return 0;
-        });
-
-        for (let i = 0; i < rows.length; i++) {
-          rows[i].name =
-            rows[i].name.getDate() +
-            '/' +
-            (rows[i].name.getMonth() + 1) +
-            '/' +
-            rows[i].name.getFullYear();
-          // more statements
-        }
-        console.log(rows);
-      }
-
       //setedo de los datos del grafico de barras
       let config = {
         labels: rows.map((label) => {
@@ -210,22 +142,8 @@ function Metrics() {
             data: rows.map((label) => {
               return label.count;
             }),
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)'
-            ],
+            backgroundColor: colors,
+            borderColor: colors,
             borderWidth: 1
           }
         ]
@@ -242,106 +160,52 @@ function Metrics() {
             data: rows.map((label) => {
               return label.count;
             }),
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(255, 206, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-              'rgba(255, 99, 132, 1)',
-              'rgba(54, 162, 235, 1)',
-              'rgba(255, 206, 86, 1)',
-              'rgba(75, 192, 192, 1)',
-              'rgba(153, 102, 255, 1)',
-              'rgba(255, 159, 64, 1)'
-            ],
+            backgroundColor: colors,
+            borderColor: colors,
             borderWidth: 1
           }
         ]
       };
-      ///line data set
-      const dataLine = {
-        labels: rows.map((label) => {
-          return label.name;
-        }),
-        datasets: [
-          {
-            label: 'Dataset 1',
-            data: rows.map((label) => {
-              return label.count;
-            }),
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgba(255, 99, 132, 0.5)'
-          }
-        ]
-      };
 
-      setDataLineChart(dataLine);
       setDataPieChart(dataPie);
       setData(rows);
       setDataBarChart(config);
-    }, [applications]);
+      setLoaded(true);
+    }, [evaluations, name, step]);
 
-    function getDaysArray(start, end) {
-      for (
-        var arr = [], dt = new Date(start);
-        dt <= end;
-        dt.setDate(dt.getDate() + 1)
-      ) {
-        arr.push(new Date(dt));
-      }
-      return arr;
-    }
     const optionsBarChart = {
       maintainAspectRatio: false
     };
-
-    const optionsLine = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-      elements: {
-        line: {
-          tension: 0.5 // disables bezier curves
-        }
-      },
-      scales: {
-        yAxes: [
-          {
-            ticks: {
-              display: false
-            },
-            gridLines: {
-              display: false
-            }
+    const [typeChart, setTypeChart] = useState(1);
+    function ExportarExcel() {
+      return (
+        <ExcelFile
+          element={
+            <Button
+              fullWidth
+              color='primary'
+              variant='text'
+              startIcon={<MdFileDownload />}>
+              Exportar datos
+            </Button>
           }
-        ],
-        xAxes: [
-          {
-            type: 'time',
-            time: {
-              unit: 'day',
-              tooltipFormat: 'MMM DD'
-            },
-            gridLines: {
-              display: false
-            }
-          }
-        ]
-      }
-    };
-    useEffect(() => setLoaded(!!data), [data]);
+          filename={name}>
+          <ExcelSheet data={data} name='Estudiantes para seguro'>
+            <ExcelColumn label='opcion' value='name' />
+            <ExcelColumn label='cantidad' value='count' />
+          </ExcelSheet>
+        </ExcelFile>
+      );
+    }
 
     return (
-      <>
-        {loaded ? (
-          <Grid container direction='column'>
-            <Grid container direction='row'>
-              <Grid item xs={4}>
+      <Card xs={12}>
+        <CardHeader title={name} />
+        <Divider />
+        <CardContent>
+          {loaded ? (
+            <>
+              {typeChart === 0 && (
                 <DataGrid
                   rows={data}
                   columns={columns}
@@ -349,24 +213,21 @@ function Metrics() {
                   autoHeight={true}
                   columnBuffer={2}
                 />
-              </Grid>
-              <Grid item xs={4}>
+              )}
+              {typeChart === 1 && (
                 <Bar data={dataBarChart} options={optionsBarChart} />
-              </Grid>
-              <Grid item xs={4}>
-                <Pie data={dataPieChart} />
-              </Grid>
-            </Grid>
-            <Grid item xs={10}>
-              <Box sx={{ width: 1000, height: 400 }}>
-                <Line options={optionsLine} data={dataLineChart} />
-              </Box>
-            </Grid>
-          </Grid>
-        ) : (
-          <CircularProgress />
-        )}
-      </>
+              )}
+              {typeChart === 2 && <Pie data={dataPieChart} />}
+            </>
+          ) : (
+            <CircularProgress />
+          )}
+        </CardContent>
+        <Divider />
+        <CardActions style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <ExportarExcel />
+        </CardActions>
+      </Card>
     );
   }
 }

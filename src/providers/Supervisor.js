@@ -672,6 +672,7 @@ export function SupervisorProvider({ children }) {
         students,
         careers,
         employers,
+        evaluations,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,

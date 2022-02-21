@@ -458,6 +458,7 @@ function DashboardAdmin({ sidebarProps }) {
             </Grid>
           }
         />
+        <Route path='/metrics' element={<Metrics />} />
         {userRole === ADMIN_ROLE && (
           <Route path='/control-panel/' element={<ControlPanel />} />
         )}

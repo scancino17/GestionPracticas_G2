@@ -95,7 +95,6 @@ function FormBuilder({
 
   return (
     <Grid
-      border={1}
       container
       direction='column'
       justifyContent='flex-start'
@@ -105,7 +104,7 @@ function FormBuilder({
         direction='column'
         justifyContent='center'
         alignItems='center'>
-        <Box pl={6} pb={2}>
+        <Box width={'100%'}>
           <Table>
             <TableHead>
               <TableRow>
@@ -124,12 +123,12 @@ function FormBuilder({
               {formInner.map((rec, i) => (
                 <TableRow key={i}>
                   <TableCell>
-                    <Typography noWrap style={{ maxWidth: '10rem' }}>
+                    <Typography style={{ maxWidth: '10rem' }}>
                       {rec.name}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography noWrap style={{ maxWidth: '7rem' }}>
+                    <Typography style={{ maxWidth: '7rem' }}>
                       {rec.type}
                     </Typography>
                   </TableCell>
@@ -178,6 +177,7 @@ function FormBuilder({
         justifyContent='center'
         alignItems='center'>
         <Button
+          style={{ marginTop: '20px', marginBottom: '20px' }}
           variant='contained'
           color='primary'
           startIcon={<Add />}

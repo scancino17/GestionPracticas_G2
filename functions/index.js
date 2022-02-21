@@ -256,7 +256,7 @@ exports.createEmployer = functions.https.onCall((data, context) => {
             .firestore()
             .collection('employers')
             .doc(userRecord.uid)
-            .set({ careers: [], internships: [], remarks: {} });
+            .set({ careers: [], internships: {}, remarks: {} });
 
           admin
             .firestore()
@@ -293,24 +293,22 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
         .get()
         .then((doc) => {
           let docData = doc.data();
-          const internships = docData.internships;
-          console.log(internships);
 
           const careers = docData.careers;
           if (!careers.includes(data.careerdId)) careers.push(data.careerId);
-
-          internships.push({
-            studentId: data.studentId,
-            internshipId: data.internshipId,
-            careerId: data.careerId,
-            employerEvaluated: false
-          });
 
           admin
             .firestore()
             .collection('employers')
             .doc(employer.id)
-            .update({ careers: careers, internships: internships });
+            .update({
+              careers: careers,
+              [`interns.${data.internshipId}`]: {
+                studentId: data.studentId,
+                careerId: data.careerId,
+                employerEvaluated: false
+              }
+            });
 
           admin.firestore().collection('users').doc(data.studentId).update({
             'currentInternship.employerId': employer.id,

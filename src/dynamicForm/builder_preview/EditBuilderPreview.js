@@ -16,11 +16,7 @@ import {
   Divider,
   Button,
   Container,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   Grid,
-  IconButton,
   Step,
   StepLabel,
   Stepper,
@@ -30,12 +26,58 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Typography
+  Typography,
+  Box
 } from '@material-ui/core';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Skeleton } from '@material-ui/lab';
-import { FormTypes } from '../camps/FormTypes';
 import { DEFAULT_CAREER } from '../../providers/User';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { isMobile } from 'react-device-detect';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 
 function EditBuilderPreview({
   selectedTab,
@@ -87,7 +129,6 @@ function EditBuilderPreview({
   }
 
   function handleEdit(index) {
-    console.log(index);
     setEditValue(editableForm[index].step);
     setIndexEdit(index);
     setEdit(true);
@@ -229,53 +270,60 @@ function EditBuilderPreview({
     return arr; // for testing purposes
   }
 
+  const matches = useMediaQuery('(max-width:650px)');
+
   return (
     <Grid container direction='column'>
-      <Grid item style={{ margin: '2rem' }}>
-        <Typography variant='h4'>
-          {
-            {
-              [FormTypes.ApplicationForm]:
-                'Formulario de inscripción de práctica',
-              [FormTypes.EvaluationForm]:
-                'Edición formulario de evaluación del estudiante',
-              [FormTypes.SurveyForm]:
-                'Edición formulario de encuesta de satisfacción'
-            }[formType]
-          }
-        </Typography>
-      </Grid>
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {currentCareer === selectedCareer && editableForm ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
-            <Grid container direction='row' justifyContent='center' spacing={8}>
-              <Grid item xs={12} md={5}>
-                <Typography variant='h5'>Etapas</Typography>
-                <Grid item container justifyContent='center'>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    startIcon={<Build />}
-                    onClick={() => setShow(true)}>
-                    Administrar Etapas
-                  </Button>
+            <Grid item>
+              <Grid
+                container
+                direction='row'
+                justifyContent='center'
+                spacing={isMobile && matches ? 0 : 6}>
+                <Grid item xs={12} sm md xl>
+                  <Box
+                    sx={{
+                      minWidth: isMobile && matches ? 300 : 318
+                    }}>
+                    <Typography variant='h5'>Etapas</Typography>
+                    <Grid item container justifyContent='center'>
+                      <Button
+                        style={{ marginTop: '20px', marginBottom: '20px' }}
+                        variant='contained'
+                        color='primary'
+                        startIcon={<Build />}
+                        onClick={() => setShow(true)}>
+                        Administrar Etapas
+                      </Button>
+                    </Grid>
+                  </Box>
+                </Grid>
+                <Divider orientation='vertical' flexItem />
+
+                <Grid item xs={12} sm md xl>
+                  <Box
+                    sx={{
+                      minWidth: isMobile && matches ? 300 : 410
+                    }}>
+                    <Typography variant='h5'>Previsualización</Typography>
+                    <Stepper
+                      activeStep={activeStep}
+                      alternativeLabel
+                      style={{ backgroundColor: 'transparent' }}>
+                      {editableForm.map((step) => (
+                        <Step key={step.step}>
+                          <StepLabel>{step.step}</StepLabel>
+                        </Step>
+                      ))}
+                    </Stepper>
+                  </Box>
                 </Grid>
               </Grid>
-              <Divider orientation='vertical' flexItem />
-              <Grid item xs={12} md={6}>
-                <Typography variant='h5'>Previsualización</Typography>
-                <Stepper
-                  activeStep={activeStep}
-                  alternativeLabel
-                  style={{ backgroundColor: 'transparent' }}>
-                  {editableForm.map((step) => (
-                    <Step key={step.step}>
-                      <StepLabel>{step.step}</StepLabel>
-                    </Step>
-                  ))}
-                </Stepper>
-              </Grid>
             </Grid>
+
             <Grid item>
               <Typography variant='h5' style={{ padding: '2rem 0 0 4rem' }}>
                 Campos
@@ -292,41 +340,46 @@ function EditBuilderPreview({
                     />
                   )
               )}
-              <Grid
-                container
-                item
-                justifyContent='flex-end'
-                alignItems='center'
-                spacing={4}>
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    startIcon={<Save />}
-                    onClick={handleSave}>
-                    Guardar
-                  </Button>
-                </Grid>
-
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === 0}
-                    startIcon={<ArrowBack />}
-                    onClick={handleBack}>
-                    Anterior
-                  </Button>
-                </Grid>
-                <Grid item>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    disabled={activeStep === editableForm.length - 1}
-                    onClick={handleNext}
-                    endIcon={<ArrowForward />}>
-                    Siguiente
-                  </Button>
+              <Grid item>
+                <Grid
+                  container
+                  direction='row'
+                  justifyContent='flex-end'
+                  alignItems='center'
+                  spacing={1}
+                  style={{ marginTop: '20px', marginBottom: '20px' }}>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      startIcon={<ArrowBack />}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === editableForm.length - 1}
+                      onClick={handleNext}
+                      endIcon={<ArrowForward />}>
+                      Siguiente
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4} sm={2}>
+                    <Button
+                      fullWidth
+                      variant='contained'
+                      color='primary'
+                      startIcon={<Save />}
+                      onClick={handleSave}>
+                      Guardar
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
@@ -342,9 +395,18 @@ function EditBuilderPreview({
           </Grid>
         )}
         {/*Moddal */}
-        <Dialog open={show} onClose={() => setShow(false)} fullWidth>
-          <DialogTitle>Pasos del formulario</DialogTitle>
-          <DialogContent>
+
+        <BootstrapDialog
+          fullWidth
+          onClose={() => setShow(false)}
+          aria-labelledby='customized-dialog-title'
+          open={show}>
+          <BootstrapDialogTitle
+            id='customized-dialog-title'
+            onClose={() => setShow(false)}>
+            Pasos del formulario
+          </BootstrapDialogTitle>
+          <DialogContent dividers>
             <Table>
               <TableHead>
                 <TableRow>
@@ -427,7 +489,7 @@ function EditBuilderPreview({
               </TableBody>
             </Table>
           </DialogContent>
-        </Dialog>
+        </BootstrapDialog>
       </Container>
     </Grid>
   );

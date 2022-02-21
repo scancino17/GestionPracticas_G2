@@ -31,6 +31,7 @@ import { useUser } from '../providers/User';
 import {
   rutFormatter,
   toLegibleDate,
+  toLegibleDateTime,
   toLegibleTime
 } from '../utils/FormatUtils';
 
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   endDateHeading: {
     fontSize: theme.typography.pxToRem(15),
     color: '#de6363',
+    fontWeight: 500,
     [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
     [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
   },
@@ -68,6 +70,14 @@ const useStyles = makeStyles((theme) => ({
   },
   expandOpen: {
     transform: 'rotate(180deg)'
+  },
+  readState: {
+    color: '#5DC2E9',
+    fontWeight: 'bold'
+  },
+  pendingState: {
+    color: theme.palette.secondary.main,
+    fontWeight: 'bold'
   }
 }));
 
@@ -81,6 +91,7 @@ function InternItem({ internship, expanded, changeExpanded }) {
   const classes = useStyles();
   const [showRemarkModal, setShowRemarkModal] = useState(false);
   const [expandedRemark, setExpandedRemark] = useState(false);
+  const { sentEvaluations } = useEmployer();
   const navigate = useNavigate();
 
   function closeModal() {
@@ -98,7 +109,8 @@ function InternItem({ internship, expanded, changeExpanded }) {
     studentCareer,
     internStart,
     internEnd,
-    employerEvaluated
+    employerEvaluated,
+    evaluationTime
   } = internship;
 
   return (
@@ -154,6 +166,60 @@ function InternItem({ internship, expanded, changeExpanded }) {
             <Grid item xs={8} className={classes.redText}>
               <Typography>{toLegibleDate(internEnd)}</Typography>
             </Grid>
+            <Grid item xs={4}>
+              <Typography className={classes.bold}>
+                Estado evaluación:
+              </Typography>
+            </Grid>
+            <Grid item xs={8}>
+              {employerEvaluated ? (
+                sentEvaluations[internshipId] ? (
+                  sentEvaluations[internshipId].read ? (
+                    <Typography className={classes.readState}>
+                      Revisada
+                    </Typography>
+                  ) : (
+                    <Typography className={classes.pendingState}>
+                      En revisión
+                    </Typography>
+                  )
+                ) : (
+                  <Typography className={classes.readState}>
+                    Evaluación envíada
+                  </Typography>
+                )
+              ) : (
+                <Typography className={classes.redText}>Sin evaluar</Typography>
+              )}
+            </Grid>
+            {evaluationTime && (
+              <>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>
+                    Envaluación envíada en:
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>{toLegibleDateTime(evaluationTime)}</Typography>
+                </Grid>
+              </>
+            )}
+            {sentEvaluations[internshipId]?.revisionTime && (
+              <>
+                <Grid item xs={4}>
+                  <Typography className={classes.bold}>
+                    Envaluación revisada en:
+                  </Typography>
+                </Grid>
+                <Grid item xs={8}>
+                  <Typography>
+                    {toLegibleDateTime(
+                      sentEvaluations[internshipId].revisionTime
+                    )}
+                  </Typography>
+                </Grid>
+              </>
+            )}
             <LastRemarkView
               internshipId={internshipId}
               expanded={expandedRemark}
@@ -212,7 +278,7 @@ function LastRemarkView({ internshipId }) {
           <Grid item>
             <Typography variant='h6'>Última observación: </Typography>
           </Grid>
-          <Grid item>
+          <Grid item onClick={handleExpand}>
             <IconButton
               className={classNames(classes.expand, {
                 [classes.expandOpen]: expanded
@@ -239,7 +305,10 @@ function LastRemarkView({ internshipId }) {
               <Typography className={classes.bold}>Estado:</Typography>
             </Grid>
             <Grid item xs={8}>
-              <Typography>
+              <Typography
+                className={classNames({
+                  [classes.readState]: remarkList[0].read
+                })}>
                 {remarkList[0].read ? 'Leído' : 'No Leído'}
               </Typography>
             </Grid>
@@ -317,14 +386,17 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
 
   return (
     <Dialog fullWidth open={showRemarkModal} onClose={closeModal}>
-      <DialogTitle>Enviar observación a supervisor de escuela</DialogTitle>
+      <DialogTitle>
+        Enviar observación a supervisor de la universidad
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>
           Puede enviar un comentario respecto al estudiante{' '}
           <Box fontWeight='fontWeightBold' display='inline'>
             {internship.studentName}
           </Box>{' '}
-          a su correspondiente supervisor de escuela a través de este medio.
+          a su correspondiente supervisor de la universidad a través de este
+          medio.
         </DialogContentText>
         <TextField
           multiline

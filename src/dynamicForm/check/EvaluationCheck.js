@@ -12,6 +12,7 @@ import { CheckOutlined } from '@material-ui/icons';
 import FormView from '../builder_preview/FormView';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisor } from '../../providers/Supervisor';
+import { serverTimestamp } from 'firebase/firestore';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,7 +66,7 @@ function EvaluationCheck() {
           setForm(
             'send-evaluation',
             evaluationId,
-            { read: true },
+            { read: true, revisionTime: serverTimestamp() },
             { merge: true }
           ),
           navigate('/evaluations/')

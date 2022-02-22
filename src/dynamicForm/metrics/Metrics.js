@@ -6,11 +6,13 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardActionArea,
   CardActions,
   Button
 } from '@material-ui/core';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import BarChartIcon from '@mui/icons-material/BarChart';
+
 import { DataGrid } from '@material-ui/data-grid';
 
 import { useEffect, useState } from 'react';
@@ -22,7 +24,6 @@ import { useUser } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 import { FormTypes } from '../camps/FormTypes';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
-import ExcelExporter from '../../utils/ExcelExporter';
 import { MdFileDownload } from 'react-icons/md';
 
 function Metrics() {
@@ -33,8 +34,8 @@ function Metrics() {
 
   useEffect(() => {
     if (selectedCareerId !== 'general') {
-      getForm(FormTypes.EvaluationForm, selectedCareerId).then((careerForm) => {
-        setFormFull(careerForm);
+      getForm(FormTypes.EvaluationForm, selectedCareerId).then((form) => {
+        setFormFull(form);
       });
     }
   }, [selectedCareerId, getForm]);
@@ -43,11 +44,13 @@ function Metrics() {
     <Grid container direction='column' style={{ marginLeft: 20 }}>
       <Grid item sx={6}>
         <Typography>Metricas</Typography>
-        <CareerSelector
-          careerId={selectedCareerId}
-          setCareerId={setSelectedCareerId}
-          excludeGeneral
-        />
+        <Grid item xs={12} sm={4}>
+          <CareerSelector
+            careerId={selectedCareerId}
+            setCareerId={setSelectedCareerId}
+            excludeGeneral
+          />
+        </Grid>
       </Grid>
 
       <Grid item container spacing={2}>
@@ -58,7 +61,12 @@ function Metrics() {
               (camp) =>
                 camp.type === 'Menú de opciones' ||
                 (camp.type === 'Medidor satisfacción' && (
-                  <Grid item xs={12} md={4} style={{ marginBottom: '1rem' }}>
+                  <Grid
+                    key={camp.name}
+                    item
+                    xs={12}
+                    md={4}
+                    style={{ marginBottom: '1rem' }}>
                     <Chart step={stepIndex} name={camp.name} />
                   </Grid>
                 ))
@@ -73,15 +81,11 @@ function Metrics() {
       { field: 'name', headerName: 'Nombre', flex: 1 },
       { field: 'count', headerName: 'Total', flex: 1 }
     ];
-    const colors = [
-      'rgba(52, 92, 140, 1)',
-      'rgba(76, 196, 196, 1)',
-      'rgba(52, 164, 236, 1)',
-      'rgba(92, 180, 236, 1)'
-    ];
+
+    const [typeChart, setTypeChart] = useState('bar');
     const [data, setData] = useState([]);
-    const [dataBarChart, setDataBarChart] = useState([]);
-    const [dataPieChart, setDataPieChart] = useState([]);
+    const [dataChart, setDataChart] = useState([]);
+
     const [loaded, setLoaded] = useState(false);
     const { evaluations } = useSupervisor();
 
@@ -123,16 +127,21 @@ function Metrics() {
       var entries = Array.from(selectCounter.entries());
 
       const rows = [];
-      let i = 0;
 
       //parseo de los datos en label y datos
-      entries.forEach((entry) => {
+      entries.forEach((entry, i) => {
         rows.push({ id: i, name: entry[0], count: entry[1] });
         i++;
       });
 
-      //setedo de los datos del grafico de barras
-      let config = {
+      let colors = [
+        'rgba(52, 92, 140, 1)',
+        'rgba(76, 196, 196, 1)',
+        'rgba(52, 164, 236, 1)',
+        'rgba(92, 180, 236, 1)'
+      ];
+      //seteo datos graficos
+      const dataChart = {
         labels: rows.map((label) => {
           return label.name;
         }),
@@ -149,34 +158,20 @@ function Metrics() {
         ]
       };
 
-      //seteo datos grafico de pastel
-      const dataPie = {
-        labels: rows.map((label) => {
-          return label.name;
-        }),
-        datasets: [
-          {
-            label: name,
-            data: rows.map((label) => {
-              return label.count;
-            }),
-            backgroundColor: colors,
-            borderColor: colors,
-            borderWidth: 1
-          }
-        ]
-      };
-
-      setDataPieChart(dataPie);
+      setDataChart(dataChart);
       setData(rows);
-      setDataBarChart(config);
       setLoaded(true);
     }, [evaluations, name, step]);
 
     const optionsBarChart = {
+      plugins: { legend: { display: false } },
       maintainAspectRatio: false
     };
-    const [typeChart, setTypeChart] = useState(1);
+    const optionsPieChart = {
+      plugins: { legend: { position: 'right' } },
+      maintainAspectRatio: false
+    };
+
     function ExportarExcel() {
       return (
         <ExcelFile
@@ -198,6 +193,11 @@ function Metrics() {
       );
     }
 
+    const handleTypeChart = (event, newAlignment) => {
+      if (newAlignment !== null) {
+        setTypeChart(newAlignment);
+      }
+    };
     return (
       <Card xs={12}>
         <CardHeader title={name} />
@@ -214,17 +214,32 @@ function Metrics() {
                   columnBuffer={2}
                 />
               )}
-              {typeChart === 1 && (
-                <Bar data={dataBarChart} options={optionsBarChart} />
+              {typeChart === 'bar' && (
+                <Bar data={dataChart} options={optionsBarChart} />
               )}
-              {typeChart === 2 && <Pie data={dataPieChart} />}
+              {typeChart === 'pie' && (
+                <Pie data={dataChart} options={optionsPieChart} />
+              )}
             </>
           ) : (
             <CircularProgress />
           )}
         </CardContent>
         <Divider />
-        <CardActions style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <CardActions
+          style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <ToggleButtonGroup
+            value={typeChart}
+            exclusive
+            onChange={handleTypeChart}
+            aria-label='text alignment'>
+            <ToggleButton value='bar' aria-label='Pastel'>
+              <BarChartIcon />
+            </ToggleButton>
+            <ToggleButton value='pie' aria-label='Barra'>
+              <PieChartIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
           <ExportarExcel />
         </CardActions>
       </Card>

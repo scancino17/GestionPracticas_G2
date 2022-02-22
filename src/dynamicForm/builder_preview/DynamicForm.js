@@ -13,10 +13,10 @@ function DynamicForm({
   setForm,
   formFull,
   filesInner,
-  setFilesInner
+  setFilesInner,
+  flag,
+  setFlag
 }) {
-  const [flag, setFlag] = useState(false);
-
   const matches = useMediaQuery('(max-width:650px)');
 
   return (

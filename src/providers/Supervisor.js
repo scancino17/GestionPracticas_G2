@@ -428,7 +428,8 @@ export function SupervisorProvider({ children }) {
 
     updateApplication(appData.id, {
       status: 'Necesita cambios menores',
-      reason: changes
+      reason: changes,
+      minorChangeRequestDate: serverTimestamp()
     });
 
     updateUser(appData.studentId, {

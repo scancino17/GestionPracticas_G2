@@ -111,7 +111,10 @@ function ApplicationsList() {
               item.rejectDate &&
               item.rejectDate.seconds * 1000 <= endDate &&
               item.rejectDate.seconds * 1000 >= startDate) ||
-            item.status === 'Necesita cambios menores'
+            (item.status === 'Necesita cambios menores' &&
+              item.minorChangeRequestDate &&
+              item.minorChangeRequestDate.seconds * 1000 <= endDate &&
+              item.minorChangeRequestDate.seconds * 1000 >= startDate)
         );
       } else if (reviewing)
         filtered = filtered.filter(
@@ -139,13 +142,53 @@ function ApplicationsList() {
         );
       else if (needChanges)
         filtered = filtered.filter(
-          (item) => item.status === 'Necesita cambios menores'
+          (item) =>
+            item.status === 'Necesita cambios menores' &&
+            item.minorChangeRequestDate &&
+            item.minorChangeRequestDate.seconds * 1000 <= endDate &&
+            item.minorChangeRequestDate.seconds * 1000 >= startDate
         );
 
       filtered.sort((a, b) =>
-        a.creationDate.seconds < b.creationDate.seconds
+        (a.status === 'En revisión' && a.creationDate
+          ? a.creationDate.seconds
+          : a.status === 'Aprobado' && a.approvedDate
+          ? a.approvedDate.seconds
+          : a.status === 'Rechazado' && a.rejectDate
+          ? a.rejectDate.seconds
+          : a.status === 'Necesita cambios menores' && a.minorChangeRequestDate
+          ? a.minorChangeRequestDate.seconds
+          : null) <
+        (b.status === 'En revisión' && b.creationDate
+          ? b.creationDate.seconds
+          : b.status === 'Aprobado' && b.approvedDate
+          ? b.approvedDate.seconds
+          : b.status === 'Rechazado' && b.rejectDate
+          ? b.rejectDate.seconds
+          : b.status === 'Necesita cambios menores' && b.minorChangeRequestDate
+          ? b.minorChangeRequestDate.seconds
+          : null)
           ? 1
-          : a.creationDate.seconds === b.creationDate.seconds
+          : (a.status === 'En revisión' && a.creationDate
+              ? a.creationDate.seconds
+              : a.status === 'Aprobado' && a.approvedDate
+              ? a.approvedDate.seconds
+              : a.status === 'Rechazado' && a.rejectDate
+              ? a.rejectDate.seconds
+              : a.status === 'Necesita cambios menores' &&
+                a.minorChangeRequestDate
+              ? a.minorChangeRequestDate.seconds
+              : null) ===
+            (b.status === 'En revisión' && b.creationDate
+              ? b.creationDate.seconds
+              : b.status === 'Aprobado' && b.approvedDate
+              ? b.approvedDate.seconds
+              : b.status === 'Rechazado' && b.rejectDate
+              ? b.rejectDate.seconds
+              : b.status === 'Necesita cambios menores' &&
+                b.minorChangeRequestDate
+              ? b.minorChangeRequestDate.seconds
+              : null)
           ? a.size < b.size
             ? 1
             : -1
@@ -351,10 +394,16 @@ function ApplicationsList() {
                 <Grid item xs={12} sm={4}>
                   <ExportarExcel />
                 </Grid>
-                <Grid container item xs={12} direction='row' spacing={2}>
-                  <Grid item xs={12} md={2}>
+                <Grid
+                  container
+                  item
+                  xs={12}
+                  sm={4}
+                  direction='row'
+                  spacing={2}
+                  justifyContent='space-between'>
+                  <Grid item xs={6} md={6}>
                     <DatePicker
-                      fullWidth
                       disableToolbar
                       variant='inline'
                       format='dd/MM/yyyy'
@@ -363,9 +412,8 @@ function ApplicationsList() {
                       onChange={(date) => setStartDate(date)}
                     />
                   </Grid>
-                  <Grid item xs={12} md={2}>
+                  <Grid item xs={6} md={6}>
                     <DatePicker
-                      fullWidth
                       disableToolbar
                       variant='inline'
                       format='dd/MM/yyyy'
@@ -429,10 +477,14 @@ function ApplicationItem({ application }) {
     if (application.status === 'En revisión' && application.creationDate) {
       return 'Enviada el ' + toLegibleDate(application.creationDate);
     } else if (application.status === 'Aprobado' && application.approvedDate) {
-      return 'Aprovada el ' + toLegibleDate(application.approvedDate);
+      return 'Aprobada el ' + toLegibleDate(application.approvedDate);
     } else if (application.status === 'Rechazado' && application.rejectDate) {
       return 'Rechazada el ' + toLegibleDate(application.rejectDate);
     } else if (application.status === 'Necesita cambios menores') {
+      return (
+        'Se solicitaron cambios el ' +
+        toLegibleDate(application.minorChangeRequestDate)
+      );
     }
   }
 

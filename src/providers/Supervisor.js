@@ -362,6 +362,7 @@ export function SupervisorProvider({ children }) {
 
   function approveApplication(appData, approveReason) {
     updateApplication(appData.id, {
+      approvedDate: serverTimestamp(),
       status: 'Aprobado',
       reason: approveReason
     });
@@ -393,6 +394,7 @@ export function SupervisorProvider({ children }) {
 
   function rejectApplication(appData, rejectReason) {
     updateApplication(appData.id, {
+      rejectDate: serverTimestamp(),
       status: 'Rechazado',
       reason: rejectReason
     });

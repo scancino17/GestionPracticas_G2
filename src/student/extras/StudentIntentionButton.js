@@ -2,7 +2,7 @@ import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useStudent } from '../../providers/Student';
-
+import { serverTimestamp } from 'firebase/firestore';
 const approvalState = pendingIntention;
 
 function StudentIntention({ practica, altText, forceDisable }) {
@@ -14,7 +14,10 @@ function StudentIntention({ practica, altText, forceDisable }) {
       setInternshipState(approvalState);
     }
 
-    updateInternship(practica.id, { status: approvalState });
+    updateInternship(practica.id, {
+      status: approvalState,
+      sentTime: serverTimestamp()
+    });
   };
 
   const isPendingApproval = () => {

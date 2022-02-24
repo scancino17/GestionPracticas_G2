@@ -34,7 +34,9 @@ import CareerSelector from '../../utils/CareerSelector';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
-
+import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -105,6 +107,10 @@ function IntentionList({ pendingIntentions, update }) {
   const [page, setPage] = useState(1);
   const [name, setName] = useState('');
   const { userRole } = useUser();
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
   const changeExpanded = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -118,9 +124,25 @@ function IntentionList({ pendingIntentions, update }) {
         );
       if (name !== '')
         filtered = filtered.filter((item) => item.studentName.includes(name));
+
+      filtered = filtered.filter(
+        (item) =>
+          item.sentTime &&
+          item.sentTime.seconds * 1000 <= endDate &&
+          item.sentTime.seconds * 1000 >= startDate
+      );
+      filtered.sort((a, b) =>
+        a.sentTime < b.sentTime
+          ? 1
+          : a.sentTime === b.sentTime
+          ? a.size < b.size
+            ? 1
+            : -1
+          : -1
+      );
       return filtered;
     } else return [];
-  }, [pendingIntentions, name, selectedCareerId]);
+  }, [pendingIntentions, selectedCareerId, name, endDate, startDate]);
 
   function ExportarExcel() {
     return (
@@ -138,6 +160,14 @@ function IntentionList({ pendingIntentions, update }) {
         <ExcelSheet
           data={filteredInternshipIntention}
           name='Estudiantes para seguro'>
+          <ExcelColumn
+            label='Fecha de la solicitud'
+            value={(col) => toLegibleDate(col.sentTime)}
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) => toLegibleTime(col.sentTime)}
+          />
           <ExcelColumn label='Nombre estudiante' value='name' />
           <ExcelColumn label='N° de Matrícula' value='enrollmentNumber' />
           <ExcelColumn label='RUT estudiante' value='rut' />
@@ -186,6 +216,32 @@ function IntentionList({ pendingIntentions, update }) {
           <Grid item xs={12} sm={4}>
             <ExportarExcel />
           </Grid>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container item xs={12} direction='row' spacing={2}>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha inicio'}
+                  value={startDate}
+                  onChange={(date) => setStartDate(date)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha Fin'}
+                  value={endDate}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
@@ -248,7 +304,7 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
     setShowRejectModal(false);
   };
 
-  const { internshipId, name, internshipNumber } = internship;
+  const { internshipId, name, internshipNumber, sentTime } = internship;
   return (
     <>
       <Accordion
@@ -263,6 +319,15 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
             className={
               classes.secondaryHeading
             }>{`Intención de práctica ${internshipNumber}`}</Typography>
+
+          {sentTime && (
+            <Typography
+              style={{ marginLeft: '3rem' }}
+              component={'span'}
+              className={
+                classes.secondaryHeading
+              }>{`Solicitada el ${toLegibleDate(sentTime)}`}</Typography>
+          )}
         </AccordionSummary>
         <AccordionDetails>
           <Grid container>

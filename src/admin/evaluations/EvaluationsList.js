@@ -62,9 +62,9 @@ function EvaluationItem({ evaluation }) {
   const navigate = useNavigate();
   function dateString(evaluation) {
     if (evaluation.read && evaluation.revisionTime) {
-      return 'Enviada el ' + toLegibleDate(evaluation.revisionTime);
+      return ' Leída el ' + toLegibleDate(evaluation.revisionTime);
     } else if (!evaluation.read && evaluation.sentTime) {
-      return 'Leída el ' + toLegibleDate(evaluation.sentTime);
+      return ' Enviada el' + toLegibleDate(evaluation.sentTime);
     }
   }
   return (

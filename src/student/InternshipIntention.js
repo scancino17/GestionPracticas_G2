@@ -126,15 +126,15 @@ const IntentionItem = ({
   const selectDetails = () => {
     switch (internship.status) {
       case approvedState:
-        return <ApprovedState />;
+        return ApprovedState();
       case pendingApprovalState:
-        return <PendingState />;
+        return PendingState();
       case deniedState:
-        return <DeniedState />;
+        return DeniedState();
       case availableInternship:
-        return <AvailableState />;
+        return AvailableState();
       case finishedInternship:
-        return <FinishedState />;
+        return FinishedState();
       default:
         return (
           <Typography>
@@ -345,11 +345,11 @@ const IntentionItem = ({
   const selectActions = () => {
     switch (internship.status) {
       case approvedState:
-        return <ApprovedActions />;
+        return ApprovedActions();
       case deniedState:
-        return <DeniedActions />;
+        return DeniedActions();
       case availableInternship:
-        return <AvailableActions />;
+        return AvailableActions();
       default:
         return <></>;
     }
@@ -463,9 +463,10 @@ const IntentionItem = ({
 };
 
 function InternshipIntention() {
-  const [noneDeclarated, isNoneDeclarated] = useState(true);
   const { internships } = useStudent();
 
+  /*
+const [noneDeclarated, isNoneDeclarated] = useState(true);
   useEffect(() => {
     isNoneDeclarated(
       internships.filter((item) => !(item.status === availableInternship))
@@ -473,26 +474,21 @@ function InternshipIntention() {
     );
   }, [internships]);
 
+*/
   return (
     <>
-      {noneDeclarated ? (
-        <EmptyHome practicas={internships} />
-      ) : (
-        internships && (
-          <Container style={{ padding: '2rem' }}>
-            <Grid container direction='column' spacing={6}>
-              <Grid item>
-                <Typography variant='h4'>
-                  Estado de intención de práctica
-                </Typography>
-              </Grid>
-              <Grid item>
-                <InternshipState internships={internships} />
-              </Grid>
-            </Grid>
-          </Container>
-        )
-      )}
+      <Container style={{ padding: '2rem' }}>
+        <Grid container direction='column' spacing={6}>
+          <Grid item>
+            <Typography variant='h4'>
+              Estado de intención de práctica
+            </Typography>
+          </Grid>
+          <Grid item>
+            <InternshipState internships={internships} />
+          </Grid>
+        </Grid>
+      </Container>
     </>
   );
 }

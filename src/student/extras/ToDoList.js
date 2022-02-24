@@ -260,7 +260,6 @@ function ToDoList() {
                         currentInternshipData.status === sentApplication
                       }
                     />
-                    <Divider />
                   </>
                 )}
               {currentInternshipData &&
@@ -380,7 +379,6 @@ function ToDoList() {
                     }
                     buttonOnClick={() => setShowExtension(true)}
                   />
-                  <Divider />
                 </>
               )}
             </Grid>

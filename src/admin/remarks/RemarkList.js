@@ -11,11 +11,6 @@ import {
   AccordionActions,
   Hidden,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   Box as TextBox,
   Divider
 } from '@material-ui/core';
@@ -31,12 +26,56 @@ import {
   toLegibleDateTime,
   toLegibleTime
 } from '../../utils/FormatUtils';
-import { Box, Tab, Tabs } from '@mui/material';
-import PropTypes from 'prop-types';
+import { Box, DialogContentText, Tab, Tabs } from '@mui/material';
+
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -249,9 +288,15 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
   useEffect(() => remark.answer && setAnswer(remark.answer), [remark]);
 
   return (
-    <Dialog fullWidth open={showAnswerModal} onClose={closeModal}>
-      <DialogTitle>Responder observación de supervisor</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showAnswerModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
+        Responder observación de supervisor
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <DialogContentText>
           Puede responder la observación respecto al estudiante{' '}
           <TextBox fontWeight='fontWeightBold' display='inline'>
@@ -278,7 +323,7 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
           Responder observación
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 

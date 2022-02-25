@@ -10,15 +10,10 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
-  Dialog,
-  DialogContent,
-  DialogContentText,
   TextField,
   Box,
-  DialogTitle,
-  DialogActions,
   Collapse,
-  IconButton
+  DialogContentText
 } from '@material-ui/core';
 import classNames from 'classnames';
 import { grey } from '@material-ui/core/colors';
@@ -34,7 +29,51 @@ import {
   toLegibleDateTime,
   toLegibleTime
 } from '../utils/FormatUtils';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -385,11 +424,15 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
   }
 
   return (
-    <Dialog fullWidth open={showRemarkModal} onClose={closeModal}>
-      <DialogTitle>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showRemarkModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
         Enviar observación a supervisor de la universidad
-      </DialogTitle>
-      <DialogContent>
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <DialogContentText>
           Puede enviar un comentario respecto al estudiante{' '}
           <Box fontWeight='fontWeightBold' display='inline'>
@@ -413,7 +456,7 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
           Enviar observación
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 

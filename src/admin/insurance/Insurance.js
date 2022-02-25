@@ -28,7 +28,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -117,7 +119,11 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerInitials}`}
+          secondary={`${
+            internship.applicationData['Rut del estudiante']
+          } - Práctica ${internship.applicationData.internshipNumber} - ${
+            internship.careerInitials
+          } - Práctica aprobada el ${toLegibleDate(internship.approvedDate)}`}
         />
       </ListItem>
       <Divider />
@@ -141,13 +147,23 @@ function Insurance() {
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
   const { internships } = useSupervisor();
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
     const exportar = [];
     const seguro = [];
 
     internships
-      .filter((item) => item.status === approvedApplication)
+      .filter(
+        (item) =>
+          item.status === approvedApplication &&
+          item.approvedDate &&
+          item.approvedDate.seconds * 1000 >= startDate &&
+          item.approvedDate.seconds * 1000 <= endDate
+      )
       .forEach((internship) => {
         if (!internship.alreadyDownloaded) {
           const termino = YearMonthDay(
@@ -161,17 +177,17 @@ function Insurance() {
             ...internship.applicationData,
             stringInicio: inicio,
             stringTermino: termino,
-            carrera: internship.careerName
+            carrera: internship.careerName,
+            approvedDate: internship.approvedDate
           });
         }
         if (!internship.seguroDisponible) {
           seguro.push(internship);
         }
       });
-
     setUsersExport([...exportar]);
     setUsersInsurance([...seguro]);
-  }, [internships]);
+  }, [internships, startDate, endDate]);
 
   const filteredInsuranceList = useMemo(() => {
     if (usersInsurance) {
@@ -204,18 +220,25 @@ function Insurance() {
             variant='contained'
             startIcon={<GetAppIcon />}
             onClick={() =>
-              usersExport.forEach((doc) =>
-                db
-                  .collection('internships')
+              usersExport.forEach((doc) => {
+                db.collection('internships')
                   .doc(doc.id)
-                  .update({ alreadyDownloaded: true })
-              )
+                  .update({ alreadyDownloaded: true });
+              })
             }>
             Exportar postulaciones aprobadas
           </Button>
         }
         filename='Estudiantes para seguro'>
         <ExcelSheet data={usersExport} name='Estudiantes para seguro'>
+          <ExcelColumn
+            label='Fecha de aprobacion de inscripción'
+            value={(col) => toLegibleDate(col.approvedDate)}
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) => toLegibleTime(col.approvedDate)}
+          />
           <ExcelColumn
             label='Nombre estudiante'
             value='Nombre del estudiante'
@@ -265,6 +288,32 @@ function Insurance() {
           <Grid item xs={12} sm={7} lg={4}>
             <ExportarExcel />
           </Grid>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container item xs={12} direction='row' spacing={2}>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha inicio'}
+                  value={startDate}
+                  onChange={(date) => setStartDate(date)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha Fin'}
+                  value={endDate}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
 
         {filteredInsuranceList.length > 0 ? (

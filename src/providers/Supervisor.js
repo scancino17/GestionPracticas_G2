@@ -368,6 +368,7 @@ export function SupervisorProvider({ children }) {
     });
 
     updateInternship(appData.internshipId, {
+      approvedDate: serverTimestamp(),
       status: approvedApplication,
       applicationData: appData,
       applicationId: appData.id,

@@ -519,6 +519,18 @@ export function SupervisorProvider({ children }) {
         file
       );
     });
+
+    sendMail(internship.studentEmail, 'Insurance', {
+      from_name: internship.studentName
+    });
+    updateUser(internship.studentId, {
+      currentInternship: {
+        id: internship.id,
+        number: internship.internshipNumber
+      }
+    }).then(() =>
+      addNotification(internship.studentId, StudentNotificationTypes.insurance)
+    );
   }
 
   function amendReport(internshipId, student, reason) {

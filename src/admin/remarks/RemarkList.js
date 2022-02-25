@@ -36,7 +36,8 @@ import PropTypes from 'prop-types';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
-
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -121,7 +122,13 @@ function RemarkItem({ remark, expanded, changeExpanded }) {
           </Typography>
           <Hidden xsDown>
             <Typography className={classes.secondaryHeading}>
-              {`Observación de Practica ${remark.internshipNumber} de ${remark.studentName}`}
+              {`Observación de Practica ${remark.internshipNumber} de ${
+                remark.studentName
+              } ${
+                remark.read ? ' Revisada el ' : ' Enviada el '
+              }${toLegibleDate(
+                remark.read ? remark.updateTime : remark.remarkTime
+              )}`}
             </Typography>
           </Hidden>
           <Hidden smUp>
@@ -289,33 +296,92 @@ function RemarkList() {
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [expanded, setExpanded] = useState();
   const [selected, setSelected] = useState({ read: false, notRead: true });
+  const { read, notRead } = selected;
   const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
   const [indice, setIndice] = useState(0);
   const itemsPerPage = 14;
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
 
   const changeExpanded = (panel) => (event, isExpanded) =>
     setExpanded(isExpanded ? panel : false);
 
   const filteredRemarkList = useMemo(() => {
-    return remarkList
-      .slice()
-      .filter(
+    if (remarkList) {
+      let filtered = remarkList.slice();
+      filtered = filtered.filter(
         (item) =>
           selectedCareerId === DEFAULT_CAREER ||
           item.careerId === selectedCareerId
-      )
-      .filter(
-        (item) =>
-          name === '' ||
-          item.studentName.includes(name) ||
-          item.employerName.includes(name)
-      )
-      .filter(
-        (item) =>
-          (item.read && selected.read) || (!item.read && selected.notRead)
       );
-  }, [name, remarkList, selectedCareerId, selected]);
+      if (name !== '') {
+        filtered = filtered.filter(
+          (item) =>
+            item.studentName.includes(name) || item.employerName.includes(name)
+        );
+      }
+      if (read && notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            (!item.read &&
+              item.remarkTime &&
+              item.remarkTime.seconds * 1000 <= endDate &&
+              item.remarkTime.seconds * 1000 >= startDate) ||
+            (item.read &&
+              item.updateTime &&
+              item.updateTime.seconds * 1000 <= endDate &&
+              item.updateTime.seconds * 1000 >= startDate)
+        );
+      } else if (read) {
+        filtered = filtered.filter(
+          (item) =>
+            item.read &&
+            item.updateTime &&
+            item.updateTime.seconds * 1000 <= endDate &&
+            item.updateTime.seconds * 1000 >= startDate
+        );
+      } else if (notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            !item.read &&
+            item.remarkTime &&
+            item.remarkTime.seconds * 1000 <= endDate &&
+            item.remarkTime.seconds * 1000 >= startDate
+        );
+      }
+      filtered.sort((a, b) =>
+        (!a.read && a.remarkTime
+          ? a.remarkTime
+          : a.read && a.updateTime
+          ? a.updateTime
+          : null) <
+        (!b.read && b.remarkTime
+          ? b.remarkTime
+          : b.read && b.updateTime
+          ? b.updateTime
+          : null)
+          ? 1
+          : (!a.read && a.remarkTime
+              ? a.remarkTime
+              : a.read && a.updateTime
+              ? a.updateTime
+              : null) ===
+            (!b.read && b.remarkTime
+              ? b.remarkTime
+              : b.read && b.updateTime
+              ? b.updateTime
+              : null)
+          ? a.size < b.size
+            ? 1
+            : -1
+          : -1
+      );
+      return filtered;
+    } else return [];
+  }, [remarkList, name, read, notRead, selectedCareerId, endDate, startDate]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();
@@ -464,6 +530,32 @@ function RemarkList() {
               <Grid item xs={12} sm={4}>
                 <ExportarExcel />
               </Grid>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Grid container item xs={12} direction='row' spacing={2}>
+                  <Grid item xs={12} md={2}>
+                    <DatePicker
+                      fullWidth
+                      disableToolbar
+                      variant='inline'
+                      format='dd/MM/yyyy'
+                      label={'Fecha inicio'}
+                      value={startDate}
+                      onChange={(date) => setStartDate(date)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    <DatePicker
+                      fullWidth
+                      disableToolbar
+                      variant='inline'
+                      format='dd/MM/yyyy'
+                      label={'Fecha Fin'}
+                      value={endDate}
+                      onChange={(date) => setEndDate(date)}
+                    />
+                  </Grid>
+                </Grid>
+              </MuiPickersUtilsProvider>
               <Divider />
               <Container style={{ marginTop: '2rem' }}>
                 {filteredRemarkList.length > 0 && (

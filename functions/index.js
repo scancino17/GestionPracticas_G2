@@ -284,12 +284,13 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
         .filter((item) => item.customClaims && item.customClaims.employer)
         .find((item) => item.email === data.employerEmail);
 
-      console.log(`Employer found: ${employer.id}`);
+      console.log(`Employer assigned: ${data.employerEmail}`);
+      console.log(`Employer found: ${employer.uid}`);
 
       admin
         .firestore()
         .collection('employers')
-        .doc(employer.id)
+        .doc(employer.uid)
         .get()
         .then((doc) => {
           let docData = doc.data();
@@ -300,7 +301,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
           admin
             .firestore()
             .collection('employers')
-            .doc(employer.id)
+            .doc(employer.uid)
             .update({
               careers: careers,
               [`interns.${data.internshipId}`]: {
@@ -311,7 +312,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
             });
 
           admin.firestore().collection('users').doc(data.studentId).update({
-            'currentInternship.employerId': employer.id,
+            'currentInternship.employerId': employer.uid,
             'currentInternship.employerName': employer.displayName,
             'currentInternship.employerEmail': employer.email
           });
@@ -321,7 +322,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
             .collection('internships')
             .doc(data.internshipId)
             .update({
-              employerId: employer.id,
+              employerId: employer.uid,
               employerName: employer.displayName,
               employerEmail: employer.email,
               employerEvaluated: false

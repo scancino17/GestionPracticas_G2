@@ -38,8 +38,45 @@ export const RequiredFields = {
       displayName: 'Nombre del supervisor',
       type: FieldTypes.formTextInput
       // Sin data: debe ser ingresado por el usuario
+    },
+    studentPhone: {
+      propName: 'studentPhone',
+      displayName: 'Número de teléfono del estudiante',
+      type: FieldTypes.formTextInput
+      // Sin data: debe ser ingresado por el usuario
     }
   },
-  [FormTypes.EvaluationForm]: {},
+  [FormTypes.EvaluationForm]: {
+    studentName: {
+      propName: 'studentName',
+      displayName: 'Nombre del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.studentName
+    },
+    studentRut: {
+      propName: 'studentRut',
+      displayName: 'Rut del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.studentRut
+    },
+    studentNumber: {
+      propName: 'studentNumber',
+      displayName: 'Número de matrícula',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.studentNumber
+    },
+    studentEmail: {
+      propName: 'studentEmail',
+      displayName: 'Correo del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.studentEmail
+    },
+    studentPhone: {
+      propName: 'studentPhone',
+      displayName: 'Número de teléfono del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.studentPhone
+    }
+  },
   [FormTypes.SurveyForm]: {}
 };

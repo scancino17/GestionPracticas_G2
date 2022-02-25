@@ -78,15 +78,22 @@ export function EmployerProvider({ children }) {
         getDoc(doc(db, 'users', studentId)).then((studentDoc) => {
           const student = studentDoc.data();
 
+          // Ojo: acá hay que preocuparse de cargar los datos requeridos
+          // por los campos requeridos del formulario de inscripción
+          // Estos tienen que llevar el key correspondiente al propName de cada
+          // valor requerido.
           const { careerId, applicationData } = internship;
           const {
             'Fecha de inicio': internStart,
-            'Fecha de término': internEnd
+            'Fecha de término': internEnd,
+            studentPhone
           } = applicationData;
           const {
             name: studentName,
             rut: studentRut,
-            careerName: studentCareer
+            careerName: studentCareer,
+            email: studentEmail,
+            enrollmentNumber: studentNumber
           } = student;
           addIntern({
             internshipId,
@@ -97,6 +104,9 @@ export function EmployerProvider({ children }) {
             studentName,
             studentRut,
             studentCareer,
+            studentEmail,
+            studentNumber,
+            studentPhone,
             ...value
           });
         });
@@ -135,7 +145,9 @@ export function EmployerProvider({ children }) {
   const remarksMap = useMemo(() => {
     if (!userData) return new Map();
     const remarksMap = new Map();
-    const internships = userData.internships.map((item) => item.internshipId);
+    const internships = Object.entries(userData.interns).map(
+      ([key, value]) => key
+    );
     internships.forEach((internship) => remarksMap.set(internship, []));
 
     Object.entries(userData.remarks)

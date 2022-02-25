@@ -185,6 +185,8 @@ function SendSurvey({ edit }) {
                       filesInner={files}
                       setFilesInner={() => setFiles}
                       student
+                      flag={flag}
+                      setFlag={setFlag}
                     />
                   )
               )}

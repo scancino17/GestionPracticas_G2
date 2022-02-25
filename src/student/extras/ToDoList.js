@@ -413,7 +413,8 @@ function DialogExtension({ internship, open, setOpen }) {
     updateCurrentInternship({
       extensionStatus: sentExtension,
       dateExtension: dateExtension,
-      reasonExtension: reasonRequestExtension
+      reasonExtension: reasonRequestExtension,
+      sentExtensionTime: serverTimestamp()
     });
   }
 

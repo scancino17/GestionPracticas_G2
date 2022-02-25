@@ -30,7 +30,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
-
+import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -92,7 +94,10 @@ function ExtensionList() {
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const { userRole } = useUser();
   const { internships } = useSupervisor();
-
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
   const sentExtensionList = useMemo(() => {
     if (internships)
       return internships.filter(
@@ -107,8 +112,23 @@ function ExtensionList() {
       filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
       filtered = filtered.filter((item) => item.studentName.includes(name));
+    filtered = filtered.filter(
+      (item) =>
+        item.sentExtensionTime &&
+        item.sentExtensionTime.seconds * 1000 <= endDate &&
+        item.sentExtensionTime.seconds * 1000 >= startDate
+    );
+    filtered.sort((a, b) =>
+      a.sentExtensionTime < b.sentExtensionTime
+        ? 1
+        : a.sentExtensionTime === b.sentExtensionTime
+        ? a.size < b.size
+          ? 1
+          : -1
+        : -1
+    );
     return filtered;
-  }, [sentExtensionList, selectedCareerId, name]);
+  }, [sentExtensionList, selectedCareerId, name, endDate, startDate]);
 
   function ExportarExcel() {
     let temp = [];
@@ -121,7 +141,8 @@ function ExtensionList() {
           rut: doc.applicationData['Rut del estudiante'],
           carrera: doc.careerName,
           practica: doc.internshipNumber,
-          email: doc.studentEmail
+          email: doc.studentEmail,
+          sentTime: doc.sentExtensionTime
         })
       );
     }
@@ -138,6 +159,14 @@ function ExtensionList() {
         }
         filename={`Solicitudes de extensión de práctica`}>
         <ExcelSheet data={temp} name='Extensiones de práctica'>
+          <ExcelColumn
+            label='Fecha de envío de la solicitud'
+            value={(col) => toLegibleDate(col.sentTime)}
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) => toLegibleTime(col.sentTime)}
+          />
           <ExcelColumn label='Nombre estudiante' value='nombre' />
           <ExcelColumn label='N° de Matrícula' value='matricula' />
           <ExcelColumn label='RUT estudiante' value='rut' />
@@ -182,6 +211,32 @@ function ExtensionList() {
           <Grid item xs={12} sm={4}>
             <ExportarExcel />
           </Grid>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container item xs={12} direction='row' spacing={2}>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha inicio'}
+                  value={startDate}
+                  onChange={(date) => setStartDate(date)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha Fin'}
+                  value={endDate}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
@@ -248,7 +303,11 @@ function IntershipItem({ internship }) {
         }}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials}`}
+          secondary={`${
+            internship.applicationData['Rut del estudiante']
+          } - Práctica ${internship.internshipNumber} - ${
+            internship.careerInitials
+          } - Enviada el ${toLegibleDate(internship.sentExtensionTime)}`}
         />
         <ListItemSecondaryAction>
           <IconButton

@@ -23,17 +23,24 @@ import { useSupervisor } from '../../providers/Supervisor';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
-
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
 function ReportsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const { userRole } = useUser();
   const { internships } = useSupervisor();
-
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
   const sentReportsList = useMemo(() => {
-    if (internships)
-      return internships.filter((item) => item.status === sentReport);
-    else return [];
+    if (internships) {
+      let filtered = internships.slice();
+      filtered = filtered.filter((item) => item.status === sentReport);
+      return filtered;
+    } else return [];
   }, [internships]);
 
   const filteredInternshipsList = useMemo(() => {
@@ -43,8 +50,24 @@ function ReportsList() {
       filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
       filtered = filtered.filter((item) => item.studentName.includes(name));
+    filtered = filtered.filter(
+      (item) =>
+        item.sentReportDate &&
+        item.sentReportDate.seconds * 1000 <= endDate &&
+        item.sentReportDate.seconds * 1000 >= startDate
+    );
+    filtered.sort((a, b) =>
+      a.sentReportDate < b.sentReportDate
+        ? 1
+        : a.sentReportDate === b.sentReportDate
+        ? a.size < b.size
+          ? 1
+          : -1
+        : -1
+    );
+
     return filtered;
-  }, [sentReportsList, selectedCareerId, name]);
+  }, [sentReportsList, selectedCareerId, name, endDate, startDate]);
   function ExportarExcel() {
     const temp = [];
     filteredInternshipsList.forEach((doc) =>
@@ -54,7 +77,8 @@ function ReportsList() {
         rut: doc.applicationData['Rut del estudiante'],
         carrera: doc.careerName,
         practica: doc.internshipNumber,
-        email: doc.studentEmail
+        email: doc.studentEmail,
+        sentReportDate: doc.sentReportDate
       })
     );
 
@@ -71,6 +95,14 @@ function ReportsList() {
         }
         filename={`Estudiantes con evaluación de informe pendiente`}>
         <ExcelSheet data={temp} name='Extensiones de práctica'>
+          <ExcelColumn
+            label='Fecha de envió'
+            value={(col) => toLegibleDate(col.sentReportDate)}
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) => toLegibleTime(col.sentReportDate)}
+          />
           <ExcelColumn label='Nombre estudiante' value='nombre' />
           <ExcelColumn label='N° de Matrícula' value='matricula' />
           <ExcelColumn label='RUT estudiante' value='rut' />
@@ -114,6 +146,32 @@ function ReportsList() {
           <Grid item xs={12} sm={4}>
             <ExportarExcel />
           </Grid>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container item xs={12} direction='row' spacing={2}>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha inicio'}
+                  value={startDate}
+                  onChange={(date) => setStartDate(date)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha Fin'}
+                  value={endDate}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
@@ -162,7 +220,11 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials}`}
+        secondary={`${
+          internship.applicationData['Rut del estudiante']
+        } - Práctica ${internship.internshipNumber} - ${
+          internship.careerInitials
+        } Enviada el ${toLegibleDate(internship.sentReportDate)}`}
       />
       <ListItemSecondaryAction>
         <IconButton

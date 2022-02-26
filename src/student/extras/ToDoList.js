@@ -542,7 +542,7 @@ function SendReportDialog({ open, setOpen }) {
 
     updateCurrentInternship({
       status: sentReport,
-      creationDate: serverTimestamp()
+      sentReportDate: serverTimestamp()
     });
   }
 

@@ -163,12 +163,15 @@ function ApplicationCheck() {
   const actions = [
     {
       edit: false,
+      type: ['En revisión'],
       icon: <Check />,
       name: 'Aprobar',
+
       function: handleShowApproved
     },
     {
       edit: false,
+      type: ['En revisión'],
       icon: <Clear />,
       color: '#ff0000',
       name: 'Rechazar',
@@ -176,19 +179,33 @@ function ApplicationCheck() {
     },
     {
       edit: false,
+      type: ['En revisión'],
       icon: <AssignmentLate />,
       name: 'Cambios menores',
       function: handleShowMinorChanges
     },
-    { edit: false, icon: <Edit />, name: 'Editar', function: handleEdit },
+    {
+      edit: false,
+      type: ['Aprobado', 'En revisión'],
+      icon: <Edit />,
+      name: 'Editar',
+      function: handleEdit
+    },
 
     {
       edit: true,
+      type: ['Aprobado', 'En revisión'],
       icon: <CancelOutlined />,
       name: 'Cancelar',
       function: handleCancel
     },
-    { edit: true, icon: <Save />, name: 'Guardar', function: handleSave }
+    {
+      edit: true,
+      type: ['Aprobado', 'En revisión'],
+      icon: <Save />,
+      name: 'Guardar',
+      function: handleSave
+    }
   ];
 
   const classes = useStyles();
@@ -202,6 +219,7 @@ function ApplicationCheck() {
 
   useEffect(() => {
     let appData = getApplication(applicationId);
+    console.log(appData.status);
     setApplication(appData);
   }, [applicationId, getApplication]);
 
@@ -246,13 +264,17 @@ function ApplicationCheck() {
         <Backdrop open={open} />
         <SpeedDial
           ariaLabel='SpeedDial tooltip example'
+          hidden={
+            application.status === 'Rechazado' ||
+            application.status === 'Necesita cambios menores'
+          }
           className={classes.speedDial}
           icon={edit ? <Edit /> : <MenuOutlined />}
           onClose={handleClose}
           onOpen={handleOpen}
           open={open}>
           {actions.map((action, i) =>
-            action.edit === edit ? (
+            action.edit === edit && action.type.includes(application.status) ? (
               <SpeedDialAction
                 tooltipOpen
                 key={i}

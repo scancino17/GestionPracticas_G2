@@ -155,13 +155,19 @@ function FormView({
                         </Typography>
                       )
                     ) : (
-                      <InternshipIntentionFileList
-                        student={studentId}
-                        internship={internshipId}
-                        application={applicationId}
-                        camp={element.name}
-                        name={element.value}
-                      />
+                      <>
+                        {element.value === '' ? (
+                          <Typography>No se subió ningún archivo</Typography>
+                        ) : (
+                          <InternshipIntentionFileList
+                            student={studentId}
+                            internship={internshipId}
+                            application={applicationId}
+                            camp={element.name}
+                            name={element.value}
+                          />
+                        )}
+                      </>
                     )
                   }
                 </>

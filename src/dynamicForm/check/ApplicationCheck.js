@@ -219,7 +219,6 @@ function ApplicationCheck() {
 
   useEffect(() => {
     let appData = getApplication(applicationId);
-    console.log(appData.status);
     setApplication(appData);
   }, [applicationId, getApplication]);
 

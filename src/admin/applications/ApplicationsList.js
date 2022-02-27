@@ -30,7 +30,7 @@ import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/Ex
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { toLegibleDate } from '../../utils/FormatUtils';
+import { normalizeString, toLegibleDate } from '../../utils/FormatUtils';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -93,9 +93,6 @@ function ApplicationsList() {
   const filteredApplications = useMemo(() => {
     if (applications) {
       let filtered = applications.slice();
-      if (name !== '')
-        filtered = filtered.filter((item) => item.studentName.includes(name));
-
       if (needChanges && rejected && approved && reviewing) {
         filtered = filtered.filter(
           (item) =>
@@ -241,7 +238,9 @@ function ApplicationsList() {
           (item) => item.careerId === selectedCareerId
         );
       if (name !== '')
-        filtered = filtered.filter((item) => item.studentName.includes(name));
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
       return filtered;
     } else return [];
   }, [filteredApplications, name, selectedCareerId]);

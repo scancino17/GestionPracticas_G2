@@ -28,7 +28,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -197,7 +201,9 @@ function Insurance() {
           (item) => item.careerId === selectedCareerId
         );
       if (name !== '')
-        filtered = filtered.filter((item) => item.studentName.includes(name));
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
       return filtered;
     } else return [];
   }, [usersInsurance, name, selectedCareerId]);

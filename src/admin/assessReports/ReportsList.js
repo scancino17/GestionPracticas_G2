@@ -25,7 +25,11 @@ import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/E
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 function ReportsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
@@ -49,7 +53,9 @@ function ReportsList() {
     if (selectedCareerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
-      filtered = filtered.filter((item) => item.studentName.includes(name));
+      filtered = filtered.filter((item) =>
+        normalizeString(item.studentName).includes(normalizeString(name))
+      );
     filtered = filtered.filter(
       (item) =>
         item.sentReportDate &&

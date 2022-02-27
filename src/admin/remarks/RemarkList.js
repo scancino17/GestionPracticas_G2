@@ -27,6 +27,7 @@ import { useSupervisor } from '../../providers/Supervisor';
 import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 import {
+  normalizeString,
   toLegibleDate,
   toLegibleDateTime,
   toLegibleTime
@@ -320,7 +321,8 @@ function RemarkList() {
       if (name !== '') {
         filtered = filtered.filter(
           (item) =>
-            item.studentName.includes(name) || item.employerName.includes(name)
+            normalizeString(item.studentName).includes(normalizeString(name)) ||
+            normalizeString(item.employerName).includes(normalizeString(name))
         );
       }
       if (read && notRead) {

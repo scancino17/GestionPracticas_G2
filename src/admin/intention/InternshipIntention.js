@@ -34,7 +34,11 @@ import CareerSelector from '../../utils/CareerSelector';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
-import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -123,7 +127,9 @@ function IntentionList({ pendingIntentions, update }) {
           (item) => item.careerId === selectedCareerId
         );
       if (name !== '')
-        filtered = filtered.filter((item) => item.studentName.includes(name));
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
 
       filtered = filtered.filter(
         (item) =>

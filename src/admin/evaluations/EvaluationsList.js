@@ -25,7 +25,7 @@ import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/E
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { toLegibleDate } from '../../utils/FormatUtils';
+import { normalizeString, toLegibleDate } from '../../utils/FormatUtils';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -109,7 +109,9 @@ function EvaluationsList() {
           item.careerId === selectedCareerId
       );
       if (name !== '') {
-        filtered = filtered.filter((item) => item.studentName.includes(name));
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
       }
       if (read && notRead) {
         filtered = filtered.filter(

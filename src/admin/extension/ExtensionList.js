@@ -30,7 +30,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
-import { toLegibleDate, toLegibleTime } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -111,7 +115,9 @@ function ExtensionList() {
     if (selectedCareerId !== 'general')
       filtered = filtered.filter((item) => item.careerId === selectedCareerId);
     if (name !== '')
-      filtered = filtered.filter((item) => item.studentName.includes(name));
+      filtered = filtered.filter((item) =>
+        normalizeString(item.studentName).includes(normalizeString(name))
+      );
     filtered = filtered.filter(
       (item) =>
         item.sentExtensionTime &&

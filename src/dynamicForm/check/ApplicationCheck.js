@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   Container,
+  Fab,
   Grid,
   makeStyles,
   TextField,
@@ -89,6 +90,15 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 1,
     bottom: theme.spacing(2),
     right: theme.spacing(2)
+  },
+  Fab: {
+    background: '#345c8c',
+    height: '55px',
+    width: '170px',
+    position: 'fixed',
+    zIndex: 1,
+    bottom: theme.spacing(2),
+    right: theme.spacing(3)
   }
 }));
 
@@ -152,7 +162,9 @@ function ApplicationCheck() {
   const handleShowApproved = () => {
     setShowApproved(true);
   };
-
+  const handleOpenClose = () => {
+    setOpen(!open);
+  };
   const handleOpen = () => {
     setOpen(true);
   };
@@ -261,11 +273,22 @@ function ApplicationCheck() {
     <>
       <>
         <Backdrop open={open} />
-        <SpeedDial
-          ariaLabel='SpeedDial tooltip example'
+        <Fab
           hidden={
             application.status === 'Rechazado' ||
             application.status === 'Necesita cambios menores'
+          }
+          className={classes.Fab}
+          variant='extended'
+          onClick={handleOpenClose}>
+          Opciones
+        </Fab>
+        <SpeedDial
+          ariaLabel='SpeedDial tooltip example'
+          hidden={
+            false
+            // application.status === 'Rechazado' ||
+            //application.status === 'Necesita cambios menores'
           }
           className={classes.speedDial}
           icon={edit ? <Edit /> : <MenuOutlined />}

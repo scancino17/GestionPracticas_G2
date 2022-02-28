@@ -80,6 +80,9 @@ const useStyles = makeStyles((theme) => ({
     flex: 'auto',
     paddingTop: '1rem',
     paddingBottom: '1rem',
+    '& .MuiFabroot': {
+      width: '80px'
+    },
     '& .MuiTextField-root': {
       margin: theme.spacing(1),
       width: '100%'

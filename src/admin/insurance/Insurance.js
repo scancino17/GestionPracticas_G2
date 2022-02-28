@@ -13,7 +13,6 @@ import ReactExport from 'react-export-excel-xlsx-fix';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect, useMemo } from 'react';
-import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
 import { approvedApplication } from '../../InternshipStates';
@@ -150,6 +149,7 @@ function Insurance() {
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
   const { internships } = useSupervisor();
   const [startDate, setStartDate] = useState(
     new Date() - 1000 * 60 * 60 * 24 * 30 * 2
@@ -224,14 +224,7 @@ function Insurance() {
             fullWidth
             color='primary'
             variant='contained'
-            startIcon={<GetAppIcon />}
-            onClick={() =>
-              usersExport.forEach((doc) => {
-                db.collection('internships')
-                  .doc(doc.id)
-                  .update({ alreadyDownloaded: true });
-              })
-            }>
+            startIcon={<GetAppIcon />}>
             Exportar postulaciones aprobadas
           </Button>
         }

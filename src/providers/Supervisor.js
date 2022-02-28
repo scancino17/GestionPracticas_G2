@@ -523,6 +523,18 @@ export function SupervisorProvider({ children }) {
         file
       );
     });
+
+    sendMail(internship.studentEmail, 'Insurance', {
+      from_name: internship.studentName
+    });
+    updateUser(internship.studentId, {
+      currentInternship: {
+        id: internship.id,
+        number: internship.internshipNumber
+      }
+    }).then(() =>
+      addNotification(internship.studentId, StudentNotificationTypes.insurance)
+    );
   }
 
   function amendReport(internshipId, student, reason) {
@@ -663,6 +675,12 @@ export function SupervisorProvider({ children }) {
         evaluatingSupervisor: { name: displayName, email: email },
         ...update
       }
+    });
+    sendMail(employerEmail, 'replyObservation', {
+      from_name: employerName,
+      supervisor: displayName,
+      answer: update.answer,
+      student: studentName
     });
   }
 

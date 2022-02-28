@@ -194,13 +194,13 @@ function FormView({
                     <Grid item>
                       <FormGroup aria-label='position'>
                         {element.options &&
-                          element.options.map((option, indexOption) => (
+                          element.options.map((option) => (
                             <FormControlLabel
                               control={
                                 <Checkbox
-                                  checked={element.value === indexOption}
+                                  checked={element.value === option}
                                   onChange={() =>
-                                    updateItem(index, 'value', indexOption)
+                                    updateItem(index, 'value', option)
                                   }
                                   style={{
                                     color: '#36568C'

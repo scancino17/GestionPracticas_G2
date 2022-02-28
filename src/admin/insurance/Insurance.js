@@ -140,7 +140,7 @@ function Insurance() {
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-  const { internships } = useSupervisor();
+  const { internships, updateInternship } = useSupervisor();
 
   useEffect(() => {
     const exportar = [];
@@ -202,15 +202,7 @@ function Insurance() {
             fullWidth
             color='primary'
             variant='contained'
-            startIcon={<GetAppIcon />}
-            onClick={() =>
-              usersExport.forEach((doc) =>
-                db
-                  .collection('internships')
-                  .doc(doc.id)
-                  .update({ alreadyDownloaded: true })
-              )
-            }>
+            startIcon={<GetAppIcon />}>
             Exportar postulaciones aprobadas
           </Button>
         }

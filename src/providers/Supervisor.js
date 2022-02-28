@@ -672,6 +672,12 @@ export function SupervisorProvider({ children }) {
         ...update
       }
     });
+    sendMail(employerEmail, 'replyObservation', {
+      from_name: employerName,
+      supervisor: displayName,
+      answer: update.answer,
+      student: studentName
+    });
   }
 
   return (

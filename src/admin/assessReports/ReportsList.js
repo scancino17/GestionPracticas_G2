@@ -11,10 +11,10 @@ import {
   TextField,
   List,
   Button,
-  Box,
-  Tabs,
-  Tab
+  Box
 } from '@material-ui/core';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { NavigateNext } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
@@ -37,12 +37,40 @@ import {
   toLegibleDate,
   toLegibleTime
 } from '../../utils/FormatUtils';
+import PropTypes from 'prop-types';
+import { Pagination } from '@material-ui/lab';
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Grid
+      role='tabpanel'
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component={'span'}>{children}</Typography>
+        </Box>
+      )}
+    </Grid>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired
+};
+
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
+
 function ReportsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
@@ -53,6 +81,7 @@ function ReportsList() {
   const [indice, setIndice] = useState(0);
   const [selected, setSelected] = useState({ read: false, notRead: true });
   const { read, notRead } = selected;
+  const itemsPerPage = 8;
   const [startDate, setStartDate] = useState(
     new Date() - 1000 * 60 * 60 * 24 * 30 * 2
   );
@@ -205,127 +234,140 @@ function ReportsList() {
         }}>
         <Typography variant='h4'>Evaluar informes de práctica</Typography>
       </div>
-      <Box sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs
-            variant='scrollable'
-            scrollButtons
-            allowScrollButtonsMobile
-            value={selectedTab}
-            onChange={handleChangeTab}
-            aria-label='Selección de observaciones a mostrar'>
-            <Tab
-              label='No Evaluadas'
-              {...a11yProps(0)}
-              onClick={(e) => {
-                e.preventDefault();
-                setSelected({ read: false, notRead: true });
-                setIndice(0);
-                setPage(1);
-              }}
-            />
-            <Tab
-              label='Evaluadas'
-              {...a11yProps(1)}
-              onClick={(e) => {
-                e.preventDefault();
-                setSelected({ read: true, notRead: false });
-                setIndice(1);
-                setPage(1);
-              }}
-            />
-            <Tab
-              label='Todas'
-              {...a11yProps(2)}
-              onClick={(e) => {
-                e.preventDefault();
-                setSelected({ read: true, notRead: true });
-                setIndice(2);
-                setPage(1);
-              }}
-            />
-          </Tabs>
-        </Box>
-      </Box>
-      <Container style={{ marginTop: '2rem' }}>
-        <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-          <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
-            <TextField
-              fullWidth
-              label='Buscar estudiante'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </Grid>
-          {userRole === ADMIN_ROLE && (
-            <Grid item xs={12} sm={4}>
-              <CareerSelector
-                careerId={selectedCareerId}
-                setCareerId={setSelectedCareerId}
-              />
-            </Grid>
-          )}
-          <Grid item xs={12} sm={4}>
-            <ExportarExcel />
-          </Grid>
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <Grid container item xs={12} direction='row' spacing={2}>
-              <Grid item xs={12} md={2}>
-                <DatePicker
-                  fullWidth
-                  disableToolbar
-                  variant='inline'
-                  format='dd/MM/yyyy'
-                  label={'Fecha inicio'}
-                  value={startDate}
-                  onChange={(date) => setStartDate(date)}
-                />
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <DatePicker
-                  fullWidth
-                  disableToolbar
-                  variant='inline'
-                  format='dd/MM/yyyy'
-                  label={'Fecha Fin'}
-                  value={endDate}
-                  onChange={(date) => setEndDate(date)}
-                />
-              </Grid>
-            </Grid>
-          </MuiPickersUtilsProvider>
-        </Grid>
-      </Container>
 
       <Container style={{ marginTop: '2rem' }}>
-        {filteredInternshipsList.length > 0 ? (
-          <List>
-            {filteredInternshipsList.map((internship) => (
-              <div key={internship.id}>
-                <ReportItem internship={internship} />
-                <Divider />
-              </div>
-            ))}
-          </List>
-        ) : (
-          <Grid
-            container
-            direction='column'
-            align='center'
-            justifyContent='center'
-            style={{ marginTop: '6rem' }}>
-            <Grid item>
-              <img
-                src='evaluate.png'
-                width='300'
-                alt='Sin informes de practica disponibles'
+        <Box sx={{ width: '100%', marginBottom: '1rem' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              variant='scrollable'
+              scrollButtons
+              allowScrollButtonsMobile
+              value={selectedTab}
+              onChange={handleChangeTab}
+              aria-label='Selección de observaciones a mostrar'>
+              <Tab
+                label='No Evaluadas'
+                {...a11yProps(0)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: false, notRead: true });
+                  setIndice(0);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Evaluadas'
+                {...a11yProps(1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: false });
+                  setIndice(1);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Todas'
+                {...a11yProps(2)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: true });
+                  setIndice(2);
+                  setPage(1);
+                }}
+              />
+            </Tabs>
+          </Box>
+          <Divider />
+        </Box>
+        <TabPanel value={selectedTab} index={indice}>
+          <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+            <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
+              <TextField
+                fullWidth
+                label='Buscar estudiante'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </Grid>
-            <Typography variant='h5' color='textSecondary'>
-              No hay informes de práctica disponibles
-            </Typography>
+            {userRole === ADMIN_ROLE && (
+              <Grid item xs={12} sm={4}>
+                <CareerSelector
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
+                />
+              </Grid>
+            )}
+            <Grid item xs={12} sm={4}>
+              <ExportarExcel />
+            </Grid>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Grid container item xs={12} direction='row' spacing={2}>
+                <Grid item xs={12} md={2}>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='dd/MM/yyyy'
+                    label={'Fecha inicio'}
+                    value={startDate}
+                    onChange={(date) => setStartDate(date)}
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='dd/MM/yyyy'
+                    label={'Fecha Fin'}
+                    value={endDate}
+                    onChange={(date) => setEndDate(date)}
+                  />
+                </Grid>
+              </Grid>
+            </MuiPickersUtilsProvider>
           </Grid>
-        )}
+
+          {filteredInternshipsList.length > 0 ? (
+            <>
+              <List>
+                {filteredInternshipsList
+                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                  .map((internship) => (
+                    <div key={internship.id}>
+                      <ReportItem internship={internship} />
+                      <Divider />
+                    </div>
+                  ))}
+              </List>
+              <Pagination
+                count={Math.ceil(filteredInternshipsList.length / itemsPerPage)}
+                page={page}
+                color='primary'
+                style={{ marginBottom: '40px' }}
+                onChange={(_, val) => setPage(val)}
+              />
+            </>
+          ) : (
+            <Grid
+              container
+              direction='column'
+              align='center'
+              justifyContent='center'
+              style={{ marginTop: '6rem' }}>
+              <Grid item>
+                <img
+                  src='evaluate.png'
+                  width='300'
+                  alt='Sin informes de practica disponibles'
+                />
+              </Grid>
+              <Typography variant='h5' color='textSecondary'>
+                No hay informes de práctica disponibles
+              </Typography>
+            </Grid>
+          )}
+        </TabPanel>
       </Container>
     </Grid>
   );

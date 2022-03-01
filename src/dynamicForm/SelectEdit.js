@@ -3,8 +3,6 @@ import {
   Card,
   CardContent,
   Grid,
-  Tab,
-  Tabs,
   Typography,
   useMediaQuery
 } from '@material-ui/core';
@@ -13,7 +11,8 @@ import { DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
 import EditBuilderPreview from './builder_preview/EditBuilderPreview';
 import { FormTypes } from './camps/FormTypes';
-
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 function SelectEdit() {
   const { careerId } = useUser();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -85,7 +84,6 @@ function SelectEdit() {
                   variant='scrollable'
                   scrollButtons
                   allowScrollButtonsMobile
-                  indicatorColor='primary'
                   value={currentTab}
                   onChange={handleChangeTab}
                   aria-label='wrapped label tabs example'>

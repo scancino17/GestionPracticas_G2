@@ -7,10 +7,7 @@ import {
   Stepper,
   Typography,
   Button,
-  TextField,
-  Slider,
   Container,
-  Input,
   Grid
 } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
@@ -24,68 +21,21 @@ import {
   serverTimestamp,
   updateDoc
 } from 'firebase/firestore';
-import PropTypes from 'prop-types';
 import { useEmployer } from '../../providers/Employer';
 import { useUser } from '../../providers/User';
 import { ref, uploadBytes } from 'firebase/storage';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(4)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}));
-
-const BootstrapDialogTitle = (props) => {
-  const { children, onClose, ...other } = props;
-
-  return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
-      {children}
-      {onClose ? (
-        <IconButton
-          aria-label='close'
-          onClick={onClose}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500]
-          }}>
-          <CloseIcon />
-        </IconButton>
-      ) : null}
-    </DialogTitle>
-  );
-};
-
-BootstrapDialogTitle.propTypes = {
-  children: PropTypes.node,
-  onClose: PropTypes.func.isRequired
-};
 function SendEvaluation({ edit }) {
   const [formFull, setFormFull] = useState([]);
   const [flag, setFlag] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [files, setFiles] = useState([]);
-  const [evaluateComment, setEvaluateComment] = useState('');
+
   const navigate = useNavigate();
   const { internshipId } = useParams();
-
   const [loaded, setLoaded] = useState(false);
   const { evaluationForms, getInternData, updateInternData } = useEmployer();
   const { userId } = useUser();
-  const [showEvaluate, setShowEvaluate] = useState(false);
-  const [qualification, setQualification] = useState(40);
 
   useEffect(() => {
     if (internshipId) {
@@ -192,10 +142,7 @@ function SendEvaluation({ edit }) {
           saveFiles(docRef.id);
           updateDoc(doc(db, 'internships', internshipId), {
             employerEvaluated: true,
-            employerEvaluationId: docRef.id,
-            employerGrade: qualification,
-            employerGradeTime: serverTimestamp(),
-            employerEvaluateComment: evaluateComment
+            employerEvaluationId: docRef.id
           });
 
           updateInternData(internshipId, {
@@ -211,196 +158,118 @@ function SendEvaluation({ edit }) {
   }
 
   return (
-    <>
-      {loaded && (
-        <Grid container direction='column'>
-          <Grid
-            style={{
-              backgroundImage: "url('HomeBanner-4x.png')",
-              backgroundColor: '#e0f3f7',
-              backgroundSize: '100%',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              position: 'relative',
-              padding: '2rem'
-            }}>
-            <Typography variant='h4'>Formulario evaluación</Typography>
-          </Grid>
-          {formFull ? (
-            <Container>
-              <Stepper
-                activeStep={activeStep}
-                alternativeLabel
-                style={{ margin: '2rem', backgroundColor: 'transparent' }}>
-                {formFull.map((step) => (
-                  <Step key={step.step}>
-                    <StepLabel>{step.step}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-              {activeStep === formFull.length ? (
-                <>
-                  <Typography>Guardar</Typography>
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleSave}>
-                    Guardar
-                  </Button>
-                </>
-              ) : (
-                <Grid container direction='column' spacing={2}>
+    loaded && (
+      <Grid container direction='column'>
+        <Grid
+          style={{
+            backgroundImage: "url('HomeBanner-4x.png')",
+            backgroundColor: '#e0f3f7',
+            backgroundSize: '100%',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            position: 'relative',
+            padding: '2rem'
+          }}>
+          <Typography variant='h4'>Formulario evaluación</Typography>
+        </Grid>
+        {formFull ? (
+          <Container>
+            <Stepper
+              activeStep={activeStep}
+              alternativeLabel
+              style={{ margin: '2rem', backgroundColor: 'transparent' }}>
+              {formFull.map((step) => (
+                <Step key={step.step}>
+                  <StepLabel>{step.step}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+            {activeStep === formFull.length ? (
+              <>
+                <Typography>Guardar</Typography>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={handleSave}>
+                  Guardar
+                </Button>
+              </>
+            ) : (
+              <Grid container direction='column' spacing={2}>
+                <Grid item>
+                  {formFull.map(
+                    (form, i) =>
+                      i === activeStep && (
+                        // formview
+                        <DynamicForm
+                          form={form.form}
+                          setForm={setFormFull}
+                          formFull={formFull}
+                          index={i}
+                          filesInner={files}
+                          setFilesInner={() => setFiles}
+                          student
+                        />
+                      )
+                  )}
+                </Grid>
+                <Grid item container justifyContent='flex-end' spacing={2}>
                   <Grid item>
-                    {formFull.map(
-                      (form, i) =>
-                        i === activeStep && (
-                          // formview
-                          <DynamicForm
-                            form={form.form}
-                            setForm={setFormFull}
-                            formFull={formFull}
-                            index={i}
-                            filesInner={files}
-                            setFilesInner={() => setFiles}
-                            student
-                          />
-                        )
-                    )}
+                    <Button
+                      variant='contained'
+                      color='primary'
+                      disabled={activeStep === 0}
+                      onClick={handleBack}>
+                      Anterior
+                    </Button>
                   </Grid>
-                  <Grid item container justifyContent='flex-end' spacing={2}>
-                    <Grid item>
+                  <Grid item>
+                    {activeStep !== formFull.length - 1 && (
                       <Button
                         variant='contained'
                         color='primary'
-                        disabled={activeStep === 0}
-                        onClick={handleBack}>
-                        Anterior
+                        onClick={handleNext}>
+                        Siguiente
                       </Button>
-                    </Grid>
-                    <Grid item>
-                      {activeStep !== formFull.length - 1 && (
-                        <Button
-                          variant='contained'
-                          color='primary'
-                          onClick={handleNext}>
-                          Siguiente
-                        </Button>
-                      )}
-                      {activeStep === formFull.length - 1 && (
-                        <Button
-                          variant='contained'
-                          color='primary'
-                          onClick={() => {
-                            setShowEvaluate(true);
-                          }}>
-                          Enviar
-                        </Button>
-                      )}
-                    </Grid>
+                    )}
+                    {activeStep === formFull.length - 1 && (
+                      <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                          Swal.fire({
+                            title: '¿Desea enviar su solicitud?',
+                            text: 'Revisa bien el formulario antes de enviarlo',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: `Enviar`,
+                            cancelButtonText: `Cancelar`
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleSave();
+                              Swal.fire(
+                                '¡Formulario enviado!',
+                                '',
+                                'success'
+                              ).then((result) => {
+                                if (result.isConfirmed) navigate('/');
+                              });
+                            }
+                          });
+                        }}>
+                        Enviar
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
-              )}
-            </Container>
-          ) : (
-            <Skeleton animation='pulse' width='100%' height='100%' />
-          )}
-        </Grid>
-      )}
-      <BootstrapDialog
-        fullWidth
-        onClose={() => setShowEvaluate(false)}
-        aria-labelledby='customized-dialog-title'
-        open={showEvaluate}>
-        <BootstrapDialogTitle
-          id='customized-dialog-title'
-          onClose={() => setShowEvaluate(false)}>
-          Evaluar Práctica
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-          <Grid container justifyContent='center' alignContent='center'>
-            <Grid item>
-              <Typography variant='h2'>
-                {qualification < 20
-                  ? '😰'
-                  : qualification < 30
-                  ? '😢'
-                  : qualification < 35
-                  ? '🙁'
-                  : qualification < 40
-                  ? '😬'
-                  : qualification < 50
-                  ? '😐'
-                  : qualification < 60
-                  ? '🙂'
-                  : qualification < 65
-                  ? '😃'
-                  : qualification >= 65
-                  ? '🤩'
-                  : null}
-              </Typography>
-            </Grid>
-            <Slider
-              min={10}
-              max={70}
-              marks={[
-                { label: '1.0', value: 10 },
-                { label: '2.0', value: 20 },
-                { label: '3.0', value: 30 },
-                { label: '4.0', value: 40 },
-                { label: '5.0', value: 50 },
-                { label: '6.0', value: 60 },
-                { label: '7.0', value: 70 }
-              ]}
-              value={qualification}
-              aria-labelledby='input-slider'
-              onChange={(event, newValue) => setQualification(newValue)}
-            />
-            <Input
-              value={qualification}
-              margin='dense'
-              onChange={(event) =>
-                event.target.value <= 70
-                  ? setQualification(event.target.value)
-                  : null
-              }
-              inputProps={{
-                min: 10,
-                max: 70,
-                type: 'number'
-              }}
-            />
-          </Grid>
-          <Typography
-            variant='h5'
-            color={qualification < 40 ? 'error' : 'primary'}>
-            Evaluar con nota: {qualification / 10}
-          </Typography>
-          <TextField
-            fullWidth
-            label='Comentarios'
-            multiline
-            variant='outlined'
-            rows={4}
-            onChange={(e) => setEvaluateComment(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button color='primary' onClick={() => setShowEvaluate(false)}>
-            Cancelar
-          </Button>
-          <Button
-            color='primary'
-            variant='contained'
-            onClick={() => {
-              handleSave();
-
-              navigate('/');
-            }}>
-            Confirmar Evaluación
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-    </>
+              </Grid>
+            )}
+          </Container>
+        ) : (
+          <Skeleton animation='pulse' width='100%' height='100%' />
+        )}
+      </Grid>
+    )
   );
 }
 

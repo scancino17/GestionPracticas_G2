@@ -131,9 +131,11 @@ export function SupervisorProvider({ children }) {
         let carList = docData.careers.filter(
           (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
         );
-        let intList = docData.internships.filter(
-          (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
-        );
+        let intList = Object.entries(docData.interns)
+          .map(([key, value]) => ({ id: key, ...value }))
+          .filter(
+            (item) => careerId === DEFAULT_CAREER || item.careerId === careerId
+          );
         let remList = Object.entries(docData.remarks)
           .map(([key, value]) => ({ id: key, ...value }))
           .filter(

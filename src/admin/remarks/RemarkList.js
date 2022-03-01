@@ -163,13 +163,17 @@ function RemarkItem({ remark, expanded, changeExpanded }) {
           </Typography>
           <Hidden xsDown>
             <Typography className={classes.secondaryHeading}>
-              {`Observación de Practica ${remark.internshipNumber} de ${
-                remark.studentName
-              } ${
-                remark.read ? ' Revisada el ' : ' Enviada el '
-              }${toLegibleDate(
-                remark.read ? remark.updateTime : remark.remarkTime
-              )}`}
+              {`Observación de Practica ${remark.internshipNumber} de ${remark.studentName} -`}
+              <Typography
+                sx={{ display: 'inline' }}
+                component='span'
+                color='primary'>
+                <strong>{` ${
+                  remark.read ? ' Revisada el ' : ' Enviada el '
+                }${toLegibleDate(
+                  remark.read ? remark.updateTime : remark.remarkTime
+                )}`}</strong>
+              </Typography>
             </Typography>
           </Hidden>
           <Hidden smUp>

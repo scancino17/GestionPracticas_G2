@@ -494,9 +494,18 @@ function ApplicationItem({ application }) {
       onClick={() => navigate(`/applications/${application.id}`)}>
       <ListItemText
         primary={application.studentName}
-        secondary={`${application['Rut del estudiante']} - Práctica ${
-          application.internshipNumber
-        } - ${application.careerInitials}- ${dateString(application)}`}
+        secondary={
+          <React.Fragment>
+            {`${application['Rut del estudiante']} - Práctica ${application.internshipNumber} - ${application.careerInitials} - `}
+            <Typography
+              sx={{ display: 'inline' }}
+              component='span'
+              variant='body2'
+              color='primary'>
+              <strong>{dateString(application)}</strong>
+            </Typography>
+          </React.Fragment>
+        }
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/applications/${application.id}`)}>

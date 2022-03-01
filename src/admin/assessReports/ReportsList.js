@@ -226,11 +226,20 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={`${
-          internship.applicationData['Rut del estudiante']
-        } - Práctica ${internship.internshipNumber} - ${
-          internship.careerInitials
-        } Enviada el ${toLegibleDate(internship.sentReportDate)}`}
+        secondary={
+          <React.Fragment>
+            {`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials} - `}
+            <Typography
+              sx={{ display: 'inline' }}
+              component='span'
+              variant='body2'
+              color='primary'>
+              <strong>{`Enviada el ${toLegibleDate(
+                internship.sentReportDate
+              )}`}</strong>
+            </Typography>
+          </React.Fragment>
+        }
       />
       <ListItemSecondaryAction>
         <IconButton

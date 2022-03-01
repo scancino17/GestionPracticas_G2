@@ -216,84 +216,84 @@ function EvaluationsList() {
   }
 
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container direction='column'>
-        <Grid
-          style={{
-            backgroundImage: "url('AdminBanner-Form.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            padding: '2rem'
-          }}>
-          <Typography component={'span'} variant='h4'>
-            Evaluación de supervisores
-          </Typography>
-        </Grid>
-        <Container style={{ marginTop: '2rem' }}>
-          <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs
-                variant='scrollable'
-                scrollButtons
-                allowScrollButtonsMobile
-                value={selectedTab}
-                onChange={handleChangeTab}
-                aria-label='Selección de observaciones a mostrar'>
-                <Tab
-                  label='No leído'
-                  {...a11yProps(0)}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelected({ read: false, notRead: true });
-                    setIndice(0);
-                    setPage(1);
-                  }}
-                />
-                <Tab
-                  label='Leído'
-                  {...a11yProps(1)}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelected({ read: true, notRead: false });
-                    setIndice(1);
-                    setPage(1);
-                  }}
-                />
-                <Tab
-                  label='Todas'
-                  {...a11yProps(2)}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setSelected({ read: true, notRead: true });
-                    setIndice(2);
-                    setPage(1);
-                  }}
-                />
-              </Tabs>
-            </Box>
+    <Grid container direction='column'>
+      <Grid
+        style={{
+          backgroundImage: "url('AdminBanner-Form.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography component={'span'} variant='h4'>
+          Evaluación de supervisores
+        </Typography>
+      </Grid>
+      <Container style={{ marginTop: '2rem' }}>
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              variant='scrollable'
+              scrollButtons
+              allowScrollButtonsMobile
+              value={selectedTab}
+              onChange={handleChangeTab}
+              aria-label='Selección de observaciones a mostrar'>
+              <Tab
+                label='No revisadas'
+                {...a11yProps(0)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: false, notRead: true });
+                  setIndice(0);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Revisadas'
+                {...a11yProps(1)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: false });
+                  setIndice(1);
+                  setPage(1);
+                }}
+              />
+              <Tab
+                label='Todas'
+                {...a11yProps(2)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelected({ read: true, notRead: true });
+                  setIndice(2);
+                  setPage(1);
+                }}
+              />
+            </Tabs>
           </Box>
-          <TabPanel value={selectedTab} index={indice}>
-            <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-              <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
-                <TextField
-                  fullWidth
-                  label='Buscar por nombre'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+        </Box>
+        <TabPanel value={selectedTab} index={indice}>
+          <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+            <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
+              <TextField
+                fullWidth
+                label='Buscar por nombre'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </Grid>
+            {userRole === ADMIN_ROLE && (
+              <Grid item xs={12} sm={4}>
+                <CareerSelector
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
                 />
               </Grid>
-              {userRole === ADMIN_ROLE && (
-                <Grid item xs={12} sm={4}>
-                  <CareerSelector
-                    careerId={selectedCareerId}
-                    setCareerId={setSelectedCareerId}
-                  />
-                </Grid>
-              )}
-              <Grid item xs={12} sm={4}>
-                <ExportarExcel />
-              </Grid>
+            )}
+            <Grid item xs={12} sm={4}>
+              <ExportarExcel />
+            </Grid>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid container item xs={12} direction='row' spacing={2}>
                 <Grid item xs={12} md={2}>
                   <DatePicker
@@ -318,58 +318,58 @@ function EvaluationsList() {
                   />
                 </Grid>
               </Grid>
-              <Divider />
-              <Container style={{ marginTop: '2rem' }}>
-                <List>
-                  {filteredEvaluationList
-                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                    .map((evaluation) => (
-                      <>
-                        <EvaluationItem evaluation={evaluation} />
-                        <Divider />
-                      </>
-                    ))}
-                </List>
-              </Container>
-              <Grid
-                container
-                justifyContent='flex-end'
-                style={{ marginTop: '2rem' }}>
-                {filteredEvaluationList.length > 0 ? (
-                  <Pagination
-                    count={Math.ceil(
-                      filteredEvaluationList.length / itemsPerPage
-                    )}
-                    page={page}
-                    color='primary'
-                    style={{ marginBottom: '40px' }}
-                    onChange={(_, val) => setPage(val)}
-                  />
-                ) : (
-                  <Grid
-                    container
-                    direction='column'
-                    align='center'
-                    justifyContent='center'
-                    style={{ marginTop: '6rem' }}>
-                    <Grid item>
-                      <img
-                        src='post.png'
-                        width='300'
-                        alt='Sin evaluaciones de supervisores'
-                      />
-                    </Grid>
-                    <Typography variant='h5' color='textSecondary'>
-                      No hay evaluaciones de supervisores pendientes.
-                    </Typography>
+            </MuiPickersUtilsProvider>
+            <Divider />
+            <Container style={{ marginTop: '2rem' }}>
+              <List>
+                {filteredEvaluationList
+                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                  .map((evaluation) => (
+                    <>
+                      <EvaluationItem evaluation={evaluation} />
+                      <Divider />
+                    </>
+                  ))}
+              </List>
+            </Container>
+            <Grid
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem' }}>
+              {filteredEvaluationList.length > 0 ? (
+                <Pagination
+                  count={Math.ceil(
+                    filteredEvaluationList.length / itemsPerPage
+                  )}
+                  page={page}
+                  color='primary'
+                  style={{ marginBottom: '40px' }}
+                  onChange={(_, val) => setPage(val)}
+                />
+              ) : (
+                <Grid
+                  container
+                  direction='column'
+                  align='center'
+                  justifyContent='center'
+                  style={{ marginTop: '6rem' }}>
+                  <Grid item>
+                    <img
+                      src='post.png'
+                      width='300'
+                      alt='Sin evaluaciones de supervisores'
+                    />
                   </Grid>
-                )}
-              </Grid>
+                  <Typography variant='h5' color='textSecondary'>
+                    No hay evaluaciones de supervisores pendientes.
+                  </Typography>
+                </Grid>
+              )}
             </Grid>
-          </TabPanel>
-        </Container>
-      </Grid>
-    </MuiPickersUtilsProvider>
+          </Grid>
+        </TabPanel>
+      </Container>
+    </Grid>
   );
 }
 

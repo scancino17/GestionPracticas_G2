@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Button,
   Container,
-  Fab,
   Grid,
   makeStyles,
   TextField,
@@ -36,7 +35,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { isMobile } from 'react-device-detect';
+import classNames from 'classnames';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -91,17 +91,18 @@ const useStyles = makeStyles((theme) => ({
   speedDial: {
     position: 'fixed',
     zIndex: 1,
-    bottom: theme.spacing(2),
+    bottom: theme.spacing(6),
     right: theme.spacing(2)
   },
-  Fab: {
-    background: '#345c8c',
-    height: '55px',
-    width: '170px',
+  speedDialMobile: {
     position: 'fixed',
     zIndex: 1,
     bottom: theme.spacing(2),
-    right: theme.spacing(3)
+    right: theme.spacing(2)
+  },
+  StaticTooltipLabel: {
+    maxWidth: '6rem',
+    minWidth: '6rem'
   }
 }));
 
@@ -275,32 +276,57 @@ function ApplicationCheck() {
   return (
     <>
       <>
-        <Backdrop open={open} />
-        <Fab
+        <Backdrop onClick={handleClose} open={open} />
+        <SpeedDial
+          FabProps={
+            !isMobile
+              ? {
+                  size: 'large',
+                  style: {
+                    width: '10rem',
+                    borderRadius: 20,
+                    content: 'Opciones'
+                  }
+                }
+              : {}
+          }
+          ariaLabel='SpeedDial tooltip example'
           hidden={
             application.status === 'Rechazado' ||
             application.status === 'Necesita cambios menores'
           }
-          className={classes.Fab}
-          variant='extended'
-          onClick={handleOpenClose}>
-          Opciones
-        </Fab>
-        <SpeedDial
-          ariaLabel='SpeedDial tooltip example'
-          hidden={
-            false
-            // application.status === 'Rechazado' ||
-            //application.status === 'Necesita cambios menores'
+          className={classNames({
+            [classes.speedDial]: !isMobile,
+            [classes.speedDialMobile]: isMobile
+          })}
+          icon={
+            !isMobile ? (
+              <Button
+                variant='text'
+                style={{ color: 'white' }}
+                endIcon={
+                  edit ? (
+                    <Edit style={{ color: 'inherit', fontSize: 27 }} />
+                  ) : (
+                    <MenuOutlined style={{ color: 'inherit', fontSize: 27 }} />
+                  )
+                }>
+                {edit ? 'Edición' : 'Opciones'}
+              </Button>
+            ) : edit ? (
+              <Edit />
+            ) : (
+              <MenuOutlined />
+            )
           }
-          className={classes.speedDial}
-          icon={edit ? <Edit /> : <MenuOutlined />}
           onClose={handleClose}
           onOpen={handleOpen}
           open={open}>
           {actions.map((action, i) =>
             action.edit === edit && action.type.includes(application.status) ? (
               <SpeedDialAction
+                classes={{ staticTooltipLabel: classes.StaticTooltipLabel }}
+                style={!isMobile ? { marginLeft: '5rem' } : {}}
                 tooltipOpen
                 key={i}
                 icon={action.icon}

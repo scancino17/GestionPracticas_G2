@@ -340,13 +340,20 @@ function ReportsList() {
                     </div>
                   ))}
               </List>
-              <Pagination
-                count={Math.ceil(filteredInternshipsList.length / itemsPerPage)}
-                page={page}
-                color='primary'
-                style={{ marginBottom: '40px' }}
-                onChange={(_, val) => setPage(val)}
-              />
+              <Grid
+                container
+                justifyContent='flex-end'
+                style={{ marginTop: '2rem' }}>
+                <Pagination
+                  count={Math.ceil(
+                    filteredInternshipsList.length / itemsPerPage
+                  )}
+                  page={page}
+                  color='primary'
+                  style={{ marginBottom: '40px' }}
+                  onChange={(_, val) => setPage(val)}
+                />
+              </Grid>
             </>
           ) : (
             <Grid

@@ -556,6 +556,7 @@ export function SupervisorProvider({ children }) {
   function evaluateReport(internshipId, student, reason, grade) {
     updateInternship(internshipId, {
       status: finishedInternship,
+      evaluatedReportTime: serverTimestamp(),
       reason: reason ? reason : 'Sin observaciones',
       grade: grade
     });

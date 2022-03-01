@@ -37,6 +37,7 @@ import {
 } from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
+import { Pagination } from '@material-ui/lab';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -98,6 +99,10 @@ function ExtensionList() {
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const { userRole } = useUser();
   const { internships } = useSupervisor();
+  const itemsPerPage = 8;
+  const [selectedTab, setSelectedTab] = useState(0);
+  const [page, setPage] = useState(1);
+  const [indice, setIndice] = useState(0);
   const [startDate, setStartDate] = useState(
     new Date() - 1000 * 60 * 60 * 24 * 30 * 2
   );
@@ -246,15 +251,32 @@ function ExtensionList() {
         </Grid>
       </Container>
       <Container style={{ marginTop: '2rem' }}>
-        {filteredInternships.length > 0 ? (
-          <List>
-            {filteredInternships.map((internship) => (
-              <div key={internship.id}>
-                <IntershipItem key={internship.id} internship={internship} />
-                <Divider />
-              </div>
-            ))}
-          </List>
+        {filteredInternships.slice(
+          (page - 1) * itemsPerPage,
+          page * itemsPerPage
+        ).length > 0 ? (
+          <>
+            <List>
+              {filteredInternships.map((internship) => (
+                <div key={internship.id}>
+                  <IntershipItem key={internship.id} internship={internship} />
+                  <Divider />
+                </div>
+              ))}
+            </List>
+            <Grid
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem' }}>
+              <Pagination
+                count={Math.ceil(filteredInternships.length / itemsPerPage)}
+                page={page}
+                color='primary'
+                style={{ marginBottom: '40px' }}
+                onChange={(_, val) => setPage(val)}
+              />
+            </Grid>
+          </>
         ) : (
           <Grid
             container

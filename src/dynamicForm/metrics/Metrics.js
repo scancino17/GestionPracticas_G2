@@ -47,26 +47,41 @@ function Metrics() {
 
   return (
     <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container direction='column' style={{ marginLeft: 20 }}>
-        <Grid item sx={6}>
-          <Typography>Metricas</Typography>
-          <Grid item xs={12} sm={4}>
-            <CareerSelector
-              careerId={selectedCareerId}
-              setCareerId={setSelectedCareerId}
-              excludeGeneral
-            />
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={4}
-            direction='row'
-            spacing={2}
-            justifyContent='space-between'>
-            <Grid item xs={6} md={6}>
+      <Grid container direction='row'>
+        <Grid
+          item
+          xs={12}
+          style={{
+            backgroundImage: "url('AdminBanner-Form.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            padding: '2rem'
+          }}>
+          <Typography component={'span'} variant='h4'>
+            Métricas
+          </Typography>
+        </Grid>
+
+        <Grid
+          item
+          xs={12}
+          style={{
+            marginTop: '2rem',
+            marginLeft: '2rem',
+            marginRight: '2rem'
+          }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={4}>
+              <CareerSelector
+                careerId={selectedCareerId}
+                setCareerId={setSelectedCareerId}
+                excludeGeneral
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
               <DatePicker
+                fullWidth
                 disableToolbar
                 variant='inline'
                 format='dd/MM/yyyy'
@@ -75,8 +90,9 @@ function Metrics() {
                 onChange={(date) => setStartDate(new Date(date))}
               />
             </Grid>
-            <Grid item xs={6} md={6}>
+            <Grid item xs={12} sm={2}>
               <DatePicker
+                fullWidth
                 disableToolbar
                 variant='inline'
                 format='dd/MM/yyyy'
@@ -88,7 +104,15 @@ function Metrics() {
           </Grid>
         </Grid>
 
-        <Grid item container spacing={2}>
+        <Grid
+          item
+          container
+          spacing={2}
+          style={{
+            marginTop: '2rem',
+            marginLeft: '1rem',
+            marginRight: '1rem'
+          }}>
           {formFull &&
             selectedCareerId !== 'general' &&
             formFull.map((step, stepIndex) =>
@@ -100,6 +124,7 @@ function Metrics() {
                       key={camp.name}
                       item
                       xs={12}
+                      sm={6}
                       md={4}
                       style={{ marginBottom: '1rem' }}>
                       <Chart step={stepIndex} name={camp.name} />

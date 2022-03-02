@@ -25,7 +25,11 @@ import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/E
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
-import { normalizeString, toLegibleDate } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -210,13 +214,27 @@ function EvaluationsList() {
           </Button>
         }
         filename={`Inscripciones de práctica - ${estados[indice]}`}>
-        <ExcelSheet
-          data={filteredEvaluationList}
-          name='Lista de evaluación de supervisores'>
+        <ExcelSheet data={filteredEvaluationList} name='Lista de evaluación'>
+          <ExcelColumn
+            label='Fecha'
+            value={(col) =>
+              toLegibleDate(!col.read ? col.sentTime : col.revisionTime)
+            }
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) =>
+              toLegibleTime(!col.read ? col.sentTime : col.revisionTime)
+            }
+          />
+          <ExcelColumn
+            label='Leida'
+            value={(col) => (col.read ? 'Si' : 'No')}
+          />
           <ExcelColumn label='Nombre estudiante' value='studentName' />
           <ExcelColumn label='N° de Matrícula' value='studentNumber' />
           <ExcelColumn label='RUT estudiante' value='studentRut' />
-          <ExcelColumn label='Carrera' value='careerName' />
+          <ExcelColumn label='Carrera' value='careerInitials' />
           <ExcelColumn label='Tipo de práctica' value='internshipNumber' />
           <ExcelColumn label='Correo' value='studentEmail' />
         </ExcelSheet>

@@ -342,6 +342,21 @@ export function SupervisorProvider({ children }) {
     await updateDoc(doc(db, 'careers', careerId), data);
   }
 
+  async function updateEmployer(employerId, data) {
+    await updateDoc(doc(db, 'employers', employerId), data);
+  }
+
+  async function updateEmployerInternship(internshipId, internData) {
+    const { employerId } = getInternship(internshipId);
+
+    let data = {};
+    Object.entries(internData).forEach(
+      ([key, value]) => (data[`interns.${internshipId}.${key}`] = value)
+    );
+
+    await updateEmployer(employerId, { ...data });
+  }
+
   function getUserData(userId) {
     return students.find((item) => item.id === userId);
   }
@@ -573,6 +588,8 @@ export function SupervisorProvider({ children }) {
     updateUser(student.id, { step: 0 }).then(() =>
       addNotification(student.id, StudentNotificationTypes.finishedInternship)
     );
+
+    updateEmployerInternship(internshipId, { finishedIntern: true });
   }
 
   function rejectExtension(internship, reason) {
@@ -654,10 +671,6 @@ export function SupervisorProvider({ children }) {
       applications,
       applicationsId
     });
-  }
-
-  async function updateEmployer(employerId, update) {
-    await updateDoc(doc(db, 'employers', employerId), update);
   }
 
   async function updateRemark(remark, update) {

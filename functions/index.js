@@ -545,6 +545,7 @@ exports.autoAssignInternEmployer = functions.firestore
     if (change.after.data().status !== 'Pending') return;
 
     const employerEmail = context.params.requestId;
+    const { lastAssignment } = change.after.data();
     admin
       .auth()
       .listUsers()
@@ -562,10 +563,10 @@ exports.autoAssignInternEmployer = functions.firestore
             let docData = doc.data();
 
             const careers = docData.careers;
-            if (!careers.includes(data.careerdId)) careers.push(data.careerId);
-
             const { internshipId, studentId, careerId } =
               change.after.data().lastAssignment;
+
+            if (!careers.includes(careerId)) careers.push(careerId);
 
             admin
               .firestore()
@@ -623,5 +624,15 @@ exports.autoAssignInternEmployer = functions.firestore
                   );
               });
           });
+      })
+      .then(() => {
+        change.after.ref
+          .update({
+            status: 'Treated',
+            [`assignedInterns.${lastAssignment.internshipId}.status`]: 'Treated'
+          })
+          .then((value) =>
+            functions.logger.info(`Employer creation successfully treated`)
+          );
       });
   });

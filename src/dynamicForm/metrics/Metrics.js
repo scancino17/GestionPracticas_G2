@@ -178,10 +178,10 @@ function Metrics() {
     const [dataChart, setDataChart] = useState([]);
 
     const [loaded, setLoaded] = useState(false);
-    const { evaluations } = useSupervisor();
+    const { evaluations, surveys } = useSupervisor();
 
     const filteredEvaluationList = useMemo(() => {
-      let list = evaluation ? evaluations : null;
+      let list = evaluation ? evaluations : surveys;
       if (list) {
         let filtered = list.slice();
 

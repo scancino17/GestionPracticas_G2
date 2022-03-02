@@ -102,15 +102,18 @@ const InternshipState = ({ internships }) => {
 
   return (
     <Grid>
-      {internships.map((internship) => (
-        <IntentionItem
-          key={internship.id}
-          internship={internship}
-          expanded={expanded}
-          changeExpanded={changeExpanded}
-          forceDisable={pending}
-        />
-      ))}
+      {internships.map(
+        (internship) =>
+          !internship.disabled && (
+            <IntentionItem
+              key={internship.id}
+              internship={internship}
+              expanded={expanded}
+              changeExpanded={changeExpanded}
+              forceDisable={pending}
+            />
+          )
+      )}
     </Grid>
   );
 };
@@ -151,7 +154,9 @@ const IntentionItem = ({
       <Grid container direction='column'>
         <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
-            ¡Felicitaciones! Terminaste tu proceso de práctica
+            {`${
+              internship.approved ? '¡Felicitaciones!' : ''
+            }Terminaste tu proceso de práctica`}
           </Typography>
         </Grid>
         <Typography variant='h5'>
@@ -350,6 +355,8 @@ const IntentionItem = ({
         return DeniedActions();
       case availableInternship:
         return AvailableActions();
+      case finishedInternship:
+        return FinishedActions();
       default:
         return <></>;
     }
@@ -383,6 +390,16 @@ const IntentionItem = ({
   const DeniedActions = () => {
     return (
       <StudentIntention
+        practica={internship}
+        altText='Volver a intentar'
+        forceDisable={forceDisable}
+      />
+    );
+  };
+  const FinishedActions = () => {
+    return (
+      <StudentIntention
+        reprove={!internship.approved}
         practica={internship}
         altText='Volver a intentar'
         forceDisable={forceDisable}
@@ -434,7 +451,7 @@ const IntentionItem = ({
         return (
           <Typography className={classes.secondaryAvailableHeading}>
             {internship.status + ' '}
-            <Emoji symbol='😄' />
+            <Emoji symbol={!internship.approved ? '😢' : '😄'} />
           </Typography>
         );
       default:

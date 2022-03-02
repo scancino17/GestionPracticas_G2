@@ -2,22 +2,27 @@ import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useStudent } from '../../providers/Student';
-import { serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebase';
 const approvalState = pendingIntention;
 
-function StudentIntention({ practica, altText, forceDisable }) {
+function StudentIntention({ practica, altText, forceDisable, reprove }) {
   const [internshipState, setInternshipState] = useState(practica.status);
-  const { updateInternship } = useStudent();
+  const { updateInternship, newInternship } = useStudent();
 
   const handleOnClick = () => {
-    if (internshipState !== approvalState) {
-      setInternshipState(approvalState);
+    if (!reprove) {
+      if (internshipState !== approvalState) {
+        setInternshipState(approvalState);
+      }
+      updateInternship(practica.id, {
+        status: approvalState,
+        sentTime: serverTimestamp()
+      });
+    } else {
+      console.log('crear nueva internship');
+      newInternship(practica.internshipNumber, practica.id);
     }
-
-    updateInternship(practica.id, {
-      status: approvalState,
-      sentTime: serverTimestamp()
-    });
   };
 
   const isPendingApproval = () => {

@@ -560,7 +560,8 @@ export function SupervisorProvider({ children }) {
       status: finishedInternship,
       evaluatedReportTime: serverTimestamp(),
       reason: reason ? reason : 'Sin observaciones',
-      grade: grade
+      grade: grade,
+      approved: grade >= 40 ? true : false
     });
 
     sendMail(student.email, 'ReportApproved', {

@@ -117,8 +117,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     {
       label: 'Métricas',
       icon: <BarChartIcon style={{ color: 'inherit', fontSize: 27 }} />,
-      path: '/metrics',
-      adminOnly: true
+      path: '/metrics'
     }
   ];
 

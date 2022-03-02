@@ -20,7 +20,7 @@ import { Bar, Pie } from 'react-chartjs-2';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import { useSupervisor } from '../../providers/Supervisor';
-import { useUser } from '../../providers/User';
+import { useUser, ADMIN_ROLE } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 import { FormTypes } from '../camps/FormTypes';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
@@ -32,7 +32,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 
 function Metrics() {
-  const { careerId } = useUser();
+  const { careerId, userRole } = useUser();
   const [selectedCareerId, setSelectedCareerId] = useState(careerId);
   const [formFull, setFormFull] = useState();
   const [evaluation, setEvaluation] = useState(true);
@@ -98,13 +98,15 @@ function Metrics() {
             marginRight: '2rem'
           }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <CareerSelector
-                careerId={selectedCareerId}
-                setCareerId={setSelectedCareerId}
-                excludeGeneral
-              />
-            </Grid>
+            {userRole === ADMIN_ROLE && (
+              <Grid item xs={12} sm={4}>
+                <CareerSelector
+                  careerId={selectedCareerId}
+                  setCareerId={setSelectedCareerId}
+                  excludeGeneral
+                />
+              </Grid>
+            )}
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <Grid item xs={12} sm={2}>
                 <DatePicker

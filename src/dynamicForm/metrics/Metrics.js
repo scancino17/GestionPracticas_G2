@@ -7,8 +7,7 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  Button,
-  Box
+  Button
 } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import PieChartIcon from '@mui/icons-material/PieChart';
@@ -31,7 +30,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import PropTypes from 'prop-types';
 
 function Metrics() {
   const { careerId } = useUser();
@@ -86,7 +84,7 @@ function Metrics() {
             value={selectedTab}
             onChange={handleChangeTab}
             aria-label='wrapped label tabs example'>
-            <Tab value={0} label='Formulario de Evaluacion' />
+            <Tab value={0} label='Formulario de evaluación del estudiante' />
             <Tab value={1} label='Formulario de encuesta de satisfacción' />
           </Tabs>
           <Divider />
@@ -208,20 +206,20 @@ function Metrics() {
       const selectCounter = new Map();
 
       //cargar opciones predefinidas en los casos en los que se puedan calcular
-      formFull[step].form.map((camp) => {
+      formFull[step].form.forEach((camp) => {
         if (
           camp.options &&
           camp.name === name &&
           (camp.type === 'Medidor satisfacción' ||
             camp.type === 'Menú de opciones')
         ) {
-          camp.options.map((option) => selectCounter.set(option, 0));
+          camp.options.forEach((option) => selectCounter.set(option, 0));
         }
       });
 
       filteredEvaluationList.forEach((doc) => {
         if (doc.form[step]) {
-          doc.form[step].form.map((camp) => {
+          doc.form[step].form.forEach((camp) => {
             if (camp.name === name) {
               if (selectCounter.has(camp.value)) {
                 let counter = selectCounter.get(camp.value);

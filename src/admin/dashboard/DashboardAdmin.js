@@ -9,16 +9,7 @@ import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../intention/InternshipIntention';
-
-import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
-import {
-  Container,
-  Grid,
-  makeStyles,
-  Select,
-  Typography,
-  Divider
-} from '@material-ui/core';
+import { Container, Grid, Typography, Divider } from '@material-ui/core';
 
 import { Avatar, Box, Card, CardContent, CardHeader } from '@mui/material';
 

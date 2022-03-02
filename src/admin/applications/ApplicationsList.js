@@ -196,7 +196,6 @@ function ApplicationsList() {
     } else return [];
   }, [
     applications,
-    name,
     reviewing,
     approved,
     rejected,

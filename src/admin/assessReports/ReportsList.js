@@ -18,11 +18,7 @@ import Tab from '@mui/material/Tab';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { NavigateNext } from '@material-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import {
-  evaluatedInternship,
-  finishedInternship,
-  sentReport
-} from '../../InternshipStates';
+import { finishedInternship, sentReport } from '../../InternshipStates';
 import CareerSelector from '../../utils/CareerSelector';
 import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../../providers/User';
 import { useSupervisor } from '../../providers/Supervisor';
@@ -39,7 +35,6 @@ import {
 } from '../../utils/FormatUtils';
 import PropTypes from 'prop-types';
 import { Pagination } from '@material-ui/lab';
-import { withStyles } from '@material-ui/styles';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -71,11 +66,7 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
-const SuccesTextTypography = withStyles({
-  root: {
-    color: '#4caf50'
-  }
-})(Typography);
+
 function ReportsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
@@ -168,7 +159,15 @@ function ReportsList() {
     );
 
     return filtered;
-  }, [sentReportsList, selectedCareerId, name, endDate, startDate]);
+  }, [
+    sentReportsList,
+    selectedCareerId,
+    name,
+    read,
+    notRead,
+    endDate,
+    startDate
+  ]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();

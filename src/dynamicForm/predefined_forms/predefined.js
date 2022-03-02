@@ -299,7 +299,7 @@ export const predefinedEvaluation = [
     form: [{}]
   },
   {
-    step: 'Competencias disiplinares',
+    step: 'Competencias disciplinares',
     uneditable: true,
     form: [{}]
   }

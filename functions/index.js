@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+
 admin.initializeApp();
 
 exports.importStudents = functions.https.onCall((data, context) => {
@@ -256,7 +257,7 @@ exports.createEmployer = functions.https.onCall((data, context) => {
             .firestore()
             .collection('employers')
             .doc(userRecord.uid)
-            .set({ careers: [], internships: {}, remarks: {} });
+            .set({ careers: [], interns: {}, remarks: {} });
 
           admin
             .firestore()
@@ -284,12 +285,13 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
         .filter((item) => item.customClaims && item.customClaims.employer)
         .find((item) => item.email === data.employerEmail);
 
-      console.log(`Employer found: ${employer.id}`);
+      console.log(`Employer assigned: ${data.employerEmail}`);
+      console.log(`Employer found: ${employer.uid}`);
 
       admin
         .firestore()
         .collection('employers')
-        .doc(employer.id)
+        .doc(employer.uid)
         .get()
         .then((doc) => {
           let docData = doc.data();
@@ -300,7 +302,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
           admin
             .firestore()
             .collection('employers')
-            .doc(employer.id)
+            .doc(employer.uid)
             .update({
               careers: careers,
               [`interns.${data.internshipId}`]: {
@@ -311,7 +313,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
             });
 
           admin.firestore().collection('users').doc(data.studentId).update({
-            'currentInternship.employerId': employer.id,
+            'currentInternship.employerId': employer.uid,
             'currentInternship.employerName': employer.displayName,
             'currentInternship.employerEmail': employer.email
           });
@@ -321,7 +323,7 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
             .collection('internships')
             .doc(data.internshipId)
             .update({
-              employerId: employer.id,
+              employerId: employer.uid,
               employerName: employer.displayName,
               employerEmail: employer.email,
               employerEvaluated: false
@@ -329,3 +331,308 @@ exports.assignInternshipToEmployer = functions.https.onCall((data, context) => {
         });
     });
 });
+
+exports.queueInternEmployerAssignment = functions.firestore
+  .document('applications/{applicationId}')
+  .onUpdate((change, context) => {
+    // Revisar estado de application
+    if (change.after.data().status === 'Aprobado') {
+      // Aquí se necesitan todos estos valores que normalmente están presentes en la application.
+      // Si por algún motivo se quitan de la application, habría que rescatarlos de los otros documentos.
+      const { internshipId, studentId, careerId, employerEmail, employerName } =
+        change.after.data();
+
+      const docRef = admin
+        .firestore()
+        .collection('employerAssignmentRequest')
+        .doc(employerEmail);
+
+      docRef.get().then((docSnap) => {
+        if (!docSnap.exists) {
+          docRef.set({
+            assignedInterns: {
+              [internshipId]: {
+                internshipId,
+                studentId,
+                careerId,
+                queueTime: admin.firestore.FieldValue.serverTimestamp(),
+                status: 'Pending'
+              }
+            },
+            lastAssignment: {
+              internshipId,
+              studentId,
+              careerId
+            },
+            employerEmail,
+            employerName,
+            status: 'Pending'
+          });
+        } else {
+          if (!docSnap.data().assignedInterns[internshipId])
+            docRef.update({
+              status: 'Pending',
+              [`assignedInterns.${internshipId}`]: {
+                internshipId,
+                studentId,
+                careerId,
+                queueTime: admin.firestore.FieldValue.serverTimestamp(),
+                status: 'Pending'
+              },
+              lastAssignment: {
+                internshipId,
+                studentId,
+                careerId
+              }
+            });
+        }
+      });
+    }
+  });
+
+exports.autoCreateEmployer = functions.firestore
+  .document('employerAssignmentRequest/{requestId}')
+  .onCreate((change, context) => {
+    const docData = change.data();
+    const employerData = {
+      name: docData.employerName,
+      email: docData.employerEmail
+    };
+    const { lastAssignment } = docData;
+    const randomPassword = Math.random().toString(36).slice(-8);
+
+    admin
+      .firestore()
+      .collection('userCreationRequests')
+      .add({
+        userDetails: employerData,
+        role: 'employer',
+        status: 'Pending',
+        createdBy: 'system',
+        createdOn: admin.firestore.FieldValue.serverTimestamp()
+      })
+      .then((userCreationRequestRef) => {
+        admin
+          .auth()
+          .createUser({
+            email: employerData.email,
+            password: randomPassword,
+            displayName: employerData.name
+          })
+          .then((userRecord) => {
+            admin.auth().setCustomUserClaims(userRecord.uid, {
+              employer: true
+            });
+            userCreationRequestRef.update({ status: 'Treated' });
+            functions.logger.info(
+              `Employer ${userRecord.uid} (email: ${userRecord.email}) created successfully.`
+            );
+
+            const { careerId, internshipId, studentId } = lastAssignment;
+            admin
+              .firestore()
+              .collection('employers')
+              .doc(userRecord.uid)
+              .set({
+                careers: [careerId],
+                interns: {
+                  [internshipId]: {
+                    studentId,
+                    careerId,
+                    employerEvaluated: false
+                  }
+                },
+                remarks: {}
+              })
+              .then((value) =>
+                functions.logger.info(
+                  `UserDoc ${userRecord.uid} for employer successfully created`
+                )
+              );
+
+            admin
+              .firestore()
+              .collection('users')
+              .doc(studentId)
+              .update({
+                'currentInternship.employerId': userRecord.uid,
+                'currentInternship.employerName': userRecord.displayName,
+                'currentInternship.employerEmail': userRecord.email
+              })
+              .then((value) =>
+                functions.logger.info(
+                  `studentDoc ${studentId} successfully updated`
+                )
+              );
+
+            admin
+              .firestore()
+              .collection('internships')
+              .doc(internshipId)
+              .update({
+                employerId: userRecord.uid,
+                employerName: userRecord.displayName,
+                employerEmail: userRecord.email,
+                employerEvaluated: false
+              })
+              .then((value) =>
+                functions.logger.info(
+                  `internshipDoc ${internshipId} successfully updated`
+                )
+              );
+
+            admin
+              .firestore()
+              .collection('mails')
+              .add({
+                to: userRecord.email,
+                template: {
+                  name: 'Welcome',
+                  data: {
+                    from_name: userRecord.displayName,
+                    password: randomPassword
+                  }
+                }
+              })
+              .then((value) =>
+                functions.logger.info(
+                  `Welcome email sent to ${userRecord.email}`
+                )
+              );
+
+            admin
+              .firestore()
+              .collection('users')
+              .doc(studentId)
+              .get()
+              .then((docSnap) => {
+                const { name: studentName } = docSnap.data();
+                admin
+                  .firestore()
+                  .collection('mails')
+                  .add({
+                    to: userRecord.email,
+                    template: {
+                      name: 'AssignedIntern',
+                      data: {
+                        studentName: studentName
+                      }
+                    }
+                  })
+                  .then((value) =>
+                    functions.logger.info(
+                      `Assigned intern email sent to ${userRecord.email}`
+                    )
+                  );
+              });
+          });
+      })
+      .then(() => {
+        change.ref
+          .update({
+            status: 'Treated',
+            [`assignedInterns.${lastAssignment.internshipId}.status`]: 'Treated'
+          })
+          .then((value) =>
+            functions.logger.info(`Employer creation successfully treated`)
+          );
+      });
+  });
+
+exports.autoAssignInternEmployer = functions.firestore
+  .document('employerAssignmentRequest/{requestId}')
+  .onUpdate((change, context) => {
+    if (change.after.data().status !== 'Pending') return;
+
+    const employerEmail = context.params.requestId;
+    const { lastAssignment } = change.after.data();
+    admin
+      .auth()
+      .listUsers()
+      .then((listUsersResult) => {
+        let employer = listUsersResult.users
+          .filter((item) => item.customClaims?.employer)
+          .find((item) => item.email === employerEmail);
+
+        admin
+          .firestore()
+          .collection('employers')
+          .doc(employer.uid)
+          .get()
+          .then((doc) => {
+            let docData = doc.data();
+
+            const careers = docData.careers;
+            const { internshipId, studentId, careerId } =
+              change.after.data().lastAssignment;
+
+            if (!careers.includes(careerId)) careers.push(careerId);
+
+            admin
+              .firestore()
+              .collection('employers')
+              .doc(employer.uid)
+              .update({
+                careers: careers,
+                [`interns.${internshipId}`]: {
+                  studentId: studentId,
+                  careerId: careerId,
+                  employerEvaluated: false
+                }
+              });
+
+            admin.firestore().collection('users').doc(data.studentId).update({
+              'currentInternship.employerId': employer.uid,
+              'currentInternship.employerName': employer.displayName,
+              'currentInternship.employerEmail': employer.email
+            });
+
+            admin
+              .firestore()
+              .collection('internships')
+              .doc(internshipId)
+              .update({
+                employerId: employer.uid,
+                employerName: employer.displayName,
+                employerEmail: employer.email,
+                employerEvaluated: false
+              });
+
+            admin
+              .firestore()
+              .collection('users')
+              .doc(studentId)
+              .get()
+              .then((docSnap) => {
+                const { name: studentName } = docSnap.data();
+                admin
+                  .firestore()
+                  .collection('mails')
+                  .add({
+                    to: userRecord.email,
+                    template: {
+                      name: 'AssignedIntern',
+                      data: {
+                        studentName: studentName
+                      }
+                    }
+                  })
+                  .then((value) =>
+                    functions.logger.info(
+                      `Assigned intern email sent to ${userRecord.email}`
+                    )
+                  );
+              });
+          });
+      })
+      .then(() => {
+        change.after.ref
+          .update({
+            status: 'Treated',
+            [`assignedInterns.${lastAssignment.internshipId}.status`]: 'Treated'
+          })
+          .then((value) =>
+            functions.logger.info(`Employer creation successfully treated`)
+          );
+      });
+  });

@@ -69,39 +69,54 @@ export function EmployerProvider({ children }) {
       });
     }
 
-    Object.entries(userData.interns).forEach(([key, value]) => {
-      const { studentId } = value;
-      const internshipId = key;
+    Object.entries(userData.interns)
+      .filter(
+        ([key, value]) => !value.finishedIntern || !value.employerEvaluated
+      )
+      .forEach(([key, value]) => {
+        const { studentId } = value;
+        const internshipId = key;
 
-      getDoc(doc(db, 'internships', internshipId)).then((internDoc) => {
-        const internship = internDoc.data();
-        getDoc(doc(db, 'users', studentId)).then((studentDoc) => {
-          const student = studentDoc.data();
+        getDoc(doc(db, 'internships', internshipId)).then((internDoc) => {
+          const internship = internDoc.data();
+          getDoc(doc(db, 'users', studentId)).then((studentDoc) => {
+            const student = studentDoc.data();
 
-          const { careerId, applicationData } = internship;
-          const {
-            'Fecha de inicio': internStart,
-            'Fecha de término': internEnd
-          } = applicationData;
-          const {
-            name: studentName,
-            rut: studentRut,
-            careerName: studentCareer
-          } = student;
-          addIntern({
-            internshipId,
-            studentId,
-            careerId,
-            internStart,
-            internEnd,
-            studentName,
-            studentRut,
-            studentCareer,
-            ...value
+            // Ojo: acá hay que preocuparse de cargar los datos requeridos
+            // por los campos requeridos del formulario de inscripción
+            // Estos tienen que llevar el key correspondiente al propName de cada
+            // valor requerido.
+            console.log(internshipId, internship);
+            const { careerId, applicationData } = internship;
+            const {
+              'Fecha de inicio': internStart,
+              'Fecha de término': internEnd,
+              studentPhone
+            } = applicationData;
+            const {
+              name: studentName,
+              rut: studentRut,
+              careerName: studentCareer,
+              email: studentEmail,
+              enrollmentNumber: studentNumber
+            } = student;
+            addIntern({
+              internshipId,
+              studentId,
+              careerId,
+              internStart,
+              internEnd,
+              studentName,
+              studentRut,
+              studentCareer,
+              studentEmail,
+              studentNumber,
+              studentPhone,
+              ...value
+            });
           });
         });
       });
-    });
   }, [isEqual, userData]);
 
   useEffect(() => loadInterns(), [loadInterns]);
@@ -135,7 +150,9 @@ export function EmployerProvider({ children }) {
   const remarksMap = useMemo(() => {
     if (!userData) return new Map();
     const remarksMap = new Map();
-    const internships = userData.internships.map((item) => item.internshipId);
+    const internships = Object.entries(userData.interns).map(
+      ([key, value]) => key
+    );
     internships.forEach((internship) => remarksMap.set(internship, []));
 
     Object.entries(userData.remarks)

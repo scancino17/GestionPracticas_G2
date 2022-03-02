@@ -235,7 +235,7 @@ function InternItem({ internship, expanded, changeExpanded }) {
               <>
                 <Grid item xs={4}>
                   <Typography className={classes.bold}>
-                    Envaluación envíada en:
+                    Evaluación envíada el:
                   </Typography>
                 </Grid>
                 <Grid item xs={8}>
@@ -247,7 +247,7 @@ function InternItem({ internship, expanded, changeExpanded }) {
               <>
                 <Grid item xs={4}>
                   <Typography className={classes.bold}>
-                    Envaluación revisada en:
+                    Evaluación revisada el:
                   </Typography>
                 </Grid>
                 <Grid item xs={8}>
@@ -302,10 +302,11 @@ function LastRemarkView({ internshipId }) {
     event.preventDefault();
     setExpanded((prevState) => !prevState);
   }
+
   /* remarkList estaba con .length, lo que generaba error */
   return (
     <>
-      {remarkList && (
+      {!!remarkList?.length && (
         <>
           <Grid
             item

@@ -14,7 +14,7 @@ import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { sentApplication } from '../../InternshipStates';
-import { FieldTypes, CustomTypes } from '../camps/FormTypes';
+import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
 import {
   addDoc,
   collection,
@@ -24,6 +24,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { useStudent } from '../../providers/Student';
+import { RequiredFields } from '../builder_preview/RequiredFields';
 
 function SendApplication({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -41,14 +42,26 @@ function SendApplication({ edit }) {
       setInternshipId(userData.currentInternship.id);
 
       if (!edit) {
+        function setValue(data, displayName, value) {
+          data.form.forEach((tab) =>
+            tab.form.forEach((item) => {
+              if (item.name === displayName) item.value = value;
+            })
+          );
+        }
+
         const docRef = doc(db, 'form', userData.careerId);
 
         getDoc(docRef).then((doc) => {
           const data = doc.data();
-          data.form[0].form[1].value = userData.name;
-          data.form[0].form[2].value = userData.rut;
-          data.form[0].form[3].value = userData.enrollmentNumber;
-          data.form[0].form[4].value = userData.email;
+
+          const requiredFields = RequiredFields[FormTypes.ApplicationForm];
+
+          Object.entries(requiredFields).forEach(([key, value]) => {
+            if (value.data)
+              setValue(data, value.displayName, value.data(userData));
+          });
+
           if (data) setFormFull(data.form);
         });
       } else {
@@ -122,6 +135,7 @@ function SendApplication({ edit }) {
       return true;
     }
   }
+
   function handleSave() {
     //extraemos los archivos antes de guardar el formulario para poder cambiar el valor del value en los campos files ya que
     //firestore no lo soporta
@@ -140,7 +154,29 @@ function SendApplication({ edit }) {
       })
     );
 
+    function findInForm(displayName) {
+      let value;
+
+      formFull.forEach((tab) =>
+        tab.form.forEach((item) => {
+          if (!value && item.name === displayName) value = item.value;
+        })
+      );
+
+      return value;
+    }
+
     if (!edit) {
+      const requiredFields = RequiredFields[FormTypes.ApplicationForm];
+
+      const requiredValues = {};
+      Object.entries(requiredFields).forEach(
+        ([key, value]) =>
+          (requiredValues[value.propName] = value.data
+            ? value.data(userData)
+            : findInForm(value.displayName))
+      );
+
       addDoc(collection(db, 'applications'), {
         form: formFull,
         studentId: user.uid,
@@ -151,6 +187,7 @@ function SendApplication({ edit }) {
         internshipNumber: userData.currentInternship.number,
         status: 'En revisión',
         creationDate: serverTimestamp(),
+        ...requiredValues,
         ...values
       })
         .then((docRef) => {
@@ -201,81 +238,74 @@ function SendApplication({ edit }) {
             </Step>
           ))}
         </Stepper>
-        {activeStep === formFull.length ? (
-          <>
-            <Typography>Guardar</Typography>
-            <Button variant='contained' color='primary' onClick={handleSave}>
-              Guardar
-            </Button>
-          </>
-        ) : (
-          <Grid container direction='column' spacing={2}>
+        <Grid container direction='column' spacing={2}>
+          <Grid item>
+            {formFull.map(
+              (form, i) =>
+                i === activeStep && (
+                  // formview
+                  <DynamicForm
+                    form={form.form}
+                    setForm={setFormFull}
+                    formFull={formFull}
+                    index={i}
+                    filesInner={files}
+                    setFilesInner={() => setFiles}
+                    student
+                    flag={flag}
+                    setFlag={setFlag}
+                  />
+                )
+            )}
+          </Grid>
+          <Grid item container justifyContent='flex-end' spacing={2}>
             <Grid item>
-              {formFull.map(
-                (form, i) =>
-                  i === activeStep && (
-                    // formview
-                    <DynamicForm
-                      form={form.form}
-                      setForm={setFormFull}
-                      formFull={formFull}
-                      index={i}
-                      filesInner={files}
-                      setFilesInner={() => setFiles}
-                      student
-                    />
-                  )
-              )}
+              <Button
+                variant='contained'
+                color='primary'
+                disabled={activeStep === 0}
+                onClick={handleBack}>
+                Anterior
+              </Button>
             </Grid>
-            <Grid item container justifyContent='flex-end' spacing={2}>
-              <Grid item>
+            <Grid item>
+              {activeStep !== formFull.length - 1 && (
                 <Button
                   variant='contained'
                   color='primary'
-                  disabled={activeStep === 0}
-                  onClick={handleBack}>
-                  Anterior
+                  onClick={handleNext}>
+                  Siguiente
                 </Button>
-              </Grid>
-              <Grid item>
-                {activeStep !== formFull.length - 1 && (
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={handleNext}>
-                    Siguiente
-                  </Button>
-                )}
-                {activeStep === formFull.length - 1 && (
-                  <Button
-                    variant='contained'
-                    color='primary'
-                    onClick={() => {
-                      Swal.fire({
-                        title: '¿Desea enviar su solicitud?',
-                        text: 'Revisa bien el formulario antes de enviarlo',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: `Enviar`,
-                        cancelButtonText: `Cancelar`
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          handleSave();
-                          Swal.fire('¡Formulario enviado!', '', 'success').then(
-                            (result) => {
-                              if (result.isConfirmed) navigate('/');
-                            }
-                          );
-                        }
-                      });
-                    }}>
-                    Enviar
-                  </Button>
-                )}
-              </Grid>
+              )}
+              {activeStep === formFull.length - 1 && (
+                <Button
+                  variant='contained'
+                  color='primary'
+                  onClick={() => {
+                    Swal.fire({
+                      title: '¿Desea enviar su solicitud?',
+                      text: 'Revisa bien el formulario antes de enviarlo',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonText: `Enviar`,
+                      cancelButtonText: `Cancelar`
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        handleSave();
+                        Swal.fire('¡Formulario enviado!', '', 'success').then(
+                          (result) => {
+                            if (result.isConfirmed) navigate('/');
+                          }
+                        );
+                      }
+                    });
+                  }}>
+                  Enviar
+                </Button>
+              )}
             </Grid>
           </Grid>
-        )}
+        </Grid>
       </Container>
     </Grid>
   );

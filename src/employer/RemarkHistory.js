@@ -147,43 +147,83 @@ function RemarkHistory() {
     [getInternData, internshipId]
   );
 
-  return remarksList && remarksList.length && internData ? (
-    <>
-      <Grid container direction='column'>
-        <Hidden smDown>
-          <div
-            style={{
-              backgroundImage: "url('../HomeBanner-3x.png')",
-              backgroundColor: '#e0f3f7',
-              backgroundSize: '100%',
-              backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat',
-              position: 'relative',
-              padding: '2rem'
-            }}>
-            <Typography variant='h4'>Historial de observaciones</Typography>
-            <Typography variant='h6'>{`Observaciones del estudiante ${internData.studentName}`}</Typography>
-          </div>
-        </Hidden>
-        <RemarksList remarksList={remarksList} />
+  return remarksList && internData ? (
+    remarksList.length ? (
+      <>
+        <Grid container direction='column'>
+          <Hidden smDown>
+            <div
+              style={{
+                backgroundImage: "url('../HomeBanner-3x.png')",
+                backgroundColor: '#e0f3f7',
+                backgroundSize: '100%',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                position: 'relative',
+                padding: '2rem'
+              }}>
+              <Typography variant='h4'>Historial de observaciones</Typography>
+              <Typography variant='h6'>{`Observaciones del estudiante ${internData.studentName}`}</Typography>
+            </div>
+          </Hidden>
+          <RemarksList remarksList={remarksList} />
+          <Container>
+            <Grid
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+              <Grid item xs={8} sm={6} md={3} lg={2}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  fullWidth
+                  onClick={() => navigate('/')}>
+                  Regresar
+                </Button>
+              </Grid>
+            </Grid>
+          </Container>
+        </Grid>
+      </>
+    ) : (
+      <>
         <Container>
           <Grid
             container
-            justifyContent='flex-end'
-            style={{ marginTop: '2rem', marginBottom: '2rem' }}>
-            <Grid item xs={8} sm={6} md={3} lg={2}>
-              <Button
-                variant='contained'
-                color='primary'
-                fullWidth
-                onClick={() => navigate('/')}>
-                Regresar
-              </Button>
+            direction='columns'
+            justifyContent='center'
+            alignItems='center'
+            style={{ marginTop: '6rem' }}>
+            <Grid item>
+              <img
+                src='evaluate.png'
+                width='300'
+                alt='Sin observaciones disponibles'
+              />
+              <Typography variant='h5' color='textSecondary'>
+                No se han registrado observaciones hasta ahora. ¡Envía una y
+                aparecerá aquí!
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              container
+              justifyContent='flex-end'
+              style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+              <Grid item xs={8} sm={6} md={3} lg={2}>
+                <Button
+                  variant='contained'
+                  color='primary'
+                  fullWidth
+                  onClick={() => navigate('/')}>
+                  Regresar
+                </Button>
+              </Grid>
             </Grid>
           </Grid>
         </Container>
-      </Grid>
-    </>
+      </>
+    )
   ) : (
     <LoadingSkeleton />
   );

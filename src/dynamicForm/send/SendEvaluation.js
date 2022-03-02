@@ -13,7 +13,7 @@ import {
 import { Skeleton } from '@material-ui/lab';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FieldTypes, CustomTypes } from '../camps/FormTypes';
+import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
 import {
   addDoc,
   collection,
@@ -24,6 +24,7 @@ import {
 import { useEmployer } from '../../providers/Employer';
 import { useUser } from '../../providers/User';
 import { ref, uploadBytes } from 'firebase/storage';
+import { RequiredFields } from '../builder_preview/RequiredFields';
 
 function SendEvaluation({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -41,7 +42,22 @@ function SendEvaluation({ edit }) {
     if (internshipId) {
       const internData = getInternData(internshipId);
       if (internData) {
-        const form = evaluationForms.get(internData.careerId);
+        function setValue(form, displayName, value) {
+          form.forEach((tab) =>
+            tab.form.forEach((item) => {
+              if (item.name === displayName) item.value = value;
+            })
+          );
+        }
+
+        const form = structuredClone(evaluationForms.get(internData.careerId));
+        const requiredFields = RequiredFields[FormTypes.EvaluationForm];
+
+        Object.entries(requiredFields).forEach(([key, value]) => {
+          if (value.data)
+            setValue(form, value.displayName, value.data(internData));
+        });
+
         setFormFull(form);
         setLoaded(true);
       }
@@ -209,6 +225,8 @@ function SendEvaluation({ edit }) {
                           filesInner={files}
                           setFilesInner={() => setFiles}
                           student
+                          flag={flag}
+                          setFlag={setFlag}
                         />
                       )
                   )}

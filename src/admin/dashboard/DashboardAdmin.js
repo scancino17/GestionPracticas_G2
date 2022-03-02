@@ -301,7 +301,10 @@ function DashboardAdmin({ sidebarProps }) {
                             height: 435,
                             position: 'relative'
                           }}>
-                          <GroupedBarChart setExportable={setInternStatus} />
+                          <GroupedBarChart
+                            graphsCareerId={graphsCareerId}
+                            setExportable={setInternStatus}
+                          />
                         </Box>
                       </CardContent>
                       <Divider />

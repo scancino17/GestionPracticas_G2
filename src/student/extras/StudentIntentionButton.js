@@ -20,7 +20,6 @@ function StudentIntention({ practica, altText, forceDisable, reprove }) {
         sentTime: serverTimestamp()
       });
     } else {
-      console.log('crear nueva internship');
       newInternship(practica.internshipNumber, practica.id);
     }
   };

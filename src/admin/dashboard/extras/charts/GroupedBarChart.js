@@ -6,7 +6,7 @@ import { DEFAULT_CAREER } from '../../../../providers/User';
 
 const NO_CAREER = 'Otras carreras';
 
-function GroupedBar({ setExportable }) {
+function GroupedBar({ graphsCareerId, setExportable }) {
   const { students, careers } = useSupervisor();
   const [loaded, setLoaded] = useState(false);
 
@@ -18,17 +18,22 @@ function GroupedBar({ setExportable }) {
   // los values son el nombre. Si este excede 34 caracteres, se corta
   const careersMap = useMemo(() => {
     const map = new Map();
-    careers
-      .filter((item) => item.id !== DEFAULT_CAREER)
-      .forEach((item) =>
-        map.set(
-          item.id,
-          item.sigla
-          /*.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name */
-        )
-      );
+    if (graphsCareerId === DEFAULT_CAREER) {
+      careers
+        .filter((item) => item.id !== DEFAULT_CAREER)
+        .forEach((item) => {
+          map.set(
+            item.id,
+            item.sigla
+            /*.name.length > 34 ? `${item.name.slice(0, 34)}...` : item.name */
+          );
+        });
+    } else {
+      let career = careers.find((element) => element.id === graphsCareerId);
+      map.set(career.id, career.sigla);
+    }
     return map;
-  }, [careers]);
+  }, [graphsCareerId, careers]);
 
   const { graphData, listData } = useMemo(() => {
     if (!careersMap || !students) return null;

@@ -22,6 +22,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Swal from 'sweetalert2';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -106,10 +107,11 @@ function ConstructorCamp({
       temp = {
         type: type,
         name: name,
-        options: options,
+        options: newOption !== '' ? options.concat(newOption) : options,
         value: '',
         open: false
       };
+      setNewOption('');
     } else if (type === FieldTypes.formFileInput) {
       temp = {
         type: type,
@@ -138,9 +140,13 @@ function ConstructorCamp({
         type: type,
         value: null,
         name: name,
-        options: optionsSatisfaction,
+        options:
+          newOptionSatisfaction !== ''
+            ? optionsSatisfaction.concat(newOptionSatisfaction)
+            : optionsSatisfaction,
         description: description
       };
+      setNewOptionSatisfaction('');
     }
 
     const aux = formFullInnerInner;
@@ -172,7 +178,18 @@ function ConstructorCamp({
     setOptionsSatisfaction([]);
     setDescription('');
   }
-
+  function handleNewOptionSelect() {
+    if (!options.includes(newOption)) {
+      setOptions((prev) => prev.concat(newOption));
+      setNewOption('');
+    }
+  }
+  function handleNewOptionSatisfaction() {
+    if (!optionsSatisfaction.includes(newOptionSatisfaction)) {
+      setOptionsSatisfaction((prev) => prev.concat(newOptionSatisfaction));
+      setNewOptionSatisfaction('');
+    }
+  }
   return (
     <BootstrapDialog
       fullWidth
@@ -242,6 +259,12 @@ function ConstructorCamp({
                 <TableRow>
                   <TableCell>
                     <TextField
+                      error={options.includes(newOption)}
+                      helperText={
+                        options.includes(newOption)
+                          ? 'La opción ya existe'
+                          : null
+                      }
                       fullWidth
                       variant='outlined'
                       value={newOption}
@@ -251,10 +274,9 @@ function ConstructorCamp({
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      disabled={!newOption}
+                      disabled={!newOption || options.includes(newOption)}
                       onClick={() => {
-                        setOptions((prev) => prev.concat(newOption));
-                        setNewOption('');
+                        handleNewOptionSelect();
                       }}>
                       <Add />
                     </IconButton>
@@ -324,6 +346,14 @@ function ConstructorCamp({
                 <TableRow>
                   <TableCell>
                     <TextField
+                      error={optionsSatisfaction.includes(
+                        newOptionSatisfaction
+                      )}
+                      helperText={
+                        optionsSatisfaction.includes(newOptionSatisfaction)
+                          ? 'La opción ya existe'
+                          : null
+                      }
                       fullWidth
                       variant='outlined'
                       value={newOptionSatisfaction}
@@ -333,12 +363,12 @@ function ConstructorCamp({
                   </TableCell>
                   <TableCell>
                     <IconButton
-                      disabled={!newOptionSatisfaction}
+                      disabled={
+                        !newOptionSatisfaction ||
+                        optionsSatisfaction.includes(newOptionSatisfaction)
+                      }
                       onClick={() => {
-                        setOptionsSatisfaction((prev) =>
-                          prev.concat(newOptionSatisfaction)
-                        );
-                        setNewOptionSatisfaction('');
+                        handleNewOptionSatisfaction();
                       }}>
                       <Add />
                     </IconButton>
@@ -375,7 +405,10 @@ function ConstructorCamp({
           disabled={
             !type ||
             (type === FieldTypes.formCustom && (!type2 || type2 === '')) ||
-            (type === FieldTypes.formSelect && options.length === 0) ||
+            (type === FieldTypes.formSelect &&
+              options.length === 0 &&
+              newOption === '') ||
+            (type === FieldTypes.formSelect && options.includes(newOption)) ||
             (type === FieldTypes.formSatisfaction &&
               optionsSatisfaction.length === 0) ||
             ((type === FieldTypes.formFileInput ||
@@ -385,7 +418,10 @@ function ConstructorCamp({
               type === FieldTypes.formSatisfaction) &&
               (name === null || name === '')) ||
             (type === FieldTypes.formSatisfaction &&
-              (description === null || description === ''))
+              optionsSatisfaction.length === 0 &&
+              (description === null || description === '')) ||
+            (type === FieldTypes.formSatisfaction &&
+              optionsSatisfaction.includes(newOptionSatisfaction))
           }
           color='primary'
           startIcon={<Save />}

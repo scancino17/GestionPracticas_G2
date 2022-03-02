@@ -82,6 +82,7 @@ export function EmployerProvider({ children }) {
           // por los campos requeridos del formulario de inscripción
           // Estos tienen que llevar el key correspondiente al propName de cada
           // valor requerido.
+          console.log(internship);
           const { careerId, applicationData } = internship;
           const {
             'Fecha de inicio': internStart,

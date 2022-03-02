@@ -10,16 +10,17 @@ import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../intention/InternshipIntention';
 
-import { Container, Divider } from '@material-ui/core';
+import styles from './extras/assets/jss/material-dashboard-react/views/dashboardStyle';
 import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
+  Container,
   Grid,
+  makeStyles,
+  Select,
   Typography,
-  CardHeader
-} from '@mui/material';
+  Divider
+} from '@material-ui/core';
+
+import { Avatar, Box, Card, CardContent, CardHeader } from '@mui/material';
 
 import WarningIcon from '@material-ui/icons/Warning';
 
@@ -49,6 +50,9 @@ import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 import RemarkList from '../remarks/RemarkList';
 import SelectEdit from '../../dynamicForm/SelectEdit';
+
+import Metrics from '../../dynamicForm/metrics/Metrics';
+
 import EvaluationsList from '../evaluations/EvaluationsList';
 import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
 
@@ -414,6 +418,7 @@ function DashboardAdmin({ sidebarProps }) {
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
+
         <Route exact path='/evaluations' element={<EvaluationsList />} />
         <Route path='/edit-form' element={<SelectEdit />} />
         <Route
@@ -453,6 +458,7 @@ function DashboardAdmin({ sidebarProps }) {
             </Grid>
           }
         />
+        <Route path='/metrics' element={<Metrics />} />
         {userRole === ADMIN_ROLE && (
           <Route path='/control-panel/' element={<ControlPanel />} />
         )}

@@ -5,7 +5,12 @@ import {
   Typography,
   Slider,
   Container,
-  Input
+  Input,
+  Card,
+  CardContent,
+  CardActions,
+  CardHeader,
+  Divider
 } from '@material-ui/core';
 import { useEffect, useState, useMemo } from 'react';
 import { storage } from '../../firebase';
@@ -17,7 +22,7 @@ import { EditorState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { getDownloadURL, ref } from 'firebase/storage';
-
+import { toLegibleDate } from '../../utils/FormatUtils';
 import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -26,6 +31,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { finishedInternship } from '../../InternshipStates';
+import { typography } from '@mui/system';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -69,13 +76,15 @@ function AssessReport() {
   const { studentId } = useParams();
   const { internshipId } = useParams();
   const [showChanges, SetShowChanges] = useState(false);
+  const [evaluated, setEvaluated] = useState(false);
   const [showEvaluate, SetShowEvaluate] = useState(false);
   const [changesEditorState, setChangesEditorState] = useState(
     EditorState.createEmpty()
   );
   const navigate = useNavigate();
   const [evaluateComment, setEvaluateComment] = useState('');
-  const { getUserData, amendReport, evaluateReport } = useSupervisor();
+  const { getUserData, amendReport, evaluateReport, getInternship } =
+    useSupervisor();
 
   const infoStudent = useMemo(() => {
     return getUserData(studentId);
@@ -85,6 +94,8 @@ function AssessReport() {
     const [url, setUrl] = useState();
 
     useEffect(() => {
+      setEvaluated(getInternship(internshipId).status === finishedInternship);
+      console.log(evaluated);
       getDownloadURL(
         ref(
           storage,
@@ -98,7 +109,7 @@ function AssessReport() {
     return (
       <Button
         startIcon={<GetApp />}
-        variant='contained'
+        variant={evaluated ? 'outlined' : 'contained'}
         target='_blank'
         href={url}
         rel='noopener'>
@@ -135,8 +146,122 @@ function AssessReport() {
             Evaluación de informe de práctica
           </Typography>
         </Grid>
-
-        {infoStudent && (
+        {evaluated && (
+          <Container style={{ marginTop: '2rem' }}>
+            <Grid container direction='row' justifyContent='space-around'>
+              <Grid item xs={6}>
+                <Card sx={{ minWidth: 275 }}>
+                  <CardHeader title={infoStudent.name}></CardHeader>
+                  <Divider />
+                  <CardContent>
+                    <Grid container>
+                      <Grid item xs={12} style={{ paddingBottom: '.5rem' }}>
+                        <Typography variant='h6'>
+                          Detalles de postulante
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Matricula:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {infoStudent.enrollmentNumber}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Correo:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {infoStudent.email}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} style={{ paddingBottom: '.5rem' }}>
+                        <Typography variant='h6'>
+                          Detalles del Evaluador
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Nombre:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {
+                            getInternship(internshipId).evaluatingSupervisor
+                              .name
+                          }
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Correo:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {
+                            getInternship(internshipId).evaluatingSupervisor
+                              .email
+                          }
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12} style={{ paddingBottom: '.5rem' }}>
+                        <Typography variant='h6'>
+                          Detalles de la practica
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant='h4'>Nota:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography variant='h4' component={'span'}>
+                          {getInternship(internshipId).grade}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Comentarios:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {getInternship(internshipId).reason
+                            ? getInternship(internshipId).reason
+                            : 'Sin comentarios'}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography>Fecha de evaluación:</Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <Typography component={'span'}>
+                          {' '}
+                          {getInternship(internshipId).evaluatedReportTime
+                            ? toLegibleDate(
+                                getInternship(internshipId).evaluatedReportTime
+                              )
+                            : 'Sin Fecha'}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                  <Divider />
+                  <CardActions>
+                    <DownloadButton />
+                  </CardActions>
+                </Card>
+              </Grid>
+              <Grid item>
+                <Grid container align='center' justifyContent='center'>
+                  <Grid item>
+                    <img
+                      height='500'
+                      src='../../AdminBanner-Evaluate-Divider.png'
+                      alt='Banner'
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Container>
+        )}
+        {infoStudent && !evaluated && (
           <Container style={{ marginTop: '2rem' }}>
             <Grid container direction='row' justifyContent='space-around'>
               <Grid item>
@@ -180,10 +305,8 @@ function AssessReport() {
                       <Grid item>
                         <Typography variant='h5'>Documento </Typography>
                       </Grid>
-                      <Grid item>
-                        <Container>
-                          <DownloadButton />
-                        </Container>
+                      <Grid>
+                        <DownloadButton />
                       </Grid>
                     </Grid>
                   </Grid>

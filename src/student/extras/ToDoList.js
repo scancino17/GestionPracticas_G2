@@ -260,7 +260,6 @@ function ToDoList() {
                         currentInternshipData.status === sentApplication
                       }
                     />
-                    <Divider />
                   </>
                 )}
               {currentInternshipData &&
@@ -380,7 +379,6 @@ function ToDoList() {
                     }
                     buttonOnClick={() => setShowExtension(true)}
                   />
-                  <Divider />
                 </>
               )}
             </Grid>
@@ -413,7 +411,8 @@ function DialogExtension({ internship, open, setOpen }) {
     updateCurrentInternship({
       extensionStatus: sentExtension,
       dateExtension: dateExtension,
-      reasonExtension: reasonRequestExtension
+      reasonExtension: reasonRequestExtension,
+      sentExtensionTime: serverTimestamp()
     });
   }
 
@@ -541,7 +540,7 @@ function SendReportDialog({ open, setOpen }) {
 
     updateCurrentInternship({
       status: sentReport,
-      creationDate: serverTimestamp()
+      sentReportDate: serverTimestamp()
     });
   }
 

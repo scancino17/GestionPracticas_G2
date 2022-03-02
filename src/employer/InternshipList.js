@@ -10,15 +10,10 @@ import {
   AccordionActions,
   AccordionDetails,
   AccordionSummary,
-  Dialog,
-  DialogContent,
-  DialogContentText,
   TextField,
   Box,
-  DialogTitle,
-  DialogActions,
   Collapse,
-  IconButton
+  DialogContentText
 } from '@material-ui/core';
 import classNames from 'classnames';
 import { grey } from '@material-ui/core/colors';
@@ -34,7 +29,51 @@ import {
   toLegibleDateTime,
   toLegibleTime
 } from '../utils/FormatUtils';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -264,108 +303,113 @@ function LastRemarkView({ internshipId }) {
     setExpanded((prevState) => !prevState);
   }
 
+  /* remarkList estaba con .length, lo que generaba error */
   return (
-    !!remarkList.length && (
-      <>
-        <Grid
-          item
-          container
-          direction='row'
-          justifyContent='space-between'
-          alignItems='center'
-          style={{ cursor: 'pointer' }}
-          onClick={handleExpand}>
-          <Grid item>
-            <Typography variant='h6'>Última observación: </Typography>
+    <>
+      {!!remarkList?.length && (
+        <>
+          <Grid
+            item
+            container
+            direction='row'
+            justifyContent='space-between'
+            alignItems='center'
+            style={{ cursor: 'pointer' }}
+            onClick={handleExpand}>
+            <Grid item>
+              <Typography variant='h6'>Última observación: </Typography>
+            </Grid>
+            <Grid item onClick={handleExpand}>
+              <IconButton
+                className={classNames(classes.expand, {
+                  [classes.expandOpen]: expanded
+                })}
+                style={{ marginRight: '-.75rem' }}
+                onClick={handleExpand}>
+                <ExpandMore />
+              </IconButton>
+            </Grid>
           </Grid>
-          <Grid item onClick={handleExpand}>
-            <IconButton
-              className={classNames(classes.expand, {
-                [classes.expandOpen]: expanded
-              })}
-              style={{ marginRight: '-.75rem' }}
-              onClick={handleExpand}>
-              <ExpandMore />
-            </IconButton>
-          </Grid>
-        </Grid>
-        <Collapse in={expanded} timeout='auto' unmountOnExit>
-          <Grid item container>
-            <Grid item xs={4}>
-              <Typography className={classes.bold}>Enviado:</Typography>
+          <Collapse in={expanded} timeout='auto' unmountOnExit>
+            <Grid item container>
+              <Grid item xs={4}>
+                <Typography className={classes.bold}>Enviado:</Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography>
+                  {`${toLegibleDate(remarkList[0].id)} ${toLegibleTime(
+                    remarkList[0].id
+                  )}`}
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography className={classes.bold}>Estado:</Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <Typography
+                  className={classNames({
+                    [classes.readState]: remarkList[0].read
+                  })}>
+                  {remarkList[0].read ? 'Leído' : 'No Leído'}
+                </Typography>
+              </Grid>
+              {remarkList[0].read && (
+                <>
+                  <Grid item xs={4}>
+                    <Typography className={classes.bold}>
+                      Recibido por:
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Typography>
+                      {remarkList[0].evaluatingSupervisor.name}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography className={classes.bold}>Correo:</Typography>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Typography>
+                      {remarkList[0].evaluatingSupervisor.email}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Typography className={classes.bold}>
+                      Última actualización:
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <Typography>
+                      {`${toLegibleDate(
+                        remarkList[0].updateTime
+                      )} ${toLegibleTime(remarkList[0].updateTime)}`}
+                    </Typography>
+                  </Grid>
+                </>
+              )}
+              <Grid item xs={12} style={{ paddingTop: '1rem' }}>
+                <Typography variant='h6'>Mensaje:</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography>{remarkList[0].remark}</Typography>
+              </Grid>
+              {!!remarkList[0].answer && (
+                <>
+                  <Grid item xs={12} style={{ paddingTop: '1rem' }}>
+                    <Typography variant='h6'>
+                      Respuesta de supervisor:
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography>{remarkList[0].answer}</Typography>
+                  </Grid>
+                </>
+              )}
             </Grid>
-            <Grid item xs={8}>
-              <Typography>
-                {`${toLegibleDate(remarkList[0].id)} ${toLegibleTime(
-                  remarkList[0].id
-                )}`}
-              </Typography>
-            </Grid>
-            <Grid item xs={4}>
-              <Typography className={classes.bold}>Estado:</Typography>
-            </Grid>
-            <Grid item xs={8}>
-              <Typography
-                className={classNames({
-                  [classes.readState]: remarkList[0].read
-                })}>
-                {remarkList[0].read ? 'Leído' : 'No Leído'}
-              </Typography>
-            </Grid>
-            {remarkList[0].read && (
-              <>
-                <Grid item xs={4}>
-                  <Typography className={classes.bold}>
-                    Recibido por:
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography>
-                    {remarkList[0].evaluatingSupervisor.name}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography className={classes.bold}>Correo:</Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography>
-                    {remarkList[0].evaluatingSupervisor.email}
-                  </Typography>
-                </Grid>
-                <Grid item xs={4}>
-                  <Typography className={classes.bold}>
-                    Última actualización:
-                  </Typography>
-                </Grid>
-                <Grid item xs={8}>
-                  <Typography>
-                    {`${toLegibleDate(
-                      remarkList[0].updateTime
-                    )} ${toLegibleTime(remarkList[0].updateTime)}`}
-                  </Typography>
-                </Grid>
-              </>
-            )}
-            <Grid item xs={12} style={{ paddingTop: '1rem' }}>
-              <Typography variant='h6'>Mensaje:</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography>{remarkList[0].remark}</Typography>
-            </Grid>
-            {!!remarkList[0].answer && (
-              <>
-                <Grid item xs={12} style={{ paddingTop: '1rem' }}>
-                  <Typography variant='h6'>Respuesta de supervisor:</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography>{remarkList[0].answer}</Typography>
-                </Grid>
-              </>
-            )}
-          </Grid>
-        </Collapse>
-      </>
-    )
+          </Collapse>
+        </>
+      )}
+    </>
   );
 }
 
@@ -385,11 +429,15 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
   }
 
   return (
-    <Dialog fullWidth open={showRemarkModal} onClose={closeModal}>
-      <DialogTitle>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showRemarkModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
         Enviar observación a supervisor de la universidad
-      </DialogTitle>
-      <DialogContent>
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <DialogContentText>
           Puede enviar un comentario respecto al estudiante{' '}
           <Box fontWeight='fontWeightBold' display='inline'>
@@ -413,7 +461,7 @@ function RemarkModal({ internship, closeModal, showRemarkModal }) {
           Enviar observación
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 

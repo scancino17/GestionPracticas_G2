@@ -163,13 +163,6 @@ export const predefinedEvaluation = [
     uneditable: true,
     form: [
       {
-        type: FieldTypes.formSatisfaction,
-        name: 'Habilidades Comunicativas:',
-        description:
-          'Refiere a la capacidad de comunicar discursos en forma oral y escrita, basándose en los recursos lingüísticos académicos, para desempeñarse en situaciones del ámbito profesional.',
-        value: null
-      },
-      {
         type: FieldTypes.formHeader,
         name: 'Estudiante: ',
         uneditable: true

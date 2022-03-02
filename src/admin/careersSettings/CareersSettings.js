@@ -20,7 +20,6 @@ function CareersSettings() {
   );
   const [career, setCareer] = useState();
   const [internships, setInternships] = useState(1);
-  const [survey, setSurvey] = useState('');
   const { getCareerData, updateCareer } = useSupervisor();
 
   useEffect(() => {
@@ -28,14 +27,12 @@ function CareersSettings() {
       let career = getCareerData(selectedCareerId);
       setCareer(career);
       setInternships(career.internships);
-      setSurvey(career.satisfactionSurvey);
     }
   }, [selectedCareerId, getCareerData]);
 
   function handleSave() {
     updateCareer(selectedCareerId, {
-      internships: parseInt(internships),
-      satisfactionSurvey: survey
+      internships: parseInt(internships)
     }).then(() =>
       Swal.fire(
         'Cambios guardados',
@@ -92,23 +89,6 @@ function CareersSettings() {
                         if (e.target.value > 0) setInternships(e.target.value);
                       }}
                       style={{ marginTop: '1rem' }}
-                    />
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item>
-                <Card>
-                  <CardContent>
-                    <Typography variant='h5'>
-                      Encuesta de satisfacción
-                    </Typography>
-                    <TextField
-                      fullWidth
-                      label='URL de la encuesta'
-                      value={survey}
-                      onChange={(e) => {
-                        setSurvey(e.target.value);
-                      }}
                     />
                   </CardContent>
                 </Card>

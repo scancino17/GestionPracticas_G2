@@ -364,11 +364,13 @@ export function SupervisorProvider({ children }) {
 
   function approveApplication(appData, approveReason) {
     updateApplication(appData.id, {
+      approvedDate: serverTimestamp(),
       status: 'Aprobado',
       reason: approveReason
     });
 
     updateInternship(appData.internshipId, {
+      approvedDate: serverTimestamp(),
       status: approvedApplication,
       applicationData: appData,
       applicationId: appData.id,
@@ -395,6 +397,7 @@ export function SupervisorProvider({ children }) {
 
   function rejectApplication(appData, rejectReason) {
     updateApplication(appData.id, {
+      rejectDate: serverTimestamp(),
       status: 'Rechazado',
       reason: rejectReason
     });
@@ -428,7 +431,8 @@ export function SupervisorProvider({ children }) {
 
     updateApplication(appData.id, {
       status: 'Necesita cambios menores',
-      reason: changes
+      reason: changes,
+      minorChangeRequestDate: serverTimestamp()
     });
 
     updateUser(appData.studentId, {
@@ -521,6 +525,18 @@ export function SupervisorProvider({ children }) {
         file
       );
     });
+
+    sendMail(internship.studentEmail, 'Insurance', {
+      from_name: internship.studentName
+    });
+    updateUser(internship.studentId, {
+      currentInternship: {
+        id: internship.id,
+        number: internship.internshipNumber
+      }
+    }).then(() =>
+      addNotification(internship.studentId, StudentNotificationTypes.insurance)
+    );
   }
 
   function amendReport(internshipId, student, reason) {
@@ -542,6 +558,7 @@ export function SupervisorProvider({ children }) {
   function evaluateReport(internshipId, student, reason, grade) {
     updateInternship(internshipId, {
       status: finishedInternship,
+      evaluatedReportTime: serverTimestamp(),
       reason: reason ? reason : 'Sin observaciones',
       grade: grade
     });
@@ -662,6 +679,12 @@ export function SupervisorProvider({ children }) {
         ...update
       }
     });
+    sendMail(employerEmail, 'replyObservation', {
+      from_name: employerName,
+      supervisor: displayName,
+      answer: update.answer,
+      student: studentName
+    });
   }
 
   return (
@@ -673,6 +696,7 @@ export function SupervisorProvider({ children }) {
         students,
         careers,
         employers,
+        evaluations,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,

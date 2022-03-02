@@ -23,7 +23,9 @@ import PropTypes from 'prop-types';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
-
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import { normalizeString, toLegibleDate } from '../../utils/FormatUtils';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -58,12 +60,29 @@ function a11yProps(index) {
 
 function EvaluationItem({ evaluation }) {
   const navigate = useNavigate();
-
+  function dateString(evaluation) {
+    if (evaluation.read && evaluation.revisionTime) {
+      return ' Leída el ' + toLegibleDate(evaluation.revisionTime);
+    } else if (!evaluation.read && evaluation.sentTime) {
+      return ' Enviada el ' + toLegibleDate(evaluation.sentTime);
+    }
+  }
   return (
     <ListItem button onClick={() => navigate(`/evaluations/${evaluation.id}`)}>
       <ListItemText
         primary={evaluation.studentName}
-        secondary={`${evaluation.studentRut} - Práctica ${evaluation.internshipNumber} - ${evaluation.careerInitials}`}
+        secondary={
+          <React.Fragment>
+            {`${evaluation.studentRut} - Práctica ${evaluation.internshipNumber} - ${evaluation.careerInitials} - `}
+            <Typography
+              sx={{ display: 'inline' }}
+              component='span'
+              variant='body2'
+              color='primary'>
+              <strong>{dateString(evaluation)}</strong>
+            </Typography>
+          </React.Fragment>
+        }
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/evaluations/${evaluation.id}`)}>
@@ -80,25 +99,96 @@ function EvaluationsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [selected, setSelected] = useState({ read: false, notRead: true });
+  const { read, notRead } = selected;
   const itemsPerPage = 8;
   const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
   const [indice, setIndice] = useState(0);
-
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
   const filteredEvaluationList = useMemo(() => {
-    return employerEvaluations
-      .slice()
-      .filter(
+    if (employerEvaluations) {
+      let filtered = employerEvaluations.slice();
+
+      filtered = filtered.filter(
         (item) =>
           selectedCareerId === DEFAULT_CAREER ||
           item.careerId === selectedCareerId
-      )
-      .filter((item) => name === '' || item.studentName.includes(name))
-      .filter(
-        (item) =>
-          (item.read && selected.read) || (!item.read && selected.notRead)
       );
-  }, [employerEvaluations, selectedCareerId, name, selected]);
+      if (name !== '') {
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
+      }
+      if (read && notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            (!item.read &&
+              item.sentTime &&
+              item.sentTime.seconds * 1000 <= endDate &&
+              item.sentTime.seconds * 1000 >= startDate) ||
+            (item.read &&
+              item.revisionTime &&
+              item.revisionTime.seconds * 1000 <= endDate &&
+              item.revisionTime.seconds * 1000 >= startDate)
+        );
+      } else if (read) {
+        filtered = filtered.filter(
+          (item) =>
+            item.read &&
+            item.revisionTime &&
+            item.revisionTime.seconds * 1000 <= endDate &&
+            item.revisionTime.seconds * 1000 >= startDate
+        );
+      } else if (notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            !item.read &&
+            item.sentTime &&
+            item.sentTime.seconds * 1000 <= endDate &&
+            item.sentTime.seconds * 1000 >= startDate
+        );
+      }
+      filtered.sort((a, b) =>
+        (a.read && a.revisionTime
+          ? a.revisionTime.seconds
+          : !a.read && a.sentTime
+          ? a.sentTime.seconds
+          : null) <
+        (b.read && b.revisionTime
+          ? b.revisionTime.seconds
+          : !b.read && b.sentTime
+          ? b.sentTime.seconds
+          : null)
+          ? 1
+          : (a.read && a.revisionTime
+              ? a.revisionTime.seconds
+              : !a.read && a.sentTime
+              ? a.sentTime.seconds
+              : null) ===
+            (b.read && b.revisionTime
+              ? b.revisionTime.seconds
+              : !b.read && b.sentTime
+              ? b.sentTime.seconds
+              : null)
+          ? a.size < b.size
+            ? 1
+            : -1
+          : -1
+      );
+      return filtered;
+    } else return [];
+  }, [
+    employerEvaluations,
+    name,
+    read,
+    notRead,
+    selectedCareerId,
+    endDate,
+    startDate
+  ]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();
@@ -159,7 +249,7 @@ function EvaluationsList() {
               onChange={handleChangeTab}
               aria-label='Selección de observaciones a mostrar'>
               <Tab
-                label='No leído'
+                label='No revisadas'
                 {...a11yProps(0)}
                 onClick={(e) => {
                   e.preventDefault();
@@ -169,7 +259,7 @@ function EvaluationsList() {
                 }}
               />
               <Tab
-                label='Leído'
+                label='Revisadas'
                 {...a11yProps(1)}
                 onClick={(e) => {
                   e.preventDefault();
@@ -212,6 +302,32 @@ function EvaluationsList() {
             <Grid item xs={12} sm={4}>
               <ExportarExcel />
             </Grid>
+            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              <Grid container item xs={12} direction='row' spacing={2}>
+                <Grid item xs={12} md={2}>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='dd/MM/yyyy'
+                    label={'Fecha inicio'}
+                    value={startDate}
+                    onChange={(date) => setStartDate(date)}
+                  />
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <DatePicker
+                    fullWidth
+                    disableToolbar
+                    variant='inline'
+                    format='dd/MM/yyyy'
+                    label={'Fecha Fin'}
+                    value={endDate}
+                    onChange={(date) => setEndDate(date)}
+                  />
+                </Grid>
+              </Grid>
+            </MuiPickersUtilsProvider>
             <Divider />
             <Container style={{ marginTop: '2rem' }}>
               <List>

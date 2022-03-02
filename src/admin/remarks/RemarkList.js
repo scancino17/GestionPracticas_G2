@@ -11,11 +11,6 @@ import {
   AccordionActions,
   Hidden,
   Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
   Box as TextBox,
   Divider
 } from '@material-ui/core';
@@ -27,16 +22,63 @@ import { useSupervisor } from '../../providers/Supervisor';
 import { useUser, DEFAULT_CAREER, ADMIN_ROLE } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 import {
+  normalizeString,
   toLegibleDate,
   toLegibleDateTime,
   toLegibleTime
 } from '../../utils/FormatUtils';
-import { Box, Tab, Tabs } from '@mui/material';
-import PropTypes from 'prop-types';
+import { Box, DialogContentText, Tab, Tabs } from '@mui/material';
+
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(4)
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1)
+  }
+}));
+
+const BootstrapDialogTitle = (props) => {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label='close'
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500]
+          }}>
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+};
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired
+};
 const useStyles = makeStyles((theme) => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -121,7 +163,17 @@ function RemarkItem({ remark, expanded, changeExpanded }) {
           </Typography>
           <Hidden xsDown>
             <Typography className={classes.secondaryHeading}>
-              {`Observación de Practica ${remark.internshipNumber} de ${remark.studentName}`}
+              {`Observación de Practica ${remark.internshipNumber} de ${remark.studentName} -`}
+              <Typography
+                sx={{ display: 'inline' }}
+                component='span'
+                color='primary'>
+                <strong>{` ${
+                  remark.read ? ' Revisada el ' : ' Enviada el '
+                }${toLegibleDate(
+                  remark.read ? remark.updateTime : remark.remarkTime
+                )}`}</strong>
+              </Typography>
             </Typography>
           </Hidden>
           <Hidden smUp>
@@ -249,9 +301,15 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
   useEffect(() => remark.answer && setAnswer(remark.answer), [remark]);
 
   return (
-    <Dialog fullWidth open={showAnswerModal} onClose={closeModal}>
-      <DialogTitle>Responder observación de supervisor</DialogTitle>
-      <DialogContent>
+    <BootstrapDialog
+      fullWidth
+      onClose={closeModal}
+      aria-labelledby='customized-dialog-title'
+      open={showAnswerModal}>
+      <BootstrapDialogTitle id='customized-dialog-title' onClose={closeModal}>
+        Responder observación de supervisor
+      </BootstrapDialogTitle>
+      <DialogContent dividers>
         <DialogContentText>
           Puede responder la observación respecto al estudiante{' '}
           <TextBox fontWeight='fontWeightBold' display='inline'>
@@ -278,7 +336,7 @@ function AnswerModal({ remark, closeModal, showAnswerModal }) {
           Responder observación
         </Button>
       </DialogActions>
-    </Dialog>
+    </BootstrapDialog>
   );
 }
 
@@ -289,33 +347,93 @@ function RemarkList() {
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [expanded, setExpanded] = useState();
   const [selected, setSelected] = useState({ read: false, notRead: true });
+  const { read, notRead } = selected;
   const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
   const [indice, setIndice] = useState(0);
   const itemsPerPage = 14;
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
 
   const changeExpanded = (panel) => (event, isExpanded) =>
     setExpanded(isExpanded ? panel : false);
 
   const filteredRemarkList = useMemo(() => {
-    return remarkList
-      .slice()
-      .filter(
+    if (remarkList) {
+      let filtered = remarkList.slice();
+      filtered = filtered.filter(
         (item) =>
           selectedCareerId === DEFAULT_CAREER ||
           item.careerId === selectedCareerId
-      )
-      .filter(
-        (item) =>
-          name === '' ||
-          item.studentName.includes(name) ||
-          item.employerName.includes(name)
-      )
-      .filter(
-        (item) =>
-          (item.read && selected.read) || (!item.read && selected.notRead)
       );
-  }, [name, remarkList, selectedCareerId, selected]);
+      if (name !== '') {
+        filtered = filtered.filter(
+          (item) =>
+            normalizeString(item.studentName).includes(normalizeString(name)) ||
+            normalizeString(item.employerName).includes(normalizeString(name))
+        );
+      }
+      if (read && notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            (!item.read &&
+              item.remarkTime &&
+              item.remarkTime.seconds * 1000 <= endDate &&
+              item.remarkTime.seconds * 1000 >= startDate) ||
+            (item.read &&
+              item.updateTime &&
+              item.updateTime.seconds * 1000 <= endDate &&
+              item.updateTime.seconds * 1000 >= startDate)
+        );
+      } else if (read) {
+        filtered = filtered.filter(
+          (item) =>
+            item.read &&
+            item.updateTime &&
+            item.updateTime.seconds * 1000 <= endDate &&
+            item.updateTime.seconds * 1000 >= startDate
+        );
+      } else if (notRead) {
+        filtered = filtered.filter(
+          (item) =>
+            !item.read &&
+            item.remarkTime &&
+            item.remarkTime.seconds * 1000 <= endDate &&
+            item.remarkTime.seconds * 1000 >= startDate
+        );
+      }
+      filtered.sort((a, b) =>
+        (!a.read && a.remarkTime
+          ? a.remarkTime
+          : a.read && a.updateTime
+          ? a.updateTime
+          : null) <
+        (!b.read && b.remarkTime
+          ? b.remarkTime
+          : b.read && b.updateTime
+          ? b.updateTime
+          : null)
+          ? 1
+          : (!a.read && a.remarkTime
+              ? a.remarkTime
+              : a.read && a.updateTime
+              ? a.updateTime
+              : null) ===
+            (!b.read && b.remarkTime
+              ? b.remarkTime
+              : b.read && b.updateTime
+              ? b.updateTime
+              : null)
+          ? a.size < b.size
+            ? 1
+            : -1
+          : -1
+      );
+      return filtered;
+    } else return [];
+  }, [remarkList, name, read, notRead, selectedCareerId, endDate, startDate]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();
@@ -464,6 +582,32 @@ function RemarkList() {
               <Grid item xs={12} sm={4}>
                 <ExportarExcel />
               </Grid>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Grid container item xs={12} direction='row' spacing={2}>
+                  <Grid item xs={12} md={2}>
+                    <DatePicker
+                      fullWidth
+                      disableToolbar
+                      variant='inline'
+                      format='dd/MM/yyyy'
+                      label={'Fecha inicio'}
+                      value={startDate}
+                      onChange={(date) => setStartDate(date)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    <DatePicker
+                      fullWidth
+                      disableToolbar
+                      variant='inline'
+                      format='dd/MM/yyyy'
+                      label={'Fecha Fin'}
+                      value={endDate}
+                      onChange={(date) => setEndDate(date)}
+                    />
+                  </Grid>
+                </Grid>
+              </MuiPickersUtilsProvider>
               <Divider />
               <Container style={{ marginTop: '2rem' }}>
                 {filteredRemarkList.length > 0 && (

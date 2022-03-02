@@ -106,6 +106,12 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/supervisor-management',
       adminOnly: true
+    },
+    {
+      label: 'Métricas',
+      icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/metrics',
+      adminOnly: true
     }
   ];
 

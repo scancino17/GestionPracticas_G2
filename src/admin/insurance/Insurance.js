@@ -13,7 +13,6 @@ import ReactExport from 'react-export-excel-xlsx-fix';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import { DropzoneArea } from 'material-ui-dropzone';
 import React, { useState, useEffect, useMemo } from 'react';
-import { db } from '../../firebase';
 import CareerSelector from '../../utils/CareerSelector';
 import { Pagination } from '@material-ui/lab';
 import { approvedApplication } from '../../InternshipStates';
@@ -28,7 +27,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
+import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -117,7 +122,20 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerInitials}`}
+          secondary={
+            <React.Fragment>
+              {`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerInitials} - `}
+              <Typography
+                sx={{ display: 'inline' }}
+                component='span'
+                variant='body2'
+                color='primary'>
+                <strong>{`Práctica aprobada el ${toLegibleDate(
+                  internship.approvedDate
+                )}`}</strong>
+              </Typography>
+            </React.Fragment>
+          }
         />
       </ListItem>
       <Divider />
@@ -140,14 +158,25 @@ function Insurance() {
   const ExcelFile = ReactExport.ExcelFile;
   const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
   const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
   const { internships } = useSupervisor();
+  const [startDate, setStartDate] = useState(
+    new Date() - 1000 * 60 * 60 * 24 * 30 * 2
+  );
+  const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
     const exportar = [];
     const seguro = [];
 
     internships
-      .filter((item) => item.status === approvedApplication)
+      .filter(
+        (item) =>
+          item.status === approvedApplication &&
+          item.approvedDate &&
+          item.approvedDate.seconds * 1000 >= startDate &&
+          item.approvedDate.seconds * 1000 <= endDate
+      )
       .forEach((internship) => {
         if (!internship.alreadyDownloaded) {
           const termino = YearMonthDay(
@@ -161,17 +190,17 @@ function Insurance() {
             ...internship.applicationData,
             stringInicio: inicio,
             stringTermino: termino,
-            carrera: internship.careerName
+            carrera: internship.careerName,
+            approvedDate: internship.approvedDate
           });
         }
         if (!internship.seguroDisponible) {
           seguro.push(internship);
         }
       });
-
     setUsersExport([...exportar]);
     setUsersInsurance([...seguro]);
-  }, [internships]);
+  }, [internships, startDate, endDate]);
 
   const filteredInsuranceList = useMemo(() => {
     if (usersInsurance) {
@@ -181,7 +210,9 @@ function Insurance() {
           (item) => item.careerId === selectedCareerId
         );
       if (name !== '')
-        filtered = filtered.filter((item) => item.studentName.includes(name));
+        filtered = filtered.filter((item) =>
+          normalizeString(item.studentName).includes(normalizeString(name))
+        );
       return filtered;
     } else return [];
   }, [usersInsurance, name, selectedCareerId]);
@@ -202,20 +233,20 @@ function Insurance() {
             fullWidth
             color='primary'
             variant='contained'
-            startIcon={<GetAppIcon />}
-            onClick={() =>
-              usersExport.forEach((doc) =>
-                db
-                  .collection('internships')
-                  .doc(doc.id)
-                  .update({ alreadyDownloaded: true })
-              )
-            }>
+            startIcon={<GetAppIcon />}>
             Exportar postulaciones aprobadas
           </Button>
         }
         filename='Estudiantes para seguro'>
         <ExcelSheet data={usersExport} name='Estudiantes para seguro'>
+          <ExcelColumn
+            label='Fecha de aprobacion de inscripción'
+            value={(col) => toLegibleDate(col.approvedDate)}
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) => toLegibleTime(col.approvedDate)}
+          />
           <ExcelColumn
             label='Nombre estudiante'
             value='Nombre del estudiante'
@@ -265,6 +296,32 @@ function Insurance() {
           <Grid item xs={12} sm={7} lg={4}>
             <ExportarExcel />
           </Grid>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <Grid container item xs={12} direction='row' spacing={2}>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha inicio'}
+                  value={startDate}
+                  onChange={(date) => setStartDate(date)}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <DatePicker
+                  fullWidth
+                  disableToolbar
+                  variant='inline'
+                  format='dd/MM/yyyy'
+                  label={'Fecha Fin'}
+                  value={endDate}
+                  onChange={(date) => setEndDate(date)}
+                />
+              </Grid>
+            </Grid>
+          </MuiPickersUtilsProvider>
         </Grid>
 
         {filteredInsuranceList.length > 0 ? (

@@ -201,6 +201,7 @@ function SendApplication({ edit }) {
       updateDoc(doc(db, 'applications', applicationId), {
         form: formFull,
         status: 'En revisión',
+        creationDate: serverTimestamp(),
         ...values
       }).then(() =>
         //se guarda los archivos en la application correspondiente

@@ -85,8 +85,8 @@ const ProfileMenu = ({ func }) => {
         </Typography>
       </Box>
       <Divider sx={{ my: 1 }} />
-      <MenuItem>
-        <ListItemIcon onClick={func.handleResetPassword}>
+      <MenuItem onClick={func.handleResetPassword}>
+        <ListItemIcon>
           <PasswordIcon fontSize='small' />
         </ListItemIcon>
         Cambiar Contraseña

@@ -166,9 +166,7 @@ function ApplicationCheck() {
   const handleShowApproved = () => {
     setShowApproved(true);
   };
-  const handleOpenClose = () => {
-    setOpen(!open);
-  };
+
   const handleOpen = () => {
     setOpen(true);
   };

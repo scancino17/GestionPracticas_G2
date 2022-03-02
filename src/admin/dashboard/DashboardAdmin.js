@@ -284,7 +284,12 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item lg={8} md={12} xl={9} xs={12}>
+                  <Grid
+                    item
+                    lg={8}
+                    md={12}
+                    xl={graphsCareerId === DEFAULT_CAREER ? 9 : 3}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Estado de los alumnos por carrera' />
                       <Divider />
@@ -294,7 +299,10 @@ function DashboardAdmin({ sidebarProps }) {
                             height: 435,
                             position: 'relative'
                           }}>
-                          <GroupedBarChart setExportable={setInternStatus} />
+                          <GroupedBarChart
+                            graphsCareerId={graphsCareerId}
+                            setExportable={setInternStatus}
+                          />
                         </Box>
                       </CardContent>
                       <Divider />
@@ -348,7 +356,12 @@ function DashboardAdmin({ sidebarProps }) {
                       </Box>
                     </Card>
                   </Grid>
-                  <Grid item lg={4} md={6} xl={4} xs={12}>
+                  <Grid
+                    item
+                    lg={4}
+                    md={6}
+                    xl={graphsCareerId === DEFAULT_CAREER ? 4 : 6}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Prácticas registradas en el extranjero' />
                       <Divider />
@@ -356,7 +369,7 @@ function DashboardAdmin({ sidebarProps }) {
                         <Box
                           sx={{
                             p: 2,
-                            height: '100%'
+                            height: 450
                           }}>
                           <TableChart setExportable={setInternCountries} />
                         </Box>
@@ -376,14 +389,19 @@ function DashboardAdmin({ sidebarProps }) {
                       </Box>
                     </Card>
                   </Grid>
-                  <Grid item lg={8} md={12} xl={8} xs={12}>
+                  <Grid
+                    item
+                    lg={8}
+                    md={12}
+                    xl={graphsCareerId !== DEFAULT_CAREER ? 12 : 8}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Empresas más elegidas por los practicantes' />
                       <Divider />
                       <CardContent>
                         <Box
                           sx={{
-                            height: 400,
+                            height: 450,
                             position: 'relative'
                           }}>
                           <VerticalBar

@@ -329,10 +329,11 @@ const IntentionItem = ({ internship, update, expanded, changeExpanded }) => {
           {sentTime && (
             <Typography
               style={{ marginLeft: '3rem' }}
-              component={'span'}
-              className={
-                classes.secondaryHeading
-              }>{`Solicitada el ${toLegibleDate(sentTime)}`}</Typography>
+              sx={{ display: 'inline' }}
+              component='span'
+              color='primary'>
+              <strong>{`Solicitada el ${toLegibleDate(sentTime)}`}</strong>
+            </Typography>
           )}
         </AccordionSummary>
         <AccordionDetails>

@@ -122,11 +122,20 @@ function StudentItem({ internship }) {
       <ListItem button onClick={(e) => setShowModal(true)}>
         <ListItemText
           primary={internship.studentName}
-          secondary={`${
-            internship.applicationData['Rut del estudiante']
-          } - Práctica ${internship.applicationData.internshipNumber} - ${
-            internship.careerInitials
-          } - Práctica aprobada el ${toLegibleDate(internship.approvedDate)}`}
+          secondary={
+            <React.Fragment>
+              {`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.applicationData.internshipNumber} - ${internship.careerInitials} - `}
+              <Typography
+                sx={{ display: 'inline' }}
+                component='span'
+                variant='body2'
+                color='primary'>
+                <strong>{`Práctica aprobada el ${toLegibleDate(
+                  internship.approvedDate
+                )}`}</strong>
+              </Typography>
+            </React.Fragment>
+          }
         />
       </ListItem>
       <Divider />

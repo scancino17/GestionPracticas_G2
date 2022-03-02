@@ -64,16 +64,25 @@ function EvaluationItem({ evaluation }) {
     if (evaluation.read && evaluation.revisionTime) {
       return ' Leída el ' + toLegibleDate(evaluation.revisionTime);
     } else if (!evaluation.read && evaluation.sentTime) {
-      return ' Enviada el' + toLegibleDate(evaluation.sentTime);
+      return ' Enviada el ' + toLegibleDate(evaluation.sentTime);
     }
   }
   return (
     <ListItem button onClick={() => navigate(`/evaluations/${evaluation.id}`)}>
       <ListItemText
         primary={evaluation.studentName}
-        secondary={`${evaluation.studentRut} - Práctica ${
-          evaluation.internshipNumber
-        } - ${evaluation.careerInitials} -${dateString(evaluation)}`}
+        secondary={
+          <React.Fragment>
+            {`${evaluation.studentRut} - Práctica ${evaluation.internshipNumber} - ${evaluation.careerInitials} - `}
+            <Typography
+              sx={{ display: 'inline' }}
+              component='span'
+              variant='body2'
+              color='primary'>
+              <strong>{dateString(evaluation)}</strong>
+            </Typography>
+          </React.Fragment>
+        }
       />
       <ListItemSecondaryAction>
         <IconButton onClick={() => navigate(`/evaluations/${evaluation.id}`)}>

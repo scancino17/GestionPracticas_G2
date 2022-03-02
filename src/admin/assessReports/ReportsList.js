@@ -39,6 +39,7 @@ import {
 } from '../../utils/FormatUtils';
 import PropTypes from 'prop-types';
 import { Pagination } from '@material-ui/lab';
+import { withStyles } from '@material-ui/styles';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -70,7 +71,11 @@ function a11yProps(index) {
     'aria-controls': `simple-tabpanel-${index}`
   };
 }
-
+const SuccesTextTypography = withStyles({
+  root: {
+    color: '#4caf50'
+  }
+})(Typography);
 function ReportsList() {
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
@@ -392,21 +397,55 @@ function ReportItem({ internship }) {
       }>
       <ListItemText
         primary={internship.studentName}
-        secondary={`${
-          internship.applicationData['Rut del estudiante']
-        } - Práctica ${internship.internshipNumber} - ${
-          internship.careerInitials
-        } - ${
-          internship.status === sentReport
-            ? `Enviada el ${toLegibleDate(internship.sentReportDate)}`
-            : internship.evaluatedReportTime
-            ? `Evaluada el ${toLegibleDate(internship.evaluatedReportTime)}`
-            : 'Fecha de evaluación no disponible'
-        }${
-          internship.status === finishedInternship
-            ? ` - Nota: ${internship.grade}`
-            : ''
-        }`}
+        secondary={
+          <React.Fragment>
+            {`${internship.applicationData['Rut del estudiante']} - Práctica ${internship.internshipNumber} - ${internship.careerInitials} - `}
+            <Typography
+              style={{ display: 'inline' }}
+              component='span'
+              variant='body2'
+              color='primary'>
+              <strong>
+                {`${
+                  internship.status === sentReport
+                    ? `Enviada el ${toLegibleDate(internship.sentReportDate)}`
+                    : internship.evaluatedReportTime
+                    ? `Evaluada el ${toLegibleDate(
+                        internship.evaluatedReportTime
+                      )}`
+                    : 'Fecha de evaluación no disponible'
+                }  `}
+              </strong>
+            </Typography>
+            <Typography
+              style={{
+                display: 'inline'
+              }}
+              component='span'
+              variant='body2'>
+              <strong>
+                {internship.status === finishedInternship ? ' - Nota: ' : ''}
+              </strong>
+            </Typography>
+            <Typography
+              style={{
+                display: 'inline',
+                color: internship.approved ? '#4caf50' : '#f44336'
+              }}
+              component='span'
+              variant='body2'>
+              <strong>
+                {`
+                ${
+                  internship.status === finishedInternship
+                    ? `${internship.grade}`
+                    : ''
+                }
+                `}
+              </strong>
+            </Typography>
+          </React.Fragment>
+        }
       />
       <ListItemSecondaryAction>
         <IconButton

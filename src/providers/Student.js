@@ -27,6 +27,10 @@ export function StudentProvider({ children }) {
     reason: 'Cargando...'
   });
   const [studentName, setStudentName] = useState('');
+  const [studentRut, setStudentRut] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentNumber, setStudentNumber] = useState('');
+  const [studentCareerId, setStudentCareerId] = useState();
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [careerInfo, setCareerInfo] = useState();
 
@@ -55,6 +59,10 @@ export function StudentProvider({ children }) {
       setStep(userData.step);
       setCurrentInternship(userData.currentInternship);
       setStudentName(userData.name);
+      setStudentRut(userData.rut);
+      setStudentEmail(userData.email);
+      setStudentNumber(userData.enrollmentNumber);
+      setStudentCareerId(userData.careerId);
       setStudentLoaded(true);
     }
   }, [userData, internships]);
@@ -112,6 +120,10 @@ export function StudentProvider({ children }) {
         lastApplication,
         step,
         studentName,
+        studentRut,
+        studentEmail,
+        studentNumber,
+        studentCareerId,
         studentLoaded,
         careerInfo,
         currentInternship,

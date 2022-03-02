@@ -53,6 +53,7 @@ export function SupervisorProvider({ children }) {
   const [careers, setCareers] = useState();
   const [employers, setEmployers] = useState();
   const [evaluations, setEvaluations] = useState();
+  const [surveys, setSurveys] = useState();
 
   useEffect(() => {
     return onSnapshot(collection(db, 'careers'), (querySnapshot) => {
@@ -74,6 +75,7 @@ export function SupervisorProvider({ children }) {
     let stuRef = collection(db, 'users');
     let empRef = collection(db, 'employers');
     let evaRef = collection(db, 'send-evaluation');
+    let surRef = collection(db, 'send-survey');
 
     // Limitar a carrera que le corresponde
     if (careerId !== DEFAULT_CAREER) {
@@ -82,6 +84,7 @@ export function SupervisorProvider({ children }) {
       stuRef = query(stuRef, where('careerId', '==', careerId));
       empRef = query(empRef, where('careers', 'array-contains', careerId));
       evaRef = query(evaRef, where('careerId', '==', careerId));
+      surRef = query(surRef, where('careerId', '==', careerId));
     }
 
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
@@ -158,12 +161,28 @@ export function SupervisorProvider({ children }) {
       setEvaluations(temp);
     });
 
+    let surUnsub = onSnapshot(surRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E';
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          ...docData
+        });
+      });
+      setSurveys(temp);
+    });
+
     return () => {
       appUnsub();
       intUnsub();
       stuUnsub();
       empUnsub();
       evaUnsub();
+      surUnsub();
     };
   }, [careers, careerId]);
 
@@ -710,6 +729,7 @@ export function SupervisorProvider({ children }) {
         careers,
         employers,
         evaluations,
+        surveys,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,

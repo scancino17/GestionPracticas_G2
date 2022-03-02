@@ -14,7 +14,15 @@ import { useUser } from '../../providers/User';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { FieldTypes, CustomTypes, FormTypes } from '../camps/FormTypes';
-import { addDoc, collection, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  serverTimestamp,
+  updateDoc
+} from 'firebase/firestore';
+import { useStudent } from '../../providers/Student';
 
 function SendSurvey({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -24,6 +32,15 @@ function SendSurvey({ edit }) {
   const [files, setFiles] = useState([]);
   const navigate = useNavigate();
   const [internshipId, setInternshipId] = useState();
+  const {
+    studentName,
+    studentRut,
+    studentEmail,
+    studentNumber,
+    currentInternshipData,
+    studentCareerId,
+    careerInfo
+  } = useStudent();
 
   useEffect(() => {
     if (userData) {
@@ -121,7 +138,15 @@ function SendSurvey({ edit }) {
 
     if (!edit) {
       addDoc(collection(db, 'send-survey'), {
-        form: formFull
+        form: formFull,
+        sentTime: serverTimestamp(),
+        studentRut: studentRut,
+        internshipNumber: currentInternshipData.internshipNumber,
+        careerInitials: careerInfo.sigla,
+        studentEmail: studentEmail,
+        studentNumber: studentNumber,
+        studentName: studentName,
+        careerId: studentCareerId
       })
         .then((docRef) => {
           //se guarda los archivos en la application correspondiente

@@ -44,7 +44,7 @@ function SurveyCheck() {
   const classes = useStyles();
 
   useEffect(() => {
-    getForm('send-evaluation', surveyId).then((surveyForm) => {
+    getForm('send-survey', surveyId).then((surveyForm) => {
       setSurvey(surveyForm);
     });
   }, [surveyId, getForm]);
@@ -94,7 +94,7 @@ function SurveyCheck() {
             backgroundRepeat: 'no-repeat',
             padding: '2rem'
           }}>
-          <Typography variant='h4'>Revisión Postulación</Typography>
+          <Typography variant='h4'>Revisión de encuesta</Typography>
         </Grid>
         <Container style={{ paddingBottom: '5rem' }}>
           {survey &&

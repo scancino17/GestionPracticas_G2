@@ -99,7 +99,7 @@ function SurveyItem({ survey }) {
 
 function SurveyList() {
   const { userRole } = useUser();
-  const { employerEvaluations } = useSupervisor();
+  const { surveys } = useSupervisor();
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [selected, setSelected] = useState({ read: false, notRead: true });
@@ -113,8 +113,9 @@ function SurveyList() {
   );
   const [endDate, setEndDate] = useState(new Date());
   const filteredSurveyList = useMemo(() => {
-    if (employerEvaluations) {
-      let filtered = employerEvaluations.slice();
+    if (surveys) {
+      console.log(surveys);
+      let filtered = surveys.slice();
 
       filtered = filtered.filter(
         (item) =>
@@ -184,15 +185,7 @@ function SurveyList() {
       );
       return filtered;
     } else return [];
-  }, [
-    employerEvaluations,
-    name,
-    read,
-    notRead,
-    selectedCareerId,
-    endDate,
-    startDate
-  ]);
+  }, [surveys, name, read, notRead, selectedCareerId, endDate, startDate]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();

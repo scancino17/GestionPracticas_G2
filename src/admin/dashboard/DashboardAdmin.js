@@ -54,7 +54,7 @@ import SelectEdit from '../../dynamicForm/SelectEdit';
 import Metrics from '../../dynamicForm/metrics/Metrics';
 
 import EvaluationsList from '../evaluations/EvaluationsList';
-import SurveyList from '../evaluations/SurveyList';
+import SurveyList from '../surveys/SurveyList';
 import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
 import SurveyCheck from '../../dynamicForm/check/SurveyCheck';
 

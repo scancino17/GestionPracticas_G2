@@ -300,26 +300,6 @@ function ToDoList() {
                   <Divider />
                 </>
               )}
-              {step === 2 &&
-                currentInternshipData &&
-                currentInternshipData.status !== reportNeedsChanges && (
-                  <>
-                    <ToDoItem
-                      icon={
-                        <IoDocumentAttachOutline className={classes.icon} />
-                      }
-                      title='Enviar Informe'
-                      body='Al finalizar tu periodo de práctica, cuéntanos lo que has aprendido.'
-                      buttonText='Enviar'
-                      buttonOnClick={() => setOpenSendReport(true)}
-                      disabled={
-                        currentInternshipData &&
-                        currentInternshipData.status === sentReport
-                      }
-                    />
-                    <Divider />
-                  </>
-                )}
 
               {step === 2 && currentInternshipData && (
                 <>
@@ -336,6 +316,27 @@ function ToDoList() {
                   <Divider />
                 </>
               )}
+              {step === 2 &&
+                currentInternshipData &&
+                currentInternshipData.status !== reportNeedsChanges && (
+                  <>
+                    <ToDoItem
+                      icon={
+                        <IoDocumentAttachOutline className={classes.icon} />
+                      }
+                      title='Enviar Informe'
+                      body='Luego de responder la encuesta de satisfacción, cuéntanos lo que has aprendido en tu informe de práctica.'
+                      buttonText='Enviar'
+                      buttonOnClick={() => setOpenSendReport(true)}
+                      disabled={
+                        (currentInternshipData &&
+                          currentInternshipData.status === sentReport) ||
+                        (currentInternshipData && !currentInternshipData.survey)
+                      }
+                    />
+                    <Divider />
+                  </>
+                )}
               {currentInternshipData &&
                 currentInternshipData.status === reportNeedsChanges && (
                   <>

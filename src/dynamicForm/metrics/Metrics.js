@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardContent,
   CardActions,
-  Button
+  Button,
+  Box
 } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import PieChartIcon from '@mui/icons-material/PieChart';
@@ -15,7 +16,7 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 
 import { DataGrid } from '@material-ui/data-grid';
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
@@ -28,43 +29,90 @@ import { MdFileDownload } from 'react-icons/md';
 import DateFnsUtils from '@date-io/date-fns';
 
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PropTypes from 'prop-types';
+
 function Metrics() {
   const { careerId } = useUser();
   const [selectedCareerId, setSelectedCareerId] = useState(careerId);
   const [formFull, setFormFull] = useState();
+  const [evaluation, setEvaluation] = useState(true);
   const { getForm, careers } = useSupervisor();
+  const [selectedTab, setSelectedTab] = useState(0);
   const [startDate, setStartDate] = useState(
     new Date(new Date() - 1000 * 60 * 60 * 24 * 30 * 2)
   );
   const [endDate, setEndDate] = useState(new Date());
+
   useEffect(() => {
     if (selectedCareerId !== 'general') {
-      getForm(FormTypes.EvaluationForm, selectedCareerId).then((form) => {
+      getForm(
+        evaluation ? FormTypes.EvaluationForm : FormTypes.SurveyForm,
+        selectedCareerId
+      ).then((form) => {
         setFormFull(form);
       });
     }
-  }, [selectedCareerId, getForm, careers]);
+  }, [selectedCareerId, getForm, careers, evaluation]);
 
+  const handleChangeTab = (event, newValue) => {
+    event.preventDefault();
+    setSelectedTab(newValue);
+    setEvaluation(newValue ? false : true);
+  };
   return (
-    <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container direction='column' style={{ marginLeft: 20 }}>
-        <Grid item sx={6}>
-          <Typography>Metricas</Typography>
-          <Grid item xs={12} sm={4}>
-            <CareerSelector
-              careerId={selectedCareerId}
-              setCareerId={setSelectedCareerId}
-              excludeGeneral
-            />
-          </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={4}
-            direction='row'
-            spacing={2}
-            justifyContent='space-between'>
+    <Grid container direction='row'>
+      <Grid
+        item
+        style={{
+          backgroundImage: "url('AdminBanner-Form.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: '2rem'
+        }}>
+        <Typography component={'span'} variant='h4'>
+          Metricas
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Tabs
+          variant='scrollable'
+          scrollButtons
+          allowScrollButtonsMobile
+          value={selectedTab}
+          onChange={handleChangeTab}
+          aria-label='wrapped label tabs example'>
+          <Tab value={0} label='Formulario de Evaluacion' />
+          <Tab value={1} label='Formulario de encuesta de satisfacción' />
+        </Tabs>
+        <Divider />
+      </Grid>
+
+      <Grid
+        style={{ marginTop: '2rem', marginLeft: '1rem' }}
+        item
+        container
+        spacing={4}
+        //justifyContent='space-between'
+        direction='row'>
+        <Grid item xs={12} sm={4}>
+          <CareerSelector
+            careerId={selectedCareerId}
+            setCareerId={setSelectedCareerId}
+            excludeGeneral
+          />
+        </Grid>
+        <Grid
+          container
+          item
+          xs={12}
+          sm={4}
+          direction='row'
+          spacing={2}
+          justifyContent='space-between'>
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Grid item xs={6} md={6}>
               <DatePicker
                 disableToolbar
@@ -85,31 +133,34 @@ function Metrics() {
                 onChange={(date) => setEndDate(new Date(date))}
               />
             </Grid>
-          </Grid>
-        </Grid>
-
-        <Grid item container spacing={2}>
-          {formFull &&
-            selectedCareerId !== 'general' &&
-            formFull.map((step, stepIndex) =>
-              step.form.map(
-                (camp) =>
-                  camp.type === 'Menú de opciones' ||
-                  (camp.type === 'Medidor satisfacción' && (
-                    <Grid
-                      key={camp.name}
-                      item
-                      xs={12}
-                      md={4}
-                      style={{ marginBottom: '1rem' }}>
-                      <Chart step={stepIndex} name={camp.name} />
-                    </Grid>
-                  ))
-              )
-            )}
+          </MuiPickersUtilsProvider>
         </Grid>
       </Grid>
-    </MuiPickersUtilsProvider>
+      <Grid
+        item
+        container
+        spacing={2}
+        style={{ marginTop: '2rem', marginLeft: '0.5rem' }}>
+        {formFull &&
+          selectedCareerId !== 'general' &&
+          formFull.map((step, stepIndex) =>
+            step.form.map(
+              (camp) =>
+                camp.type === 'Menú de opciones' ||
+                (camp.type === 'Medidor satisfacción' && (
+                  <Grid
+                    key={camp.name}
+                    item
+                    xs={12}
+                    md={4}
+                    style={{ marginBottom: '1rem' }}>
+                    <Chart step={stepIndex} name={camp.name} />
+                  </Grid>
+                ))
+            )
+          )}
+      </Grid>
+    </Grid>
   );
 
   function Chart({ step, name }) {
@@ -126,8 +177,9 @@ function Metrics() {
     const { evaluations } = useSupervisor();
 
     const filteredEvaluationList = useMemo(() => {
-      if (evaluations) {
-        let filtered = evaluations.slice();
+      let list = evaluation ? evaluations : null;
+      if (list) {
+        let filtered = list.slice();
 
         if (selectedCareerId !== 'general') {
           filtered = filtered.filter(

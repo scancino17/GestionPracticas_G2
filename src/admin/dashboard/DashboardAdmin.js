@@ -54,7 +54,9 @@ import SelectEdit from '../../dynamicForm/SelectEdit';
 import Metrics from '../../dynamicForm/metrics/Metrics';
 
 import EvaluationsList from '../evaluations/EvaluationsList';
+import SurveyList from '../evaluations/SurveyList';
 import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
+import SurveyCheck from '../../dynamicForm/check/SurveyCheck';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -420,6 +422,7 @@ function DashboardAdmin({ sidebarProps }) {
         <Route exact path='/applications' element={<ApplicationsList />} />
 
         <Route exact path='/evaluations' element={<EvaluationsList />} />
+        <Route exact path='/satisfaction-survey' element={<SurveyList />} />
         <Route path='/edit-form' element={<SelectEdit />} />
         <Route
           path='/applications/:applicationId'
@@ -428,6 +431,10 @@ function DashboardAdmin({ sidebarProps }) {
         <Route
           path='/evaluations/:evaluationId'
           element={<EvaluationCheck />}
+        />
+        <Route
+          path='/satisfaction-survey/:surveyId'
+          element={<SurveyCheck />}
         />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />

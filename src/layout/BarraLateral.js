@@ -19,7 +19,8 @@ import { ADMIN_ROLE, useUser } from '../providers/User';
 import { useLocation } from 'react-router-dom';
 import { AssignmentInd, Feedback } from '@material-ui/icons';
 import { useSupervisor } from '../providers/Supervisor';
-
+import BarChartIcon from '@mui/icons-material/BarChart';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 const useStyles = makeStyles((theme) => ({
   paper: {
     background: theme.palette.primary.main,
@@ -81,6 +82,12 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
       path: '/evaluations'
     },
     {
+      label: 'Encuestas de satisfacción',
+      icon: <FactCheckIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      path: '/satisfaction-survey'
+    },
+
+    {
       label: 'Extensión de Prácticas',
       icon: <AddAlarmIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/extension-list'
@@ -109,7 +116,7 @@ function BarraLateral({ sidebarOpen, setSidebarOpen }) {
     },
     {
       label: 'Métricas',
-      icon: <GroupIcon style={{ color: 'inherit', fontSize: 27 }} />,
+      icon: <BarChartIcon style={{ color: 'inherit', fontSize: 27 }} />,
       path: '/metrics',
       adminOnly: true
     }

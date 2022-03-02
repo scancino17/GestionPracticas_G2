@@ -313,8 +313,9 @@ function ToDoList() {
                       buttonText='Enviar'
                       buttonOnClick={() => setOpenSendReport(true)}
                       disabled={
-                        currentInternshipData &&
-                        currentInternshipData.status === sentReport
+                        (currentInternshipData &&
+                          currentInternshipData.status === sentReport) ||
+                        (currentInternshipData && !currentInternshipData.survey)
                       }
                     />
                     <Divider />

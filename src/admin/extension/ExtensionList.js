@@ -151,7 +151,9 @@ function ExtensionList() {
           carrera: doc.careerName,
           practica: doc.internshipNumber,
           email: doc.studentEmail,
-          sentTime: doc.sentExtensionTime
+          sentTime: doc.sentExtensionTime,
+          dateExtension: doc.dateExtension,
+          actualDate: doc.applicationData['Fecha de término']
         })
       );
     }
@@ -182,6 +184,22 @@ function ExtensionList() {
           <ExcelColumn label='Carrera' value='carrera' />
           <ExcelColumn label='Tipo de práctica' value='practica' />
           <ExcelColumn label='Correo' value='email' />
+          <ExcelColumn
+            label='Fecha actual de término'
+            value={(col) =>
+              col.actualDate
+                ? toLegibleDate(col.actualDate)
+                : 'Fecha no disponible'
+            }
+          />
+          <ExcelColumn
+            label='Fecha propuesta de término'
+            value={(col) =>
+              col.dateExtension
+                ? toLegibleDate(col.dateExtension)
+                : 'Fecha no disponible'
+            }
+          />
         </ExcelSheet>
       </ExcelFile>
     );

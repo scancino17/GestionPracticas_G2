@@ -103,7 +103,6 @@ function UploadModal({ internship, close, show }) {
       <DialogActions>
         <Button onClick={close}>Cancelar</Button>
         <Button
-          variant='contained'
           color='primary'
           disabled={file.length === 0 ? true : false}
           onClick={handleSubmit}>

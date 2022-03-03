@@ -533,7 +533,6 @@ const ApprovalModal = ({
           <SecondaryButton onClick={closeModal}>Cancelar</SecondaryButton>
           <Button
             color='primary'
-            variant='contained'
             disabled={isConfirmDisabled}
             onClick={handleApprove}>
             Confirmar Aprobación

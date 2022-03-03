@@ -7,7 +7,7 @@ import {
   useMediaQuery
 } from '@material-ui/core';
 import { useState } from 'react';
-import { DEFAULT_CAREER, useUser } from '../providers/User';
+import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
 import EditBuilderPreview from './builder_preview/EditBuilderPreview';
 import { FormTypes } from './camps/FormTypes';
@@ -34,7 +34,7 @@ function SelectEdit() {
       setCurrentCareer(newValue);
     }
   };
-
+  const { userRole } = useUser();
   const tabSize = useMediaQuery('(max-width:1450px)', { noSsr: true });
   const matches = useMediaQuery('(max-width:400px)', { noSsr: true });
   return (
@@ -53,7 +53,7 @@ function SelectEdit() {
         <Box margin={'1rem'}>
           <Grid
             container
-            direction='row-reverse'
+            direction={userRole === ADMIN_ROLE ? 'row-reverse' : 'row'}
             justifyContent='flex-start'
             alignItems='center'
             spacing={4}>
@@ -69,13 +69,15 @@ function SelectEdit() {
                 </Card>
               </Grid>
             )}
-            <Grid item xs={12} sm={5} lg={4}>
-              <CareerSelector
-                careerId={currentCareer}
-                setCareerId={handleChangeCareer}
-                excludeGeneral
-              />
-            </Grid>
+            {userRole === ADMIN_ROLE && (
+              <Grid item xs={12} sm={5} lg={4}>
+                <CareerSelector
+                  careerId={currentCareer}
+                  setCareerId={handleChangeCareer}
+                  excludeGeneral
+                />
+              </Grid>
+            )}
 
             <Grid item xs={12} lg={tabSize ? 12 : 8}>
               <Box

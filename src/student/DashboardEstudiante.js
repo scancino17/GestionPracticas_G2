@@ -2,14 +2,7 @@ import React from 'react';
 import { useStudent } from '../providers/Student';
 import { Route, Routes } from 'react-router-dom';
 import DetailedHome from './DetailedHome';
-import {
-  Grid,
-  Hidden,
-  Typography,
-  Card,
-  Container,
-  Box
-} from '@material-ui/core';
+import { Grid, Typography, Card, Container, Box } from '@material-ui/core';
 import CustomStepper from './extras/CustomStepper';
 import StudentApplications from './applications/StudentApplications';
 import ApplicationDetails from './applications/ApplicationDetails';

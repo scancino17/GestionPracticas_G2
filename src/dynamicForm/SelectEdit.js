@@ -157,7 +157,7 @@ function SelectEdit() {
           justifyContent='center'
           style={{ marginTop: '6rem' }}>
           <Grid item>
-            <img src='EmptyState-3x.png' width='300' alt='Banner' />
+            <img src='/EmptyState-3x.png' width='300' alt='Banner' />
           </Grid>
           <Grid item>
             <Typography variant='h5' color='textSecondary'>

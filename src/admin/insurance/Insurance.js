@@ -364,7 +364,7 @@ function Insurance() {
             style={{ marginTop: '6rem' }}>
             <Grid item>
               <img
-                src='health.png'
+                src='/health.png'
                 width='300'
                 alt='Sin seguros de práctica disponibles'
               />

@@ -219,7 +219,7 @@ function ToDoList() {
         <AccordionDetails>
           {done ? (
             <Grid container direction='column' alignItems='center'>
-              <img src='AllDone.png' alt='Sin tareas' />
+              <img src='/AllDone.png' alt='Sin tareas' />
               <Typography variant='h6'>
                 No tienes tareas pendientes de momento.
               </Typography>

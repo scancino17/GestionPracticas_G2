@@ -647,7 +647,7 @@ function RemarkList() {
                     style={{ marginTop: '6rem' }}>
                     <Grid item>
                       <img
-                        src='evaluate.png'
+                        src='/evaluate.png'
                         width='300'
                         alt='Sin observaciones disponibles'
                       />

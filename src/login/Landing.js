@@ -103,7 +103,7 @@ function Landing() {
           xs={12}
           sm={6}>
           <Grid item container justifyContent='center'>
-            <img className={classes.logo} src='logo1.png' alt='Logo' />
+            <img className={classes.logo} src='/logo1.png' alt='Logo' />
           </Grid>
           <Grid item>
             <Typography variant='h4' color='primary' align='center'>

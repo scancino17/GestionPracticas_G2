@@ -581,7 +581,7 @@ exports.autoAssignInternEmployer = functions.firestore
                 }
               });
 
-            admin.firestore().collection('users').doc(data.studentId).update({
+            admin.firestore().collection('users').doc(studentId).update({
               'currentInternship.employerId': employer.uid,
               'currentInternship.employerName': employer.displayName,
               'currentInternship.employerEmail': employer.email

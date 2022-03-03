@@ -78,5 +78,30 @@ export const RequiredFields = {
       data: (source) => source.studentPhone
     }
   },
-  [FormTypes.SurveyForm]: {}
+  [FormTypes.SurveyForm]: {
+    studentName: {
+      propName: 'studentName',
+      displayName: 'Nombre del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.name
+    },
+    studentRut: {
+      propName: 'studentRut',
+      displayName: 'Rut del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.rut
+    },
+    studentNumber: {
+      propName: 'studentNumber',
+      displayName: 'Número de matrícula',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.enrollmentNumber
+    },
+    studentEmail: {
+      propName: 'studentEmail',
+      displayName: 'Correo del estudiante',
+      type: FieldTypes.formTextInput,
+      data: (source) => source.email
+    }
+  }
 };

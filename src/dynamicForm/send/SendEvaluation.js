@@ -53,13 +53,15 @@ function SendEvaluation({ edit }) {
         const form = structuredClone(evaluationForms.get(internData.careerId));
         const requiredFields = RequiredFields[FormTypes.EvaluationForm];
 
-        Object.entries(requiredFields).forEach(([key, value]) => {
-          if (value.data)
-            setValue(form, value.displayName, value.data(internData));
-        });
+        if (form) {
+          Object.entries(requiredFields).forEach(([key, value]) => {
+            if (value.data)
+              setValue(form, value.displayName, value.data(internData));
+          });
 
-        setFormFull(form);
-        setLoaded(true);
+          setFormFull(form);
+          setLoaded(true);
+        }
       }
     }
   }, [evaluationForms, getInternData, internshipId]);

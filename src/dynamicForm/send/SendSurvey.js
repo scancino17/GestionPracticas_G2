@@ -23,6 +23,7 @@ import {
   updateDoc
 } from 'firebase/firestore';
 import { useStudent } from '../../providers/Student';
+import { RequiredFields } from '../builder_preview/RequiredFields';
 
 function SendSurvey({ edit }) {
   const [formFull, setFormFull] = useState([]);
@@ -51,7 +52,27 @@ function SendSurvey({ edit }) {
 
         getDoc(docRef).then((doc) => {
           const data = doc.data();
-          if (data) setFormFull(data.form);
+
+          if (data) {
+            const { form } = data;
+
+            function setValue(form, displayName, value) {
+              form.forEach((tab) =>
+                tab.form.forEach((item) => {
+                  if (item.name === displayName) item.value = value;
+                })
+              );
+            }
+
+            const requiredFields = RequiredFields[FormTypes.SurveyForm];
+
+            Object.entries(requiredFields).forEach(([key, value]) => {
+              if (value.data)
+                setValue(form, value.displayName, value.data(userData));
+            });
+
+            setFormFull(form);
+          }
         });
       }
     }

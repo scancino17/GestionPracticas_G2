@@ -93,12 +93,23 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
     [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
   },
+  evaluatedHeading: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.primary.main,
+    fontWeight: 500,
+    [theme.breakpoints.up('sm')]: { flexBasis: '33.33%', flexShrink: 0 },
+    [theme.breakpoints.down('sm')]: { flexBasis: '50%', flexShrink: 0 }
+  },
   bold: {
     fontWeight: 600
   },
   redText: {
     fontSize: theme.typography.pxToRem(15),
     color: '#cf0000'
+  },
+  blueText: {
+    fontSize: theme.typography.pxToRem(15),
+    color: theme.palette.primary.main
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -164,7 +175,11 @@ function InternItem({ internship, expanded, changeExpanded }) {
               {studentCareer}
             </Typography>
           </Hidden>
-          <Typography className={classes.endDateHeading}>
+          <Typography
+            className={classNames({
+              [classes.endDateHeading]: !employerEvaluated,
+              [classes.evaluatedHeading]: employerEvaluated
+            })}>
             {`Fecha de término: ${toLegibleDate(internEnd)}`}
           </Typography>
         </AccordionSummary>
@@ -202,7 +217,13 @@ function InternItem({ internship, expanded, changeExpanded }) {
                 Fecha de término:
               </Typography>
             </Grid>
-            <Grid item xs={8} className={classes.redText}>
+            <Grid
+              item
+              xs={8}
+              className={classNames({
+                [classes.redText]: !employerEvaluated,
+                [classes.blueText]: employerEvaluated
+              })}>
               <Typography>{toLegibleDate(internEnd)}</Typography>
             </Grid>
             <Grid item xs={4}>

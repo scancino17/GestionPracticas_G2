@@ -380,7 +380,7 @@ function SurveyList() {
                     style={{ marginTop: '6rem' }}>
                     <Grid item>
                       <img
-                        src='post.png'
+                        src='/post.png'
                         width='300'
                         alt='Sin evaluaciones de supervisores'
                       />

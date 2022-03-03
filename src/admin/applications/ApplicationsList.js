@@ -496,7 +496,7 @@ function ApplicationsList() {
                     style={{ marginTop: '6rem' }}>
                     <Grid item>
                       <img
-                        src='post.png'
+                        src='/post.png'
                         width='300'
                         alt='Sin inscripciones de práctica'
                       />

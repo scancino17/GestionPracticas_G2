@@ -211,7 +211,7 @@ function TopBar({ setSidebarOpen }) {
                   ? classes.logoStudent
                   : classes.logoAdmin
               }
-              src='logo5b-utal.png'
+              src='/logo5b-utal.png'
               alt='logo'
             />
           </IconButton>
@@ -248,7 +248,7 @@ function TopBar({ setSidebarOpen }) {
             style={{ backgroundColor: 'transparent' }}>
             <img
               className={classes.logoAdmin}
-              src='logo5b-utal.png'
+              src='/logo5b-utal.png'
               alt='logo'
             />
           </IconButton>

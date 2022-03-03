@@ -286,7 +286,7 @@ function IntentionList({ pendingIntentions, update }) {
               style={{ marginTop: '6rem' }}>
               <Grid item>
                 <img
-                  src='inten.png'
+                  src='/inten.png'
                   width='300'
                   alt='Sin intenciones de práctica'
                 />

@@ -30,7 +30,11 @@ import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/Ex
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { normalizeString, toLegibleDate } from '../../utils/FormatUtils';
+import {
+  normalizeString,
+  toLegibleDate,
+  toLegibleTime
+} from '../../utils/FormatUtils';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -260,6 +264,41 @@ function ApplicationsList() {
         <ExcelSheet
           data={filteredApplicationsList}
           name='Insctipciones de práctica'>
+          <ExcelColumn
+            label='Fecha'
+            value={(col) =>
+              toLegibleDate(
+                col.status === 'En revisión' && col.creationDate
+                  ? col.creationDate
+                  : col.status === 'Aprobado' && col.approvedDate
+                  ? col.approvedDate
+                  : col.status === 'Rechazado' && col.rejectDate
+                  ? col.rejectDate
+                  : col.status === 'Necesita cambios menores' &&
+                    col.minorChangeRequestDate
+                  ? col.minorChangeRequestDate
+                  : null
+              )
+            }
+          />
+          <ExcelColumn
+            label='Hora'
+            value={(col) =>
+              toLegibleTime(
+                col.status === 'En revisión' && col.creationDate
+                  ? col.creationDate
+                  : col.status === 'Aprobado' && col.approvedDate
+                  ? col.approvedDate
+                  : col.status === 'Rechazado' && col.rejectDate
+                  ? col.rejectDate
+                  : col.status === 'Necesita cambios menores' &&
+                    col.minorChangeRequestDate
+                  ? col.minorChangeRequestDate
+                  : null
+              )
+            }
+          />
+          <ExcelColumn label='Estado' value='status' />
           <ExcelColumn label='Nombre estudiante' value='studentName' />
           <ExcelColumn label='N° de Matrícula' value='Número de matrícula' />
           <ExcelColumn label='RUT estudiante' value='Rut del estudiante' />

@@ -22,8 +22,6 @@ import {
 } from '../InternshipStates';
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
-import EmptyHome from './EmptyHome';
-import { RiSurveyLine } from 'react-icons/ri';
 import { useStudent } from '../providers/Student';
 import { toLegibleDate } from '../utils/FormatUtils';
 const pendingApprovalState = pendingIntention;
@@ -145,8 +143,6 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { careerInfo } = useStudent();
-
     return (
       <Grid container direction='column'>
         <Grid item container direction='row' justifyContent='flex-start'>

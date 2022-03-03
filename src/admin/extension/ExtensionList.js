@@ -100,9 +100,7 @@ function ExtensionList() {
   const { userRole } = useUser();
   const { internships } = useSupervisor();
   const itemsPerPage = 8;
-  const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
-  const [indice, setIndice] = useState(0);
   const [startDate, setStartDate] = useState(
     new Date() - 1000 * 60 * 60 * 24 * 30 * 2
   );

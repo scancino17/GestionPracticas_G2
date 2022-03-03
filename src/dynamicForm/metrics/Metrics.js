@@ -202,7 +202,7 @@ function Metrics() {
 
         return filtered;
       } else return [];
-    }, [evaluations]);
+    }, [evaluations, surveys]);
 
     useEffect(() => {
       const selectCounter = new Map();

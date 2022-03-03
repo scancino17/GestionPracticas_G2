@@ -2,8 +2,8 @@ import { Button } from '@material-ui/core';
 import React, { useState } from 'react';
 import { pendingIntention } from '../../InternshipStates';
 import { useStudent } from '../../providers/Student';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { serverTimestamp } from 'firebase/firestore';
+
 const approvalState = pendingIntention;
 
 function StudentIntention({ practica, altText, forceDisable, reprove }) {

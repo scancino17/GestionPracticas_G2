@@ -116,7 +116,6 @@ export function StudentProvider({ children }) {
     await updateDoc(doc(db, 'internships', id), update);
   }
   async function newInternship(number, idLastInter) {
-    console.log(currentInternship.id);
     await addDoc(collection(db, 'internships'), {
       careerId: careerId,
       careerName: careerInfo.name,

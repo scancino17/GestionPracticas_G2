@@ -118,7 +118,6 @@ function SurveyList() {
   const [endDate, setEndDate] = useState(new Date());
   const filteredSurveyList = useMemo(() => {
     if (surveys) {
-      console.log(surveys);
       let filtered = surveys.slice();
 
       filtered = filtered.filter(

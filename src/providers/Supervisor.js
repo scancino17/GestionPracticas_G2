@@ -595,7 +595,8 @@ export function SupervisorProvider({ children }) {
       evaluatedReportTime: serverTimestamp(),
       reason: reason ? reason : 'Sin observaciones',
       grade: grade,
-      approved: grade >= 40 ? true : false
+      approved: grade >= 40 ? true : false,
+      evaluatingSupervisor: { email: email, name: displayName }
     });
 
     sendMail(student.email, 'ReportApproved', {

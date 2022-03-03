@@ -94,7 +94,6 @@ function AssessReport() {
 
     useEffect(() => {
       setEvaluated(getInternship(internshipId).status === finishedInternship);
-      console.log(evaluated);
       getDownloadURL(
         ref(
           storage,

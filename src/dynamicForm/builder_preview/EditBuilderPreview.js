@@ -147,7 +147,6 @@ function EditBuilderPreview({
               obj.name === field.displayName &&
               obj.type === field.type
             ) {
-              console.log(field.displayName);
               inForm = true;
             }
           })
@@ -159,10 +158,6 @@ function EditBuilderPreview({
       ([key, value]) => !isFieldInForm(value)
     );
   }, [editableForm, requiredFormFields, flag]);
-
-  //useEffect(() => console.log(editableForm), [editableForm]);
-
-  useEffect(() => console.log(missingFormFields), [missingFormFields]);
 
   function handleNext() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);

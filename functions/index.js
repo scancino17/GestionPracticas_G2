@@ -356,7 +356,8 @@ exports.queueInternEmployerAssignment = functions.firestore
                 studentId,
                 careerId,
                 queueTime: admin.firestore.FieldValue.serverTimestamp(),
-                status: 'Pending'
+                status: 'Pending',
+                failedOn: []
               }
             },
             lastAssignment: {
@@ -383,7 +384,8 @@ exports.queueInternEmployerAssignment = functions.firestore
                 internshipId,
                 studentId,
                 careerId
-              }
+              },
+              failedOn: []
             });
         }
       });
@@ -542,10 +544,14 @@ exports.autoCreateEmployer = functions.firestore
 exports.autoAssignInternEmployer = functions.firestore
   .document('employerAssignmentRequest/{requestId}')
   .onUpdate((change, context) => {
-    if (change.after.data().status !== 'Pending') return;
+    const status = change.after.data().status;
+    const failedOn = change.after.data().failedOn || [];
+
+    if (status !== 'Pending' || status !== 'Failed') return;
 
     const employerEmail = context.params.requestId;
     const { lastAssignment } = change.after.data();
+
     admin
       .auth()
       .listUsers()
@@ -568,61 +574,116 @@ exports.autoAssignInternEmployer = functions.firestore
 
             if (!careers.includes(careerId)) careers.push(careerId);
 
-            admin
-              .firestore()
-              .collection('employers')
-              .doc(employer.uid)
-              .update({
-                careers: careers,
-                [`interns.${internshipId}`]: {
-                  studentId: studentId,
-                  careerId: careerId,
-                  employerEvaluated: false
-                }
-              });
-
-            admin.firestore().collection('users').doc(studentId).update({
-              'currentInternship.employerId': employer.uid,
-              'currentInternship.employerName': employer.displayName,
-              'currentInternship.employerEmail': employer.email
-            });
-
-            admin
-              .firestore()
-              .collection('internships')
-              .doc(internshipId)
-              .update({
-                employerId: employer.uid,
-                employerName: employer.displayName,
-                employerEmail: employer.email,
-                employerEvaluated: false
-              });
-
-            admin
-              .firestore()
-              .collection('users')
-              .doc(studentId)
-              .get()
-              .then((docSnap) => {
-                const { name: studentName } = docSnap.data();
-                admin
-                  .firestore()
-                  .collection('mails')
-                  .add({
-                    to: userRecord.email,
-                    template: {
-                      name: 'AssignedIntern',
-                      data: {
-                        studentName: studentName
-                      }
-                    }
-                  })
-                  .then((value) =>
-                    functions.logger.info(
-                      `Assigned intern email sent to ${userRecord.email}`
+            if (
+              status === 'Pending' ||
+              failedOn.includes('employer assignment')
+            )
+              admin
+                .firestore()
+                .collection('employers')
+                .doc(employer.uid)
+                .update({
+                  careers: careers,
+                  [`interns.${internshipId}`]: {
+                    studentId: studentId,
+                    careerId: careerId,
+                    employerEvaluated: false
+                  }
+                })
+                .catch(() =>
+                  change.after.ref.update({
+                    status: 'Failed',
+                    failedOn: admin.firestore.FieldValue.arrayUnion(
+                      'employer assignment'
                     )
-                  );
-              });
+                  })
+                );
+
+            if (
+              status === 'Pending' ||
+              failedOn.includes('currentinternship assignment')
+            )
+              admin
+                .firestore()
+                .collection('users')
+                .doc(studentId)
+                .update({
+                  'currentInternship.employerId': employer.uid,
+                  'currentInternship.employerName': employer.displayName,
+                  'currentInternship.employerEmail': employer.email
+                })
+                .catch(() =>
+                  change.after.ref.update({
+                    status: 'Failed',
+                    failedOn: admin.firestore.FieldValue.arrayUnion(
+                      'currentinternship assignment'
+                    )
+                  })
+                );
+
+            if (
+              status === 'Pending' ||
+              failedOn.includes(' internship assingment')
+            )
+              admin
+                .firestore()
+                .collection('internships')
+                .doc(internshipId)
+                .update({
+                  employerId: employer.uid,
+                  employerName: employer.displayName,
+                  employerEmail: employer.email,
+                  employerEvaluated: false
+                })
+                .catch(() =>
+                  change.after.ref.update({
+                    status: 'Failed',
+                    failedOn: admin.firestore.FieldValue.arrayUnion(
+                      'internship assignment'
+                    )
+                  })
+                );
+
+            if (status === 'Pending' || failedOn.includes('send email'))
+              admin
+                .firestore()
+                .collection('users')
+                .doc(studentId)
+                .get()
+                .then((docSnap) => {
+                  const { name: studentName } = docSnap.data();
+                  admin
+                    .firestore()
+                    .collection('mails')
+                    .add({
+                      to: userRecord.email,
+                      template: {
+                        name: 'AssignedIntern',
+                        data: {
+                          studentName: studentName
+                        }
+                      }
+                    })
+                    .catch(() => {
+                      change.after.ref.update({
+                        status: 'Failed',
+                        failedOn:
+                          admin.firestore.FieldValue.arrayUnion('send email')
+                      });
+                    })
+                    .then((value) =>
+                      functions.logger.info(
+                        `Assigned intern email sent to ${userRecord.email}`
+                      )
+                    );
+                })
+                .catch(() =>
+                  change.after.ref.update({
+                    status: 'Failed',
+                    failedOn:
+                      admin.firestore.FieldValue.arrayUnion('send email')
+                  })
+                );
           });
       })
       .then(() => {
@@ -632,7 +693,7 @@ exports.autoAssignInternEmployer = functions.firestore
             [`assignedInterns.${lastAssignment.internshipId}.status`]: 'Treated'
           })
           .then((value) =>
-            functions.logger.info(`Employer creation successfully treated`)
+            functions.logger.info(`Employer assigment successfully treated`)
           );
       });
   });

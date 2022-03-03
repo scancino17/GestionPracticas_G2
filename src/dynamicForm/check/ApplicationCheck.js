@@ -37,6 +37,8 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { isMobile } from 'react-device-detect';
 import classNames from 'classnames';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -237,7 +239,9 @@ function ApplicationCheck() {
   }, [applicationId, getApplication]);
 
   function BackUp() {
-    setApplication(getApplication(applicationId));
+    getDoc(doc(db, 'applications', applicationId)).then((doc) => {
+      setApplication(doc.data());
+    });
   }
 
   useEffect(() => {

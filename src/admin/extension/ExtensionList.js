@@ -38,6 +38,8 @@ import {
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import { Pagination } from '@material-ui/lab';
+import { withStyles } from '@material-ui/styles';
+import { grey } from '@material-ui/core/colors';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(4)
@@ -74,7 +76,17 @@ BootstrapDialogTitle.propTypes = {
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired
 };
+const DenyButton = withStyles((theme) => ({
+  root: {
+    color: theme.palette.error.main
+  }
+}))(Button);
 
+const SecondaryButton = withStyles((theme) => ({
+  root: {
+    color: grey[700]
+  }
+}))(Button);
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction='up' ref={ref} {...props} />;
 });
@@ -410,14 +422,10 @@ function IntershipItem({ internship }) {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button
-              variant='outlined'
-              color='secondary'
-              onClick={() => setShowDenied(true)}>
+            <DenyButton color='warning' onClick={() => setShowDenied(true)}>
               Rechazar
-            </Button>
+            </DenyButton>
             <Button
-              variant='contained'
               color='primary'
               onClick={() => {
                 setShowApproved(true);
@@ -455,17 +463,16 @@ function IntershipItem({ internship }) {
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            variant='outlined'
+          <SecondaryButton
             onClick={() => {
               setShowApproved(false);
               setShowDenied(false);
             }}>
             Cancelar
-          </Button>
+          </SecondaryButton>
           <Button
-            variant='contained'
-            color={showApproved ? 'primary' : 'secondary'}
+            style={{ color: showApproved ? '#36568c' : '#f44336' }}
+            color={showApproved ? 'primary' : 'warning'}
             onClick={() => {
               if (showApproved) handleExtensionApproved();
               else handleExtensionDenied();

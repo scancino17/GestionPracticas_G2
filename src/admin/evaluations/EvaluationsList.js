@@ -28,7 +28,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  toDateWhitoutTime,
+  removeTimeInDate
 } from '../../utils/FormatUtils';
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -131,28 +133,31 @@ function EvaluationsList() {
           (item) =>
             (!item.read &&
               item.sentTime &&
-              item.sentTime.seconds * 1000 <= endDate &&
-              item.sentTime.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.sentTime) >=
+                removeTimeInDate(startDate)) ||
             (item.read &&
               item.revisionTime &&
-              item.revisionTime.seconds * 1000 <= endDate &&
-              item.revisionTime.seconds * 1000 >= startDate)
+              toDateWhitoutTime(item.revisionTime) <=
+                removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.revisionTime) >=
+                removeTimeInDate(startDate))
         );
       } else if (read) {
         filtered = filtered.filter(
           (item) =>
             item.read &&
             item.revisionTime &&
-            item.revisionTime.seconds * 1000 <= endDate &&
-            item.revisionTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.revisionTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.revisionTime) >= removeTimeInDate(startDate)
         );
       } else if (notRead) {
         filtered = filtered.filter(
           (item) =>
             !item.read &&
             item.sentTime &&
-            item.sentTime.seconds * 1000 <= endDate &&
-            item.sentTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.sentTime) >= removeTimeInDate(startDate)
         );
       }
       filtered.sort((a, b) =>
@@ -200,7 +205,7 @@ function EvaluationsList() {
   }
 
   function ExportarExcel() {
-    const estados = ['Leídos', 'No leídos', 'Todos'];
+    const estados = ['No revisadas', 'Revisadas', 'Todas'];
 
     return (
       <ExcelFile
@@ -213,7 +218,7 @@ function EvaluationsList() {
             Exportar datos
           </Button>
         }
-        filename={`Inscripciones de práctica - ${estados[indice]}`}>
+        filename={`Evaluación de supervisores - ${estados[indice]}`}>
         <ExcelSheet data={filteredEvaluationList} name='Lista de evaluación'>
           <ExcelColumn
             label='Fecha'

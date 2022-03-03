@@ -33,7 +33,9 @@ import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/E
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  removeTimeInDate,
+  toDateWhitoutTime
 } from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -136,8 +138,9 @@ function ExtensionList() {
     filtered = filtered.filter(
       (item) =>
         item.sentExtensionTime &&
-        item.sentExtensionTime.seconds * 1000 <= endDate &&
-        item.sentExtensionTime.seconds * 1000 >= startDate
+        toDateWhitoutTime(item.sentExtensionTime) <=
+          removeTimeInDate(endDate) &&
+        toDateWhitoutTime(item.sentExtensionTime) >= removeTimeInDate(startDate)
     );
     filtered.sort((a, b) =>
       a.sentExtensionTime < b.sentExtensionTime

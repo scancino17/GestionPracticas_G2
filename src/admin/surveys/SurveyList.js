@@ -28,7 +28,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  removeTimeInDate,
+  toDateWhitoutTime
 } from '../../utils/FormatUtils';
 
 function TabPanel(props) {
@@ -135,28 +137,31 @@ function SurveyList() {
           (item) =>
             (!item.read &&
               item.sentTime &&
-              item.sentTime.seconds * 1000 <= endDate &&
-              item.sentTime.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.sentTime) >=
+                removeTimeInDate(startDate)) ||
             (item.read &&
               item.revisionTime &&
-              item.revisionTime.seconds * 1000 <= endDate &&
-              item.revisionTime.seconds * 1000 >= startDate)
+              toDateWhitoutTime(item.revisionTime) <=
+                removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.revisionTime) >=
+                removeTimeInDate(startDate))
         );
       } else if (read) {
         filtered = filtered.filter(
           (item) =>
             item.read &&
             item.revisionTime &&
-            item.revisionTime.seconds * 1000 <= endDate &&
-            item.revisionTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.revisionTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.revisionTime) >= removeTimeInDate(startDate)
         );
       } else if (notRead) {
         filtered = filtered.filter(
           (item) =>
             !item.read &&
             item.sentTime &&
-            item.sentTime.seconds * 1000 <= endDate &&
-            item.sentTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.sentTime) >= removeTimeInDate(startDate)
         );
       }
       filtered.sort((a, b) =>
@@ -196,7 +201,7 @@ function SurveyList() {
   }
 
   function ExportarExcel() {
-    const estados = ['Leídos', 'No leídos', 'Todos'];
+    const estados = ['No leídos', 'Leídos', 'Todos'];
 
     return (
       <ExcelFile
@@ -209,7 +214,7 @@ function SurveyList() {
             Exportar datos
           </Button>
         }
-        filename={`Inscripciones de práctica - ${estados[indice]}`}>
+        filename={`Encuestas de satisfacción - ${estados[indice]}`}>
         <ExcelSheet data={filteredSurveyList} name='Lista de encuestas'>
           <ExcelColumn
             label='Fecha'

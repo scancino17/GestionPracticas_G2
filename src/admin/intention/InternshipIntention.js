@@ -36,6 +36,8 @@ import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/Ex
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
 import {
   normalizeString,
+  toDateWhitoutTime,
+  removeTimeInDate,
   toLegibleDate,
   toLegibleTime
 } from '../../utils/FormatUtils';
@@ -134,8 +136,8 @@ function IntentionList({ pendingIntentions, update }) {
       filtered = filtered.filter(
         (item) =>
           item.sentTime &&
-          item.sentTime.seconds * 1000 <= endDate &&
-          item.sentTime.seconds * 1000 >= startDate
+          toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+          toDateWhitoutTime(item.sentTime) >= removeTimeInDate(startDate)
       );
       filtered.sort((a, b) =>
         a.sentTime < b.sentTime

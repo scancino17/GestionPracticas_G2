@@ -25,7 +25,9 @@ import {
   normalizeString,
   toLegibleDate,
   toLegibleDateTime,
-  toLegibleTime
+  toLegibleTime,
+  toDateWhitoutTime,
+  removeTimeInDate
 } from '../../utils/FormatUtils';
 import { Box, DialogContentText, Tab, Tabs } from '@mui/material';
 
@@ -380,28 +382,29 @@ function RemarkList() {
           (item) =>
             (!item.read &&
               item.remarkTime &&
-              item.remarkTime.seconds * 1000 <= endDate &&
-              item.remarkTime.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.remarkTime) <= removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.remarkTime) >=
+                removeTimeInDate(startDate)) ||
             (item.read &&
               item.updateTime &&
-              item.updateTime.seconds * 1000 <= endDate &&
-              item.updateTime.seconds * 1000 >= startDate)
+              toDateWhitoutTime(item.updateTime) <= removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.updateTime) >= removeTimeInDate(startDate))
         );
       } else if (read) {
         filtered = filtered.filter(
           (item) =>
             item.read &&
             item.updateTime &&
-            item.updateTime.seconds * 1000 <= endDate &&
-            item.updateTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.updateTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.updateTime) >= removeTimeInDate(startDate)
         );
       } else if (notRead) {
         filtered = filtered.filter(
           (item) =>
             !item.read &&
             item.remarkTime &&
-            item.remarkTime.seconds * 1000 <= endDate &&
-            item.remarkTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.remarkTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.remarkTime) >= removeTimeInDate(startDate)
         );
       }
       filtered.sort((a, b) =>

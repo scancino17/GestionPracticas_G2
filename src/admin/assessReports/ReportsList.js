@@ -31,7 +31,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  toDateWhitoutTime,
+  removeTimeInDate
 } from '../../utils/FormatUtils';
 import PropTypes from 'prop-types';
 import { Pagination } from '@material-ui/lab';
@@ -69,12 +71,14 @@ function a11yProps(index) {
 
 function ReportsList() {
   const [name, setName] = useState('');
+
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const { userRole } = useUser();
   const { internships } = useSupervisor();
   const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
   const [indice, setIndice] = useState(0);
+  const [estado, setEstado] = useState('No Evaluadas');
   const [selected, setSelected] = useState({ read: false, notRead: true });
   const { read, notRead } = selected;
   const itemsPerPage = 8;
@@ -108,26 +112,32 @@ function ReportsList() {
         (item) =>
           (item.status === finishedInternship &&
             item.evaluatedReportTime &&
-            item.evaluatedReportTime.seconds * 1000 <= endDate &&
-            item.evaluatedReportTime.seconds * 1000 >= startDate) ||
+            toDateWhitoutTime(item.evaluatedReportTime) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.evaluatedReportTime) >=
+              removeTimeInDate(startDate)) ||
           (item.status === sentReport &&
             item.sentReportDate &&
-            item.sentReportDate.seconds * 1000 <= endDate &&
-            item.sentReportDate.seconds * 1000 >= startDate)
+            toDateWhitoutTime(item.sentReportDate) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.sentReportDate) >=
+              removeTimeInDate(startDate))
       );
     } else if (read) {
       filtered = filtered.filter(
         (item) =>
           item.evaluatedReportTime &&
-          item.evaluatedReportTime.seconds * 1000 <= endDate &&
-          item.evaluatedReportTime.seconds * 1000 >= startDate
+          toDateWhitoutTime(item.evaluatedReportTime) <=
+            removeTimeInDate(endDate) &&
+          toDateWhitoutTime(item.evaluatedReportTime) >=
+            removeTimeInDate(startDate)
       );
     } else if (notRead) {
       filtered = filtered.filter(
         (item) =>
           item.sentReportDate &&
-          item.sentReportDate.seconds * 1000 <= endDate &&
-          item.sentReportDate.seconds * 1000 >= startDate
+          toDateWhitoutTime(item.sentReportDate) <= removeTimeInDate(endDate) &&
+          toDateWhitoutTime(item.sentReportDate) >= removeTimeInDate(startDate)
       );
     }
     filtered.sort((a, b) =>
@@ -204,7 +214,7 @@ function ReportsList() {
             Exportar datos
           </Button>
         }
-        filename={`Estudiantes con evaluación de informe pendiente`}>
+        filename={`Estudiantes con evaluación de informe pendiente - ${estado}`}>
         <ExcelSheet data={temp} name='Extensiones de práctica'>
           <ExcelColumn
             label='Fecha'
@@ -255,6 +265,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: false, notRead: true });
+                  setEstado('No Evaluadas');
                   setIndice(0);
                   setPage(1);
                 }}
@@ -265,6 +276,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: true, notRead: false });
+                  setEstado('Evaluadas');
                   setIndice(1);
                   setPage(1);
                 }}
@@ -275,6 +287,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: true, notRead: true });
+                  setEstado('Todas');
                   setIndice(2);
                   setPage(1);
                 }}

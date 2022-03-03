@@ -20,7 +20,7 @@ import { Bar, Pie } from 'react-chartjs-2';
 import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/ExcelFile';
 import ExcelSheet from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelSheet';
 import { useSupervisor } from '../../providers/Supervisor';
-import { useUser, ADMIN_ROLE } from '../../providers/User';
+import { useUser, ADMIN_ROLE, DEFAULT_CAREER } from '../../providers/User';
 import CareerSelector from '../../utils/CareerSelector';
 import { FormTypes } from '../camps/FormTypes';
 import ExcelColumn from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/elements/ExcelColumn';
@@ -30,7 +30,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-
+import { removeTimeInDate, toDateWhitoutTime } from '../../utils/FormatUtils';
 function Metrics() {
   const { careerId, userRole } = useUser();
   const [selectedCareerId, setSelectedCareerId] = useState(careerId);
@@ -162,6 +162,23 @@ function Metrics() {
                   ))
               )
             )}
+          {selectedCareerId === DEFAULT_CAREER && (
+            <Grid
+              container
+              direction='column'
+              align='center'
+              justifyContent='center'
+              style={{ marginTop: '6rem' }}>
+              <Grid item>
+                <img src='EmptyState-3x.png' width='300' alt='Banner' />
+              </Grid>
+              <Grid item>
+                <Typography variant='h5' color='textSecondary'>
+                  Selecciona una carrera para continuar
+                </Typography>
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </>
@@ -196,8 +213,8 @@ function Metrics() {
         filtered = filtered.filter(
           (item) =>
             item.sentTime &&
-            item.sentTime.seconds * 1000 <= endDate &&
-            item.sentTime.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.sentTime) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.sentTime) >= removeTimeInDate(startDate)
         );
 
         return filtered;

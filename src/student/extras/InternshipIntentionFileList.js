@@ -52,7 +52,9 @@ function InternshipIntentionFileList({ studentId, internshipId }) {
   return (
     <List>
       {files.map((file) => (
-        <UrlLink file={file} />
+        <ListItem>
+          <UrlLink file={file} />
+        </ListItem>
       ))}
     </List>
   );

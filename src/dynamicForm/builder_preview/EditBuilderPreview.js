@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import DynamicForm from '../builder_preview/DynamicForm';
 import {
   Add,
@@ -26,9 +26,12 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Box as TextBox,
   Typography,
-  Box
+  Card,
+  CardContent
 } from '@material-ui/core';
+import { Box } from '@mui/material';
 import { useSupervisor } from '../../providers/Supervisor';
 import { Skeleton } from '@material-ui/lab';
 import { DEFAULT_CAREER } from '../../providers/User';
@@ -41,6 +44,7 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { isMobile } from 'react-device-detect';
+import { RequiredFields } from './RequiredFields';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -118,7 +122,42 @@ function EditBuilderPreview({
     [currentCareer, formType, getForm]
   );
 
+  // El estado de editableForm es manejado mutando el estado, en algunas partes
+  // intencionalmente, en otras no. Este flag está para forzar un rerender al cambiar el estado.
+  // Esto es claramente una deuda tecnologica: debería ser reemplazado por funciones que no muten
+  // el estado.
   useEffect(() => setFlag(false), [flag]);
+
+  const requiredFormFields = useMemo(
+    () => RequiredFields[formType],
+    [formType]
+  );
+
+  const missingFormFields = useMemo(() => {
+    if (!editableForm || flag) return Object.entries(requiredFormFields);
+
+    function isFieldInForm(field) {
+      let inForm = false;
+      editableForm.forEach(
+        (tab) =>
+          !inForm &&
+          tab.form.forEach((obj) => {
+            if (
+              !inForm &&
+              obj.name === field.displayName &&
+              obj.type === field.type
+            ) {
+              inForm = true;
+            }
+          })
+      );
+      return inForm;
+    }
+
+    return Object.entries(requiredFormFields).filter(
+      ([key, value]) => !isFieldInForm(value)
+    );
+  }, [editableForm, requiredFormFields, flag]);
 
   function handleNext() {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -169,6 +208,28 @@ function EditBuilderPreview({
   function handleDown(index) {
     setEditableForm((prev) => array_move(prev, index, index + 1));
     setFlag(true);
+  }
+
+  function array_move(arr, old_index, new_index) {
+    // Si el indice es negativo, dar vuelta entera
+    while (old_index < 0) {
+      old_index += arr.length;
+    }
+    while (new_index < 0) {
+      new_index += arr.length;
+    }
+
+    // Si el indice es mayor que el largo, agregar espacios
+    if (new_index >= arr.length) {
+      var k = new_index - arr.length + 1;
+      while (k--) {
+        arr.push(undefined);
+      }
+    }
+
+    // Mover objeto en old index a new index
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+    return arr; // for testing purposes
   }
 
   // Manejar guardado de cambios
@@ -253,23 +314,6 @@ function EditBuilderPreview({
   // Y mostrar modal de guardar cambios al haber cambios no guardados.
   useEffect(() => handleChanges(), [handleChanges]);
 
-  function array_move(arr, old_index, new_index) {
-    while (old_index < 0) {
-      old_index += arr.length;
-    }
-    while (new_index < 0) {
-      new_index += arr.length;
-    }
-    if (new_index >= arr.length) {
-      var k = new_index - arr.length + 1;
-      while (k--) {
-        arr.push(undefined);
-      }
-    }
-    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
-    return arr; // for testing purposes
-  }
-
   const matches = useMediaQuery('(max-width:650px)');
 
   return (
@@ -277,6 +321,23 @@ function EditBuilderPreview({
       <Container maxWidth='xl' style={{ marginTop: '2rem' }}>
         {currentCareer === selectedCareer && editableForm ? (
           <Grid container direction='column' style={{ padding: '3rem 0 0 0' }}>
+            {!!missingFormFields.length && (
+              <Grid item>
+                <Card style={{ margin: '-3rem 1rem 3rem 1rem' }}>
+                  <CardContent style={{ background: '#ffecb3' }}>
+                    <Typography>
+                      Para guardar los cambios, se requieren los siguientes
+                      campos de texto en el formulario:{' '}
+                      {missingFormFields.map(([key, value]) => (
+                        <TextBox display='inline' fontWeight='bold'>
+                          {value.displayName + ' '}
+                        </TextBox>
+                      ))}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )}
             <Grid item>
               <Grid
                 container
@@ -337,6 +398,8 @@ function EditBuilderPreview({
                       formFull={editableForm}
                       index={i}
                       admin
+                      flag={flag}
+                      setFlag={setFlag}
                     />
                   )
               )}
@@ -394,8 +457,8 @@ function EditBuilderPreview({
             </Grid>
           </Grid>
         )}
-        {/*Moddal */}
 
+        {/*Modal de administración de etapas */}
         <BootstrapDialog
           fullWidth
           onClose={() => setShow(false)}

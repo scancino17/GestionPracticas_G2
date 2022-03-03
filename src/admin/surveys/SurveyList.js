@@ -29,9 +29,10 @@ import {
   normalizeString,
   toLegibleDate,
   toLegibleTime,
-  toDateWhitoutTime,
-  removeTimeInDate
+  removeTimeInDate,
+  toDateWhitoutTime
 } from '../../utils/FormatUtils';
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -64,34 +65,37 @@ function a11yProps(index) {
   };
 }
 
-function EvaluationItem({ evaluation }) {
+function SurveyItem({ survey }) {
   const navigate = useNavigate();
-  function dateString(evaluation) {
-    if (evaluation.read && evaluation.revisionTime) {
-      return ' Leída el ' + toLegibleDate(evaluation.revisionTime);
-    } else if (!evaluation.read && evaluation.sentTime) {
-      return ' Enviada el ' + toLegibleDate(evaluation.sentTime);
+  function dateString(survey) {
+    if (survey.read && survey.revisionTime) {
+      return ' Leída el ' + toLegibleDate(survey.revisionTime);
+    } else if (!survey.read && survey.sentTime) {
+      return ' Enviada el ' + toLegibleDate(survey.sentTime);
     }
   }
   return (
-    <ListItem button onClick={() => navigate(`/evaluations/${evaluation.id}`)}>
+    <ListItem
+      button
+      onClick={() => navigate(`/satisfaction-survey/${survey.id}`)}>
       <ListItemText
-        primary={evaluation.studentName}
+        primary={survey.studentName}
         secondary={
           <React.Fragment>
-            {`${evaluation.studentRut} - Práctica ${evaluation.internshipNumber} - ${evaluation.careerInitials} - `}
+            {`${survey.studentRut} - Práctica ${survey.internshipNumber} - ${survey.careerInitials} - `}
             <Typography
               sx={{ display: 'inline' }}
               component='span'
               variant='body2'
               color='primary'>
-              <strong>{dateString(evaluation)}</strong>
+              <strong>{dateString(survey)}</strong>
             </Typography>
           </React.Fragment>
         }
       />
       <ListItemSecondaryAction>
-        <IconButton onClick={() => navigate(`/evaluations/${evaluation.id}`)}>
+        <IconButton
+          onClick={() => navigate(`/satisfaction-survey/${survey.id}`)}>
           <NavigateNext />
         </IconButton>
       </ListItemSecondaryAction>
@@ -99,9 +103,9 @@ function EvaluationItem({ evaluation }) {
   );
 }
 
-function EvaluationsList() {
+function SurveyList() {
   const { userRole } = useUser();
-  const { employerEvaluations } = useSupervisor();
+  const { surveys } = useSupervisor();
   const [name, setName] = useState('');
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const [selected, setSelected] = useState({ read: false, notRead: true });
@@ -114,9 +118,9 @@ function EvaluationsList() {
     new Date() - 1000 * 60 * 60 * 24 * 30 * 2
   );
   const [endDate, setEndDate] = useState(new Date());
-  const filteredEvaluationList = useMemo(() => {
-    if (employerEvaluations) {
-      let filtered = employerEvaluations.slice();
+  const filteredSurveyList = useMemo(() => {
+    if (surveys) {
+      let filtered = surveys.slice();
 
       filtered = filtered.filter(
         (item) =>
@@ -189,15 +193,7 @@ function EvaluationsList() {
       );
       return filtered;
     } else return [];
-  }, [
-    employerEvaluations,
-    name,
-    read,
-    notRead,
-    selectedCareerId,
-    endDate,
-    startDate
-  ]);
+  }, [surveys, name, read, notRead, selectedCareerId, endDate, startDate]);
 
   function handleChangeTab(event, newValue) {
     event.preventDefault();
@@ -205,7 +201,7 @@ function EvaluationsList() {
   }
 
   function ExportarExcel() {
-    const estados = ['No revisadas', 'Revisadas', 'Todas'];
+    const estados = ['No leídos', 'Leídos', 'Todos'];
 
     return (
       <ExcelFile
@@ -218,8 +214,8 @@ function EvaluationsList() {
             Exportar datos
           </Button>
         }
-        filename={`Evaluación de supervisores - ${estados[indice]}`}>
-        <ExcelSheet data={filteredEvaluationList} name='Lista de evaluación'>
+        filename={`Encuestas de satisfacción - ${estados[indice]}`}>
+        <ExcelSheet data={filteredSurveyList} name='Lista de encuestas'>
           <ExcelColumn
             label='Fecha'
             value={(col) =>
@@ -248,84 +244,84 @@ function EvaluationsList() {
   }
 
   return (
-    <Grid container direction='column'>
-      <Grid
-        style={{
-          backgroundImage: "url('AdminBanner-Form.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          padding: '2rem'
-        }}>
-        <Typography component={'span'} variant='h4'>
-          Evaluación de supervisores
-        </Typography>
-      </Grid>
-      <Container style={{ marginTop: '2rem' }}>
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs
-              variant='scrollable'
-              scrollButtons
-              allowScrollButtonsMobile
-              value={selectedTab}
-              onChange={handleChangeTab}
-              aria-label='Selección de observaciones a mostrar'>
-              <Tab
-                label='No revisadas'
-                {...a11yProps(0)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelected({ read: false, notRead: true });
-                  setIndice(0);
-                  setPage(1);
-                }}
-              />
-              <Tab
-                label='Revisadas'
-                {...a11yProps(1)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelected({ read: true, notRead: false });
-                  setIndice(1);
-                  setPage(1);
-                }}
-              />
-              <Tab
-                label='Todas'
-                {...a11yProps(2)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelected({ read: true, notRead: true });
-                  setIndice(2);
-                  setPage(1);
-                }}
-              />
-            </Tabs>
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <Grid container direction='column'>
+        <Grid
+          style={{
+            backgroundImage: "url('AdminBanner-Form.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            padding: '2rem'
+          }}>
+          <Typography component={'span'} variant='h4'>
+            Encuestas de satisfacción
+          </Typography>
+        </Grid>
+        <Container style={{ marginTop: '2rem' }}>
+          <Box sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs
+                variant='scrollable'
+                scrollButtons
+                allowScrollButtonsMobile
+                value={selectedTab}
+                onChange={handleChangeTab}
+                aria-label='Selección de observaciones a mostrar'>
+                <Tab
+                  label='No leído'
+                  {...a11yProps(0)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelected({ read: false, notRead: true });
+                    setIndice(0);
+                    setPage(1);
+                  }}
+                />
+                <Tab
+                  label='Leído'
+                  {...a11yProps(1)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelected({ read: true, notRead: false });
+                    setIndice(1);
+                    setPage(1);
+                  }}
+                />
+                <Tab
+                  label='Todas'
+                  {...a11yProps(2)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelected({ read: true, notRead: true });
+                    setIndice(2);
+                    setPage(1);
+                  }}
+                />
+              </Tabs>
+            </Box>
           </Box>
-        </Box>
-        <TabPanel value={selectedTab} index={indice}>
-          <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
-            <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
-              <TextField
-                fullWidth
-                label='Buscar por nombre'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Grid>
-            {userRole === ADMIN_ROLE && (
-              <Grid item xs={12} sm={4}>
-                <CareerSelector
-                  careerId={selectedCareerId}
-                  setCareerId={setSelectedCareerId}
+          <TabPanel value={selectedTab} index={indice}>
+            <Grid style={{ marginBlockEnd: '1rem' }} container spacing={4}>
+              <Grid item xs={12} sm={userRole === ADMIN_ROLE ? 4 : 8}>
+                <TextField
+                  fullWidth
+                  label='Buscar por nombre'
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </Grid>
-            )}
-            <Grid item xs={12} sm={4}>
-              <ExportarExcel />
-            </Grid>
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+              {userRole === ADMIN_ROLE && (
+                <Grid item xs={12} sm={4}>
+                  <CareerSelector
+                    careerId={selectedCareerId}
+                    setCareerId={setSelectedCareerId}
+                  />
+                </Grid>
+              )}
+              <Grid item xs={12} sm={4}>
+                <ExportarExcel />
+              </Grid>
               <Grid container item xs={12} direction='row' spacing={2}>
                 <Grid item xs={12} md={2}>
                   <DatePicker
@@ -350,59 +346,57 @@ function EvaluationsList() {
                   />
                 </Grid>
               </Grid>
-            </MuiPickersUtilsProvider>
-            <Divider />
-            <Container style={{ marginTop: '2rem' }}>
-              <List>
-                {filteredEvaluationList
-                  .slice((page - 1) * itemsPerPage, page * itemsPerPage)
-                  .map((evaluation) => (
-                    <>
-                      <EvaluationItem evaluation={evaluation} />
-                      <Divider />
-                    </>
-                  ))}
-              </List>
-            </Container>
-            <Grid
-              container
-              justifyContent='flex-end'
-              style={{ marginTop: '2rem' }}>
-              {filteredEvaluationList.length > 0 ? (
-                <Pagination
-                  count={Math.ceil(
-                    filteredEvaluationList.length / itemsPerPage
-                  )}
-                  page={page}
-                  color='primary'
-                  style={{ marginBottom: '40px' }}
-                  onChange={(_, val) => setPage(val)}
-                />
-              ) : (
-                <Grid
-                  container
-                  direction='column'
-                  align='center'
-                  justifyContent='center'
-                  style={{ marginTop: '6rem' }}>
-                  <Grid item>
-                    <img
-                      src='post.png'
-                      width='300'
-                      alt='Sin evaluaciones de supervisores'
-                    />
+              <Divider />
+              <Container style={{ marginTop: '2rem' }}>
+                <List>
+                  {filteredSurveyList
+                    .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+                    .map((survey) => (
+                      <>
+                        <SurveyItem survey={survey} />
+                        <Divider />
+                      </>
+                    ))}
+                </List>
+              </Container>
+              <Grid
+                container
+                justifyContent='flex-end'
+                style={{ marginTop: '2rem' }}>
+                {filteredSurveyList.length > 0 ? (
+                  <Pagination
+                    count={Math.ceil(filteredSurveyList.length / itemsPerPage)}
+                    page={page}
+                    color='primary'
+                    style={{ marginBottom: '40px' }}
+                    onChange={(_, val) => setPage(val)}
+                  />
+                ) : (
+                  <Grid
+                    container
+                    direction='column'
+                    align='center'
+                    justifyContent='center'
+                    style={{ marginTop: '6rem' }}>
+                    <Grid item>
+                      <img
+                        src='/post.png'
+                        width='300'
+                        alt='Sin evaluaciones de supervisores'
+                      />
+                    </Grid>
+                    <Typography variant='h5' color='textSecondary'>
+                      No hay evaluaciones de supervisores pendientes.
+                    </Typography>
                   </Grid>
-                  <Typography variant='h5' color='textSecondary'>
-                    No hay evaluaciones de supervisores pendientes.
-                  </Typography>
-                </Grid>
-              )}
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        </TabPanel>
-      </Container>
-    </Grid>
+          </TabPanel>
+        </Container>
+      </Grid>
+    </MuiPickersUtilsProvider>
   );
 }
 
-export default EvaluationsList;
+export default SurveyList;

@@ -22,10 +22,8 @@ import {
 } from '../InternshipStates';
 import InternshipIntentionFileList from './extras/InternshipIntentionFileList';
 import StudentIntention from './extras/StudentIntentionButton';
-import EmptyHome from './EmptyHome';
-import { RiSurveyLine } from 'react-icons/ri';
 import { useStudent } from '../providers/Student';
-
+import { toLegibleDate } from '../utils/FormatUtils';
 const pendingApprovalState = pendingIntention;
 const approvedState = approvedIntention;
 const deniedState = deniedIntention;
@@ -126,15 +124,15 @@ const IntentionItem = ({
   const selectDetails = () => {
     switch (internship.status) {
       case approvedState:
-        return <ApprovedState />;
+        return ApprovedState();
       case pendingApprovalState:
-        return <PendingState />;
+        return PendingState();
       case deniedState:
-        return <DeniedState />;
+        return DeniedState();
       case availableInternship:
-        return <AvailableState />;
+        return AvailableState();
       case finishedInternship:
-        return <FinishedState />;
+        return FinishedState();
       default:
         return (
           <Typography>
@@ -145,13 +143,13 @@ const IntentionItem = ({
   };
 
   const FinishedState = () => {
-    const { careerInfo } = useStudent();
-
     return (
       <Grid container direction='column'>
         <Grid item container direction='row' justifyContent='flex-start'>
           <Typography>
-            ¡Felicitaciones! Terminaste tu proceso de práctica
+            {`${
+              internship.approved ? '¡Felicitaciones!' : ''
+            }Terminaste tu proceso de práctica`}
           </Typography>
         </Grid>
         <Typography variant='h5'>
@@ -188,25 +186,6 @@ const IntentionItem = ({
         )}
 
         <Grid
-          container
-          style={{
-            cursor: 'pointer',
-            paddingTop: '2rem',
-            paddingBottom: '1rem'
-          }}
-          onClick={() => window.open(careerInfo.satisfactionSurvey, '_blank')}>
-          <Grid item>
-            <RiSurveyLine className={classes.icon} />
-          </Grid>
-          <Grid item direction='column'>
-            <Typography variant='h6'>Responder Encuesta</Typography>
-            <Typography variant='body2'>
-              Cuéntanos tu experiencia durante las semanas de práctica.
-            </Typography>
-          </Grid>
-        </Grid>
-
-        <Grid
           item
           container
           direction='row'
@@ -220,6 +199,11 @@ const IntentionItem = ({
             {internship.evaluatingSupervisor.email}
           </Typography>
         </Grid>
+        {internship.evaluatedReportTime && (
+          <Typography className={classes.evaluatingSupervisorText}>
+            {toLegibleDate(internship.evaluatedReportTime)}
+          </Typography>
+        )}
       </Grid>
     );
   };
@@ -345,11 +329,21 @@ const IntentionItem = ({
   const selectActions = () => {
     switch (internship.status) {
       case approvedState:
-        return <ApprovedActions />;
+        return ApprovedActions();
       case deniedState:
-        return <DeniedActions />;
+        return DeniedActions();
       case availableInternship:
-        return <AvailableActions />;
+        return AvailableActions();
+      case finishedInternship:
+        return !internship.approved ? (
+          !internship.disabled ? (
+            FinishedActions()
+          ) : (
+            <></>
+          )
+        ) : (
+          <></>
+        );
       default:
         return <></>;
     }
@@ -383,6 +377,16 @@ const IntentionItem = ({
   const DeniedActions = () => {
     return (
       <StudentIntention
+        practica={internship}
+        altText='Volver a intentar'
+        forceDisable={forceDisable}
+      />
+    );
+  };
+  const FinishedActions = () => {
+    return (
+      <StudentIntention
+        reprove={!internship.approved}
         practica={internship}
         altText='Volver a intentar'
         forceDisable={forceDisable}
@@ -433,8 +437,10 @@ const IntentionItem = ({
       case finishedInternship:
         return (
           <Typography className={classes.secondaryAvailableHeading}>
-            {internship.status + ' '}
-            <Emoji symbol='😄' />
+            {internship.approved
+              ? internship.status + ' '
+              : 'Práctica reprobada'}
+            <Emoji symbol={!internship.approved ? '😢' : '😄'} />
           </Typography>
         );
       default:
@@ -463,9 +469,10 @@ const IntentionItem = ({
 };
 
 function InternshipIntention() {
-  const [noneDeclarated, isNoneDeclarated] = useState(true);
   const { internships } = useStudent();
 
+  /*
+const [noneDeclarated, isNoneDeclarated] = useState(true);
   useEffect(() => {
     isNoneDeclarated(
       internships.filter((item) => !(item.status === availableInternship))
@@ -473,26 +480,21 @@ function InternshipIntention() {
     );
   }, [internships]);
 
+*/
   return (
     <>
-      {noneDeclarated ? (
-        <EmptyHome practicas={internships} />
-      ) : (
-        internships && (
-          <Container style={{ padding: '2rem' }}>
-            <Grid container direction='column' spacing={6}>
-              <Grid item>
-                <Typography variant='h4'>
-                  Estado de intención de práctica
-                </Typography>
-              </Grid>
-              <Grid item>
-                <InternshipState internships={internships} />
-              </Grid>
-            </Grid>
-          </Container>
-        )
-      )}
+      <Container style={{ padding: '2rem' }}>
+        <Grid container direction='column' spacing={6}>
+          <Grid item>
+            <Typography variant='h4'>
+              Estado de intención de práctica
+            </Typography>
+          </Grid>
+          <Grid item>
+            <InternshipState internships={internships} />
+          </Grid>
+        </Grid>
+      </Container>
     </>
   );
 }

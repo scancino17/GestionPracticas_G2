@@ -29,7 +29,8 @@ export const StudentNotificationTypes = {
   reportNeedChanges: 'reportNeedChanges',
   finishedInternship: 'finishedInternship',
   approvedExtension: 'approvedExtension',
-  deniedExtension: 'deniedExtension'
+  deniedExtension: 'deniedExtension',
+  insurance: 'insurance'
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -67,6 +68,8 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
         return 'Extensión aprovada';
       case StudentNotificationTypes.deniedExtension:
         return 'Extensión rechazado';
+      case StudentNotificationTypes.insurance:
+        return 'Seguro de práctica';
       default:
         return 'Notificación';
     }
@@ -94,6 +97,8 @@ const NotificationItem = ({ type, time, handleDiscard }) => {
         return 'Tu solicitud de extensión de práctica ha sido aprobada.';
       case StudentNotificationTypes.deniedExtension:
         return 'Tu solicitud de extensión de práctica ha sido rechazada.';
+      case StudentNotificationTypes.insurance:
+        return 'Se ha publicado tu seguro de práctica.';
       default:
         return 'Notificación';
     }

@@ -7,7 +7,7 @@ import SendEvaluation from './../dynamicForm/send/SendEvaluation';
 function DashboardEmployer() {
   return (
     <Routes>
-      <Route exact path='/' element={<InternshipList />} />
+      <Route path='/' element={<InternshipList />} />
       <Route path='/remark-history/:internshipId' element={<RemarkHistory />} />
       <Route
         path='/send-evaluation/:internshipId'

@@ -41,7 +41,38 @@ export function toLegibleTime(timestamp) {
       : timestamp.seconds * 1000;
   return new Date(time).toLocaleTimeString('es-CL');
 }
+export function toDateWhitoutTime(timestamp) {
+  let time =
+    typeof timestamp === 'string'
+      ? parseInt(timestamp)
+      : timestamp.seconds * 1000;
+  return new Date(time).setHours(0, 0, 0);
+}
+export function removeTimeInDate(date) {
+  if (date instanceof Date || typeof date === 'number') {
+    return new Date(date).setHours(0, 0, 0);
+  } else {
+    if (typeof date === 'string') {
+      return toDateWhitoutTime(date);
+    } else {
+      return Date.now();
+    }
+  }
+}
 
 export function toLegibleDateTime(timestamp) {
   return `${toLegibleDate(timestamp)} ${toLegibleTime(timestamp)}`;
+}
+
+export function normalizeString(str) {
+  str = str.toLowerCase();
+  for (var i = 0; i < str.length; i++) {
+    //Sustituye "á é í ó ú"
+    if (str.charAt(i) === 'á') str = str.replace(/á/, 'a');
+    if (str.charAt(i) === 'é') str = str.replace(/é/, 'e');
+    if (str.charAt(i) === 'í') str = str.replace(/í/, 'i');
+    if (str.charAt(i) === 'ó') str = str.replace(/ó/, 'o');
+    if (str.charAt(i) === 'ú') str = str.replace(/ú/, 'u');
+  }
+  return str;
 }

@@ -16,7 +16,7 @@ function EmptyHome({ practicas }) {
         alignItems='center'>
         <Grid item>
           <Hidden xsDown>
-            <img width='300' src='EmptyState-2x.png' alt='No internships' />
+            <img width='300' src='/EmptyState-2x.png' alt='No internships' />
           </Hidden>
         </Grid>
         <Grid item container direction='column' alignItems='center'>

@@ -53,6 +53,7 @@ export function SupervisorProvider({ children }) {
   const [careers, setCareers] = useState();
   const [employers, setEmployers] = useState();
   const [evaluations, setEvaluations] = useState();
+  const [surveys, setSurveys] = useState();
 
   useEffect(() => {
     return onSnapshot(collection(db, 'careers'), (querySnapshot) => {
@@ -74,6 +75,7 @@ export function SupervisorProvider({ children }) {
     let stuRef = collection(db, 'users');
     let empRef = collection(db, 'employers');
     let evaRef = collection(db, 'send-evaluation');
+    let surRef = collection(db, 'send-survey');
 
     // Limitar a carrera que le corresponde
     if (careerId !== DEFAULT_CAREER) {
@@ -82,6 +84,7 @@ export function SupervisorProvider({ children }) {
       stuRef = query(stuRef, where('careerId', '==', careerId));
       empRef = query(empRef, where('careers', 'array-contains', careerId));
       evaRef = query(evaRef, where('careerId', '==', careerId));
+      surRef = query(surRef, where('careerId', '==', careerId));
     }
 
     let appUnsub = onSnapshot(appRef, (querySnapshot) => {
@@ -158,12 +161,28 @@ export function SupervisorProvider({ children }) {
       setEvaluations(temp);
     });
 
+    let surUnsub = onSnapshot(surRef, (querySnapshot) => {
+      const temp = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        const career = careers.find((item) => item.id === docData.careerId);
+        const sigla = career ? career.sigla : 'N.E';
+        temp.push({
+          id: doc.id,
+          careerInitials: sigla,
+          ...docData
+        });
+      });
+      setSurveys(temp);
+    });
+
     return () => {
       appUnsub();
       intUnsub();
       stuUnsub();
       empUnsub();
       evaUnsub();
+      surUnsub();
     };
   }, [careers, careerId]);
 
@@ -342,6 +361,21 @@ export function SupervisorProvider({ children }) {
     await updateDoc(doc(db, 'careers', careerId), data);
   }
 
+  async function updateEmployer(employerId, data) {
+    await updateDoc(doc(db, 'employers', employerId), data);
+  }
+
+  async function updateEmployerInternship(internshipId, internData) {
+    const { employerId } = getInternship(internshipId);
+
+    let data = {};
+    Object.entries(internData).forEach(
+      ([key, value]) => (data[`interns.${internshipId}.${key}`] = value)
+    );
+
+    await updateEmployer(employerId, { ...data });
+  }
+
   function getUserData(userId) {
     return students.find((item) => item.id === userId);
   }
@@ -364,11 +398,13 @@ export function SupervisorProvider({ children }) {
 
   function approveApplication(appData, approveReason) {
     updateApplication(appData.id, {
+      approvedDate: serverTimestamp(),
       status: 'Aprobado',
       reason: approveReason
     });
 
     updateInternship(appData.internshipId, {
+      approvedDate: serverTimestamp(),
       status: approvedApplication,
       applicationData: appData,
       applicationId: appData.id,
@@ -395,6 +431,7 @@ export function SupervisorProvider({ children }) {
 
   function rejectApplication(appData, rejectReason) {
     updateApplication(appData.id, {
+      rejectDate: serverTimestamp(),
       status: 'Rechazado',
       reason: rejectReason
     });
@@ -428,7 +465,8 @@ export function SupervisorProvider({ children }) {
 
     updateApplication(appData.id, {
       status: 'Necesita cambios menores',
-      reason: changes
+      reason: changes,
+      minorChangeRequestDate: serverTimestamp()
     });
 
     updateUser(appData.studentId, {
@@ -521,6 +559,18 @@ export function SupervisorProvider({ children }) {
         file
       );
     });
+
+    sendMail(internship.studentEmail, 'Insurance', {
+      from_name: internship.studentName
+    });
+    updateUser(internship.studentId, {
+      currentInternship: {
+        id: internship.id,
+        number: internship.internshipNumber
+      }
+    }).then(() =>
+      addNotification(internship.studentId, StudentNotificationTypes.insurance)
+    );
   }
 
   function amendReport(internshipId, student, reason) {
@@ -542,8 +592,11 @@ export function SupervisorProvider({ children }) {
   function evaluateReport(internshipId, student, reason, grade) {
     updateInternship(internshipId, {
       status: finishedInternship,
+      evaluatedReportTime: serverTimestamp(),
       reason: reason ? reason : 'Sin observaciones',
-      grade: grade
+      grade: grade,
+      approved: grade >= 40 ? true : false,
+      evaluatingSupervisor: { email: email, name: displayName }
     });
 
     sendMail(student.email, 'ReportApproved', {
@@ -556,6 +609,8 @@ export function SupervisorProvider({ children }) {
     updateUser(student.id, { step: 0 }).then(() =>
       addNotification(student.id, StudentNotificationTypes.finishedInternship)
     );
+
+    updateEmployerInternship(internshipId, { finishedIntern: true });
   }
 
   function rejectExtension(internship, reason) {
@@ -639,10 +694,6 @@ export function SupervisorProvider({ children }) {
     });
   }
 
-  async function updateEmployer(employerId, update) {
-    await updateDoc(doc(db, 'employers', employerId), update);
-  }
-
   async function updateRemark(remark, update) {
     const {
       employerName,
@@ -662,6 +713,12 @@ export function SupervisorProvider({ children }) {
         ...update
       }
     });
+    sendMail(employerEmail, 'replyObservation', {
+      from_name: employerName,
+      supervisor: displayName,
+      answer: update.answer,
+      student: studentName
+    });
   }
 
   return (
@@ -673,6 +730,8 @@ export function SupervisorProvider({ children }) {
         students,
         careers,
         employers,
+        evaluations,
+        surveys,
         pendingIntentionsCount,
         pendingFormsCount,
         sentReportsCount,

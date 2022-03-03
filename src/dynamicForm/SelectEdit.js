@@ -3,17 +3,16 @@ import {
   Card,
   CardContent,
   Grid,
-  Tab,
-  Tabs,
   Typography,
   useMediaQuery
 } from '@material-ui/core';
 import { useState } from 'react';
-import { DEFAULT_CAREER, useUser } from '../providers/User';
+import { ADMIN_ROLE, DEFAULT_CAREER, useUser } from '../providers/User';
 import CareerSelector from '../utils/CareerSelector';
 import EditBuilderPreview from './builder_preview/EditBuilderPreview';
 import { FormTypes } from './camps/FormTypes';
-
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 function SelectEdit() {
   const { careerId } = useUser();
   const [selectedTab, setSelectedTab] = useState(0);
@@ -35,7 +34,7 @@ function SelectEdit() {
       setCurrentCareer(newValue);
     }
   };
-
+  const { userRole } = useUser();
   const tabSize = useMediaQuery('(max-width:1450px)', { noSsr: true });
   const matches = useMediaQuery('(max-width:400px)', { noSsr: true });
   return (
@@ -54,7 +53,7 @@ function SelectEdit() {
         <Box margin={'1rem'}>
           <Grid
             container
-            direction='row-reverse'
+            direction={userRole === ADMIN_ROLE ? 'row-reverse' : 'row'}
             justifyContent='flex-start'
             alignItems='center'
             spacing={4}>
@@ -70,13 +69,15 @@ function SelectEdit() {
                 </Card>
               </Grid>
             )}
-            <Grid item xs={12} sm={5} lg={4}>
-              <CareerSelector
-                careerId={currentCareer}
-                setCareerId={handleChangeCareer}
-                excludeGeneral
-              />
-            </Grid>
+            {userRole === ADMIN_ROLE && (
+              <Grid item xs={12} sm={5} lg={4}>
+                <CareerSelector
+                  careerId={currentCareer}
+                  setCareerId={handleChangeCareer}
+                  excludeGeneral
+                />
+              </Grid>
+            )}
 
             <Grid item xs={12} lg={tabSize ? 12 : 8}>
               <Box
@@ -85,7 +86,6 @@ function SelectEdit() {
                   variant='scrollable'
                   scrollButtons
                   allowScrollButtonsMobile
-                  indicatorColor='primary'
                   value={currentTab}
                   onChange={handleChangeTab}
                   aria-label='wrapped label tabs example'>
@@ -157,7 +157,7 @@ function SelectEdit() {
           justifyContent='center'
           style={{ marginTop: '6rem' }}>
           <Grid item>
-            <img src='EmptyState-3x.png' width='300' alt='Banner' />
+            <img src='/EmptyState-3x.png' width='300' alt='Banner' />
           </Grid>
           <Grid item>
             <Typography variant='h5' color='textSecondary'>

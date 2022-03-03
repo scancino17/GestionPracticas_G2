@@ -85,8 +85,8 @@ const ProfileMenu = ({ func }) => {
         </Typography>
       </Box>
       <Divider sx={{ my: 1 }} />
-      <MenuItem>
-        <ListItemIcon onClick={func.handleResetPassword}>
+      <MenuItem onClick={func.handleResetPassword}>
+        <ListItemIcon>
           <PasswordIcon fontSize='small' />
         </ListItemIcon>
         Cambiar Contraseña
@@ -211,7 +211,7 @@ function TopBar({ setSidebarOpen }) {
                   ? classes.logoStudent
                   : classes.logoAdmin
               }
-              src='logo5b-utal.png'
+              src='/logo5b-utal.png'
               alt='logo'
             />
           </IconButton>
@@ -248,7 +248,7 @@ function TopBar({ setSidebarOpen }) {
             style={{ backgroundColor: 'transparent' }}>
             <img
               className={classes.logoAdmin}
-              src='logo5b-utal.png'
+              src='/logo5b-utal.png'
               alt='logo'
             />
           </IconButton>

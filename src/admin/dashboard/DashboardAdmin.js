@@ -9,17 +9,9 @@ import ApplicationsList from '../applications/ApplicationsList';
 import BarraLateral from '../../layout/BarraLateral';
 import CountUp from 'react-countup';
 import InternshipIntention from '../intention/InternshipIntention';
+import { Container, Grid, Typography, Divider } from '@material-ui/core';
 
-import { Container, Divider } from '@material-ui/core';
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  CardHeader
-} from '@mui/material';
+import { Avatar, Box, Card, CardContent, CardHeader } from '@mui/material';
 
 import WarningIcon from '@material-ui/icons/Warning';
 
@@ -49,8 +41,13 @@ import Chart from 'chart.js/auto';
 import { useSupervisor } from '../../providers/Supervisor';
 import RemarkList from '../remarks/RemarkList';
 import SelectEdit from '../../dynamicForm/SelectEdit';
+
+import Metrics from '../../dynamicForm/metrics/Metrics';
+
 import EvaluationsList from '../evaluations/EvaluationsList';
+import SurveyList from '../surveys/SurveyList';
 import EvaluationCheck from '../../dynamicForm/check/EvaluationCheck';
+import SurveyCheck from '../../dynamicForm/check/SurveyCheck';
 
 function DashboardAdmin({ sidebarProps }) {
   const { careerId, userRole } = useUser();
@@ -287,7 +284,12 @@ function DashboardAdmin({ sidebarProps }) {
                       </CardContent>
                     </Card>
                   </Grid>
-                  <Grid item lg={8} md={12} xl={9} xs={12}>
+                  <Grid
+                    item
+                    lg={8}
+                    md={12}
+                    xl={graphsCareerId === DEFAULT_CAREER ? 9 : 3}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Estado de los alumnos por carrera' />
                       <Divider />
@@ -297,7 +299,10 @@ function DashboardAdmin({ sidebarProps }) {
                             height: 435,
                             position: 'relative'
                           }}>
-                          <GroupedBarChart setExportable={setInternStatus} />
+                          <GroupedBarChart
+                            graphsCareerId={graphsCareerId}
+                            setExportable={setInternStatus}
+                          />
                         </Box>
                       </CardContent>
                       <Divider />
@@ -351,7 +356,12 @@ function DashboardAdmin({ sidebarProps }) {
                       </Box>
                     </Card>
                   </Grid>
-                  <Grid item lg={4} md={6} xl={4} xs={12}>
+                  <Grid
+                    item
+                    lg={4}
+                    md={6}
+                    xl={graphsCareerId === DEFAULT_CAREER ? 4 : 6}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Prácticas registradas en el extranjero' />
                       <Divider />
@@ -359,7 +369,7 @@ function DashboardAdmin({ sidebarProps }) {
                         <Box
                           sx={{
                             p: 2,
-                            height: '100%'
+                            height: 450
                           }}>
                           <TableChart setExportable={setInternCountries} />
                         </Box>
@@ -379,14 +389,19 @@ function DashboardAdmin({ sidebarProps }) {
                       </Box>
                     </Card>
                   </Grid>
-                  <Grid item lg={8} md={12} xl={8} xs={12}>
+                  <Grid
+                    item
+                    lg={8}
+                    md={12}
+                    xl={graphsCareerId !== DEFAULT_CAREER ? 12 : 8}
+                    xs={12}>
                     <Card>
                       <CardHeader title='Empresas más elegidas por los practicantes' />
                       <Divider />
                       <CardContent>
                         <Box
                           sx={{
-                            height: 400,
+                            height: 450,
                             position: 'relative'
                           }}>
                           <VerticalBar
@@ -414,7 +429,9 @@ function DashboardAdmin({ sidebarProps }) {
           }
         />
         <Route exact path='/applications' element={<ApplicationsList />} />
+
         <Route exact path='/evaluations' element={<EvaluationsList />} />
+        <Route exact path='/satisfaction-survey' element={<SurveyList />} />
         <Route path='/edit-form' element={<SelectEdit />} />
         <Route
           path='/applications/:applicationId'
@@ -423,6 +440,10 @@ function DashboardAdmin({ sidebarProps }) {
         <Route
           path='/evaluations/:evaluationId'
           element={<EvaluationCheck />}
+        />
+        <Route
+          path='/satisfaction-survey/:surveyId'
+          element={<SurveyCheck />}
         />
         <Route path='/import' element={<ImportStudents />} />
         <Route path='/internship-intention' element={<InternshipIntention />} />
@@ -453,6 +474,7 @@ function DashboardAdmin({ sidebarProps }) {
             </Grid>
           }
         />
+        <Route path='/metrics' element={<Metrics />} />
         {userRole === ADMIN_ROLE && (
           <Route path='/control-panel/' element={<ControlPanel />} />
         )}

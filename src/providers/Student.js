@@ -1,15 +1,18 @@
 import React, { useContext, useState, useEffect, useCallback } from 'react';
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   onSnapshot,
   query,
+  serverTimestamp,
   updateDoc,
   where
 } from 'firebase/firestore';
 import { useUser } from './User';
 import { db } from '../firebase';
+import { pendingIntention } from '../InternshipStates';
 
 export const StudentContext = React.createContext();
 
@@ -27,6 +30,10 @@ export function StudentProvider({ children }) {
     reason: 'Cargando...'
   });
   const [studentName, setStudentName] = useState('');
+  const [studentRut, setStudentRut] = useState('');
+  const [studentEmail, setStudentEmail] = useState('');
+  const [studentNumber, setStudentNumber] = useState('');
+  const [studentCareerId, setStudentCareerId] = useState();
   const [studentLoaded, setStudentLoaded] = useState(false);
   const [careerInfo, setCareerInfo] = useState();
 
@@ -55,6 +62,10 @@ export function StudentProvider({ children }) {
       setStep(userData.step);
       setCurrentInternship(userData.currentInternship);
       setStudentName(userData.name);
+      setStudentRut(userData.rut);
+      setStudentEmail(userData.email);
+      setStudentNumber(userData.enrollmentNumber);
+      setStudentCareerId(userData.careerId);
       setStudentLoaded(true);
     }
   }, [userData, internships]);
@@ -104,6 +115,26 @@ export function StudentProvider({ children }) {
   async function updateInternship(id, update) {
     await updateDoc(doc(db, 'internships', id), update);
   }
+  async function newInternship(number, idLastInter) {
+    await addDoc(collection(db, 'internships'), {
+      careerId: careerId,
+      careerName: careerInfo.name,
+      internshipNumber: number,
+      status: pendingIntention,
+      studentEmail: userData.email,
+      studentId: userId,
+      studentName: userData.name,
+      sentTime: serverTimestamp()
+    })
+      .then((docRef) => {
+        updateDoc(doc(db, 'internships', idLastInter), { disabled: true });
+
+        //se guarda los archivos en la application correspondiente
+      })
+      .catch((error) => {
+        console.error('Error adding document: ', error);
+      });
+  }
 
   return (
     <StudentContext.Provider
@@ -112,13 +143,18 @@ export function StudentProvider({ children }) {
         lastApplication,
         step,
         studentName,
+        studentRut,
+        studentEmail,
+        studentNumber,
+        studentCareerId,
         studentLoaded,
         careerInfo,
         currentInternship,
         currentInternshipData,
         updateUser,
         updateInternship,
-        updateCurrentInternship
+        updateCurrentInternship,
+        newInternship
       }}>
       {userLoaded && children}
     </StudentContext.Provider>

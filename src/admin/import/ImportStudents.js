@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import XLSX from 'xlsx';
-import { functions } from '../../firebase';
+import { functions, storage } from '../../firebase';
 import {
   Button,
   Container,
@@ -12,18 +12,24 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Grid
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  CardHeader
 } from '@material-ui/core';
 import { DropzoneArea } from 'material-ui-dropzone';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisor } from '../../providers/Supervisor';
+import { ref, getDownloadURL } from 'firebase/storage';
 
 function ImportStudents() {
   const navigate = useNavigate();
   const [careersNames, setCareersNames] = useState({});
   const [list, setList] = useState([]);
   const [currentUsersEmails, setCurrentUsersEmails] = useState([]);
+  const [exampleUrl, setExampleUrl] = useState();
   const { students, careers } = useSupervisor();
 
   useEffect(() => {
@@ -66,12 +72,25 @@ function ImportStudents() {
     if (files[0]) reader.readAsBinaryString(files[0]);
   }
 
+  function handleExcelDate(row) {
+    // Como odio excel, ni siquiera se usa la fecha de nacimiento
+    try {
+      if (typeof row === 'number') {
+        return new Date((row - (25567 + 1)) * 86400 * 1000);
+      } else if (typeof row === 'string') {
+        return Date.parse(row);
+      }
+    } catch {
+      return Date.now();
+    }
+  }
+
   function handleSubmit() {
     const importStudents = functions.httpsCallable('importStudents');
     list.forEach((row) => {
       importStudents({
         able: true,
-        birthDate: Date.parse(row[8]),
+        birthDate: handleExcelDate(row[8]),
         careerId: row[1].toString(),
         careerName: careersNames[row[1]],
         careerPlan: row[9],
@@ -95,6 +114,12 @@ function ImportStudents() {
     ).then(() => navigate('/'));
   }
 
+  useEffect(() => {
+    // Para que este link de descarga funcione, aquí tiene que apuntar a la plantilla en storage de firebase
+    const exampleRef = ref(storage, 'Formato_ingreso_info_estudiantes.xlsx');
+    getDownloadURL(exampleRef).then((res) => setExampleUrl(res));
+  }, []);
+
   return (
     <Grid container direction='column'>
       <div
@@ -111,6 +136,30 @@ function ImportStudents() {
         <Grid container direction='column' spacing={2}>
           {list.length === 0 && (
             <>
+              <Grid item>
+                <Card style={{ margin: '1rem 0 1rem 0' }}>
+                  <CardHeader title='Plantilla de ejemplo'></CardHeader>
+                  <CardContent>
+                    <Typography>
+                      Para importar estudiantes, se recomienda que utilice la
+                      plantilla entregada a continuación. Esta plantilla trae
+                      estudiantes de ejemplo: asegúrese de eliminarlos antes de
+                      subir la plantilla con los estudiantes a importar.
+                    </Typography>
+                  </CardContent>
+                  <CardActions style={{ justifyContent: 'end' }}>
+                    <Button
+                      variant='text'
+                      color='primary'
+                      component='a'
+                      href={exampleUrl}
+                      target='_blank'
+                      rel='noopener'>
+                      Descargar plantilla
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
               <Grid item>
                 <Typography variant='h6'>
                   Seleccione el archivo con la información de los estudiantes:

@@ -201,7 +201,7 @@ function SurveyList() {
   }
 
   function ExportarExcel() {
-    const estados = ['Leídos', 'No leídos', 'Todos'];
+    const estados = ['No leídos', 'Leídos', 'Todos'];
 
     return (
       <ExcelFile
@@ -214,7 +214,7 @@ function SurveyList() {
             Exportar datos
           </Button>
         }
-        filename={`Inscripciones de práctica - ${estados[indice]}`}>
+        filename={`Encuestas de satisfacción - ${estados[indice]}`}>
         <ExcelSheet data={filteredSurveyList} name='Lista de encuestas'>
           <ExcelColumn
             label='Fecha'

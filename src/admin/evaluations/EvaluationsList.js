@@ -205,7 +205,7 @@ function EvaluationsList() {
   }
 
   function ExportarExcel() {
-    const estados = ['Leídos', 'No leídos', 'Todos'];
+    const estados = ['No revisadas', 'Revisadas', 'Todas'];
 
     return (
       <ExcelFile
@@ -218,7 +218,7 @@ function EvaluationsList() {
             Exportar datos
           </Button>
         }
-        filename={`Inscripciones de práctica - ${estados[indice]}`}>
+        filename={`Evaluación de supervisores - ${estados[indice]}`}>
         <ExcelSheet data={filteredEvaluationList} name='Lista de evaluación'>
           <ExcelColumn
             label='Fecha'

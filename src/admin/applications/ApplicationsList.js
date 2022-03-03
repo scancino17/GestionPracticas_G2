@@ -147,10 +147,8 @@ function ApplicationsList() {
           (item) =>
             item.status === 'Rechazado' &&
             item.rejectDate &&
-            toDateWhitoutTime(item.rejectDate * 1000) <=
-              removeTimeInDate(endDate) &&
-            toDateWhitoutTime(item.rejectDate * 1000) >=
-              removeTimeInDate(startDate)
+            toDateWhitoutTime(item.rejectDate) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.rejectDate) >= removeTimeInDate(startDate)
         );
       else if (needChanges)
         filtered = filtered.filter(

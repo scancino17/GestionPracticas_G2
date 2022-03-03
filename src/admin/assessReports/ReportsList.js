@@ -71,12 +71,14 @@ function a11yProps(index) {
 
 function ReportsList() {
   const [name, setName] = useState('');
+
   const [selectedCareerId, setSelectedCareerId] = useState(DEFAULT_CAREER);
   const { userRole } = useUser();
   const { internships } = useSupervisor();
   const [selectedTab, setSelectedTab] = useState(0);
   const [page, setPage] = useState(1);
   const [indice, setIndice] = useState(0);
+  const [estado, setEstado] = useState('No Evaluadas');
   const [selected, setSelected] = useState({ read: false, notRead: true });
   const { read, notRead } = selected;
   const itemsPerPage = 8;
@@ -212,7 +214,7 @@ function ReportsList() {
             Exportar datos
           </Button>
         }
-        filename={`Estudiantes con evaluación de informe pendiente`}>
+        filename={`Estudiantes con evaluación de informe pendiente - ${estado}`}>
         <ExcelSheet data={temp} name='Extensiones de práctica'>
           <ExcelColumn
             label='Fecha'
@@ -263,6 +265,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: false, notRead: true });
+                  setEstado('No Evaluadas');
                   setIndice(0);
                   setPage(1);
                 }}
@@ -273,6 +276,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: true, notRead: false });
+                  setEstado('Evaluadas');
                   setIndice(1);
                   setPage(1);
                 }}
@@ -283,6 +287,7 @@ function ReportsList() {
                 onClick={(e) => {
                   e.preventDefault();
                   setSelected({ read: true, notRead: true });
+                  setEstado('Todas');
                   setIndice(2);
                   setPage(1);
                 }}

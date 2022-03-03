@@ -30,7 +30,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  removeTimeInDate,
+  toDateWhitoutTime
 } from '../../utils/FormatUtils';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
@@ -174,8 +176,8 @@ function Insurance() {
         (item) =>
           item.status === approvedApplication &&
           item.approvedDate &&
-          item.approvedDate.seconds * 1000 >= startDate &&
-          item.approvedDate.seconds * 1000 <= endDate
+          toDateWhitoutTime(item.approvedDate) >= removeTimeInDate(startDate) &&
+          toDateWhitoutTime(item.approvedDate) <= removeTimeInDate(endDate)
       )
       .forEach((internship) => {
         if (!internship.alreadyDownloaded) {
@@ -213,6 +215,16 @@ function Insurance() {
         filtered = filtered.filter((item) =>
           normalizeString(item.studentName).includes(normalizeString(name))
         );
+      filtered = filtered.filter((item) => item.approvedDate);
+      filtered.sort((a, b) =>
+        a.approvedDate < b.approvedDate
+          ? 1
+          : a.approvedDate === b.approvedDate
+          ? a.size < b.size
+            ? 1
+            : -1
+          : -1
+      );
       return filtered;
     } else return [];
   }, [usersInsurance, name, selectedCareerId]);

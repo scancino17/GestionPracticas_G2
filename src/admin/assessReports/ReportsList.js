@@ -31,7 +31,9 @@ import DateFnsUtils from '@date-io/date-fns';
 import {
   normalizeString,
   toLegibleDate,
-  toLegibleTime
+  toLegibleTime,
+  toDateWhitoutTime,
+  removeTimeInDate
 } from '../../utils/FormatUtils';
 import PropTypes from 'prop-types';
 import { Pagination } from '@material-ui/lab';
@@ -108,26 +110,32 @@ function ReportsList() {
         (item) =>
           (item.status === finishedInternship &&
             item.evaluatedReportTime &&
-            item.evaluatedReportTime.seconds * 1000 <= endDate &&
-            item.evaluatedReportTime.seconds * 1000 >= startDate) ||
+            toDateWhitoutTime(item.evaluatedReportTime) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.evaluatedReportTime) >=
+              removeTimeInDate(startDate)) ||
           (item.status === sentReport &&
             item.sentReportDate &&
-            item.sentReportDate.seconds * 1000 <= endDate &&
-            item.sentReportDate.seconds * 1000 >= startDate)
+            toDateWhitoutTime(item.sentReportDate) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.sentReportDate) >=
+              removeTimeInDate(startDate))
       );
     } else if (read) {
       filtered = filtered.filter(
         (item) =>
           item.evaluatedReportTime &&
-          item.evaluatedReportTime.seconds * 1000 <= endDate &&
-          item.evaluatedReportTime.seconds * 1000 >= startDate
+          toDateWhitoutTime(item.evaluatedReportTime) <=
+            removeTimeInDate(endDate) &&
+          toDateWhitoutTime(item.evaluatedReportTime) >=
+            removeTimeInDate(startDate)
       );
     } else if (notRead) {
       filtered = filtered.filter(
         (item) =>
           item.sentReportDate &&
-          item.sentReportDate.seconds * 1000 <= endDate &&
-          item.sentReportDate.seconds * 1000 >= startDate
+          toDateWhitoutTime(item.sentReportDate) <= removeTimeInDate(endDate) &&
+          toDateWhitoutTime(item.sentReportDate) >= removeTimeInDate(startDate)
       );
     }
     filtered.sort((a, b) =>

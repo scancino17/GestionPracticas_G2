@@ -32,6 +32,8 @@ import ExcelFile from 'react-export-excel-xlsx-fix/dist/ExcelPlugin/components/E
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import {
   normalizeString,
+  removeTimeInDate,
+  toDateWhitoutTime,
   toLegibleDate,
   toLegibleTime
 } from '../../utils/FormatUtils';
@@ -102,52 +104,63 @@ function ApplicationsList() {
           (item) =>
             (item.status === 'En revisión' &&
               item.creationDate &&
-              item.creationDate.seconds * 1000 <= endDate &&
-              item.creationDate.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.creationDate) <=
+                removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.creationDate) >=
+                removeTimeInDate(startDate)) ||
             (item.status === 'Aprobado' &&
               item.approvedDate &&
-              item.approvedDate.seconds * 1000 <= endDate &&
-              item.approvedDate.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.approvedDate) <=
+                removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.approvedDate) >=
+                removeTimeInDate(startDate)) ||
             (item.status === 'Rechazado' &&
               item.rejectDate &&
-              item.rejectDate.seconds * 1000 <= endDate &&
-              item.rejectDate.seconds * 1000 >= startDate) ||
+              toDateWhitoutTime(item.rejectDate) <= removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.rejectDate) >=
+                removeTimeInDate(startDate)) ||
             (item.status === 'Necesita cambios menores' &&
               item.minorChangeRequestDate &&
-              item.minorChangeRequestDate.seconds * 1000 <= endDate &&
-              item.minorChangeRequestDate.seconds * 1000 >= startDate)
+              toDateWhitoutTime(item.minorChangeRequestDate) <=
+                removeTimeInDate(endDate) &&
+              toDateWhitoutTime(item.minorChangeRequestDate) >=
+                removeTimeInDate(startDate))
         );
       } else if (reviewing)
         filtered = filtered.filter(
           (item) =>
             item.status === 'En revisión' &&
-            item.creationDate &&
-            item.creationDate.seconds * 1000 <= endDate &&
-            item.creationDate.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.creationDate) &&
+            toDateWhitoutTime(item.creationDate) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.creationDate) >= removeTimeInDate(startDate)
         );
       else if (approved)
         filtered = filtered.filter(
           (item) =>
             item.status === 'Aprobado' &&
             item.approvedDate &&
-            item.approvedDate.seconds * 1000 <= endDate &&
-            item.approvedDate.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.approvedDate) <= removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.approvedDate) >= removeTimeInDate(startDate)
         );
       else if (rejected)
         filtered = filtered.filter(
           (item) =>
             item.status === 'Rechazado' &&
             item.rejectDate &&
-            item.rejectDate.seconds * 1000 <= endDate &&
-            item.rejectDate.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.rejectDate * 1000) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.rejectDate * 1000) >=
+              removeTimeInDate(startDate)
         );
       else if (needChanges)
         filtered = filtered.filter(
           (item) =>
             item.status === 'Necesita cambios menores' &&
             item.minorChangeRequestDate &&
-            item.minorChangeRequestDate.seconds * 1000 <= endDate &&
-            item.minorChangeRequestDate.seconds * 1000 >= startDate
+            toDateWhitoutTime(item.minorChangeRequestDate) <=
+              removeTimeInDate(endDate) &&
+            toDateWhitoutTime(item.minorChangeRequestDate) >=
+              removeTimeInDate(startDate)
         );
 
       filtered.sort((a, b) =>

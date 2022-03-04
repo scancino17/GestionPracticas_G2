@@ -23,8 +23,8 @@ function VerticalBar({ setExportable }) {
       });
 
     setExportable([
-      Array.from(companyCounter.keys()),
-      [Object.fromEntries(companyCounter)]
+      ['Estado', ...Array.from(companyCounter.keys())],
+      [{ Estado: 'Total prácticantes', ...Object.fromEntries(companyCounter) }]
     ]);
 
     let list = Array.from(companyCounter.entries());

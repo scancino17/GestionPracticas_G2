@@ -24,7 +24,11 @@ function ExcelExporter(props) {
         return (
           <ExcelSheet key={i} data={dataset} name='Single Page'>
             {props.data[0].map((col, i) => {
-              return <ExcelColumn key={i} label={col} value={col} />;
+              if (col === 'Estado') {
+                return <ExcelColumn key={i} label={''} value={col} />;
+              } else {
+                return <ExcelColumn key={i} label={col} value={col} />;
+              }
             })}
           </ExcelSheet>
         );

@@ -363,7 +363,7 @@ function DashboardAdmin({ sidebarProps }) {
                     xl={graphsCareerId === DEFAULT_CAREER ? 4 : 6}
                     xs={12}>
                     <Card>
-                      <CardHeader title='Prácticas registradas en el extranjero' />
+                      <CardHeader title='Paises con mayor registro de prácticas' />
                       <Divider />
                       <CardContent>
                         <Box
@@ -383,7 +383,7 @@ function DashboardAdmin({ sidebarProps }) {
                           height: '100%'
                         }}>
                         <ExcelExporter
-                          filename='Practicas registradas en el extranjero'
+                          filename='Paises con mayor registro de prácticas'
                           data={internCountries}
                         />
                       </Box>

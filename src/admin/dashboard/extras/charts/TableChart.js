@@ -30,8 +30,8 @@ function TableChart({ setExportable }) {
       });
 
     setExportable([
-      Array.from(countryCounter.keys()),
-      [Object.fromEntries(countryCounter)]
+      ['Estado', ...Array.from(countryCounter.keys())],
+      [{ Estado: 'Nro de prácticas', ...Object.fromEntries(countryCounter) }]
     ]);
 
     let entries = Array.from(countryCounter.entries());

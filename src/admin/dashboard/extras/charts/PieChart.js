@@ -100,8 +100,11 @@ function PieChart({ graphsCareerId, setExportable }) {
 
     // Preparar datos para enntrgar a padre
     const listData = [
-      Array.from(tempApproved.keys()),
-      [Object.fromEntries(tempApproved), Object.fromEntries(tempRejected)]
+      ['Estado', ...Array.from(tempApproved.keys())],
+      [
+        { Estado: 'Aprobados', ...Object.fromEntries(tempApproved) },
+        { Estado: 'Rechazados', ...Object.fromEntries(tempRejected) }
+      ]
     ];
 
     // Preparar datos para grafico

@@ -100,11 +100,14 @@ function GroupedBar({ graphsCareerId, setExportable }) {
 
     // Preparar datos y entregar a padre, para poder ser exportado como xslx
     let listData = [
-      Array.from(noAction.keys()),
+      ['Estado', ...Array.from(noAction.keys())],
       [
-        Object.fromEntries(noAction),
-        Object.fromEntries(applying),
-        Object.fromEntries(onIntern)
+        { Estado: 'Sin práctica', ...Object.fromEntries(noAction) },
+        {
+          Estado: 'En proceso de inscripción',
+          ...Object.fromEntries(applying)
+        },
+        { Estado: 'En práctica', ...Object.fromEntries(applying) }
       ]
     ];
 

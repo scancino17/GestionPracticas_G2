@@ -58,7 +58,7 @@ function PieChart({ graphsCareerId, setExportable }) {
     tempApproved.set(NO_CAREER, 0);
     tempRejected.set(NO_CAREER, 0);
 
-    // Por cada postulación, agregar al contador de cada estado,
+    // Por cada inscripción, agregar al contador de cada estado,
     // por carrera y en general
     applications.forEach((doc) => {
       let key = careersMap.has(doc.careerId)

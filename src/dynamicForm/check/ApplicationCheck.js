@@ -349,7 +349,7 @@ function ApplicationCheck() {
             backgroundRepeat: 'no-repeat',
             padding: '2rem'
           }}>
-          <Typography variant='h4'>Revisión Postulación</Typography>
+          <Typography variant='h4'>Revisión inscripción</Typography>
         </Grid>
         <Container style={{ paddingBottom: '5rem' }}>
           {application.form &&
@@ -381,11 +381,11 @@ function ApplicationCheck() {
           <BootstrapDialogTitle
             id='customized-dialog-title'
             onClose={() => setShow(false)}>
-            Rechazar postulación de práctica
+            Rechazar inscripción de práctica
           </BootstrapDialogTitle>
           <DialogContent dividers>
             <Typography gutterBottom>
-              ¿Está seguro de rechazar postulación de Práctica?
+              ¿Está seguro de rechazar inscripción de Práctica?
             </Typography>
 
             <TextField
@@ -421,11 +421,11 @@ function ApplicationCheck() {
           <BootstrapDialogTitle
             id='customized-dialog-title'
             onClose={() => setShowApproved(false)}>
-            Aprobar postulación de práctica
+            Aprobar inscripción de práctica
           </BootstrapDialogTitle>
           <DialogContent dividers>
             <Typography gutterBottom>
-              ¿Está seguro de aceptar la postulación de Práctica ?
+              ¿Está seguro de aceptar la inscripción de Práctica ?
             </Typography>
             <TextField
               fullWidth

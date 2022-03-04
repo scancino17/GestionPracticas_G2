@@ -94,7 +94,7 @@ function EvaluationCheck() {
             backgroundRepeat: 'no-repeat',
             padding: '2rem'
           }}>
-          <Typography variant='h4'>Revisión Postulación</Typography>
+          <Typography variant='h4'>Revisión evaluación</Typography>
         </Grid>
         <Container style={{ paddingBottom: '5rem' }}>
           {evaluation &&

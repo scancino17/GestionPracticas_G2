@@ -461,6 +461,22 @@ const IntentionItem = ({
           Estado de práctica {internship.internshipNumber}
         </Typography>
         {StateIcon()}
+
+        {internship.evaluatedReportTime ? (
+          <Typography
+            style={{ marginLeft: '3rem' }}
+            className={classes.evaluatingSupervisorText}>
+            {toLegibleDate(internship.evaluatedReportTime)}
+          </Typography>
+        ) : (
+          internship.sentTime && (
+            <Typography
+              style={{ marginLeft: '3rem' }}
+              className={classes.evaluatingSupervisorText}>
+              {toLegibleDate(internship.sentTime)}
+            </Typography>
+          )
+        )}
       </AccordionSummary>
       <AccordionDetails>{selectDetails()}</AccordionDetails>
       <AccordionActions>{selectActions()}</AccordionActions>

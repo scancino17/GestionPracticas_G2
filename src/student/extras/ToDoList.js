@@ -415,6 +415,7 @@ function DialogExtension({ internship, open, setOpen }) {
       reasonExtension: reasonRequestExtension,
       sentExtensionTime: serverTimestamp()
     });
+    setReasonRequestExtension('');
   }
 
   function transformDate(date) {
@@ -448,7 +449,10 @@ function DialogExtension({ internship, open, setOpen }) {
       maxWidth='sm'>
       <BootstrapDialogTitle
         id='customized-dialog-title'
-        onClose={() => setOpen(false)}>
+        onClose={() => {
+          setOpen(false);
+          setReasonRequestExtension('');
+        }}>
         Solicitud de extensión
       </BootstrapDialogTitle>
       <DialogContent dividers>
@@ -507,7 +511,10 @@ function DialogExtension({ internship, open, setOpen }) {
         <Button
           variant='outlined'
           color='primary'
-          onClick={() => setOpen(false)}>
+          onClick={() => {
+            setOpen(false);
+            setReasonRequestExtension('');
+          }}>
           Cerrar
         </Button>
         <Button
